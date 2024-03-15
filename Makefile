@@ -10,7 +10,7 @@ PVS_HTML=report.html
 PVS_PREPARE=./pvs-studio-prepare
 
 CFLAGS=-c
-OFLAGS=-g
+OFLAGS=-O3
 LDFLAGS=
 DFLAGS=
 INCLUDES=empollon.hpp asyncserversocket.hpp asyncclientsocket.hpp connection.hpp
@@ -70,7 +70,8 @@ chatgpt_load:
 	@echo "============================"
 	@$(CHATGPTLOAD)
 
-valgrind:
+valgrind: OFLAGS=-O0 -g
+valgrind: $(EXECUTABLE)
 	@echo ""
 	@echo "Running with valgrind..."
 	@echo "========================"
