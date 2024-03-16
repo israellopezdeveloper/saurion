@@ -3,30 +3,35 @@
 
 #include <bits/types/sig_atomic_t.h>
 
+#include <map>
+
 #include "connection.hpp"
+#include "threadpool.hpp"
 
 #define MAX_EVENTS 10
 
 class Empollon {
  public:
-  explicit Empollon(const int fd, const bool svr) noexcept;
+  explicit Empollon(int nfd, bool svr);
   ~Empollon() noexcept;
   Empollon(const Empollon &) = delete;
   Empollon &operator=(const Empollon &) = delete;
+  Empollon(Empollon &&) = delete;
+  Empollon &operator=(Empollon &&) = delete;
 
   using ConnectedCb = void (*)(Connection &, void *);
   using ReadedCb = void (*)(int, char *, ssize_t, void *);
   using WroteCb = void (*)(int, void *);
   using ClosedCb = void (*)(int, void *);
 
-  Connection *const socket() const noexcept;
+  Connection *socket() const noexcept;
 
-  void on_connected(ConnectedCb cb, void *arg) noexcept;
-  void on_readed(ReadedCb cb, void *arg) noexcept;
-  void on_wrote(WroteCb cb, void *arg) noexcept;
-  void on_closed(ClosedCb cb, void *arg) noexcept;
+  void on_connected(ConnectedCb ncb, void *arg) noexcept;
+  void on_readed(ReadedCb ncb, void *arg) noexcept;
+  void on_wrote(WroteCb ncb, void *arg) noexcept;
+  void on_closed(ClosedCb ncb, void *arg) noexcept;
 
-  void add(Connection *conn);
+  Connection *add(int nfd) const;
 
   void modify(Connection *conn) noexcept;
   void remove(Connection *conn) noexcept;
@@ -35,11 +40,19 @@ class Empollon {
   void stop() noexcept;
 
  private:
+  typedef struct ThreadParam {
+    Connection *conn;
+    Empollon *epoll;
+  } ThreadParam;
+
   int m_epoll_fd;
   Connection *m_socket;
   Connection *m_event;
-  const bool m_is_server = false;
+  bool m_is_server = false;
   volatile sig_atomic_t m_stop_f = 0;
+  ThreadPool m_thread_pool;
+  std::map<int, Connection *> m_connections;
+
   ConnectedCb m_connected_cb = nullptr;
   void *m_connected_arg = nullptr;
   ReadedCb m_readed_cb = nullptr;
@@ -50,7 +63,7 @@ class Empollon {
   void *m_closed_arg = nullptr;
 
   void connect_new() noexcept;
-  bool read_fd(Connection *conn) noexcept;
+  void read_fd(Connection *conn) noexcept;
   void write_fd(Connection *conn) noexcept;
 };
 

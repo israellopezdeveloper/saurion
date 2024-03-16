@@ -9,21 +9,21 @@ PVS_LICENSE=/home/israel/.config/PVS-Studio/PVS-Studio.lic
 PVS_HTML=report.html
 PVS_PREPARE=./pvs-studio-prepare
 
-CFLAGS=-c
+CFLAGS=-c -Wall -Wextra -pedantic -Wpedantic -Werror -pedantic-errors
 OFLAGS=-O3
 LDFLAGS=
 DFLAGS=
-INCLUDES=empollon.hpp asyncserversocket.hpp asyncclientsocket.hpp connection.hpp
-SOURCES=empollon.cpp main.cpp asyncserversocket.cpp asyncclientsocket.cpp connection.cpp
+INCLUDES=empollon.hpp asyncserversocket.hpp asyncclientsocket.hpp connection.hpp threadpool.hpp
+SOURCES=empollon.cpp asyncserversocket.cpp asyncclientsocket.cpp connection.cpp threadpool.cpp main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 IOBJECTS=$(SOURCES:.cpp=.o.PVS-Studio.i)
 POBJECTS=$(SOURCES:.cpp=.o.PVS-Studio.log)
-EXECUTABLE=test2
+EXECUTABLE=asyncsocket
 CHATGPTSEND=folder2chatgpt
 CHATGPTLOAD=chatgpt2folder
 VALGRIND=valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 -s
 
-.PHONY: all clean prepare chatgpt_send chatgpt_load
+.PHONY: all clean prepare chatgpt_send chatgpt_load valgrind show run
 
 all: $(EXECUTABLE)
 

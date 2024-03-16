@@ -15,16 +15,18 @@ class AsyncServerSocket {
   ~AsyncServerSocket() noexcept;
   AsyncServerSocket(const AsyncServerSocket &) = delete;
   AsyncServerSocket &operator=(const AsyncServerSocket &) = delete;
+  AsyncServerSocket(AsyncServerSocket &&) = delete;
+  AsyncServerSocket &operator=(AsyncServerSocket &&) = delete;
 
-  void on_connected(ConnectedCb cb, void *arg) noexcept;
-  void on_readed(ReadedCb cb, void *arg) noexcept;
-  void on_wrote(WroteCb cb, void *arg) noexcept;
-  void on_closed(ClosedCb cb, void *arg) noexcept;
+  void on_connected(ConnectedCb ncb, void *arg) noexcept;
+  void on_readed(ReadedCb ncb, void *arg) noexcept;
+  void on_wrote(WroteCb ncb, void *arg) noexcept;
+  void on_closed(ClosedCb ncb, void *arg) noexcept;
 
-  void start(const int port);
+  void start(int port);
   void stop() noexcept;
 
-  void send(Connection *conn, char *data, const size_t len) noexcept;
+  static void send(Connection *conn, char *data, size_t len) noexcept;
 
  private:
   int m_server_fd;
