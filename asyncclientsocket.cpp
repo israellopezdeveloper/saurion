@@ -13,13 +13,13 @@ using ACS = AsyncClientSocket;
 ACS::AsyncClientSocket() noexcept
     : m_client_fd(socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)),
       m_client_conn(nullptr),
-      m_client_th(0),
-      m_epoll(m_client_fd, false) {
+      m_epoll(m_client_fd, false),
+      m_client_th(0) {
   m_client_conn = m_epoll.socket();
 }
 ACS::~AsyncClientSocket() noexcept {
   m_epoll.stop();
-  if (m_client_th) {
+  if (m_client_th != 0U) {
     pthread_join(m_client_th, nullptr);
     m_client_th = 0;
   }
@@ -29,28 +29,29 @@ ACS::~AsyncClientSocket() noexcept {
   }
 }
 
-void ACS::on_connected(ConnectedCb cb, void *arg) noexcept {
-  m_connected_cb = cb;
+void ACS::on_connected(ConnectedCb ncb, void *arg) noexcept {
+  m_connected_cb = ncb;
   m_connected_arg = arg;
 }
-void ACS::on_readed(ReadedCb cb, void *arg) noexcept { m_epoll.on_readed(cb, arg); }
-void ACS::on_wrote(WroteCb cb, void *arg) noexcept { m_epoll.on_wrote(cb, arg); }
-void ACS::on_closed(ClosedCb cb, void *arg) noexcept { m_epoll.on_closed(cb, arg); }
+void ACS::on_readed(ReadedCb ncb, void *arg) noexcept { m_epoll.on_readed(ncb, arg); }
+void ACS::on_wrote(WroteCb ncb, void *arg) noexcept { m_epoll.on_wrote(ncb, arg); }
+void ACS::on_closed(ClosedCb ncb, void *arg) noexcept { m_epoll.on_closed(ncb, arg); }
 
-void ACS::connect(const char *ip, const int port) {
+void ACS::connect(const char *ipa, const int port) {
   if (m_client_fd == -1) {
     throw std::runtime_error("socket failed");
   }
-  struct sockaddr_in client_addr;
-  client_addr.sin_family = AF_INET;
-  client_addr.sin_port = htons(port);
-  client_addr.sin_addr.s_addr = inet_addr(ip);
-  if (::connect(m_client_fd, (struct sockaddr *)&client_addr, sizeof(client_addr)) == -1) {
+  struct sockaddr_in c_addr {};
+  c_addr.sin_family = AF_INET;
+  c_addr.sin_port = htons(port);
+  c_addr.sin_addr.s_addr = inet_addr(ipa);
+  auto *ca_cast = reinterpret_cast<struct sockaddr *>(&c_addr);
+  if (::connect(m_client_fd, ca_cast, sizeof(c_addr)) == -1) {
     if (errno != EINPROGRESS) {
       throw std::runtime_error("connect failed");
     }
   }
-  if (m_connected_cb) {
+  if (m_connected_cb != nullptr) {
     m_connected_cb(*m_epoll.socket(), m_connected_arg);
   }
   if (pthread_create(&m_client_th, nullptr, &ACS::main_th, this) != 0) {

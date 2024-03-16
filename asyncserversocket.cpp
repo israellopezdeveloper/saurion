@@ -12,8 +12,8 @@ using ASS = AsyncServerSocket;
 
 ASS::AsyncServerSocket() noexcept
     : m_server_fd(socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)),
-      m_server_th(0),
-      m_epoll(m_server_fd, true) {}
+      m_epoll(m_server_fd, true),
+      m_server_th(0) {}
 ASS::~AsyncServerSocket() noexcept {
   stop();
   if (m_server_fd != -1) {
@@ -21,10 +21,10 @@ ASS::~AsyncServerSocket() noexcept {
   }
 }
 
-void ASS::on_connected(ConnectedCb cb, void *arg) noexcept { m_epoll.on_connected(cb, arg); }
-void ASS::on_readed(ReadedCb cb, void *arg) noexcept { m_epoll.on_readed(cb, arg); }
-void ASS::on_wrote(WroteCb cb, void *arg) noexcept { m_epoll.on_wrote(cb, arg); }
-void ASS::on_closed(ClosedCb cb, void *arg) noexcept { m_epoll.on_closed(cb, arg); }
+void ASS::on_connected(ConnectedCb ncb, void *arg) noexcept { m_epoll.on_connected(ncb, arg); }
+void ASS::on_readed(ReadedCb ncb, void *arg) noexcept { m_epoll.on_readed(ncb, arg); }
+void ASS::on_wrote(WroteCb ncb, void *arg) noexcept { m_epoll.on_wrote(ncb, arg); }
+void ASS::on_closed(ClosedCb ncb, void *arg) noexcept { m_epoll.on_closed(ncb, arg); }
 
 void ASS::start(const int port) {
   if (m_server_fd == -1) {
@@ -34,11 +34,12 @@ void ASS::start(const int port) {
   if (setsockopt(m_server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
     throw std::runtime_error("setsockopt failed");
   }
-  struct sockaddr_in server_addr;
-  server_addr.sin_family = AF_INET;
-  server_addr.sin_addr.s_addr = INADDR_ANY;
-  server_addr.sin_port = htons(port);
-  if (bind(m_server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
+  struct sockaddr_in s_addr {};
+  s_addr.sin_family = AF_INET;
+  s_addr.sin_addr.s_addr = INADDR_ANY;
+  s_addr.sin_port = htons(port);
+  auto *sa_cast = reinterpret_cast<struct sockaddr *>(&s_addr);
+  if (bind(m_server_fd, sa_cast, sizeof(s_addr)) == -1) {
     throw std::runtime_error("bind failed");
   }
   if (listen(m_server_fd, SOMAXCONN) == -1) {
@@ -50,7 +51,7 @@ void ASS::start(const int port) {
 }
 void ASS::stop() noexcept {
   m_epoll.stop();
-  if (m_server_th) {
+  if (m_server_th != 0U) {
     pthread_join(m_server_th, nullptr);
     m_server_th = 0;
   }
