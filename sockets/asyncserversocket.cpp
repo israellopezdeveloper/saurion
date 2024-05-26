@@ -4,6 +4,7 @@
 
 #include <netinet/in.h>
 
+#include <cstring>
 #include <stdexcept>
 
 #define MAX_EVENTS 10
@@ -29,6 +30,14 @@ void ASS::on_closed(ClosedCb ncb, void *arg) noexcept { m_epoll.on_closed(ncb, a
 void ASS::start(const int port) {
   if (m_server_fd == -1) {
     throw std::runtime_error("socket failed");
+  }
+  struct timeval timeout {};
+  timeout.tv_sec = 1;
+  if (setsockopt(m_server_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) == -1) {
+    throw std::runtime_error(strerror(errno));
+  }
+  if (setsockopt(m_server_fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout)) == -1) {
+    throw std::runtime_error(strerror(errno));
   }
   int opt = 1;
   if (setsockopt(m_server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
@@ -61,7 +70,10 @@ void ASS::stop() noexcept {
   }
 }
 
-void ASS::send(Connection *conn, char *data, const size_t len) noexcept { conn->send(data, len); }
+void ASS::send(Connection *conn, char *data, const size_t len) noexcept {
+  conn->send(data, len);
+  m_epoll.write_fd(conn);
+}
 
 void *ASS::main_th(void *arg) noexcept {
   ASS *server = static_cast<AsyncServerSocket *>(arg);

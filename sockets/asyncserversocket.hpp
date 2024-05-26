@@ -1,8 +1,7 @@
 #ifndef ASYNC_SERVER_SOCKET_H
 #define ASYNC_SERVER_SOCKET_H
 
-#include "connection.hpp"
-#include "empollon.hpp"
+#include "../epoll/empollon.hpp"
 
 class AsyncServerSocket {
  public:
@@ -26,7 +25,7 @@ class AsyncServerSocket {
   void start(int port);
   void stop() noexcept;
 
-  static void send(Connection *conn, char *data, size_t len) noexcept;
+  void send(Connection *conn, char *data, size_t len) noexcept;
 
  private:
   int m_server_fd;

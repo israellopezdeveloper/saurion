@@ -10,11 +10,11 @@ PVS_HTML=report.html
 PVS_PREPARE=./pvs-studio-prepare
 
 CFLAGS=-c -Wall -Wextra -pedantic -Wpedantic -Werror -pedantic-errors
-OFLAGS=-O3
+OFLAGS=-O0 -g
 LDFLAGS=
 DFLAGS=
-INCLUDES=empollon.hpp asyncserversocket.hpp asyncclientsocket.hpp connection.hpp threadpool.hpp
-SOURCES=empollon.cpp asyncserversocket.cpp asyncclientsocket.cpp connection.cpp threadpool.cpp main.cpp
+INCLUDES=epoll/empollon.hpp epoll/connection.hpp epoll/threadpool/threadpool.hpp sockets/asyncserversocket.hpp sockets/asyncclientsocket.hpp
+SOURCES=$(INCLUDES:.hpp=.cpp) main.cpp tests/threadpool.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 IOBJECTS=$(SOURCES:.cpp=.o.PVS-Studio.i)
 POBJECTS=$(SOURCES:.cpp=.o.PVS-Studio.log)

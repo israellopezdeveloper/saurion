@@ -1,8 +1,7 @@
 #ifndef ASYNC_CLIENT_SOCKET_H
 #define ASYNC_CLIENT_SOCKET_H
 
-#include "connection.hpp"
-#include "empollon.hpp"
+#include "../epoll/empollon.hpp"
 
 class AsyncClientSocket {
  public:

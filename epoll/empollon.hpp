@@ -6,7 +6,7 @@
 #include <map>
 
 #include "connection.hpp"
-#include "threadpool.hpp"
+#include "threadpool/threadpool.hpp"
 
 #define MAX_EVENTS 10
 
@@ -44,14 +44,16 @@ class Empollon {
     Connection *conn;
     Empollon *epoll;
   } ThreadParam;
+  typedef std::map<int, Connection *> Connections;
 
   int m_epoll_fd;
+  int m_socket_fd;
   Connection *m_socket;
   Connection *m_event;
   bool m_is_server = false;
   volatile sig_atomic_t m_stop_f = 0;
   ThreadPool m_thread_pool;
-  std::map<int, Connection *> m_connections;
+  Connections m_connections;
 
   ConnectedCb m_connected_cb = nullptr;
   void *m_connected_arg = nullptr;
@@ -64,6 +66,8 @@ class Empollon {
 
   void connect_new() noexcept;
   void read_fd(Connection *conn) noexcept;
+
+ public:
   void write_fd(Connection *conn) noexcept;
 };
 

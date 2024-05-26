@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+#include <cstring>
 #include <stdexcept>
 
 using ACS = AsyncClientSocket;
@@ -41,6 +42,14 @@ void ACS::connect(const char *ipa, const int port) {
   if (m_client_fd == -1) {
     throw std::runtime_error("socket failed");
   }
+  struct timeval timeout {};
+  timeout.tv_sec = 1;
+  if (setsockopt(m_client_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) == -1) {
+    throw std::runtime_error("client socket failed 1");
+  }
+  if (setsockopt(m_client_fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout)) == -1) {
+    throw std::runtime_error("client socket failed 2");
+  }
   struct sockaddr_in c_addr {};
   c_addr.sin_family = AF_INET;
   c_addr.sin_port = htons(port);
@@ -66,7 +75,10 @@ void ACS::stop() noexcept {
   }
 }
 
-void ACS::send(const char *data, const size_t len) noexcept { m_client_conn->send(data, len); }
+void ACS::send(const char *data, const size_t len) noexcept {
+  m_client_conn->send(data, len);
+  m_epoll.write_fd(m_client_conn);
+}
 
 void *ACS::main_th(void *arg) noexcept {
   ACS *client = static_cast<AsyncClientSocket *>(arg);
