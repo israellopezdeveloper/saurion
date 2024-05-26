@@ -6,6 +6,8 @@
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
 
+#include <cstdio>
+#include <cstring>
 #include <stdexcept>
 
 #include "connection.hpp"
@@ -14,18 +16,17 @@ using E = Empollon;
 
 E::Empollon(const int nfd, const bool svr)
     : m_epoll_fd(epoll_create1(0)),
-      m_socket(add(nfd)),
+      m_socket_fd(nfd),
+      m_socket(add(m_socket_fd)),
       m_event(add(eventfd(0, EFD_NONBLOCK))),
       m_is_server(svr),
-      m_thread_pool("empollon", 5) {
-  if (m_epoll_fd == -1) {
+      m_thread_pool(5) {
+  if (m_epoll_fd == -1 || m_event->fd() == -1) {
     return;
   }
-  if (m_event->fd() == -1) {
-    return;
-  }
-  m_thread_pool.new_queue(m_socket->fd(), 1);
+  m_thread_pool.new_queue(m_socket_fd, 1);
   m_thread_pool.new_queue(m_event->fd(), 1);
+  m_thread_pool.init();
 }
 E::~Empollon() noexcept {
   stop();
@@ -37,7 +38,6 @@ E::~Empollon() noexcept {
   for (auto &conn : m_connections) {
     delete conn.second;
   }
-  m_thread_pool.stop();
 }
 
 Connection *E::socket() const noexcept { return m_socket; }
@@ -62,21 +62,23 @@ void E::on_closed(ClosedCb ncb, void *arg) noexcept {
 Connection *E::add(int nfd) const {
   struct epoll_event event {};
   event.events = EPOLLIN | EPOLLOUT | EPOLLHUP | EPOLLERR | EPOLLONESHOT;
-  event.data.ptr = new Connection(nfd);
+  auto *conn = new Connection(nfd);
+  event.data.ptr = conn;
 
   if (epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, nfd, &event) == -1) {
     throw std::runtime_error("epoll_ctl");
   }
-  return static_cast<Connection *>(event.data.ptr);
+  auto *ret = static_cast<Connection *>(event.data.ptr);
+  return ret;
 }
 
 void E::modify(Connection *conn) noexcept {
   struct epoll_event event {};
   event.events = EPOLLHUP | EPOLLERR | EPOLLONESHOT;
-  if (conn->is_readable() || conn == m_event) {
+  if (conn == m_event) {
     event.events |= EPOLLIN;
   }
-  if (conn->is_writable() || conn == m_event) {
+  if (conn == m_event) {
     event.events |= EPOLLOUT;
   }
   event.data.ptr = conn;
@@ -106,7 +108,6 @@ void E::remove(Connection *conn) noexcept {
 }
 
 void E::wait() noexcept {
-  m_thread_pool.init();
   struct epoll_event events[MAX_EVENTS];
   int num_ready = 0;
   while (m_stop_f == 0) {
@@ -120,8 +121,10 @@ void E::wait() noexcept {
 
     for (int i = 0; i < num_ready; ++i) {
       auto *conn = reinterpret_cast<Connection *>(events[i].data.ptr);
+      if (m_epoll_fd == 7) {
+        fprintf(stderr, "epoll_wait: %d\n", conn->fd());
+      }
       if ((events[i].events & (EPOLLHUP | EPOLLERR)) != 0U) {
-        auto *conn = reinterpret_cast<Connection *>(events[i].data.ptr);
         remove(conn);
         continue;
       }
@@ -140,13 +143,11 @@ void E::wait() noexcept {
   }
 }
 void E::stop() noexcept {
+  fprintf(stderr, "Stopping epoll 1\n");
   m_stop_f = 1;
   eventfd_write(m_event->fd(), 1);
-  m_event->wait_not_using();
-  m_socket->wait_not_using();
-  for (auto &conn : m_connections) {
-    conn.second->wait_not_using();
-  }
+  m_thread_pool.stop();
+  fprintf(stderr, "Stopping epoll 2\n");
 }
 
 void E::connect_new() noexcept {
@@ -165,6 +166,7 @@ void E::connect_new() noexcept {
             _this->modify(_this->m_socket);
             return;
           }
+          _this->m_thread_pool.new_queue(c_fd, 1);
           try {
             auto *nconn = _this->add(c_fd);
             _this->m_connections[c_fd] = nconn;
@@ -186,26 +188,42 @@ void E::read_fd(Connection *conn) noexcept {
     m_thread_pool.add(
         conn->fd(),
         [](void *arg) {
+          fprintf(stderr, "<%lu> Inicio lectura\n", pthread_self());
           auto *ptr = static_cast<ThreadParam *>(arg);
           auto *_this = ptr->epoll;
           auto *conn = ptr->conn;
           char buffer[1024];
           char *buffer_ptr = buffer;
           ssize_t bytes_read = sizeof(buffer);
-          conn->read(buffer_ptr, bytes_read);
-          if (bytes_read < 1) {
-            if (errno != EAGAIN) {
-              _this->remove(conn);
-              return;
+          while (bytes_read > 0) {
+            conn->read(buffer_ptr, bytes_read);
+            char *ptr_substr = buffer;
+            ssize_t sublen = 0;
+            while ((ptr_substr + sublen) < (buffer + bytes_read)) {
+              while ((ptr_substr + sublen) < (buffer + bytes_read)) {
+                if (*(ptr_substr + sublen) == '\0') {
+                  if (bytes_read < 1) {
+                    if (errno != EAGAIN) {
+                      _this->remove(conn);
+                      return;
+                    }
+                    _this->modify(conn);
+                    return;
+                  }
+                  if (_this->m_readed_cb != nullptr) {
+                    _this->m_readed_cb(conn->fd(), buffer, bytes_read, _this->m_readed_arg);
+                  }
+                  ptr_substr = ptr_substr + sublen + 1;
+                  sublen = 0;
+                  break;
+                }
+                sublen++;
+              }
             }
-            _this->modify(conn);
-            return;
-          }
-          if (_this->m_readed_cb != nullptr) {
-            _this->m_readed_cb(conn->fd(), buffer, bytes_read, _this->m_readed_arg);
           }
           _this->modify(conn);
           delete ptr;
+          fprintf(stderr, "<%lu> Fin lectura\n", pthread_self());
         },
         new ThreadParam{conn, this});
   } catch (...) {
@@ -219,12 +237,13 @@ void E::write_fd(Connection *conn) noexcept {
           auto *ptr = static_cast<ThreadParam *>(arg);
           auto *_this = ptr->epoll;
           auto *conn = ptr->conn;
+          auto fd1 = conn->fd();
           if (!conn->write()) {
             _this->remove(conn);
             return;
           }
           if (_this->m_wrote_cb != nullptr) {
-            _this->m_wrote_cb(conn->fd(), _this->m_wrote_arg);
+            _this->m_wrote_cb(fd1, _this->m_wrote_arg);
           }
           _this->modify(conn);
           delete ptr;
