@@ -201,7 +201,9 @@ TEST(ThreadPoolTest, HandleTaskException) {
   pool.init();
 
   // Agrega la tarea que lanza una excepción al pool de hilos
-  ASSERT_NO_THROW(pool.add(taskWithError, nullptr));
+  for (int i = 0; i < 10; ++i) {
+    ASSERT_NO_THROW(pool.add(taskWithError, nullptr));
+  }
 
   // Espera hasta que el pool de hilos esté vacío
   pool.wait_empty();
@@ -264,7 +266,9 @@ TEST(ThreadPoolTest, AddNullFunctionPointer) {
   pool.init();
 
   // Intentar agregar una tarea con un puntero a función nulo
-  ASSERT_THROW({ pool.add(nullptr, nullptr); }, std::logic_error);
+  for (int i = 0; i < 10; ++i) {
+    ASSERT_THROW({ pool.add(nullptr, nullptr); }, std::logic_error);
+  }
 }
 
 TEST(ThreadPoolTest, InitMultipleTimes) {
@@ -381,7 +385,9 @@ TEST(ThreadPoolTest, AddTaskWithNullFunctionToNonexistentQueue) {
   pool.init();
 
   // Intentar agregar una tarea con función nula a una cola inexistente
-  ASSERT_THROW({ pool.add(1, nullptr, nullptr); }, std::logic_error);
+  for (int i = 0; i < 10; ++i) {
+    ASSERT_THROW({ pool.add(1, nullptr, nullptr); }, std::logic_error);
+  }
 }
 
 TEST(ThreadPoolTest, AddAndRemoveMultipleQueues) {
@@ -450,5 +456,28 @@ TEST(ThreadPoolTest, AddTaskToStoppedPool) {
   // Agregar una tarea con un argumento inválido
   for (int i = 0; i < 100; ++i) {
     ASSERT_THROW({ pool.add([](void*) {}, nullptr); }, std::logic_error);
+  }
+}
+
+TEST(ThreadPoolTest, ClosePoolWithActiveTasks) {
+  ThreadPool pool;
+
+  // Iniciar el pool de hilos
+  pool.init();
+
+  pool.new_queue(1, 1);
+
+  // Agregar una tarea con un argumento inválido
+  for (int i = 0; i < 10000; ++i) {
+    pool.add(
+        1, [](void*) {}, nullptr);
+  }
+}
+
+TEST(ThreadPoolTest, TryToCloseDefaultQueue) {
+  ThreadPool pool;
+  pool.init();
+  for (int i = 0; i < 1000; ++i) {
+    ASSERT_NO_THROW({ pool.remove_queue(0); });  // Intentar eliminar la cola de tareas predeterminada
   }
 }

@@ -14,18 +14,9 @@ using T = Task;
 T::Task(void (*nfn)(void*), void* narg) : function(nfn), argument(narg) {}
 
 //********* AsyncQueue ************
-TP::AsyncQueue::AsyncQueue(uint32_t cnt) : m_max(cnt), m_cnt(0) {
-}
+TP::AsyncQueue::AsyncQueue(uint32_t cnt) : m_max(cnt), m_cnt(0) {}
 
-TP::AsyncQueue::~AsyncQueue() {
-  pthread_mutex_lock(&m_mtx);
-  while (!m_queue.empty()) {
-    delete m_queue.front();
-    m_queue.pop();
-  }
-  pthread_mutex_unlock(&m_mtx);
-  pthread_mutex_destroy(&m_mtx);
-}
+TP::AsyncQueue::~AsyncQueue() { pthread_mutex_destroy(&m_mtx); }
 
 void TP::AsyncQueue::push(Task* task) {
   pthread_mutex_lock(&m_mtx);
