@@ -72,22 +72,10 @@ GTEST_INCLUDE_DIR=$(GTEST_DIR)/final/usr/local/include
 INCLUDES_FLAGS=-I$(INCLUDES_DIR) $(patsubst %, -I%/$(INCLUDES_DIR)/,$(DEPENDENCIES_SHARED_LIBS)) $(patsubst %, -I%/$(INCLUDES_DIR)/,$(DEPENDENCIES_STATIC_LIBS))
 CXXFLAGS=-Wall -Wextra -pedantic -Wpedantic -Werror -pedantic-errors $(INCLUDES_FLAGS) -O3 -pthread
 TESTFLAGS=-I$(GTEST_INCLUDE_DIR) -L$(GTEST_LIB_DIR) -lgtest_main -lgtest
-LDFLAGS=$(patsubst %, -L%/$(LIB_DIR)/,$(DEPENDENCIES_STATIC_LIBS)) $(patsubst %, -L%/$(LIB_DIR)/,$(DEPENDENCIES_SHARED_LIBS)) $(foreach dir,$(DEPENDENCIES_STATIC_LIBS),-l:lib$(notdir $(dir)).a) $(foreach dir,$(DEPENDENCIES_SHARED_LIBS),-l:lib$(notdir $(dir)).so) $(foreach dir, $(EXTERNAL_DEPENDENCIES),-l$(notdir $(dir)))
+LDFLAGS=$(patsubst %, -L%/$(LIB_DIR)/,$(DEPENDENCIES_STATIC_LIBS)) $(patsubst %, -L%/$(LIB_DIR)/,$(DEPENDENCIES_SHARED_LIBS)) $(foreach dir,$(DEPENDENCIES_STATIC_LIBS),-l:lib$(notdir $(dir)).a) -lc $(foreach dir,$(DEPENDENCIES_SHARED_LIBS),-l:lib$(notdir $(dir)).so) $(foreach dir, $(EXTERNAL_DEPENDENCIES),-l$(notdir $(dir)))
 COVERAGE_FLAGS=-fprofile-instr-generate -fcoverage-mapping
 STATIC_LIB_FLAGS=-r
 SHARED_LIB_FLAGS=-shared -fPIC
-
-##################################
-# LOG CONFIGURATIONS
-##################################
-PVS_CFG=$(COMMON_MK_PATH)/PVS-Studio.cfg
-LOG_FORMAT=tasklist # csv, errorfile, fullhtml, html, tasklist, xml
-LOG_FORMAT2=fullhtml
-PVS_LOG=$(BUILD_DIR)/project.tasks
-PVS_LICENSE=$(HOME)/.config/PVS-Studio/PVS-Studio.lic
-PVS_HTML=$(BUILD_DIR)/pvs-report/
-PVS_PREPARE=$(COMMON_MK_PATH)/pvs-studio-prepare
-PVS_STUDIO=pvs-studio
 
 ##################################
 # DIRECTORIES CREATION
@@ -100,8 +88,6 @@ $(LIB_DIR):
 
 $(BUILD_DIR):
 	@mkdir -p $(BUILD_DIR)
-
-$(PVS_HTML): $(BUILD_DIR)
 
 $(GTEST_DIR):
 	@git clone https://github.com/google/googletest.git $(GTEST_DIR)
@@ -152,7 +138,7 @@ LLVM_JSON_REPORT=llvm-cov export $(BIN_DIR)/$(TEST_EXECUTABLE)_coverage \
 ##################################
 # RULES
 ##################################
-.PHONY: all clean prepare chatgpt_send chatgpt_load valgrind show run test format list help
+.PHONY: all clean chatgpt_send chatgpt_load valgrind show run test format list help
 
 help:
 	@echo -e "make <options>\n Options:"
@@ -172,10 +158,7 @@ help:
 	@echo -e "Objects: specify one or more objects:"
 	@echo "    $(CPP_OBJECTS)"
 
-all: $(EXECUTABLE) $(TEST_EXECUTABLE) libs compile_commands $(TEST_EXECUTABLE)_coverage
-
-prepare: $(CPP_SOURCES) $(PVS_HTML)
-	@$(PVS_PREPARE) -c 1 . > /dev/null 2>&1
+all: $(EXECUTABLE) $(TEST_EXECUTABLE) libs $(TEST_EXECUTABLE)_coverage compile_commands
 
 clean:
 	@rm -rf $(BUILD_DIR) $(BIN_DIR) $(LIB_DIR) compile_commands.json
@@ -193,22 +176,18 @@ $(DEPENDENCIES_LIBS) : % :
 main.cpp:
 	@echo -e "Ly8gVGhpcyBpcyBhIHBlcnNvbmFsIGFjYWRlbWljIHByb2plY3QuIERlYXIgUFZTLVN0dWRpbywg\ncGxlYXNlIGNoZWNrIGl0LgovLyBQVlMtU3R1ZGlvIFN0YXRpYyBDb2RlIEFuYWx5emVyIGZvciBD\nLCBDKyssIEMjLCBhbmQgSmF2YTogaHR0cHM6Ly9wdnMtc3R1ZGlvLmNvbQojaW5jbHVkZSA8Y3N0\nZGlvPgoKaW50IG1haW4oKSB7CiAgcHJpbnRmKCJIZWxsbywgV29ybGQhXG4iKTsKICByZXR1cm4g\nMDsKfQo=" | base64 -d > $@
 
-$(EXECUTABLE): $(BIN_DIR)/$(EXECUTABLE) compile_commands
+$(EXECUTABLE): $(BIN_DIR)/$(EXECUTABLE)
 
 $(BIN_DIR)/$(EXECUTABLE): $(CPP_OBJECTS) $(C_OBJECTS) $(BIN_DIR) main.cpp $(DEPENDENCIES_LIBS)
 	@$(CXX) $(CXXFLAGS) $(CPP_OBJECTS) $(C_OBJECTS) main.cpp $(LDFLAGS) -o $@
-	@plog-converter -a 'GA:1,2' -t $(LOG_FORMAT) $(POBJECTS) -o $(PVS_LOG) > /dev/null 2>&1 || true
-	@plog-converter -a 'GA:1,2' -t $(LOG_FORMAT2) $(POBJECTS) -o $(PVS_HTML) > /dev/null 2>&1 || true
 
-$(CPP_OBJECTS): $(BUILD_DIR)/%.o : $(SOURCES_DIR)/%.cpp $(BUILD_DIR) prepare
+$(CPP_OBJECTS): $(BUILD_DIR)/%.o : $(SOURCES_DIR)/%.cpp $(BUILD_DIR)
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
 	@$(CXX) $(CXXFLAGS) $< -E -o $@.PVS-Studio.i > /dev/null 2>&1
-	@$(PVS_STUDIO) --lic-file=$(PVS_LICENSE) --cfg $(PVS_CFG) --source-file $< --i-file $@.PVS-Studio.i --output-file $@.PVS-Studio.log > /dev/null 2>&1
 
-$(C_OBJECTS): $(BUILD_DIR)/%.o : $(SOURCES_DIR)/%.c $(BUILD_DIR) prepare
+$(C_OBJECTS): $(BUILD_DIR)/%.o : $(SOURCES_DIR)/%.c $(BUILD_DIR)
 	@$(CC) $(CXXFLAGS) -c $< -o $@
 	@$(CC) $(CXXFLAGS) $< -E -o $@.PVS-Studio.i > /dev/null 2>&1
-	@$(PVS_STUDIO) --lic-file=$(PVS_LICENSE) --cfg $(PVS_CFG) --source-file $< --i-file $@.PVS-Studio.i --output-file $@.PVS-Studio.log > /dev/null 2>&1
 
 run: $(EXECUTABLE)
 	@echo ""
@@ -221,10 +200,10 @@ run: $(EXECUTABLE)
 #################
 $(TEST_EXECUTABLE): $(BIN_DIR)/$(TEST_EXECUTABLE)
 
-$(BIN_DIR)/$(TEST_EXECUTABLE): $(TESTS_OBJECTS) $(CPP_OBJECTS) $(C_OBJECTS) $(BIN_DIR) $(DEPENDENCIES_LIBS) compile_commands
+$(BIN_DIR)/$(TEST_EXECUTABLE): $(GTEST_DIR) $(TESTS_OBJECTS) $(CPP_OBJECTS) $(C_OBJECTS) $(BIN_DIR) $(DEPENDENCIES_LIBS)
 	@$(CXX) $(CXXFLAGS) $(TESTFLAGS) $(TESTS_OBJECTS) $(CPP_OBJECTS) $(C_OBJECTS) $(LDFLAGS) -o $@
 
-$(TESTS_OBJECTS): $(BUILD_DIR)/%.o : $(TESTS_DIR)/%.cpp $(BUILD_DIR) prepare
+$(TESTS_OBJECTS): $(BUILD_DIR)/%.o : $(TESTS_DIR)/%.cpp $(BUILD_DIR)
 	@$(CXX) $(CXXFLAGS) -I$(GTEST_INCLUDE_DIR) -c $< -o $@
 
 tests: $(TEST_EXECUTABLE)
@@ -248,13 +227,13 @@ $(LIB_DIR)/lib$(LIB_NAME).so: $(CPP_OBJECTS) $(LIB_DIR)
 #################
 $(EXECUTABLE)_coverage: $(BIN_DIR)/$(EXECUTABLE)_coverage
 
-$(BIN_DIR)/$(EXECUTABLE)_coverage: $(CPP_OBJECTS_COVERAGE) $(C_OBJECTS_COVERAGE) $(BIN_DIR) main.cpp $(DEPENDENCIES_LIBS) compile_commands
+$(BIN_DIR)/$(EXECUTABLE)_coverage: $(CPP_OBJECTS_COVERAGE) $(C_OBJECTS_COVERAGE) $(BIN_DIR) main.cpp $(DEPENDENCIES_LIBS)
 	@$(CXX) $(CXXFLAGS) $(COVERAGE_FLAGS) --coverage $(CPP_OBJECTS_COVERAGE) $(C_OBJECTS_COVERAGE) main.cpp $(LDFLAGS) -o $@
 
-$(CPP_OBJECTS_COVERAGE): $(BUILD_DIR)/%_coverage.o : $(SOURCES_DIR)/%.cpp $(BUILD_DIR) prepare
+$(CPP_OBJECTS_COVERAGE): $(BUILD_DIR)/%_coverage.o : $(SOURCES_DIR)/%.cpp $(BUILD_DIR)
 	@$(CXX) $(CXXFLAGS) $(COVERAGE_FLAGS) -c $< -o $@
 
-$(C_OBJECTS_COVERAGE): $(BUILD_DIR)/%_coverage.o : $(SOURCES_DIR)/%.c $(BUILD_DIR) prepare
+$(C_OBJECTS_COVERAGE): $(BUILD_DIR)/%_coverage.o : $(SOURCES_DIR)/%.c $(BUILD_DIR)
 	@$(CC) $(CXXFLAGS) $(COVERAGE_FLAGS) -c $< -o $@
 
 $(TEST_EXECUTABLE)_coverage: $(BIN_DIR)/$(TEST_EXECUTABLE)_coverage
@@ -265,10 +244,10 @@ $(TEST_EXECUTABLE)_coverage: $(BIN_DIR)/$(TEST_EXECUTABLE)_coverage
 		jq '.data[0].totals' $(BUILD_DIR)/cov_report.json > $(BUILD_DIR)/coverage_report.json
 	@rm -rf $(BUILD_DIR)/cov_report.json $(BUILD_DIR)/default.profdata default.profraw
 
-$(BIN_DIR)/$(TEST_EXECUTABLE)_coverage: $(TESTS_OBJECTS_COVERAGE) $(CPP_OBJECTS_COVERAGE) $(C_OBJECTS_COVERAGE) $(BIN_DIR) $(DEPENDENCIES_LIBS) compile_commands
+$(BIN_DIR)/$(TEST_EXECUTABLE)_coverage: $(TESTS_OBJECTS_COVERAGE) $(CPP_OBJECTS_COVERAGE) $(C_OBJECTS_COVERAGE) $(BIN_DIR) $(DEPENDENCIES_LIBS)
 	@$(CXX) $(CXXFLAGS) $(TESTFLAGS) $(COVERAGE_FLAGS) $(TESTS_OBJECTS_COVERAGE) $(CPP_OBJECTS_COVERAGE) $(C_OBJECTS_COVERAGE) $(LDFLAGS) -o $@
 
-$(TESTS_OBJECTS_COVERAGE): $(BUILD_DIR)/%_coverage.o : $(TESTS_DIR)/%.cpp $(BUILD_DIR) prepare
+$(TESTS_OBJECTS_COVERAGE): $(BUILD_DIR)/%_coverage.o : $(TESTS_DIR)/%.cpp $(BUILD_DIR)
 	@$(CXX) $(CXXFLAGS) -I$(GTEST_INCLUDE_DIR) $(COVERAGE_FLAGS) -c $< -o $@
 
 coverage: $(TEST_EXECUTABLE)_coverage
@@ -281,9 +260,6 @@ coverage: $(TEST_EXECUTABLE)_coverage
 #################
 # TOOLS
 #################
-show: $(EXECUTABLE)
-	@qutebrowser $(PVS_HTML)
-
 chatgpt_send:
 	@echo ""
 	@echo "Enter a message to send to ChatGPT:"
