@@ -1,6 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <pthread.h>
@@ -281,7 +278,7 @@ class LowSaurionTest : public ::testing::Test {
     memset(&sadd, 0, sizeof(sadd));
     sadd.sin_family = AF_INET;
     sadd.sin_port = htons(PORT);
-    if (inet_pton(AF_INET, "127.0.0.1", &sadd.sin_addr) <= 0) {
+    if (inet_pton(AF_INET, "localhost", &sadd.sin_addr) < 0) {
       printf("ERROR: %d\n", sfd);
       perror("inet_pton");
       close(sfd);
@@ -289,11 +286,17 @@ class LowSaurionTest : public ::testing::Test {
     }
     // Conectar al servidor
     int ret = 0;
+    int attempts = 10;
     while ((ret = connect(sfd, reinterpret_cast<struct sockaddr *>(&sadd), sizeof(sadd))) < 0) {
       if (errno == EINTR) {
         continue;
       }
-      printf("ERROR: %d\n", sfd);
+      if (errno == ECONNREFUSED && attempts > 0) {
+        printf("ERROR: %d\n", sfd);
+        usleep(100000);  // Esperar 100ms antes de intentar nuevamente
+        attempts--;
+        continue;
+      }
       perror("connect");
       close(sfd);
       return -1;
