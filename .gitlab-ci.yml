@@ -1,10 +1,11 @@
 default:
-  image: lopoeisr/ubuntu-make-clang:18
+  image: lopoeisr/ubuntu-make-clang:18.1
 
 stages:
   - build
   - preparation
   - test
+  - coverage
 
 build-job:
   tags:
@@ -24,13 +25,23 @@ build-job:
       - saurion/build/
       - saurion/lib/
 
-preparation-job:
+gtest-job:
   stage: preparation
   script:
     - make gtest
   artifacts:
     paths:
       - gtest/
+
+scripts-job:
+  image: lopoeisr/node-pkg:18
+  stage: preparation
+  script:
+    - pkg -t node18-linux-x64 saurion/scripts/client.sh --output saurion/scripts/client > /dev/null 2>&1
+    - pkg -t node18-linux-x64 saurion/scripts/server.sh --output saurion/scripts/server > /dev/null 2>&1
+  artifacts:
+    paths:
+      - saurion/scripts/
 
 test-job:
   tags:
@@ -41,6 +52,24 @@ test-job:
   stage: test
   script:
     - make tests
+  artifacts:
+    paths:
+      - threadpool/bin/
+      - threadpool/build/
+      - threadpool/lib/
+      - saurion/bin/
+      - saurion/build/
+      - saurion/lib/
+
+coverage-job:
+  tags:
+    - c
+    - c++
+    - liburing
+    - privileged
+  stage: coverage
+  script:
+    - make check_coverage
   artifacts:
     paths:
       - threadpool/bin/

@@ -1,15 +1,11 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
 #include "linked_list.h"
 
-#include <bits/types/struct_iovec.h>
+#include <sys/uio.h>  // for iovec
 
-#include <cstddef>
-#include <cstdlib>
-#include <cstring>
+#include <cstdlib>  // for malloc, free
+#include <cstring>  // for strcpy, strlen
 
-#include "gtest/gtest.h"
+#include "gtest/gtest.h"  // for AssertionResult, Message, TestInfo (ptr only)
 
 #define N_ITEMS 100
 

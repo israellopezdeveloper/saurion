@@ -46,6 +46,8 @@ CC=clang
 CXX=clang++
 AR=ar
 
+filter ?= *
+
 ##################################
 # PATHS
 ##################################
@@ -69,11 +71,13 @@ GTEST_INCLUDE_DIR=$(GTEST_DIR)/final/usr/local/include
 ##################################
 # COMPILATION FLAGS
 ##################################
-INCLUDES_FLAGS=-I$(INCLUDES_DIR) $(patsubst %, -I%/$(INCLUDES_DIR)/,$(DEPENDENCIES_SHARED_LIBS)) $(patsubst %, -I%/$(INCLUDES_DIR)/,$(DEPENDENCIES_STATIC_LIBS))
-CXXFLAGS=-Wall -Wextra -pedantic -Wpedantic -Werror -pedantic-errors $(INCLUDES_FLAGS) -O3 -pthread
+INCLUDES_FLAGS=-I$(INCLUDES_DIR) $(patsubst %, -I%/$(INCLUDES_DIR)/,$(DEPENDENCIES_SHARED_LIBS)) $(patsubst %, -I%/$(INCLUDES_DIR)/,$(DEPENDENCIES_STATIC_LIBS)) -I$(COMMON_MK_PATH)config
+EXCLUDES=-Wno-macro-redefined \
+				 -Wno-c23-extensions
+CXXFLAGS=-Wall -Wextra -pedantic -Wpedantic -Werror -pedantic-errors $(EXCLUDES) $(INCLUDES_FLAGS) -O3 -pthread -fPIC
 TESTFLAGS=-I$(GTEST_INCLUDE_DIR) -L$(GTEST_LIB_DIR) -lgtest_main -lgtest
 LDFLAGS=$(patsubst %, -L%/$(LIB_DIR)/,$(DEPENDENCIES_STATIC_LIBS)) $(patsubst %, -L%/$(LIB_DIR)/,$(DEPENDENCIES_SHARED_LIBS)) $(foreach dir,$(DEPENDENCIES_STATIC_LIBS),-l:lib$(notdir $(dir)).a) -lc $(foreach dir,$(DEPENDENCIES_SHARED_LIBS),-l:lib$(notdir $(dir)).so) $(foreach dir, $(EXTERNAL_DEPENDENCIES),-l$(notdir $(dir)))
-COVERAGE_FLAGS=-fprofile-instr-generate -fcoverage-mapping
+COVERAGE_FLAGS=-fprofile-instr-generate -fcoverage-mapping -fprofile-arcs -ftest-coverage
 STATIC_LIB_FLAGS=-r
 SHARED_LIB_FLAGS=-shared -fPIC
 
@@ -106,15 +110,13 @@ $(GTEST_DIR):
 INCLUDES=$(wildcard $(INCLUDES_DIR)/*.hpp) $(wildcard $(INCLUDES_DIR)/*.h)
 CPP_SOURCES=$(wildcard $(SOURCES_DIR)/*.cpp)
 C_SOURCES=$(wildcard $(SOURCES_DIR)/*.c)
-CPP_OBJECTS=$(patsubst $(SOURCES_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(CPP_SOURCES))
 C_OBJECTS=$(patsubst $(SOURCES_DIR)/%.c,$(BUILD_DIR)/%.o,$(C_SOURCES))
+CPP_OBJECTS=$(patsubst $(SOURCES_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(CPP_SOURCES))
 CPP_OBJECTS_COVERAGE=$(patsubst $(SOURCES_DIR)/%.cpp,$(BUILD_DIR)/%_coverage.o,$(CPP_SOURCES))
 C_OBJECTS_COVERAGE=$(patsubst $(SOURCES_DIR)/%.c,$(BUILD_DIR)/%_coverage.o,$(C_SOURCES))
 TESTS_SOURCES=$(wildcard $(TESTS_DIR)/*.cpp)
 TESTS_OBJECTS=$(patsubst $(TESTS_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(TESTS_SOURCES))
 TESTS_OBJECTS_COVERAGE=$(patsubst $(TESTS_DIR)/%.cpp,$(BUILD_DIR)/%_coverage.o,$(TESTS_SOURCES))
-IOBJECTS=$(patsubst $(SOURCES_DIR)/%.cpp,$(BUILD_DIR)/%.o.PVS-Studio.i,$(CPP_SOURCES)) $(patsubst $(SOURCES_DIR)/%.c,$(BUILD_DIR)/%.o.PVS-Studio.i,$(C_SOURCES))
-POBJECTS=$(patsubst $(SOURCES_DIR)/%.cpp,$(BUILD_DIR)/%.o.PVS-Studio.log,$(CPP_SOURCES)) $(patsubst $(SOURCES_DIR)/%.c,$(BUILD_DIR)/%.o.PVS-Studio.log,$(C_SOURCES))
 
 ##################################
 # TOOLS
@@ -122,7 +124,7 @@ POBJECTS=$(patsubst $(SOURCES_DIR)/%.cpp,$(BUILD_DIR)/%.o.PVS-Studio.log,$(CPP_S
 CHATGPTSEND=folder2chatgpt
 CHATGPTLOAD=chatgpt2folder
 VALGRIND=valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 -s
-LLVM_PROF=llvm-profdata merge -sparse default.profraw -o $(BUILD_DIR)/default.profdata
+LLVM_PROF=llvm-profdata merge -sparse $(BUILD_DIR)/default.profraw -o $(BUILD_DIR)/default.profdata
 LLVM_HTML_REPORT=llvm-cov show $(BIN_DIR)/$(TEST_EXECUTABLE)_coverage \
 						-instr-profile=$(BUILD_DIR)/default.profdata \
 						-ignore-filename-regex='.*gtest.*' \
@@ -138,7 +140,7 @@ LLVM_JSON_REPORT=llvm-cov export $(BIN_DIR)/$(TEST_EXECUTABLE)_coverage \
 ##################################
 # RULES
 ##################################
-.PHONY: all clean chatgpt_send chatgpt_load valgrind show run test format list help
+.PHONY: all clean chatgpt_send chatgpt_load valgrind show run test format list help docs
 
 help:
 	@echo -e "make <options>\n Options:"
@@ -158,10 +160,10 @@ help:
 	@echo -e "Objects: specify one or more objects:"
 	@echo "    $(CPP_OBJECTS)"
 
-all: $(EXECUTABLE) $(TEST_EXECUTABLE) libs $(TEST_EXECUTABLE)_coverage compile_commands
+all: $(EXECUTABLE) $(TEST_EXECUTABLE) libs $(TEST_EXECUTABLE)_coverage compile_commands docs
 
 clean:
-	@rm -rf $(BUILD_DIR) $(BIN_DIR) $(LIB_DIR) compile_commands.json
+	@rm -rf $(BUILD_DIR) $(BIN_DIR) $(LIB_DIR) compile_commands.json default.profraw docs
 
 list:
 	@LC_ALL=C $(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/(^|\n)# Files(\n|$$)/,/(^|\n)# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep -E -v -e '^[^[:alnum:]]' -e '^$@$$'
@@ -183,11 +185,9 @@ $(BIN_DIR)/$(EXECUTABLE): $(CPP_OBJECTS) $(C_OBJECTS) $(BIN_DIR) main.cpp $(DEPE
 
 $(CPP_OBJECTS): $(BUILD_DIR)/%.o : $(SOURCES_DIR)/%.cpp $(BUILD_DIR)
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
-	@$(CXX) $(CXXFLAGS) $< -E -o $@.PVS-Studio.i > /dev/null 2>&1
 
 $(C_OBJECTS): $(BUILD_DIR)/%.o : $(SOURCES_DIR)/%.c $(BUILD_DIR)
 	@$(CC) $(CXXFLAGS) -c $< -o $@
-	@$(CC) $(CXXFLAGS) $< -E -o $@.PVS-Studio.i > /dev/null 2>&1
 
 run: $(EXECUTABLE)
 	@echo ""
@@ -210,17 +210,17 @@ tests: $(TEST_EXECUTABLE)
 	@echo ""
 	@echo "Running tests..."
 	@echo "================"
-	@./$(BIN_DIR)/$(TEST_EXECUTABLE)
+	@./$(BIN_DIR)/$(TEST_EXECUTABLE) --gtest_filter=$(filter)
 
 #################
 # LIBS
 #################
 libs: $(LIB_DIR)/lib$(LIB_NAME).a $(LIB_DIR)/lib$(LIB_NAME).so
 
-$(LIB_DIR)/lib$(LIB_NAME).a: $(CPP_OBJECTS) $(LIB_DIR)
-$(LIB_DIR)/lib$(LIB_NAME).so: $(CPP_OBJECTS) $(LIB_DIR)
-	@$(AR) $(STATIC_LIB_FLAGS) $(LIB_DIR)/lib$(LIB_NAME).a $(CPP_OBJECTS) > /dev/null 2>&1
-	@$(CXX) $(CXXFLAGS) $(SHARED_LIB_FLAGS) $(CPP_SOURCES) -o $(LIB_DIR)/lib$(LIB_NAME).so
+$(LIB_DIR)/lib$(LIB_NAME).a: $(CPP_OBJECTS) $(C_OBJECTS) $(LIB_DIR)
+$(LIB_DIR)/lib$(LIB_NAME).so: $(CPP_OBJECTS) $(C_OBJECTS) $(LIB_DIR)
+	@$(AR) $(STATIC_LIB_FLAGS) $(LIB_DIR)/lib$(LIB_NAME).a $(CPP_OBJECTS) $(C_OBJECTS) > /dev/null 2>&1
+	@$(CXX) $(CXXFLAGS) $(SHARED_LIB_FLAGS) $(CPP_SOURCES) $(C_OBJECTS) -o $(LIB_DIR)/lib$(LIB_NAME).so
 
 #################
 # COVERAGE
@@ -238,10 +238,11 @@ $(C_OBJECTS_COVERAGE): $(BUILD_DIR)/%_coverage.o : $(SOURCES_DIR)/%.c $(BUILD_DI
 
 $(TEST_EXECUTABLE)_coverage: $(BIN_DIR)/$(TEST_EXECUTABLE)_coverage
 	@./$(BIN_DIR)/$(TEST_EXECUTABLE)_coverage
+	@mv default.profraw $(BUILD_DIR)
 	@$(LLVM_PROF) > /dev/null 2>&1
 	@$(LLVM_HTML_REPORT)
 	@$(LLVM_JSON_REPORT) && \
-		jq '.data[0].totals' $(BUILD_DIR)/cov_report.json > $(BUILD_DIR)/coverage_report.json
+  	jq '.data[0].totals' $(BUILD_DIR)/cov_report.json > $(BUILD_DIR)/coverage_report.json
 	@rm -rf $(BUILD_DIR)/cov_report.json $(BUILD_DIR)/default.profdata default.profraw
 
 $(BIN_DIR)/$(TEST_EXECUTABLE)_coverage: $(TESTS_OBJECTS_COVERAGE) $(CPP_OBJECTS_COVERAGE) $(C_OBJECTS_COVERAGE) $(BIN_DIR) $(DEPENDENCIES_LIBS)
@@ -260,18 +261,6 @@ coverage: $(TEST_EXECUTABLE)_coverage
 #################
 # TOOLS
 #################
-chatgpt_send:
-	@echo ""
-	@echo "Enter a message to send to ChatGPT:"
-	@echo "==================================="
-	@$(CHATGPTSEND) | xclip
-
-chatgpt_load:
-	@echo ""
-	@echo "Loading code from ChatGPT..."
-	@echo "============================"
-	@$(CHATGPTLOAD)
-
 format: main.cpp
 	@clang-format -i $(CPP_SOURCES) $(INCLUDES) $(TESTS_SOURCES)
 
@@ -280,7 +269,11 @@ valgrind: $(BIN_DIR)/$(TEST_EXECUTABLE)
 	@echo ""
 	@echo "Running with valgrind..."
 	@echo "========================"
-	@$(VALGRIND) --log-file=$(BUILD_DIR)/valgrind_output.txt ./$(BIN_DIR)/$(TEST_EXECUTABLE)
+	@$(VALGRIND) --log-file=$(BUILD_DIR)/valgrind_output.txt ./$(BIN_DIR)/$(TEST_EXECUTABLE) --gtest_filter=$(filter)
 
 compile_commands:
 	@compiledb -n make all
+
+docs: $(BUILD_DIR)
+	@doxygen Doxyfile > /dev/null 2>&1
+	@cd build/docs/latex && make > /dev/null 2>&1

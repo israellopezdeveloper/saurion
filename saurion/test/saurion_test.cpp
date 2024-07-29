@@ -1,55 +1,162 @@
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <pthread.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include <fcntl.h>      // for open, O_WRONLY
+#include <pthread.h>    // for pthread_mutex_lock, pthread_mutex_unlock
+#include <sys/stat.h>   // for mkfifo
+#include <sys/types.h>  // for ssize_t, pid_t
+#include <sys/wait.h>   // for waitpid
+#include <time.h>       // for time
+#include <unistd.h>     // for dup2, close, execvp, fork, unlink, STDER...
 
-#include <algorithm>
-#include <cstddef>
-#include <cstdio>
-#include <cstring>
-#include <string>
-#include <thread>
+#include <algorithm>         // for remove
+#include <csignal>           // for size_t, signal, SIGINT
+#include <cstdint>           // for uint32_t
+#include <cstdio>            // for fflush, fprintf, perror, remove, FILE, NULL
+#include <cstdlib>           // for exit, free, malloc, rand, srand
+#include <cstring>           // for memset, strcpy
+#include <filesystem>        // for directory_iterator, path, directory_entry
+#include <fstream>           // for basic_ostream, operator<<, endl, basic_i...
+#include <initializer_list>  // for initializer_list
+#include <iostream>          // for cout, cerr
+#include <regex>             // for regex_match, regex
+#include <sstream>           // for basic_stringstream
+#include <string>            // for char_traits, basic_string, allocator
+#include <thread>            // for thread
+#include <vector>            // for vector
 
-#include "gtest/gtest.h"
-#include "low_saurion.h"
+#include "config.h"       // for ERROR_CODE, LOG_END, LOG_INIT, CHUNK_SZ
+#include "gtest/gtest.h"  // for Message, EXPECT_EQ, TestPartResult, Test...
+#include "low_saurion.h"  // for saurion, saurion_send, EXTERNAL_set_socket
 
 #define PORT 8080
+
+#define SCRIPT "./scripts/client"
+#define FIFO "/tmp/saurion_test_fifo.XXX"
+#define FIFO_LENGTH 27
 
 struct summary {
   explicit summary() = default;
   ~summary() = default;
-
   summary(const summary &) = delete;
   summary(summary &&) = delete;
   summary &operator=(const summary &) = delete;
   summary &operator=(summary &&) = delete;
-
-  uint connected = 0;
+  uint32_t connected = 0;
   std::vector<int> fds;
   pthread_cond_t connected_c = PTHREAD_COND_INITIALIZER;
   pthread_mutex_t connected_m = PTHREAD_MUTEX_INITIALIZER;
-  uint readed = 0;
+  uint32_t disconnected = 0;
+  pthread_cond_t disconnected_c = PTHREAD_COND_INITIALIZER;
+  pthread_mutex_t disconnected_m = PTHREAD_MUTEX_INITIALIZER;
+  size_t readed = 0;
   pthread_cond_t readed_c = PTHREAD_COND_INITIALIZER;
   pthread_mutex_t readed_m = PTHREAD_MUTEX_INITIALIZER;
-  uint wrote = 0;
+  uint32_t wrote = 0;
   pthread_cond_t wrote_c = PTHREAD_COND_INITIALIZER;
   pthread_mutex_t wrote_m = PTHREAD_MUTEX_INITIALIZER;
 } __attribute__((aligned(128))) summary;
 
+void signalHandler(int signum);
+
 class LowSaurionTest : public ::testing::Test {
  public:
-  std::vector<int> client_threads;
   struct saurion *saurion;
+  static std::thread *sender;
+  static char *fifo_name;
+  static FILE *fifo_write;
 
  protected:
+  static char *generate_random_fifo_name() {
+    fifo_name = (char *)malloc(FIFO_LENGTH);
+    if (!fifo_name) {
+      return NULL;  // Handle error
+    }
+
+    strcpy(fifo_name, FIFO);
+    // Seed the random number generator
+    srand(time(NULL));
+
+    // Generate the random "XXX" string
+    for (int i = 23; i < 26; i++) {
+      char c = (rand() % 10) + '0';
+      fifo_name[i] = c;
+    }
+
+    return fifo_name;
+  }
+
+  static void SetUpTestSuite() {
+    fifo_name = generate_random_fifo_name();
+    std::signal(SIGINT, signalHandler);
+    if (!fifo_name) {
+      // Handle error generating random name
+      exit(ERROR_CODE);
+    }
+    if (mkfifo(fifo_name, 0666) == -1) {
+      free(fifo_name);
+      exit(ERROR_CODE);
+    }
+    sender = new std::thread([=]() {
+      pid_t pid = fork();
+      if (pid < 0) {
+        return ERROR_CODE;
+      }
+      if (pid == 0) {
+        std::vector<const char *> exec_args;
+        for (char *item : {(char *)SCRIPT, (char *)"-p", fifo_name}) {
+          exec_args.push_back(item);
+        }
+        exec_args.push_back(nullptr);
+        int dev_null = open("/dev/null", O_WRONLY);
+        if (dev_null == -1) {
+          perror("Failed to open /dev/null");
+          exit(ERROR_CODE);
+        }
+
+        // Redirige stdout a /dev/null
+        if (dup2(dev_null, STDOUT_FILENO) == -1) {
+          perror("Failed to redirect stdout");
+          exit(ERROR_CODE);
+        }
+
+        // Redirige stderr a /dev/null
+        if (dup2(dev_null, STDERR_FILENO) == -1) {
+          perror("Failed to redirect stderr");
+          exit(ERROR_CODE);
+        }
+
+        close(dev_null);
+
+        // Ejecuta el comando y ignora el retorno
+        execvp(SCRIPT, const_cast<char *const *>(exec_args.data()));
+      }
+      int status;
+      waitpid(pid, &status, 0);
+      return SUCCESS_CODE;
+    });
+    fifo_write = fopen(fifo_name, "w");
+  }
+
+  static void TearDownTestSuite() {
+    close_clients();
+    if (sender != nullptr) {
+      if (sender->joinable()) {
+        sender->join();
+      }
+      delete sender;
+    }
+    fclose(fifo_write);
+    unlink(fifo_name);
+    free(fifo_name);
+  }
+
   void SetUp() override {
+    LOG_INIT("");
     summary.connected = 0;
+    summary.disconnected = 0;
     summary.readed = 0;
     summary.wrote = 0;
     summary.fds.clear();
-    saurion = saurion_create();
-    if (saurion == nullptr) {
+    saurion = saurion_create(3);
+    if (!saurion) {
       return;
     }
     saurion->ss = EXTERNAL_set_socket(PORT);
@@ -60,9 +167,9 @@ class LowSaurionTest : public ::testing::Test {
       pthread_cond_signal(&summary.connected_c);
       pthread_mutex_unlock(&summary.connected_m);
     };
-    saurion->cb.on_readed = [](int, const char *const, const ssize_t, void *) -> void {
+    saurion->cb.on_readed = [](int, const void *const, const ssize_t size, void *) -> void {
       pthread_mutex_lock(&summary.readed_m);
-      summary.readed++;
+      summary.readed += size;
       pthread_cond_signal(&summary.readed_c);
       pthread_mutex_unlock(&summary.readed_m);
     };
@@ -73,58 +180,38 @@ class LowSaurionTest : public ::testing::Test {
       pthread_mutex_unlock(&summary.wrote_m);
     };
     saurion->cb.on_closed = [](int sfd, void *) -> void {
+      pthread_mutex_lock(&summary.disconnected_m);
+      summary.disconnected++;
+      pthread_cond_signal(&summary.disconnected_c);
+      pthread_mutex_unlock(&summary.disconnected_m);
       pthread_mutex_lock(&summary.connected_m);
-      summary.connected--;
       auto &vec = summary.fds;
       vec.erase(std::remove(vec.begin(), vec.end(), sfd), vec.end());
       pthread_cond_signal(&summary.connected_c);
       pthread_mutex_unlock(&summary.connected_m);
     };
-    saurion->cb.on_error = [](int sfd, const char *const, const ssize_t, void *) -> void {
-      printf("On error %d\n", sfd);
-    };
-    saurion_thread = new std::thread(
-        [](void *arg) -> void {
-          auto *saurion = static_cast<struct saurion *>(arg);
-          saurion_start(saurion);
-        },
-        saurion);
-
+    saurion->cb.on_error = [](int, const char *const, const ssize_t, void *) -> void {};
+    if (!saurion_start(saurion)) {
+      exit(ERROR_CODE);
+    }
     pthread_mutex_lock(&saurion->status_m);
     while (saurion->status != 1) {
       pthread_cond_wait(&saurion->status_c, &saurion->status_m);
     }
     pthread_mutex_unlock(&saurion->status_m);
+    LOG_END("");
   }
 
   void TearDown() override {
+    LOG_INIT("");
+    disconnect_clients();
     saurion_stop(saurion);
-    if (saurion_thread->joinable()) {
-      saurion_thread->join();
-    }
     saurion_destroy(saurion);
-    delete saurion_thread;
-    for (auto sfd : client_threads) {
-      close(sfd);
-    }
+    deleteLogFiles();
+    LOG_END("");
   }
 
-  [[nodiscard]] int add_clients(uint n) {
-    for (uint i = 0; i < n; ++i) {
-      int sock = create_client();
-      if (connect_client(sock) == -1) {
-        for (uint j = 0; j < i; ++j) {
-          close(client_threads.front());
-          client_threads.pop_back();
-        }
-        return -1;
-      }
-      client_threads.push_back(sock);
-    }
-    return 0;
-  }
-
-  static void wait_connected(uint n) {
+  static void wait_connected(uint32_t n) {
     pthread_mutex_lock(&summary.connected_m);
     while (summary.connected != n) {
       pthread_cond_wait(&summary.connected_c, &summary.connected_m);
@@ -132,7 +219,15 @@ class LowSaurionTest : public ::testing::Test {
     pthread_mutex_unlock(&summary.connected_m);
   }
 
-  static void wait_readed(uint n) {
+  static void wait_disconnected(uint32_t n) {
+    pthread_mutex_lock(&summary.disconnected_m);
+    while (summary.disconnected != n) {
+      pthread_cond_wait(&summary.disconnected_c, &summary.disconnected_m);
+    }
+    pthread_mutex_unlock(&summary.disconnected_m);
+  }
+
+  static void wait_readed(size_t n) {
     pthread_mutex_lock(&summary.readed_m);
     while (summary.readed < n) {
       pthread_cond_wait(&summary.readed_c, &summary.readed_m);
@@ -140,8 +235,7 @@ class LowSaurionTest : public ::testing::Test {
     pthread_mutex_unlock(&summary.readed_m);
   }
 
-  static void wait_wrote(uint n) {
-    n = static_cast<uint>(n * 0.99999);
+  static void wait_wrote(uint32_t n) {
     pthread_mutex_lock(&summary.wrote_m);
     while (summary.wrote < n) {
       pthread_cond_wait(&summary.wrote_c, &summary.wrote_m);
@@ -149,43 +243,35 @@ class LowSaurionTest : public ::testing::Test {
     pthread_mutex_unlock(&summary.wrote_m);
   }
 
-  [[nodiscard]] int client_sends(int sfd, uint n, const char *msg) {
-    if (std::find(client_threads.begin(), client_threads.end(), sfd) == client_threads.end()) {
-      return -1;
-    }
-    for (uint i = 0; i < n; ++i) {
-      write(sfd, msg, strlen(msg));
-    }
-    return 0;
+  static void connect_clients(uint32_t n) {
+    fprintf(fifo_write, "connect;%d\n", n);
+    fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
   }
 
-  void all_clients_sends(uint n, const char *msg) {
-    std::vector<std::thread *> senders;
-    senders.reserve(client_threads.size());
-    for (auto sfd : client_threads) {
-      senders.push_back(new std::thread([sfd, n, msg]() {
-        for (uint i = 0; i < n; ++i) {
-          write(sfd, msg, strlen(msg));
-        }
-      }));
-    }
-    for (std::thread *thrd : senders) {
-      if (thrd->joinable()) {
-        thrd->join();
-      }
-      delete thrd;
-    }
+  static void disconnect_clients() {
+    fprintf(fifo_write, "disconnect\n");
+    fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
   }
 
-  void saurion_sends_to_client(int sfd, uint n, const char *const msg) const {
-    for (uint i = 0; i < n; ++i) {
+  static void send_clients(uint32_t n, const char *const msg, uint32_t delay) {
+    fprintf(fifo_write, "send;%d;%s;%d\n", n, msg, delay);
+    fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
+  }
+
+  static void close_clients() {
+    fprintf(fifo_write, "close\n");
+    fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
+  }
+
+  void saurion_sends_to_client(int sfd, uint32_t n, const char *const msg) const {
+    for (uint32_t i = 0; i < n; ++i) {
       saurion_send(saurion, sfd, msg);
     }
   }
 
-  void saurion_sends_to_all_clients(uint n, const char *const msg) {
-    for (auto sfd : client_threads) {
-      for (uint i = 0; i < n; ++i) {
+  void saurion_sends_to_all_clients(uint32_t n, const char *const msg) {
+    for (auto sfd : summary.fds) {
+      for (uint32_t i = 0; i < n; ++i) {
         saurion_send(saurion, sfd, msg);
       }
     }
@@ -194,347 +280,168 @@ class LowSaurionTest : public ::testing::Test {
   static size_t countOccurrences(std::string &content, const std::string &search) {
     size_t count = 0;
     size_t pos = content.find(search);
-
     while (pos != std::string::npos) {
       count++;
       pos = content.find(search, pos + search.length());
     }
-
     return count;
   }
 
-  static size_t read_from_client(int sockfd, const std::string &search) {
-    // Configurar el socket como no bloqueante
-    int flags = fcntl(sockfd, F_GETFL, 0);
-    if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
-      perror("fcntl");
-      return -1;
-    }
-    // Definir el conjunto de descriptores de archivo para esperar que el socket esté listo para
-    // escribir
-    fd_set writefds;
-    FD_ZERO(&writefds);
-    FD_SET(sockfd, &writefds);
-
-    // Configurar el tiempo de espera máximo
-    struct timeval timeout {};
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 100;
-
-    const size_t bufferSize = 1024;
-    char buffer[bufferSize];
-    std::string content;
-    ssize_t bytesRead = 0;
-    int ready = select(sockfd + 1, nullptr, &writefds, nullptr, &timeout);
-    while (ready > 0) {
-      if (FD_ISSET(sockfd, &writefds)) {
-        bytesRead = recv(sockfd, buffer, bufferSize, 0);
-        if (bytesRead > 0) {
-          content += std::string(buffer, bytesRead);
-          memset(buffer, 0, bufferSize);
-        } else {
-          break;
+  static size_t read_from_clients(const std::string &search) {
+    size_t occurrences = 0;
+    for (const auto &entry : std::filesystem::directory_iterator("/tmp/")) {
+      const auto &path = entry.path();
+      if (path.filename().string().find("saurion_sender.") == 0) {
+        std::ifstream file(path);
+        if (file.is_open()) {
+          std::stringstream buffer;
+          buffer << file.rdbuf();
+          std::string content = buffer.str();
+          occurrences += countOccurrences(content, search);
         }
       }
-      ready = select(sockfd + 1, nullptr, &writefds, nullptr, &timeout);
     }
-
-    auto count = countOccurrences(content, search);
-    return count;
-  }
-
-  size_t read_from_clients(const std::string &search) {
-    size_t count = 0;
-    for (auto sfd : client_threads) {
-      count += read_from_client(sfd, search);
-    }
-    return count;
+    return occurrences;
   }
 
  private:
-  [[nodiscard]] static int create_client() {
-    int sockfd = 0;
-
-    // Crear el socket
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) {
-      return -1;
-    }
-    struct timeval timeout {};
-    timeout.tv_sec = 0;  // 5 segundos de timeout
-    timeout.tv_usec = 100000;
-    if (setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, static_cast<void *>(&timeout),
-                   sizeof(timeout)) < 0) {
-      close(sockfd);
-      return -1;
-    }
-
-    return sockfd;
-  }
-
-  [[nodiscard]] static int connect_client(int sfd) {
-    struct sockaddr_in sadd {};
-    // Configurar la dirección del servidor
-    memset(&sadd, 0, sizeof(sadd));
-    sadd.sin_family = AF_INET;
-    sadd.sin_port = htons(PORT);
-    if (inet_pton(AF_INET, "localhost", &sadd.sin_addr) < 0) {
-      printf("ERROR: %d\n", sfd);
-      perror("inet_pton");
-      close(sfd);
-      return -1;
-    }
-    // Conectar al servidor
-    int ret = 0;
-    int attempts = 10;
-    while ((ret = connect(sfd, reinterpret_cast<struct sockaddr *>(&sadd), sizeof(sadd))) < 0) {
-      if (errno == EINTR) {
-        continue;
+  void deleteLogFiles() {
+    for (const auto &entry : std::filesystem::directory_iterator("/tmp/")) {
+      const auto &path = entry.path();
+      if (path.filename().string().find("saurion_sender.") == 0) {
+        try {
+          std::filesystem::remove(path);
+        } catch (...) {
+        }
       }
-      if (errno == ECONNREFUSED && attempts > 0) {
-        printf("ERROR: %d\n", sfd);
-        usleep(100000);  // Esperar 100ms antes de intentar nuevamente
-        attempts--;
-        continue;
-      }
-      perror("connect");
-      close(sfd);
-      return -1;
     }
-    return 0;
   }
-
-  std::thread *saurion_thread;
 };
 
+char *LowSaurionTest::fifo_name = nullptr;
+std::thread *LowSaurionTest::sender = nullptr;
+FILE *LowSaurionTest::fifo_write = nullptr;
+
+void signalHandler(int signum) {
+  std::cout << "Interceptada la señal " << signum << std::endl;
+
+  // Intenta eliminar el archivo FIFO
+  if (std::remove(LowSaurionTest::fifo_name) != 0) {
+    std::cerr << "Error al eliminar " << LowSaurionTest::fifo_name << std::endl;
+  } else {
+    std::cout << LowSaurionTest::fifo_name << " eliminado exitosamente." << std::endl;
+  }
+  std::regex pattern("^saurion_sender.*\\.log$");
+
+  for (const auto &entry : std::filesystem::directory_iterator("/tmp")) {
+    if (std::filesystem::is_regular_file(entry)) {
+      std::string filename = entry.path().filename().string();
+      if (std::regex_match(filename, pattern)) {
+        try {
+          std::filesystem::remove(entry.path());
+          std::cout << "Archivo borrado: " << filename << std::endl;
+        } catch (const std::filesystem::filesystem_error &e) {
+          std::cerr << "Error al borrar " << filename << ": " << e.what() << std::endl;
+        }
+      }
+    }
+  }
+  // Termina el programa
+  exit(ERROR_CODE);
+}
+
 TEST_F(LowSaurionTest, connectMultipleClients) {
-  uint clients = 10;
-
-  if (add_clients(clients) != 0) {
-    FAIL();
-    return;
-  }
-
+  uint32_t clients = 10;
+  connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
+  disconnect_clients();
+  wait_disconnected(clients);
+  EXPECT_EQ(summary.disconnected, clients);
 }
 
-TEST_F(LowSaurionTest, readMultipleMsgsFromClient) {
-  uint clients = 10;
-  uint msgs = 100;
-
-  if (add_clients(clients) != 0) {
-    FAIL();
-    return;
-  }
-
+TEST_F(LowSaurionTest, readMultipleMsgsFromClients) {
+  LOG_INIT("");
+  uint32_t clients = 20;
+  uint32_t msgs = 100;
+  connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
-
-  int sfd = client_threads.at(0);
-
-  if (client_sends(sfd, msgs, "Hola\n") != 0) {
-    FAIL();
-    return;
-  }
-  wait_readed(msgs);
-  EXPECT_EQ(summary.readed, msgs);
-}
-
-TEST_F(LowSaurionTest, readMultipleMsgsFromMultipleClients) {
-  uint clients = 10;
-  uint msgs = 100;
-
-  if (add_clients(clients) != 0) {
-    FAIL();
-    return;
-  }
-
-  wait_connected(clients);
-  EXPECT_EQ(summary.connected, clients);
-
-  all_clients_sends(msgs, "Hola\n");
-
-  wait_readed(msgs * clients);
-  EXPECT_EQ(summary.readed, msgs * clients);
-}
-
-TEST_F(LowSaurionTest, writeMsgsToClient) {
-  uint clients = 1;
-  uint msgs = 3;
-
-  if (add_clients(clients) != 0) {
-    FAIL();
-    return;
-  }
-
-  wait_connected(clients);
-  int server_client_fd = summary.fds.front();
-  int client_fd = client_threads.at(0);
-  EXPECT_EQ(summary.connected, clients);
-
-  saurion_sends_to_client(server_client_fd, msgs, "Hola");
-
-  wait_wrote(msgs);
-  EXPECT_EQ(msgs, read_from_client(client_fd, "Hola"));
+  send_clients(msgs, "Hola", 0);
+  wait_readed(msgs * clients * 4);
+  EXPECT_EQ(summary.readed, msgs * clients * 4);
+  disconnect_clients();
+  wait_disconnected(clients);
+  EXPECT_EQ(summary.disconnected, clients);
+  LOG_END("");
 }
 
 TEST_F(LowSaurionTest, writeMsgsToClients) {
-  uint clients = 10;
-  uint msgs = 1000;
-
-  if (add_clients(clients) != 0) {
-    FAIL();
-    return;
-  }
-
+  uint32_t clients = 20;
+  uint32_t msgs = 100;
+  connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
-
-  for (int sfd : summary.fds) {
-    saurion_sends_to_client(sfd, msgs, "Hola");
+  for (auto &cfd : summary.fds) {
+    saurion_sends_to_client(cfd, msgs, "Hola");
   }
-
   wait_wrote(msgs * clients);
-  auto total_msgs = read_from_clients("Hola");
-  EXPECT_EQ(msgs * clients, total_msgs);
+  disconnect_clients();
+  wait_disconnected(clients);
+  EXPECT_EQ(msgs * clients, read_from_clients("Hola"));
+  EXPECT_EQ(summary.disconnected, clients);
 }
 
 TEST_F(LowSaurionTest, reconnectClients) {
-  uint clients = 5;
-
-  if (add_clients(clients) != 0) {
-    FAIL();
-    return;
-  }
-
+  uint32_t clients = 5;
+  connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
-
-  for (auto pair : client_threads) {
-    close(pair);
-  }
-  client_threads.clear();
-  wait_connected(0);
-
-  summary.connected = 0;
-  if (add_clients(clients) != 0) {
-    FAIL();
-    return;
-  }
-  wait_connected(clients);
-  EXPECT_EQ(summary.connected, clients);
-}
-
-TEST_F(LowSaurionTest, handleClientDisconnect) {
-  uint clients = 5;
-
-  if (add_clients(clients) != 0) {
-    FAIL();
-    return;
-  }
-
-  wait_connected(clients);
-  EXPECT_EQ(summary.connected, clients);
-
-  for (auto sfd : client_threads) {
-    close(sfd);
-    clients--;
-  }
-  client_threads.clear();
-
-  // Wait for a moment to allow server to process the disconnections
-  wait_connected(0);
-  EXPECT_EQ(summary.connected, clients);  // Connection count remains the same
+  disconnect_clients();
+  wait_disconnected(clients);
+  EXPECT_EQ(summary.disconnected, clients);
+  connect_clients(clients);
+  wait_connected(clients * 2);
+  EXPECT_EQ(summary.connected, clients * 2);
+  disconnect_clients();
+  wait_disconnected(clients * 2);
+  EXPECT_EQ(summary.disconnected, clients * 2);
 }
 
 TEST_F(LowSaurionTest, readWriteWithLargeMessage) {
-  uint clients = 1;
-  if (add_clients(clients) != 0) {
-    FAIL();
-    return;
-  }
-
+  uint32_t clients = 1;
+  size_t size = CHUNK_SZ * 10;
+  char *str = new char[size + 1];
+  memset(str, 'A', size);
+  str[size - 1] = '1';
+  str[size] = '\0';
+  connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
-
-  int client_fd = client_threads.at(0);
-
-  {
-    std::string large_message(static_cast<size_t>(IOVEC_SZ * 10), 'A');
-    large_message[IOVEC_SZ * 10 - 1] = '\n';
-
-    if (client_sends(client_fd, 1, large_message.c_str()) != 0) {
-      FAIL();
-      return;
-    }
-    wait_readed(1);
-    EXPECT_EQ(summary.readed, 1UL);
-  }
-
-  {
-    std::string large_message(static_cast<size_t>(IOVEC_SZ * 10), 'A');
-    large_message[IOVEC_SZ * 10 - 1] = '\n';
-
-    saurion_sends_to_client(summary.fds.front(), 1, large_message.c_str());
-    wait_wrote(1);
-    large_message.pop_back();
-    EXPECT_EQ(1UL, read_from_client(client_fd, large_message));
-  }
-}
-
-TEST_F(LowSaurionTest, handleErrors) {
-  /*! TODO: Verificar que se utiliza el callback de errores
-   *  \todo Verificar que se utiliza el callback de errores
-   */
-  uint clients = 5;
-
-  if (add_clients(clients) != 0) {
-    FAIL();
-    return;
-  }
-
-  wait_connected(clients);
-  EXPECT_EQ(summary.connected, clients);
-
-  // Send erroneous data to trigger error callback
-  int client_fd = client_threads.at(0);
-  if (client_sends(client_fd, 1, "INVALID\0") != 0) {
-    FAIL();
-    return;
-  }
-  wait_readed(1);
-  EXPECT_EQ(summary.readed, 1UL);
-
-  // Wait for error callback to be triggered
-  EXPECT_GT(summary.readed, 0UL);  // Assuming error callback increments read count
+  send_clients(1, str, 0);
+  wait_readed(size);
+  EXPECT_EQ(summary.readed, 81920UL);
+  saurion_sends_to_client(summary.fds.front(), 1, (char *)str);
+  wait_wrote(1);
+  disconnect_clients();
+  wait_disconnected(clients);
+  EXPECT_EQ(1UL, read_from_clients((char *)str));
+  EXPECT_EQ(summary.disconnected, clients);
+  delete[] str;
 }
 
 TEST_F(LowSaurionTest, handleConcurrentReadsAndWrites) {
-  uint clients = 10;
-  uint msgs = 100;
-
-  if (add_clients(clients) != 0) {
-    FAIL();
-    return;
-  }
-
+  uint32_t clients = 20;
+  uint32_t msgs = 100;
+  connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
-
-  std::thread reader([&]() { all_clients_sends(msgs, "Hello\n"); });
-  wait_readed(msgs * clients);
-
-  std::thread writer([&]() {
-    for (int sfd : summary.fds) {
-      saurion_sends_to_client(sfd, msgs, "World");
-    }
-  });
+  send_clients(msgs, "Hola", 2);
+  saurion_sends_to_all_clients(msgs, "Hola");
+  wait_readed(msgs * clients * 4);
+  EXPECT_EQ(msgs * clients * 4, summary.readed);
   wait_wrote(msgs * clients);
-
-  reader.join();
-  writer.join();
-
-  EXPECT_EQ(msgs * clients, summary.readed);
   EXPECT_EQ(msgs * clients, summary.wrote);
+  disconnect_clients();
+  wait_disconnected(clients);
 }

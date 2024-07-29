@@ -1,10 +1,11 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-#include <stdexcept>
-#include <thread>
+#include <stdint.h>  // for uint32_t
 
-#include "gtest/gtest.h"
-#include "threadpool.hpp"
+#include <iostream>   // for basic_ostream, basic_ios, basic_ostream::o...
+#include <stdexcept>  // for logic_error, out_of_range, runtime_error
+#include <thread>     // for thread
+
+#include "gtest/gtest.h"   // for Test, Message, TestInfo (ptr only), TEST
+#include "threadpool.hpp"  // for ThreadPool
 
 void taskWithError(void* /*unused*/) { throw std::runtime_error("Error dentro de la tarea"); }
 
@@ -182,9 +183,7 @@ TEST(ThreadPoolTest, AddTaskToNonExistentQueue) {
   ThreadPool pool;
   pool.init();
 
-  EXPECT_THROW(pool.add(
-                   100, [](void*) {}, nullptr),
-               std::out_of_range);
+  EXPECT_THROW(pool.add(100, [](void*) {}, nullptr), std::out_of_range);
 }
 
 TEST(ThreadPoolTest, AddTaskAfterStop) {
@@ -244,8 +243,7 @@ TEST(ThreadPoolTest, ManyQueuesWithManyTasks) {
   // Agregar más de 1000 tareas a cada cola
   for (int i = 0; i < 20; ++i) {
     for (int j = 0; j < 1000; ++j) {
-      pool.add(
-          i, [](void*) {}, nullptr);
+      pool.add(i, [](void*) {}, nullptr);
     }
   }
 
@@ -306,12 +304,7 @@ TEST(ThreadPoolTest, AddTaskToDeletedQueue) {
   pool.remove_queue(1);
 
   // Intentar agregar una tarea a la cola eliminada
-  ASSERT_THROW(
-      {
-        pool.add(
-            1, [](void*) {}, nullptr);
-      },
-      std::out_of_range);
+  ASSERT_THROW({ pool.add(1, [](void*) {}, nullptr); }, std::out_of_range);
 }
 
 TEST(ThreadPoolTest, AddTaskToRecreatedQueue) {
@@ -330,10 +323,7 @@ TEST(ThreadPoolTest, AddTaskToRecreatedQueue) {
   pool.new_queue(1, 1);
 
   // Intentar agregar una tarea a la cola recreada
-  ASSERT_NO_THROW({
-    pool.add(
-        1, [](void*) {}, nullptr);
-  });
+  ASSERT_NO_THROW({ pool.add(1, [](void*) {}, nullptr); });
 }
 
 TEST(ThreadPoolTest, RemoveQueueAfterRecreate) {
@@ -469,8 +459,7 @@ TEST(ThreadPoolTest, ClosePoolWithActiveTasks) {
 
   // Agregar una tarea con un argumento inválido
   for (int i = 0; i < 10000; ++i) {
-    pool.add(
-        1, [](void*) {}, nullptr);
+    pool.add(1, [](void*) {}, nullptr);
   }
 }
 
