@@ -4,3 +4,5 @@ lib/
 bin/
 .cache/
 compile_commands.json
+saurion/scripts/client
+saurion/scripts/server

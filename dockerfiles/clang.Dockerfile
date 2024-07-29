@@ -15,6 +15,8 @@ RUN apt update && apt install -y \
   liburing-dev \
   git \
   libc++-dev \
+  jq \
+  bc \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 

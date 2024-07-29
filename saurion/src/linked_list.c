@@ -1,10 +1,9 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 #include "linked_list.h"
 
 #include <pthread.h>
-#include <stdio.h>
 #include <stdlib.h>
+
+#include "logger.h"
 
 struct Node {
   void* ptr;
@@ -19,21 +18,26 @@ pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
 // Función para crear un nuevo nodo
 struct Node* create_node(void* ptr, size_t amount, void** children) {
   struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
+  // LCOV_EXCL_START
   if (!new_node) {
     return NULL;
   }
+  // LCOV_EXCL_STOP
   new_node->ptr = ptr;
   new_node->size = amount;
   new_node->children = NULL;
   if (amount > 0) {
     new_node->children = (struct Node**)malloc(sizeof(struct Node*) * amount);
+    // LCOV_EXCL_START
     if (!new_node->children) {
       free(new_node);
       return NULL;
     }
+    // LCOV_EXCL_STOP
     for (size_t i = 0; i < amount; ++i) {
-      new_node->children[i] = (struct Node*)malloc(sizeof(struct Node) * amount);
+      new_node->children[i] = (struct Node*)malloc(sizeof(struct Node));
 
+      // LCOV_EXCL_START
       if (!new_node->children[i]) {
         for (size_t j = 0; j < i; ++j) {
           free(new_node->children[j]);
@@ -42,6 +46,7 @@ struct Node* create_node(void* ptr, size_t amount, void** children) {
         return NULL;
       }
     }
+    // LCOV_EXCL_STOP
     for (size_t i = 0; i < amount; ++i) {
       new_node->children[i]->size = 0;
       new_node->children[i]->next = NULL;
@@ -55,17 +60,19 @@ struct Node* create_node(void* ptr, size_t amount, void** children) {
 
 int list_insert(struct Node** head, void* ptr, size_t amount, void** children) {
   struct Node* new_node = create_node(ptr, amount, children);
+  // LCOV_EXCL_START
   if (!new_node) {
     return 1;
   }
+  // LCOV_EXCL_STOP
   pthread_mutex_lock(&list_mutex);
-  if (*head == NULL) {
+  if (!*head) {
     *head = new_node;
     pthread_mutex_unlock(&list_mutex);
     return 0;
   }
   struct Node* temp = *head;
-  while (temp->next != NULL) {
+  while (temp->next) {
     temp = temp->next;
   }
   temp->next = new_node;
@@ -86,12 +93,13 @@ void free_node(struct Node* current) {
 }
 
 void list_delete_node(struct Node** head, void* ptr) {
+  LOG_INIT("list_delete_node");
   pthread_mutex_lock(&list_mutex);
   struct Node* current = *head;
   struct Node* prev = NULL;
 
   // Si el nodo a eliminar es el nodo cabeza
-  if (current != NULL && current->ptr == ptr) {
+  if (current && current->ptr == ptr) {
     *head = current->next;
     free_node(current);
     pthread_mutex_unlock(&list_mutex);
@@ -99,13 +107,13 @@ void list_delete_node(struct Node** head, void* ptr) {
   }
 
   // Buscar el nodo a eliminar
-  while (current != NULL && current->ptr != ptr) {
+  while (current && current->ptr != ptr) {
     prev = current;
     current = current->next;
   }
 
   // Si el dato no se encuentra en la lista
-  if (current == NULL) {
+  if (!current) {
     pthread_mutex_unlock(&list_mutex);
     return;
   }
@@ -114,6 +122,7 @@ void list_delete_node(struct Node** head, void* ptr) {
   prev->next = current->next;
   free_node(current);
   pthread_mutex_unlock(&list_mutex);
+  LOG_END("");
 }
 
 void list_free(struct Node** head) {
@@ -121,7 +130,7 @@ void list_free(struct Node** head) {
   struct Node* current = *head;
   struct Node* next;
 
-  while (current != NULL) {
+  while (current) {
     next = current->next;
     free_node(current);
     current = next;
