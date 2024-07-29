@@ -78,3 +78,13 @@ coverage-job:
       - saurion/bin/
       - saurion/build/
       - saurion/lib/
+
+pages:
+  image: node:lts
+  script:
+    - make libs
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH

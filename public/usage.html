@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usage - Saurion</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Saurion</h1>
+        <p>Asynchronous Sockets with liburing</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="installation.html">Installation</a></li>
+            <li><a href="usage.html">Usage</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="usage">
+            <h2>Usage</h2>
+            <img src="img/usage.jpg" alt="Usage" class="usage-img">
+            <p>Here is a basic example of how to use Saurion:</p>
+            <pre><code>#include &lt;saurion.h&gt;
+
+int main() {
+    struct saurion *s = saurion_create(4);
+    saurion_start(s);
+    // Your code here
+    saurion_stop(s);
+    saurion_destroy(s);
+    return 0;
+}</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Saurion Project</p>
+    </footer>
+</body>
+</html>
+
