@@ -82,7 +82,7 @@ coverage-job:
 pages:
   image: node:lts
   script:
-    - make libs
+    - echo "Hello World"
   artifacts:
     paths:
       - public
