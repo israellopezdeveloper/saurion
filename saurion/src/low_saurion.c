@@ -285,7 +285,7 @@ static void add_read_continue(struct saurion *const s, struct request *oreq, con
   pthread_mutex_unlock(&s->m_rings[sel]);
 }
 
-static void add_write(struct saurion *const s, int fd, const char *const str, const int sel) {
+static void add_write(struct saurion *const s, int fd, const void *const str, const int sel) {
   int res = ERROR_CODE;
   pthread_mutex_lock(&s->m_rings[sel]);
   while (res != SUCCESS_CODE) {
@@ -802,9 +802,6 @@ void saurion_destroy(struct saurion *const s) {
   free(s);
 }
 
-/*! TODO: Cambiar a void
- *  \todo Cambiar a void
- */
-void saurion_send(struct saurion *const s, const int fd, const char *const msg) {
+void saurion_send(struct saurion *const s, const int fd, const void *const msg) {
   add_write(s, fd, msg, next(s));
 }

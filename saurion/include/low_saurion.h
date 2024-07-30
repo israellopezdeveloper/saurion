@@ -146,9 +146,9 @@ void saurion_destroy(struct saurion *s);
  *
  * @param s Puntero a la estructura saurion.
  * @param fd Descriptor de archivo del socket al que se enviará el mensaje.
- * @param msg Puntero a la cadena de caracteres que se enviará.
+ * @param msg Puntero a la cadena de bytes que se enviará.
  */
-void saurion_send(struct saurion *s, const int fd, const char *const msg);
+void saurion_send(struct saurion *s, const int fd, const void *const msg);
 
 #ifdef __cplusplus
 }
