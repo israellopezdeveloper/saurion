@@ -4,12 +4,12 @@
 
 #include "low_saurion.h"
 
-Saurion::Saurion(const uint32_t thds, const int sck) noexcept {
+Saurion::Saurion(const uint32_t thds, const int port) noexcept {
   this->s = saurion_create(thds);
   if (!this->s) {
     return;
   }
-  this->s->ss = sck;
+  this->s->ss = set_socket(port);
 }
 
 Saurion::~Saurion() { saurion_destroy(this->s); }
@@ -18,6 +18,11 @@ void Saurion::init() noexcept {
   if (!saurion_start(this->s)) {
     return;
   }
+  pthread_mutex_lock(&this->s->status_m);
+  while (this->s->status != 1) {
+    pthread_cond_wait(&this->s->status_c, &this->s->status_m);
+  }
+  pthread_mutex_unlock(&this->s->status_m);
 }
 
 void Saurion::stop() noexcept { saurion_stop(this->s); }
