@@ -480,7 +480,7 @@ static void handle_close(const struct saurion *const s, const struct request *co
 }
 
 /*********************************** INTERFACE ***********************************/
-int EXTERNAL_set_socket(const int p) {
+int set_socket(const int p) {
   int sock = 0;
   struct sockaddr_in srv_addr;
 

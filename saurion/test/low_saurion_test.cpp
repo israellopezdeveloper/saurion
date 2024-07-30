@@ -161,7 +161,7 @@ class LowSaurionTest : public ::testing::Test {
     if (!saurion) {
       return;
     }
-    saurion->ss = EXTERNAL_set_socket(PORT);
+    saurion->ss = set_socket(PORT);
     saurion->cb.on_connected = [](int sfd, void *) -> void {
       pthread_mutex_lock(&summary.connected_m);
       summary.connected++;

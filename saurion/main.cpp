@@ -22,7 +22,7 @@ int main() {
   if (!saurion) {
     return -1;
   }
-  saurion->ss = EXTERNAL_set_socket(PORT);
+  saurion->ss = set_socket(PORT);
   saurion->cb.on_connected = [](int sfd, void *) -> void { printf("<%d> <-> saurion\n", sfd); };
   saurion->cb.on_readed = [](int sfd, const char *const msg, const ssize_t size, void *) -> void {
     printf("<%d> <- %s[%zd]\n", sfd, msg, size);

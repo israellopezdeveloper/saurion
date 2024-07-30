@@ -91,10 +91,7 @@ struct saurion {
   } __attribute__((aligned(PACKING_SZ))) cb;
 } __attribute__((aligned(PACKING_SZ)));
 
-/*! TODO: Eliminar
- *  \todo Eliminar
- */
-int EXTERNAL_set_socket(int p);
+int set_socket(int p);
 
 /*!
  * @brief Crea una instancia de la estructura saurion.
