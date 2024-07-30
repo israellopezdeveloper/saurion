@@ -13,7 +13,6 @@
 
 #include "config.h"
 #include "linked_list.h"
-#include "logger.h"
 
 #define EVENT_TYPE_ACCEPT 0  //! @brief Tipo de evento para aceptar una nueva conexión.
 #define EVENT_TYPE_READ 1    //! @brief Tipo de evento para leer datos.

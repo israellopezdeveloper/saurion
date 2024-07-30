@@ -13,7 +13,7 @@ LIN_MIN_COVERAGE := 70.00
 REG_MIN_COVERAGE := 80.00
 BRA_MIN_COVERAGE := 70.00
 
-create_module:
+create_module: check_config
 	@echo "Ingrese el nombre del módulo:"
 	@read module_name; \
 	if [ -z "$$module_name" ]; then \
@@ -42,28 +42,28 @@ define foreach_subdir
   @echo "$(MAKE) -C $(1) $(2)"
 endef
 
-all:
+all: check_config
 	@$(foreach ndir, $(SUBPROJECTS), $(MAKE) -C $(ndir) all;)
 
-clean:
+clean: check_config
 	@$(foreach ndir, $(SUBPROJECTS), $(MAKE) -C $(ndir) clean;)
 
-valgrind:
+valgrind: check_config
 	@$(foreach ndir, $(SUBPROJECTS), $(MAKE) -C $(ndir) valgrind;)
 
-tests:
+tests: check_config
 	@$(foreach ndir, $(SUBPROJECTS), $(MAKE) -C $(ndir) tests;)
 
-run:
+run: check_config
 	@$(foreach ndir, $(SUBPROJECTS), $(MAKE) -C $(ndir) run;)
 
-format:
+format: check_config
 	@$(foreach ndir, $(SUBPROJECTS), $(MAKE) -C $(ndir) format;)
 
-libs:
+libs: check_config
 	@$(foreach ndir, $(SUBPROJECTS), $(MAKE) -C $(ndir) libs;)
 
-docs:
+docs: check_config
 	@$(foreach ndir, $(SUBPROJECTS), $(MAKE) -C $(ndir) docs;)
 
 define get_coverage_values
@@ -73,10 +73,10 @@ define get_coverage_values
 	$(foreach ndir, $(SUBPROJECTS), $(eval COVERAGE_REGION_VALUES += $(shell jq '.regions.percent' "$(ndir)/build/coverage_report.json")))
 endef
 
-coverage:
+coverage: check_config
 	@$(foreach ndir, $(SUBPROJECTS), $(MAKE) -C $(ndir) coverage;)
 
-check_coverage: coverage
+check_coverage: check_config coverage
 	@$(call get_coverage_values) \
 	coverage_sum=0; \
 	count=0; \
@@ -161,3 +161,14 @@ gtest:
 		make install DESTDIR=../final && \
 		cd .. && rm -rf build
 
+check_config:
+	@if [ ! -f config/config.h ]; then \
+		echo "config/config.h no existe. Creándolo..."; \
+		mkdir -p config; \
+		echo "#ifndef CONFIG_H" > config/config.h; \
+		echo "#define CONFIG_H" >> config/config.h; \
+		echo "" >> config/config.h; \
+		echo "// Definiciones de configuración aquí" >> config/config.h; \
+		echo "" >> config/config.h; \
+		echo "#endif // CONFIG_H" >> config/config.h; \
+	fi
