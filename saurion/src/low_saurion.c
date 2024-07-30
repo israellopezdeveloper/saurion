@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/eventfd.h>
+#include <sys/socket.h>
 #include <sys/uio.h>
 #include <unistd.h>
 
@@ -40,23 +41,25 @@ struct saurion_wrapper {
   uint32_t sel;
 };
 
-static uint32_t next(struct saurion *s) {
+static uint32_t next(struct saurion *const s) {
   s->next = (s->next + 1) % s->n_threads;
   return s->next;
 }
 
-static void free_request(struct request *req, void **children_ptr, size_t amount) {
+static void free_request(struct request *req, void **children_ptr, const size_t amount) {
   if (children_ptr) {
     free(children_ptr);
+    children_ptr = NULL;
   }
   for (size_t i = 0; i < amount; ++i) {
     free(req->iov[i].iov_base);
   }
   free(req);
+  req = NULL;
 }
 
-[[nodiscard]]
-static int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, uint8_t h) {
+[[nodiscard]] static int init_iovec(struct iovec *iov, size_t a, size_t pos, const void *const msg,
+                                    const uint8_t h) {
   if (!iov || !iov->iov_base) {
     return ERROR_CODE;
   }
@@ -70,7 +73,7 @@ static int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *
     if (h) {
       offset_s -= (pos ? 8 : 0);
       offset_iov += (!pos ? 8 : 0);
-      if (pos == (amount - 1)) {
+      if (pos == (a - 1)) {
         --len;
       }
     }
@@ -89,23 +92,22 @@ static int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *
   return SUCCESS_CODE;
 }
 
-[[nodiscard]]
-static int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size,
-                          void **chd_ptr) {
+[[nodiscard]] static int alloc_iovec(struct iovec *iov, const size_t a, const size_t p,
+                                     const size_t s, void **c_p) {
   iov->iov_base = malloc(CHUNK_SZ);
   if (!iov->iov_base) {
     return ERROR_CODE;
   }
-  iov->iov_len = (pos == (amount - 1) ? (size % CHUNK_SZ) : CHUNK_SZ);
+  iov->iov_len = (p == (a - 1) ? (s % CHUNK_SZ) : CHUNK_SZ);
   if (iov->iov_len == 0) {
     iov->iov_len = CHUNK_SZ;
   }
-  chd_ptr[pos] = iov->iov_base;
+  c_p[p] = iov->iov_base;
   return SUCCESS_CODE;
 }
 
-[[nodiscard]]
-static int set_request(struct request **r, struct Node **l, size_t s, void *m, uint8_t h) {
+[[nodiscard]] static int s_req(struct request **r, struct Node **l, size_t s, const void *const m,
+                               const uint8_t h) {
   if (h) {
     s += (8 + 1);
   }
@@ -140,12 +142,12 @@ static int set_request(struct request **r, struct Node **l, size_t s, void *m, u
     return ERROR_CODE;
   }
   for (size_t i = 0; i < amount; ++i) {
-    if (!allocate_iovec(&req->iov[i], amount, i, s, children_ptr)) {
+    if (!alloc_iovec(&req->iov[i], amount, i, s, children_ptr)) {
       free_request(req, children_ptr, amount);
       free(children_ptr);
       return ERROR_CODE;
     }
-    if (!initialize_iovec(&req->iov[i], amount, i, m, h)) {
+    if (!init_iovec(&req->iov[i], amount, i, m, h)) {
       free_request(req, children_ptr, amount);
       free(children_ptr);
       return ERROR_CODE;
@@ -172,7 +174,7 @@ static void add_accept(struct saurion *const s, const struct sockaddr_in *const 
       usleep(TIMEOUT_RETRY);
     }
     struct request *req = NULL;
-    if (!set_request(&req, &s->list, 0, NULL, 0)) {
+    if (!s_req(&req, &s->list, 0, NULL, 0)) {
       free(sqe);
       usleep(TIMEOUT_RETRY);
       res = ERROR_CODE;
@@ -194,7 +196,7 @@ static void add_accept(struct saurion *const s, const struct sockaddr_in *const 
   pthread_mutex_unlock(&s->m_rings[0]);
 }
 
-static void add_efd(struct saurion *const s, const int client_socket, int sel) {
+static void add_efd(struct saurion *const s, const int client_socket, const int sel) {
   pthread_mutex_lock(&s->m_rings[sel]);
   int res = ERROR_CODE;
   while (res != SUCCESS_CODE) {
@@ -205,7 +207,7 @@ static void add_efd(struct saurion *const s, const int client_socket, int sel) {
       usleep(TIMEOUT_RETRY);
     }
     struct request *req = NULL;
-    if (!set_request(&req, &s->list, CHUNK_SZ, NULL, 0)) {
+    if (!s_req(&req, &s->list, CHUNK_SZ, NULL, 0)) {
       free(sqe);
       res = ERROR_CODE;
       continue;
@@ -237,7 +239,7 @@ static void add_read(struct saurion *const s, const int client_socket) {
       usleep(TIMEOUT_RETRY);
     }
     struct request *req = NULL;
-    if (!set_request(&req, &s->list, CHUNK_SZ, NULL, 0)) {
+    if (!s_req(&req, &s->list, CHUNK_SZ, NULL, 0)) {
       free(sqe);
       res = ERROR_CODE;
       continue;
@@ -267,7 +269,7 @@ static void add_read_continue(struct saurion *const s, struct request *oreq, con
       sqe = io_uring_get_sqe(ring);
       usleep(TIMEOUT_RETRY);
     }
-    if (!set_request(&oreq, &s->list, oreq->prev_remain, NULL, 0)) {
+    if (!s_req(&oreq, &s->list, oreq->prev_remain, NULL, 0)) {
       free(sqe);
       res = ERROR_CODE;
       continue;
@@ -285,7 +287,7 @@ static void add_read_continue(struct saurion *const s, struct request *oreq, con
   pthread_mutex_unlock(&s->m_rings[sel]);
 }
 
-static void add_write(struct saurion *const s, int fd, const void *const str, const int sel) {
+static void add_write(struct saurion *const s, const int fd, const void *const str, const int sel) {
   int res = ERROR_CODE;
   pthread_mutex_lock(&s->m_rings[sel]);
   while (res != SUCCESS_CODE) {
@@ -296,7 +298,7 @@ static void add_write(struct saurion *const s, int fd, const void *const str, co
       usleep(TIMEOUT_RETRY);
     }
     struct request *req = NULL;
-    if (!set_request(&req, &s->list, strlen(str), (void *)str, 1)) {
+    if (!s_req(&req, &s->list, strlen(str), (void *)str, 1)) {
       free(sqe);
       res = ERROR_CODE;
       continue;
@@ -482,36 +484,40 @@ int EXTERNAL_set_socket(const int p) {
   int sock = 0;
   struct sockaddr_in srv_addr;
 
-  sock = socket(PF_INET, SOCK_STREAM, 0);
+  sock = socket(AF_INET, SOCK_STREAM, 0);
   if (sock == ERROR_CODE) {
-    return SUCCESS_CODE;
+    return ERROR_CODE;
   }
 
   int enable = 1;
   if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
-    return SUCCESS_CODE;
+    return ERROR_CODE;
   }
 
   memset(&srv_addr, 0, sizeof(srv_addr));
   srv_addr.sin_family = AF_INET;
   srv_addr.sin_port = htons(p);
-  srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  srv_addr.sin_addr.s_addr = INADDR_ANY;
 
   /* We bind to a port and turn this socket into a listening
    * socket.
    * */
   if (bind(sock, (const struct sockaddr *)&srv_addr, sizeof(srv_addr)) < 0) {
-    return SUCCESS_CODE;
+    close(sock);
+    return ERROR_CODE;
   }
 
   if (listen(sock, ACCEPT_QUEUE) < 0) {
-    return SUCCESS_CODE;
+    close(sock);
+    return ERROR_CODE;
   }
+  int flags = fcntl(sock, F_GETFL, 0);
+  fcntl(sock, F_SETFL, flags | O_NONBLOCK);
 
   return (sock);
 }
 
-struct saurion *saurion_create(uint32_t n_threads) {
+[[nodiscard]] struct saurion *saurion_create(uint32_t n_threads) {
   LOG_INIT("");
   // Asignar memoria
   struct saurion *p = (struct saurion *)malloc(sizeof(struct saurion));
@@ -533,6 +539,8 @@ struct saurion *saurion_create(uint32_t n_threads) {
     LOG_END("");
     return NULL;
   }
+  n_threads = (n_threads < 2 ? 2 : n_threads);
+  n_threads = (n_threads > NUM_CORES ? NUM_CORES : n_threads);
   p->m_rings = (pthread_mutex_t *)malloc(n_threads * sizeof(pthread_mutex_t));
   if (!p->m_rings) {
     free(p);
@@ -544,8 +552,6 @@ struct saurion *saurion_create(uint32_t n_threads) {
   }
   // Inicializar miembros
   p->ss = 0;
-  n_threads = (n_threads < 2 ? 2 : n_threads);
-  n_threads = (n_threads > NUM_CORES ? NUM_CORES : n_threads);
   p->n_threads = n_threads;
   p->status = 0;
   p->list = NULL;
@@ -641,6 +647,8 @@ void saurion_worker_master(void *arg) {
       continue;
     }
     if (cqe->res < 0) {
+      handle_error(s, req);
+      handle_close(s, req);
       free(req);
       LOG_END("");
       return;
@@ -660,9 +668,6 @@ void saurion_worker_master(void *arg) {
         list_delete_node(&s->list, req);
         break;
       case EVENT_TYPE_READ:
-        if (cqe->res < 0) {
-          handle_error(s, req);
-        }
         if (cqe->res < 1) {
           handle_close(s, req);
         }
@@ -693,9 +698,7 @@ void saurion_worker_slave(void *arg) {
   free(ss);
   struct io_uring ring = s->rings[sel];
   struct io_uring_cqe *cqe = NULL;
-
   add_efd(s, s->efds[sel], sel);
-
   pthread_mutex_lock(&s->status_m);
   s->status = 1;
   pthread_cond_signal(&s->status_c);
@@ -713,6 +716,8 @@ void saurion_worker_slave(void *arg) {
       continue;
     }
     if (cqe->res < 0) {
+      handle_error(s, req);
+      handle_close(s, req);
       free(req);
       LOG_END("");
       return;
@@ -726,9 +731,6 @@ void saurion_worker_slave(void *arg) {
     io_uring_cqe_seen(&ring, cqe);
     switch (req->event_type) {
       case EVENT_TYPE_READ:
-        if (cqe->res < 0) {
-          handle_error(s, req);
-        }
         if (cqe->res < 1) {
           handle_close(s, req);
         }
@@ -751,7 +753,7 @@ void saurion_worker_slave(void *arg) {
   return;
 }
 
-int saurion_start(struct saurion *const s) {
+[[nodiscard]] int saurion_start(struct saurion *const s) {
   LOG_INIT("");
   ThreadPool_init(s->pool);
   ThreadPool_add_default(s->pool, saurion_worker_master, s);

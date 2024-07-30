@@ -31,6 +31,9 @@ if (!pipePath) {
   process.exit(1);
 }
 
+const tempFile2 = path.join(os.tmpdir(), `saurion_temp.log`);
+const logStream2 = fs.createWriteStream(tempFile2, { flags: 'a' });
+
 const createClient = (clientId) => {
   // Crear archivo temporal para el cliente
   const tempFile = path.join(os.tmpdir(), `saurion_sender.${clientId}.log`);
@@ -79,12 +82,14 @@ const connectClients = (n) => {
 };
 
 const sendMessages = (n, msg, delay) => {
+  msg = (msg === "(null)" ? "" : msg)
+  const length = Buffer.alloc(8);
+  const message = Buffer.from(msg + '\0');
+  length.writeBigUInt64LE(BigInt(message.length - 1), 0);
+  // logStream2.write(`n->${n}[${length}] - msg->${message} - delay->${delay}`);
   clients.forEach((client, index) => {
     for (let i = 0; i < n; i++) {
       setTimeout(() => {
-        const length = Buffer.alloc(8);
-        const message = Buffer.from(msg + '\0');
-        length.writeBigUInt64LE(BigInt(message.length - 1), 0);
         client.write(Buffer.concat([length, message]));
       }, i * delay);
     }
@@ -100,12 +105,16 @@ const disconnectClients = () => {
 };
 
 const closeApplication = () => {
+  logStream2.close();
+  fs.unlinkSync(tempFile2);
   disconnectClients();
   try {
     rl.close();
   } catch (e) { }
   process.exit(0);
 };
+
+process.on('SIGINT', () => {closeApplication();});
 
 let buffer = '';
 
@@ -131,18 +140,23 @@ const handleCommand = (command) => {
       closeApplication();
       break;
     default:
-      console.log('Comando desconocido:', cmd);
       break;
   }
 };
 
 const processBuffer = () => {
-  // Buscar el final del comando (asumiendo que termina con '\n' o es el buffer completo)
-  const endIndex = buffer.indexOf('\n');
-  if (endIndex !== -1 || buffer.length > 0) {
-    const command = endIndex !== -1 ? buffer.slice(0, endIndex) : buffer;
+  let endIndex;
+  
+  while ((endIndex = buffer.indexOf('\n')) !== -1) {
+    const command = buffer.slice(0, endIndex);
     handleCommand(command.trim());
-    buffer = endIndex !== -1 ? buffer.slice(endIndex + 1) : '';
+    buffer = buffer.slice(endIndex + 1);
+  }
+  
+  // Procesar cualquier comando restante que no esté seguido de '\n'
+  if (buffer.length > 0) {
+    handleCommand(buffer.trim());
+    buffer = '';
   }
 };
 

@@ -56,6 +56,8 @@ struct summary {
 
 void signalHandler(int signum);
 
+static pid_t pid = 0;
+
 class LowSaurionTest : public ::testing::Test {
  public:
   struct saurion *saurion;
@@ -95,7 +97,7 @@ class LowSaurionTest : public ::testing::Test {
       exit(ERROR_CODE);
     }
     sender = new std::thread([=]() {
-      pid_t pid = fork();
+      pid = fork();
       if (pid < 0) {
         return ERROR_CODE;
       }
@@ -253,7 +255,7 @@ class LowSaurionTest : public ::testing::Test {
     fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
   }
 
-  static void send_clients(uint32_t n, const char *const msg, uint32_t delay) {
+  static void clients2saurion(uint32_t n, const char *const msg, uint32_t delay) {
     fprintf(fifo_write, "send;%d;%s;%d\n", n, msg, delay);
     fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
   }
@@ -322,15 +324,14 @@ char *LowSaurionTest::fifo_name = nullptr;
 std::thread *LowSaurionTest::sender = nullptr;
 FILE *LowSaurionTest::fifo_write = nullptr;
 
-void signalHandler(int signum) {
-  std::cout << "Interceptada la señal " << signum << std::endl;
+void signalHandler(int) {
+  if (kill(pid, SIGINT) == -1) {
+    exit(EXIT_FAILURE);
+  } else {
+  }
 
   // Intenta eliminar el archivo FIFO
-  if (std::remove(LowSaurionTest::fifo_name) != 0) {
-    std::cerr << "Error al eliminar " << LowSaurionTest::fifo_name << std::endl;
-  } else {
-    std::cout << LowSaurionTest::fifo_name << " eliminado exitosamente." << std::endl;
-  }
+  std::remove(LowSaurionTest::fifo_name);
   std::regex pattern("^saurion_sender.*\\.log$");
 
   for (const auto &entry : std::filesystem::directory_iterator("/tmp")) {
@@ -339,9 +340,7 @@ void signalHandler(int signum) {
       if (std::regex_match(filename, pattern)) {
         try {
           std::filesystem::remove(entry.path());
-          std::cout << "Archivo borrado: " << filename << std::endl;
         } catch (const std::filesystem::filesystem_error &e) {
-          std::cerr << "Error al borrar " << filename << ": " << e.what() << std::endl;
         }
       }
     }
@@ -367,7 +366,7 @@ TEST_F(LowSaurionTest, readMultipleMsgsFromClients) {
   connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
-  send_clients(msgs, "Hola", 0);
+  clients2saurion(msgs, "Hola", 0);
   wait_readed(msgs * clients * 4);
   EXPECT_EQ(summary.readed, msgs * clients * 4);
   disconnect_clients();
@@ -418,7 +417,7 @@ TEST_F(LowSaurionTest, readWriteWithLargeMessage) {
   connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
-  send_clients(1, str, 0);
+  clients2saurion(1, str, 0);
   wait_readed(size);
   EXPECT_EQ(summary.readed, 81920UL);
   saurion_sends_to_client(summary.fds.front(), 1, (char *)str);
@@ -436,7 +435,7 @@ TEST_F(LowSaurionTest, handleConcurrentReadsAndWrites) {
   connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
-  send_clients(msgs, "Hola", 2);
+  clients2saurion(msgs, "Hola", 2);
   saurion_sends_to_all_clients(msgs, "Hola");
   wait_readed(msgs * clients * 4);
   EXPECT_EQ(msgs * clients * 4, summary.readed);
@@ -444,4 +443,47 @@ TEST_F(LowSaurionTest, handleConcurrentReadsAndWrites) {
   EXPECT_EQ(msgs * clients, summary.wrote);
   disconnect_clients();
   wait_disconnected(clients);
+}
+
+TEST_F(LowSaurionTest, largeNumberOfMessages) {
+  uint32_t clients = 10;
+  uint32_t msgs = 1000;
+  connect_clients(clients);
+  wait_connected(clients);
+  EXPECT_EQ(summary.connected, clients);
+  clients2saurion(msgs, "Test Message", 0);
+  wait_readed(msgs * clients * 12);
+  EXPECT_EQ(summary.readed, msgs * clients * 12);
+  disconnect_clients();
+  wait_disconnected(clients);
+  EXPECT_EQ(summary.disconnected, clients);
+}
+
+TEST_F(LowSaurionTest, handleInvalidMessages) {
+  uint32_t clients = 10;
+  connect_clients(clients);
+  wait_connected(clients);
+  EXPECT_EQ(summary.connected, clients);
+  // Send invalid messages
+  clients2saurion(clients, "", 0);       // Empty message
+  clients2saurion(clients, nullptr, 0);  // Null message
+  disconnect_clients();
+  wait_disconnected(clients);
+  EXPECT_EQ(summary.disconnected, clients);
+}
+
+TEST_F(LowSaurionTest, stressTest) {
+  const char *str = "Stress Test Message";
+  uint32_t clients = 50;
+  uint32_t msgs = 1000;
+  connect_clients(clients);
+  wait_connected(clients);
+  EXPECT_EQ(summary.connected, clients);
+  clients2saurion(msgs, str, 1);
+  wait_readed(msgs * clients *
+              strlen(str));  // Adjust the expected length based on your message size
+  EXPECT_EQ(summary.readed, msgs * clients * strlen(str));
+  disconnect_clients();
+  wait_disconnected(clients);
+  EXPECT_EQ(summary.disconnected, clients);
 }
