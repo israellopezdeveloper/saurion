@@ -1,4 +1,4 @@
-#include "low_saurion.h"  // for saurion, saurion_send, EXTERNAL_set_socket
+#include "saurion.hpp"
 
 #include <fcntl.h>      // for open, O_WRONLY
 #include <pthread.h>    // for pthread_mutex_lock, pthread_mutex_unlock
@@ -26,7 +26,7 @@
 
 #include "config.h"       // for ERROR_CODE, LOG_END, LOG_INIT, CHUNK_SZ
 #include "gtest/gtest.h"  // for Message, EXPECT_EQ, TestPartResult, Test...
-#include "saurion.hpp"
+#include "low_saurion.h"  // for saurion, saurion_send, EXTERNAL_set_socket
 
 #define PORT 8080
 
@@ -154,6 +154,7 @@ class LowSaurionTest : public ::testing::Test {
 
   void SetUp() override {
     LOG_INIT("");
+    num_mallocs = 0;
     summary.connected = 0;
     summary.disconnected = 0;
     summary.readed = 0;
@@ -208,6 +209,7 @@ class LowSaurionTest : public ::testing::Test {
 
   void TearDown() override {
     LOG_INIT("");
+    test_mode = 0;
     disconnect_clients();
     saurion_stop(saurion);
     saurion_destroy(saurion);
@@ -490,6 +492,14 @@ TEST_F(LowSaurionTest, stressTest) {
   EXPECT_EQ(summary.disconnected, clients);
 }
 
+TEST_F(LowSaurionTest, memoryFailsAtStructCreation) {
+  test_mode = 2;
+  target_mallocs = 100000;
+  printf("=>>test_mode = %d\n", test_mode);
+  struct saurion *fail_saurion = saurion_create(2);
+  EXPECT_EQ(fail_saurion, nullptr);
+}
+
 class SaurionTest : public ::testing::Test {
  public:
   Saurion *saurion;
@@ -584,6 +594,7 @@ class SaurionTest : public ::testing::Test {
 
   void SetUp() override {
     LOG_INIT("");
+    num_mallocs = 0;
     summary.connected = 0;
     summary.disconnected = 0;
     summary.readed = 0;
@@ -639,6 +650,7 @@ class SaurionTest : public ::testing::Test {
 
   void TearDown() override {
     LOG_INIT("");
+    test_mode = 0;
     disconnect_clients();
     saurion->stop();
     delete saurion;

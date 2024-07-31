@@ -521,6 +521,7 @@ int set_socket(const int p) {
   // Asignar memoria
   struct saurion *p = (struct saurion *)malloc(sizeof(struct saurion));
   if (!p) {
+    puts("FALLO");
     LOG_END("");
     return NULL;
   }

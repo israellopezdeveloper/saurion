@@ -228,8 +228,53 @@ tests: $(TEST_EXECUTABLE)
 	@echo "================"
 	@./$(BIN_DIR)/$(TEST_EXECUTABLE) --gtest_filter=$(filter)
 
-$(TEST_MALLOC_FILE): $(CONFIG_FILE)
-	@echo -e "I2lmbmRlZiBURVNUX01BTExPQ19ICiNkZWZpbmUgVEVTVF9NQUxMT0NfSAoKI2luY2x1ZGUgPHN0\nZGRlZi5oPgojaW5jbHVkZSA8c3RkaW8uaD4KCi8vIERlZmluaWNpw7NuIGRlIGxhcyB2YXJpYWJs\nZXMgZ2xvYmFsZXMKc3RhdGljIGludCB0ZXN0X21vZGUgPSAwOwpzdGF0aWMgaW50IG51bV9tYWxs\nb2NzID0gMDsKc3RhdGljIGludCB0YXJnZXRfbWFsbG9jcyA9IDA7Cgp2b2lkICpmYWtlX21hbGxv\nYyh1bnNpZ25lZCBsb25nIHNpemUpIHsKICB2b2lkICpwdHIgPSBOVUxMOwogIGlmICh0ZXN0X21v\nZGUgPT0gMCkgewogICAgcHRyID0gbWFsbG9jKHNpemUpOwogIH0gZWxzZSBpZiAodGVzdF9tb2Rl\nID09IDEgJiYgbnVtX21hbGxvY3MgPT0gdGFyZ2V0X21hbGxvY3MpIHsKICAgIHB0ciA9IE5VTEw7\nCiAgfSBlbHNlIGlmICh0ZXN0X21vZGUgPT0gMiAmJiBudW1fbWFsbG9jcyA8IHRhcmdldF9tYWxs\nb2NzKSB7CiAgICBwdHIgPSBOVUxMOwogIH0gZWxzZSBpZiAodGVzdF9tb2RlID09IDMgJiYgbnVt\nX21hbGxvY3MgPiB0YXJnZXRfbWFsbG9jcykgewogICAgcHRyID0gTlVMTDsKICB9IGVsc2Ugewog\nICAgcHRyID0gbWFsbG9jKHNpemUpOwogIH0KICBpZiAocHRyICE9IE5VTEwgfHwgdGVzdF9tb2Rl\nICE9IDApIHsKICAgIG51bV9tYWxsb2NzKys7CiAgfQogIHJldHVybiBwdHI7Cn0KCi8vIE1hY3Jv\nIHBhcmEgbWFuZWphciBsYXMgZGlmZXJlbnRlcyBjb25kaWNpb25lcyBkZSB0ZXN0X21vZGUKI2Rl\nZmluZSBtYWxsb2Moc2l6ZSkgZmFrZV9tYWxsb2Moc2l6ZSkKCiNlbmRpZiAgLy8gIVRFU1RfTUFM\nTE9DX0gK" | base64 --decode > $(TEST_MALLOC_FILE)	
+$(TEST_MALLOC_FILE):
+	@printf " \n\
+	#ifndef TEST_MALLOC_H \n\
+	#define TEST_MALLOC_H \n\
+	\n\
+	#include <stddef.h> \n\
+	#include <stdlib.h> \n\
+	#include <stdatomic.h> \n\
+	\n\
+	// Definición de las variables globales \n\
+	static atomic_int test_mode; \n\
+	static atomic_int num_mallocs; \n\
+	static atomic_int target_mallocs; \n\
+	int i = 0;
+	atomic_store(&test_mode, i); \n\
+	atomic_store(&num_mallocs, i); \n\
+	atomic_store(&target_mallocs, i); \n\
+	\n\
+	void *fake_malloc(unsigned long size) { \n\
+		void *ptr = NULL; \n\
+		printf(\"fake_malloc atomic_load(&test_mode)=%%d, atomic_load(&num_mallocs)=%%d, atomic_load(&target_mallocs)=%%d\", atomic_load(&test_mode), atomic_load(&num_mallocs), atomic_load(&target_mallocs)); \n\
+		puts(\"\");\n\
+		if (atomic_load(&test_mode) == 0) { \n\
+			ptr = malloc(size); \n\
+		} else if (atomic_load(&test_mode) == 1 && atomic_load(&num_mallocs) == atomic_load(&target_mallocs)) { \n\
+		  puts(\"test mode 1\"); \n\
+			ptr = NULL; \n\
+		} else if (atomic_load(&test_mode) == 2 && atomic_load(&num_mallocs) < atomic_load(&target_mallocs)) { \n\
+		  puts(\"test mode 2\"); \n\
+			ptr = NULL; \n\
+		} else if (atomic_load(&test_mode) == 3 && atomic_load(&num_mallocs) > atomic_load(&target_mallocs)) { \n\
+		  puts(\"test mode 3\"); \n\
+			ptr = NULL; \n\
+		} else { \n\
+			puts(\"test mode else\"); \n\
+			ptr = malloc(size); \n\
+		} \n\
+		if (ptr != NULL || atomic_load(&test_mode) != 0) { \n\
+			atomic_load(&num_mallocs)++; \n\
+		} \n\
+		return ptr; \n\
+	} \n\
+	\n\
+	// Macro para manejar las diferentes condiciones de test_mode \n\
+	#define malloc(size) fake_malloc(size) \n\
+	\n\
+	#endif  // !TEST_MALLOC_H \n" > $(TEST_MALLOC_FILE)
 	@if ! grep -q '#include "test_malloc.h"' $(CONFIG_FILE); then \
 		sed -i '/#define CONFIG_H/a #include "test_malloc.h"' $(CONFIG_FILE); \
 	fi
@@ -267,8 +312,9 @@ $(TEST_EXECUTABLE)_coverage: $(BIN_DIR)/$(TEST_EXECUTABLE)_coverage
   	jq '.data[0].totals' $(BUILD_DIR)/cov_report.json > $(BUILD_DIR)/coverage_report.json
 	@rm -rf $(BUILD_DIR)/cov_report.json $(BUILD_DIR)/default.profdata default.profraw
 
-$(BIN_DIR)/$(TEST_EXECUTABLE)_coverage: $(TESTS_OBJECTS_COVERAGE) $(CPP_OBJECTS_COVERAGE) $(C_OBJECTS_COVERAGE) $(BIN_DIR) $(DEPENDENCIES_LIBS)
-	@$(CXX) $(CXXFLAGS) $(TESTFLAGS) $(COVERAGE_FLAGS) $(TESTS_OBJECTS_COVERAGE) $(CPP_OBJECTS_COVERAGE) $(C_OBJECTS_COVERAGE) $(LDFLAGS) -o $@
+$(BIN_DIR)/$(TEST_EXECUTABLE)_coverage: $(TEST_MALLOC_FILE) $(TESTS_OBJECTS_COVERAGE) $(CPP_OBJECTS_COVERAGE) $(C_OBJECTS_COVERAGE) $(BIN_DIR) $(DEPENDENCIES_LIBS)
+	@$(CXX) $(CXXFLAGS) $(TESTFLAGS) $(COVERAGE_FLAGS) $(TESTS_OBJECTS_COVERAGE) $(CPP_OBJECTS_COVERAGE) $(C_OBJECTS_COVERAGE) $(LDFLAGS) -o $@; \
+		sed -i '/#include "test_malloc.h"/d' $(CONFIG_FILE) && rm $(TEST_MALLOC_FILE) > /dev/null 2>&1 || true
 
 $(TESTS_OBJECTS_COVERAGE): $(BUILD_DIR)/%_coverage.o : $(TESTS_DIR)/%.cpp $(BUILD_DIR)
 	@$(CXX) $(CXXFLAGS) -I$(GTEST_INCLUDE_DIR) $(COVERAGE_FLAGS) -c $< -o $@
