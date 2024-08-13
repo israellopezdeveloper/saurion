@@ -3,7 +3,8 @@ LIB_NAME=saurion
 TEST_EXECUTABLE=saurion_test
 DEPENDENCIES=../threadpool>STATIC
 EXTERNAL_DEPENDENCIES=uring
-include ../module.mk
+
+include ../.scaffold/module.mk
 
 generate_pkg_scripts:
 	@rm scripts/client scripts/server > /dev/null 2>&1 || true

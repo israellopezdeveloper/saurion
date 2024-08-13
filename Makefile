@@ -1,7 +1,7 @@
 DOCKERTAGSCLANG := lopoeisr/ubuntu-make-clang:18.1 lopoeisr/ubuntu-make-clang:latest
 DOCKERTAGSNODE := lopoeisr/node-pkg:18 lopoeisr/node-pkg:latest
 
-include master.mk
+include .scaffold/master.mk
 
 image:
 	@docker build -f dockerfiles/clang.Dockerfile $(patsubst %, -t % ,$(DOCKERTAGSCLANG)) .
