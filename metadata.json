@@ -1,0 +1,17 @@
+{
+  "technologies": ["C", "C++", "Make", "JavaScript", "Valgrind", "Google Tests", "Docker", "TDD"],
+  "lang": {
+    "en": {
+      "name": "Saurion",
+      "desc": "Minimalistic C project using liburing and a threadpool to asynchronously manage sockets in high-concurrency environments."
+    },
+    "es": {
+      "name": "Saurion",
+      "desc": "Proyecto en C minimalista que utiliza liburing y un threadpool para manejar asincrónicamente sockets en entornos de alta concurrencia."
+    },
+    "zh": {
+      "name": "Saurion",
+      "desc": "使用liburing和线程池异步管理高并发环境中的套接字的简约C项目。"
+    }
+  }
+}
