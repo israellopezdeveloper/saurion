@@ -1,6 +1,5 @@
 #ifndef CONFIG_H
 #define CONFIG_H
-#include "test_malloc.h"
 
 #include <unistd.h>
 
