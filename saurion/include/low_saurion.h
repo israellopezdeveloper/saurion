@@ -101,7 +101,7 @@ int set_socket(int p);
  *
  * @return struct saurion* Puntero a la estructura saurion creada, o NULL en caso de error.
  */
-[[nodiscard]] struct saurion *saurion_create(uint32_t n_threads);
+struct saurion *saurion_create(uint32_t n_threads) __attribute__((warn_unused_result));
 
 /*!
  * @brief Inicia el procesamiento de eventos en la estructura saurion.
@@ -112,7 +112,7 @@ int set_socket(int p);
  * @param s Puntero a la estructura saurion.
  * @return int 0 en caso de éxito, 1 en caso de error.
  */
-[[nodiscard]] int saurion_start(struct saurion *s);
+int saurion_start(struct saurion *s) __attribute__((warn_unused_result));
 
 /*!
  * @brief Detiene el procesamiento de eventos en la estructura saurion.

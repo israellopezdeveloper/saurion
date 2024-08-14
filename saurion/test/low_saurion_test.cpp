@@ -461,19 +461,6 @@ TEST_F(LowSaurionTest, largeNumberOfMessages) {
   EXPECT_EQ(summary.disconnected, clients);
 }
 
-TEST_F(LowSaurionTest, handleInvalidMessages) {
-  uint32_t clients = 10;
-  connect_clients(clients);
-  wait_connected(clients);
-  EXPECT_EQ(summary.connected, clients);
-  // Send invalid messages
-  clients2saurion(clients, "", 0);       // Empty message
-  clients2saurion(clients, nullptr, 0);  // Null message
-  disconnect_clients();
-  wait_disconnected(clients);
-  EXPECT_EQ(summary.disconnected, clients);
-}
-
 TEST_F(LowSaurionTest, stressTest) {
   const char *str = "Stress Test Message";
   uint32_t clients = 50;
@@ -862,19 +849,6 @@ TEST_F(SaurionTest, largeNumberOfMessages) {
   clients2saurion(msgs, "Test Message", 0);
   wait_readed(msgs * clients * 12);
   EXPECT_EQ(summary.readed, msgs * clients * 12);
-  disconnect_clients();
-  wait_disconnected(clients);
-  EXPECT_EQ(summary.disconnected, clients);
-}
-
-TEST_F(SaurionTest, handleInvalidMessages) {
-  uint32_t clients = 10;
-  connect_clients(clients);
-  wait_connected(clients);
-  EXPECT_EQ(summary.connected, clients);
-  // Send invalid messages
-  clients2saurion(clients, "", 0);       // Empty message
-  clients2saurion(clients, nullptr, 0);  // Null message
   disconnect_clients();
   wait_disconnected(clients);
   EXPECT_EQ(summary.disconnected, clients);

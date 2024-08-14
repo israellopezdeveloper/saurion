@@ -9,6 +9,7 @@
 #include <sys/eventfd.h>
 #include <sys/socket.h>
 #include <sys/uio.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "config.h"
@@ -57,8 +58,11 @@ static void free_request(struct request *req, void **children_ptr, const size_t 
   req = NULL;
 }
 
-[[nodiscard]] static int init_iovec(struct iovec *iov, size_t a, size_t pos, const void *const msg,
-                                    const uint8_t h) {
+static int init_iovec(struct iovec *iov, size_t a, size_t pos, const void *const msg,
+                      const uint8_t h) __attribute__((warn_unused_result));
+
+static int init_iovec(struct iovec *iov, size_t a, size_t pos, const void *const msg,
+                      const uint8_t h) {
   if (!iov || !iov->iov_base) {
     return ERROR_CODE;
   }
@@ -91,8 +95,11 @@ static void free_request(struct request *req, void **children_ptr, const size_t 
   return SUCCESS_CODE;
 }
 
-[[nodiscard]] static int alloc_iovec(struct iovec *iov, const size_t a, const size_t p,
-                                     const size_t s, void **c_p) {
+static int alloc_iovec(struct iovec *iov, const size_t a, const size_t p, const size_t s,
+                       void **c_p) __attribute__((warn_unused_result));
+
+static int alloc_iovec(struct iovec *iov, const size_t a, const size_t p, const size_t s,
+                       void **c_p) {
   iov->iov_base = malloc(CHUNK_SZ);
   if (!iov->iov_base) {
     return ERROR_CODE;
@@ -105,8 +112,11 @@ static void free_request(struct request *req, void **children_ptr, const size_t 
   return SUCCESS_CODE;
 }
 
-[[nodiscard]] static int s_req(struct request **r, struct Node **l, size_t s, const void *const m,
-                               const uint8_t h) {
+static int s_req(struct request **r, struct Node **l, size_t s, const void *const m,
+                 const uint8_t h) __attribute__((warn_unused_result));
+
+static int s_req(struct request **r, struct Node **l, size_t s, const void *const m,
+                 const uint8_t h) {
   if (h) {
     s += (8 + 1);
   }
@@ -143,18 +153,15 @@ static void free_request(struct request *req, void **children_ptr, const size_t 
   for (size_t i = 0; i < amount; ++i) {
     if (!alloc_iovec(&req->iov[i], amount, i, s, children_ptr)) {
       free_request(req, children_ptr, amount);
-      free(children_ptr);
       return ERROR_CODE;
     }
     if (!init_iovec(&req->iov[i], amount, i, m, h)) {
       free_request(req, children_ptr, amount);
-      free(children_ptr);
       return ERROR_CODE;
     }
   }
   if (list_insert(l, req, amount, children_ptr)) {
     free_request(req, children_ptr, amount);
-    free(children_ptr);
     return ERROR_CODE;
   }
   free(children_ptr);
@@ -516,7 +523,7 @@ int set_socket(const int p) {
   return (sock);
 }
 
-[[nodiscard]] struct saurion *saurion_create(uint32_t n_threads) {
+struct saurion *saurion_create(uint32_t n_threads) {
   LOG_INIT("");
   // Asignar memoria
   struct saurion *p = (struct saurion *)malloc(sizeof(struct saurion));
@@ -752,7 +759,7 @@ void saurion_worker_slave(void *arg) {
   return;
 }
 
-[[nodiscard]] int saurion_start(struct saurion *const s) {
+int saurion_start(struct saurion *const s) {
   LOG_INIT("");
   ThreadPool_init(s->pool);
   ThreadPool_add_default(s->pool, saurion_worker_master, s);
