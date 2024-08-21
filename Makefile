@@ -1,6 +1,6 @@
-DOCKERTAGSCLANG := lopoeisr/ubuntu-make-clang:18.2 lopoeisr/ubuntu-make-clang:latest
-DOCKERTAGSGCC := lopoeisr/ubuntu-make-gcc:18.3 lopoeisr/ubuntu-make-gcc:latest
-DOCKERTAGSNODE := lopoeisr/node-pkg:18.2 lopoeisr/node-pkg:latest
+DOCKERTAGSCLANG := lopoeisr/ubuntu-make-clang:18.5 lopoeisr/ubuntu-make-clang:latest
+DOCKERTAGSGCC := lopoeisr/ubuntu-make-gcc:18.5 lopoeisr/ubuntu-make-gcc:latest
+DOCKERTAGSNODE := lopoeisr/node-pkg:18.5 lopoeisr/node-pkg:latest
 
 include .scaffold/master.mk
 

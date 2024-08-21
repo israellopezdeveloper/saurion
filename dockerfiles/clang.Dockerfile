@@ -18,6 +18,8 @@ RUN apt update && apt install -y \
   jq \
   bc \
   cmake \
+  doxygen \
+  texlive-full \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
