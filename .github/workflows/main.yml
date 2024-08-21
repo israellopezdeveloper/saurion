@@ -21,7 +21,9 @@ jobs:
   build-and-test-gcc:
     name: Build, Test and Package with GCC
     runs-on: ubuntu-latest
-    container: lopoeisr/ubuntu-make-gcc
+    container: 
+      image: lopoeisr/ubuntu-make-gcc
+      options: --privileged
 
     steps:
     - name: Checkout code
@@ -51,7 +53,9 @@ jobs:
   build-and-test-clang:
     name: Build, Test and Package with Clang
     runs-on: ubuntu-latest
-    container: lopoeisr/ubuntu-make-clang
+    container:
+      image: lopoeisr/ubuntu-make-clang
+      options: --privileged
 
     steps:
     - name: Checkout code
