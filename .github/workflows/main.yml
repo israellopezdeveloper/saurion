@@ -59,7 +59,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: sudo actions/checkout@v3
 
     - name: Prepare environment with make gtest
       run: make gtest
