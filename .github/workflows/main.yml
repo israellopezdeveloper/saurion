@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     container: 
       image: lopoeisr/ubuntu-make-gcc
+      options: --privileged
 
     steps:
     - name: Checkout code
@@ -54,6 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: lopoeisr/ubuntu-make-clang
+      options: --privileged
 
     steps:
     - name: Checkout code
