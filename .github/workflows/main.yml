@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: lopoeisr/ubuntu-make-clang
-      options: --privileged
+      options: --privileged --user root
 
     steps:
     - name: Checkout code
