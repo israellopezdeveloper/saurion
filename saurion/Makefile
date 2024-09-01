@@ -11,4 +11,5 @@ generate_pkg_scripts: scripts/client scripts/server
 
 PRE_TEST_TASKS += generate_pkg_scripts
 
+
 include ../.scaffold/module.mk
