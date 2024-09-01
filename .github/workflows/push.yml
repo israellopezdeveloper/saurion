@@ -15,7 +15,7 @@ on:
 
 jobs:
   use-reusable-workflow:
-    uses: ./.scaffold/workflows/main.yml
+    uses: israellopezdeveloper/scaffold/workflows/main.yml@main
     with:
       after_prepare: |
         - name: Upload dependencies
