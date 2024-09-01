@@ -1,4 +1,4 @@
-name: C Project CI Pipeline
+name: Push
 
 on:
   push:
@@ -14,139 +14,23 @@ on:
         required: true
 
 jobs:
-  prepare:
-    name: Prepare environment
-    runs-on: ubuntu-latest
-    container:
-      image: lopoeisr/node-pkg:1.0
-      options: --privileged --user root
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        submodules: true
-        fetch-depth: 0
-        recursive: true
-    - name: Preparing environment
-      run: make prepare
-    - name: Upload dependencies
-      uses: actions/upload-artifact@v3
-      with:
-        name: dependencies
-        path: |
-          ./saurion/scripts/client
-          ./saurion/scripts/server
-
-  documentation:
-    name: Create documentation
-    runs-on: ubuntu-latest
-    container:
-      image: lopoeisr/ubuntu-make-doc:1.0
-      options: --privileged --user root
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        submodules: true
-        fetch-depth: 0
-        recursive: true
-    - name: create documentation
-      run: |
-        make docs && tar -czvf docs.tar.gz docs
-    - name: Upload documentation
-      uses: actions/upload-artifact@v3
-      with:
-        name: documentation
-        path: |
-          ./docs.tar.gz
-
-  build-and-test-gcc:
-    name: Build, Test and Package with GCC
-    runs-on: ubuntu-latest
-    needs: [prepare, documentation]
-    container: 
-      image: lopoeisr/ubuntu-make-gcc:1.0
-      options: --privileged --user root
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        submodules: true
-        fetch-depth: 0
-        recursive: true
-    - name: Prepare environment with make gtest
-      run: make gtest
-    - name: Download dependencies
-      uses: actions/download-artifact@v3
-      with:
-        name: dependencies
-    - name: Create directories and move scripts
-      run: |
-        mkdir -p saurion/scripts
-        mv client saurion/scripts/
-        mv server saurion/scripts/
-        chmod +x saurion/scripts/client
-        chmod +x saurion/scripts/server
-    - name: Run tests
-      run: make tests
-    - name: Create libraries
-      run: make clean && make libs
-    - name: Download documentation
-      uses: actions/download-artifact@v3
-      with:
-        name: documentation
-    - name: Package libraries
-      run: |
-        tar -xf docs.tar.gz
-        tar -czvf gcc-libs-n-docs.tar.gz libs docs
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: gcc-libs-n-docs
-        path: gcc-libs-n-docs.tar.gz
-
-  build-and-test-clang:
-    name: Build, Test and Package with Clang
-    runs-on: ubuntu-latest
-    needs: [prepare, documentation]
-    container:
-      image: lopoeisr/ubuntu-make-clang:1.0
-      options: --privileged --user root
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        submodules: true
-        fetch-depth: 0
-        recursive: true
-    - name: Prepare environment with make gtest
-      run: make gtest
-    - name: Download dependencies
-      uses: actions/download-artifact@v3
-      with:
-        name: dependencies
-    - name: Create directories and move scripts
-      run: |
-        mkdir -p saurion/scripts
-        mv client saurion/scripts/
-        mv server saurion/scripts/
-        chmod +x saurion/scripts/client
-        chmod +x saurion/scripts/server
-    - name: Run tests
-      run: make tests
-    - name: Create libraries
-      run: make clean && make libs
-    - name: Download documentation
-      uses: actions/download-artifact@v3
-      with:
-        name: documentation
-    - name: Package libraries
-      run: |
-        tar -xf docs.tar.gz
-        tar -czvf clang-libs-n-docs.tar.gz libs docs
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: clang-libs-n-docs
-        path: clang-libs-n-docs.tar.gz
+  use-reusable-workflow:
+    uses: ./.scaffold/workflows/main.yml
+    with:
+      after_prepare: |
+        - name: Upload dependencies
+          uses: actions/upload-artifact@v3
+          with:
+            name: dependencies
+            path: |
+              ./saurion/scripts/client
+              ./saurion/scripts/server
+      before_tests: |
+        - name: Create directories and move scripts
+          run: |
+            mkdir -p saurion/scripts
+            mv client saurion/scripts/
+            mv server saurion/scripts/
+            chmod +x saurion/scripts/client
+            chmod +x saurion/scripts/server
 
