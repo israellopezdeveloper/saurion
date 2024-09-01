@@ -91,10 +91,7 @@ struct saurion {
   } __attribute__((aligned(PACKING_SZ))) cb;
 } __attribute__((aligned(PACKING_SZ)));
 
-/*! TODO: Eliminar
- *  \todo Eliminar
- */
-int EXTERNAL_set_socket(int p);
+int set_socket(int p);
 
 /*!
  * @brief Crea una instancia de la estructura saurion.
@@ -104,8 +101,7 @@ int EXTERNAL_set_socket(int p);
  *
  * @return struct saurion* Puntero a la estructura saurion creada, o NULL en caso de error.
  */
-[[nodiscard]]
-struct saurion *saurion_create(uint32_t n_threads);
+struct saurion *saurion_create(uint32_t n_threads) __attribute__((warn_unused_result));
 
 /*!
  * @brief Inicia el procesamiento de eventos en la estructura saurion.
@@ -116,8 +112,7 @@ struct saurion *saurion_create(uint32_t n_threads);
  * @param s Puntero a la estructura saurion.
  * @return int 0 en caso de éxito, 1 en caso de error.
  */
-[[nodiscard]]
-int saurion_start(struct saurion *s);
+int saurion_start(struct saurion *s) __attribute__((warn_unused_result));
 
 /*!
  * @brief Detiene el procesamiento de eventos en la estructura saurion.
@@ -146,9 +141,9 @@ void saurion_destroy(struct saurion *s);
  *
  * @param s Puntero a la estructura saurion.
  * @param fd Descriptor de archivo del socket al que se enviará el mensaje.
- * @param msg Puntero a la cadena de caracteres que se enviará.
+ * @param msg Puntero a la cadena de bytes que se enviará.
  */
-void saurion_send(struct saurion *s, const int fd, const char *const msg);
+void saurion_send(struct saurion *s, const int fd, const void *const msg);
 
 #ifdef __cplusplus
 }

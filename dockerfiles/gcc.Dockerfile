@@ -1,4 +1,4 @@
-FROM silkeh/clang:18
+FROM gcc:14.2.0
 
 LABEL description="Esta imagen requiere privilegios elevados para ejecutar io_uring. Use '--privileged' al ejecutar el contenedor."
 
@@ -18,6 +18,7 @@ RUN apt update && apt install -y \
   jq \
   bc \
   cmake \
+  lcov \
   valgrind \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
@@ -25,3 +26,4 @@ RUN apt update && apt install -y \
 USER dev
 
 CMD ["/bin/bash"]
+

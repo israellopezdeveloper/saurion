@@ -11,7 +11,7 @@ class Saurion {
   using ClosedCb = void (*)(const int, void *);
   using ErrorCb = void (*)(const int, const char *const, const ssize_t, void *);
 
-  explicit Saurion(const uint32_t thds, const int sck) noexcept;
+  explicit Saurion(const uint32_t thds, const int port) noexcept;
   ~Saurion();
 
   Saurion(const Saurion &) = delete;

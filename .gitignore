@@ -2,7 +2,10 @@ gtest/
 build/
 lib/
 bin/
+docs/
+libs/
 .cache/
 compile_commands.json
 saurion/scripts/client
 saurion/scripts/server
+

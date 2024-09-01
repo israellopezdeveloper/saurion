@@ -1,3 +1,6 @@
 [submodule ".scaffold"]
 	path = .scaffold
 	url = git@github.com:israellopezdeveloper/scaffold.git
+[submodule "nanologger"]
+	path = nanologger
+	url = git@github.com:israellopezdeveloper/nanologger.git
