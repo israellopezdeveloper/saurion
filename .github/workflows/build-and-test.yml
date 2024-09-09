@@ -1,0 +1,96 @@
+name: Build and Test
+
+on:
+  workflow_call:
+    inputs:
+      docker_image:
+        description: "Docker image where the job will be executed"
+        required: true
+        type: string
+      docker_image_options:
+        description: "Docker image special options"
+        required: false
+        type: string
+        default: ""
+      mode:
+        description: "Build type"
+        required: false
+        type: choice
+        options:
+        - production
+        - debug
+        - memleak
+        - thread-sanitize
+        - coverage
+        default: production
+      docs:
+        description: "Enables or not the creation of documentation"
+        required: false
+        default: false
+      tests:
+        description: "Enables or not the execution of tests"
+        required: false
+        default: true
+jobs:
+  build-and-test:
+    name: "Build and test [${{ inputs.mode }}]"
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.docker_image }}
+      options: ${{ inputs.docker_image_options }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+        fetch-depth: 0
+        recursive: true
+    - name: Build
+      run: |
+        autoreconf --install
+        mkdir build
+        cd build
+        ../configure --enable-doxygen-doc ${{ inputs.docs && '--enable-doxygen-doc' || '' }} --enable-build-mode=${{ inputs.mode }}
+    - name: Generate documentation
+      if: ${{ inputs.docs }}
+      run: |
+        cd build
+        make doxygen-doc
+    - name: Upload documentation
+      if: ${{ inputs.docs }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: documentation
+        path: |
+          ./build/docs.tar.gz
+    - name: Run tests
+      if: ${{ inputs.tests }}
+      run: |
+          cd build
+          make check
+    - name: Memory leaks check
+      if: ${{ inputs.mode == 'memleak' }}
+      run: |
+          cd build
+          make leak-check
+    - name: Test coverage
+      if: ${{ inputs.mode == 'coverage' }}
+      run: |
+          cd build
+          make coverage
+    - name: Download documentation
+      if: ${{ inputs.mode == 'production' }}
+      uses: actions/download-artifact@v3
+      with:
+        name: documentation
+    - name: Package libraries
+      if: ${{ inputs.mode == 'production' }}
+      run: |
+        tar -czvf gcc-libs-n-docs.tar.gz build/libs docs.tar.gz
+    - name: Upload artifact
+      if: ${{ inputs.mode == 'production' }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: gcc-libs-n-docs
+        path: gcc-libs-n-docs.tar.gz
+

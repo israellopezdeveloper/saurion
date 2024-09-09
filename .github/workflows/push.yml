@@ -1,0 +1,84 @@
+name: Push to any branch
+
+on:
+  push:
+    branches: ["*"]
+
+  workflow_dispatch:  # Permite ejecutar el workflow manualmente
+    inputs:
+      tag_name:
+        description: 'Tag name'
+        required: true
+      release_name:
+        description: 'Release name'
+        required: true
+
+jobs:
+  documentation:
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      docker_image: lopoeisr/ubuntu-make-doc:1.0
+      docker_image_options: --privileged --user root
+      mode: production
+      docs: true
+      tests: false
+
+  gcc-production:
+    needs: [documentation]
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      docker_image: lopoeisr/ubuntu-make-gcc:1.0
+      docker_image_options: --privileged --user root
+      mode: production
+      docs: false
+      tests: true
+
+  clang-production:
+    needs: [documentation]
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      docker_image: lopoeisr/ubuntu-make-clang:1.0
+      docker_image_options: --privileged --user root
+      mode: production
+      docs: false
+      tests: true
+
+  gcc-memleak:
+    needs: [documentation]
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      docker_image: lopoeisr/ubuntu-make-gcc:1.0
+      docker_image_options: --privileged --user root
+      mode: memleak
+      docs: false
+      tests: true
+
+  clang-memleak:
+    needs: [documentation]
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      docker_image: lopoeisr/ubuntu-make-clang:1.0
+      docker_image_options: --privileged --user root
+      mode: memleak
+      docs: false
+      tests: true
+
+  gcc-coverage:
+    needs: [documentation]
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      docker_image: lopoeisr/ubuntu-make-gcc:1.0
+      docker_image_options: --privileged --user root
+      mode: coverage
+      docs: false
+      tests: true
+
+  clang-coverage:
+    needs: [documentation]
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      docker_image: lopoeisr/ubuntu-make-clang:1.0
+      docker_image_options: --privileged --user root
+      mode: coverage
+      docs: false
+      tests: true

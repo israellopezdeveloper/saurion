@@ -1,0 +1,20 @@
+# Doxyfile for Doxygen configuration
+
+# Project details
+PROJECT_NAME           = @PACKAGE_NAME@
+PROJECT_NUMBER         = @VERSION@
+
+# Input/output options
+OUTPUT_DIRECTORY       = docs
+GENERATE_HTML          = YES
+GENERATE_LATEX         = YES
+
+# LaTeX/PDF options
+LATEX_OUTPUT           = latex
+PDF_HYPERLINKS         = YES
+USE_PDFLATEX           = YES
+
+# Sources
+INPUT                  = src include
+RECURSIVE              = YES
+
