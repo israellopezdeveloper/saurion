@@ -10,7 +10,15 @@ RUN groupadd -g ${GROUP_ID} devs \
   && echo 'dev ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 RUN apt update && apt install -y \
+  liburing-dev \
   git \
+  libc++-dev \
+  cmake \
+  jq \
+  autotools-dev \
+  libtool \
+  bear \
+  libc6-dbg \
   doxygen \
   texlive-full \
   && apt-get clean \

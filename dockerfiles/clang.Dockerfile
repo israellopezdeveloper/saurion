@@ -15,12 +15,18 @@ RUN apt update && apt install -y \
   liburing-dev \
   git \
   libc++-dev \
-  jq \
-  bc \
   cmake \
-  valgrind \
+  jq \
+  autotools-dev \
+  libtool \
+  bear \
+  libc6-dbg \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+
+RUN wget https://sourceware.org/pub/valgrind/valgrind-3.23.0.tar.bz2 && tar xf valgrind-3.23.0.tar.bz2 && cd valgrind-3.23.0 && \
+  ./configure && make && make install && \
+  cd .. && rm -rf valgrind-3.23.0*
 
 USER dev
 
