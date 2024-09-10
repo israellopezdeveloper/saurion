@@ -1,5 +1,4 @@
 #include <arpa/inet.h>
-#include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <pthread.h>
@@ -17,6 +16,14 @@ int numClients = 0;
 int *clients = NULL;
 pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 char *pipePath = NULL;
+int stopClients = 0;              // Bandera para detener a los hilos de los clientes
+pthread_t *clientThreads = NULL;  // Array para almacenar los hilos de los clientes
+
+// Estructura para pasar los datos al hilo del cliente
+typedef struct {
+  int sockfd;
+  FILE *logFile;
+} ClientData;
 
 // Error handling function
 void error(const char *msg) {
@@ -24,53 +31,22 @@ void error(const char *msg) {
   exit(1);
 }
 
-// Function to create a client and connect it to the server
-int createClient(int clientId) {
-  int sockfd;
-  struct sockaddr_in server_addr;
-  char tempFile[256];
-  snprintf(tempFile, sizeof(tempFile), "/tmp/saurion_sender.%d.log", clientId);
-
-  // Create a temporary file for logs
-  FILE *logFile = fopen(tempFile, "a");
-  if (logFile == NULL) {
-    perror("Error creating temporary file");
-    return -1;
-  }
-
-  // Create the socket
-  sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sockfd < 0) {
-    perror("Error opening socket");
-    fclose(logFile);
-    return -1;
-  }
-
-  // Set up server address
-  memset(&server_addr, 0, sizeof(server_addr));
-  server_addr.sin_family = AF_INET;
-  server_addr.sin_port = htons(8080);
-  server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-
-  // Connect to the server
-  if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) <
-      0) {
-    perror("Error connecting to server");
-    fclose(logFile);
-    close(sockfd);
-    return -1;
-  }
-
-  // Process incoming data from the server
+// Función que se ejecutará en el hilo para leer el socket
+void *clientHandler(void *arg) {
+  ClientData *clientData = (ClientData *)arg;
+  int sockfd = clientData->sockfd;
+  FILE *logFile = clientData->logFile;
+  free(clientData);
   uint64_t expectedLength = 0;
   char buffer[1024];
-  while (1) {
+
+  while (!stopClients) {
     int n = read(sockfd, buffer, sizeof(buffer));
     if (n < 0) {
       perror("Error reading from socket");
       break;
     } else if (n == 0) {
-      // Connection closed
+      // Conexión cerrada
       break;
     }
 
@@ -79,57 +55,137 @@ int createClient(int clientId) {
       expectedLength = ntohl(expectedLength);
     }
 
-    fprintf(logFile, "%s", buffer + 8); // Write data to the log file
-    fflush(logFile);                    // Ensure immediate writing of data
+    fprintf(logFile, "%s", buffer + 8);  // Escribir datos en el archivo de log
+    fflush(logFile);                     // Asegurar que los datos se escriban inmediatamente
   }
 
   fclose(logFile);
   close(sockfd);
+  return NULL;
+}
+
+// Función para crear un cliente y conectarlo al servidor
+int createClient(int clientId) {
+  int sockfd;
+  struct sockaddr_in server_addr;
+  char tempFile[256];
+  snprintf(tempFile, sizeof(tempFile), "/tmp/saurion_sender.%d.log", clientId);
+
+  // Crear un archivo temporal para logs
+  FILE *logFile = fopen(tempFile, "a");
+  if (logFile == NULL) {
+    perror("Error creating temporary file");
+    return -1;
+  }
+
+  // Crear el socket
+  sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  if (sockfd < 0) {
+    perror("Error opening socket");
+    fclose(logFile);
+    return -1;
+  }
+
+  // Configurar la dirección del servidor
+  memset(&server_addr, 0, sizeof(server_addr));
+  server_addr.sin_family = AF_INET;
+  server_addr.sin_port = htons(8080);
+  server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+  // Conectar al servidor
+  if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+    perror("Error connecting to server");
+    fclose(logFile);
+    close(sockfd);
+    return -1;
+  }
+
+  // Preparar los datos para el hilo
+  ClientData *clientData = (ClientData *)malloc(sizeof(ClientData));
+  clientData->sockfd = sockfd;
+  clientData->logFile = logFile;
+
+  // Crear un nuevo hilo para manejar la lectura del socket
+  pthread_t *clientThread = (pthread_t *)malloc(sizeof(pthread_t));
+  if (pthread_create(clientThread, NULL, clientHandler, clientData) != 0) {
+    perror("Error creating client thread");
+    fclose(logFile);
+    close(sockfd);
+    free(clientData);
+    return -1;
+  }
+
+  // Almacenar el hilo en el array de hilos
+  clientThreads[clientId] = *clientThread;
+  clients[clientId] = sockfd;
+
+  // Detach el hilo para que se libere al terminar
+  pthread_detach(*clientThread);
+
   return 0;
 }
 
-// Function to connect multiple clients
+// Función para conectar múltiples clientes
 void connectClients(int n) {
   pthread_mutex_lock(&clients_mutex);
   clients = realloc(clients, (numClients + n) * sizeof(int));
+  clientThreads =
+      realloc(clientThreads, (numClients + n) * sizeof(pthread_t));  // Redimensionar array de hilos
+
   for (int i = 0; i < n; i++) {
-    int clientId = numClients + i + 1;
-    clients[numClients + i] = createClient(clientId);
+    createClient(numClients + i);
   }
+
   numClients += n;
   pthread_mutex_unlock(&clients_mutex);
 }
 
-// Function to send messages to clients
+// Función para enviar mensajes a los clientes
 void sendMessages(int n, const char *msg, int delay) {
   pthread_mutex_lock(&clients_mutex);
   for (int i = 0; i < numClients; i++) {
     for (int j = 0; j < n; j++) {
       uint64_t length = strlen(msg);
-      length = htonl(length);
-      char buffer[1024];
+      size_t size = sizeof(msg) + 9;
+      char buffer[size];
+      memset(buffer, 0, size);
       memcpy(buffer, &length, sizeof(length));
       strcpy(buffer + sizeof(length), msg);
-      write(clients[i], buffer, sizeof(buffer));
+      write(clients[i], buffer, size);
       usleep(delay * 1000);
     }
   }
   pthread_mutex_unlock(&clients_mutex);
 }
 
-// Function to disconnect all clients
+// Función para desconectar a todos los clientes
 void disconnectClients() {
   pthread_mutex_lock(&clients_mutex);
+
+  // Establecer la bandera para detener los hilos
+  stopClients = 1;
+
+  // Esperar a que los hilos terminen
   for (int i = 0; i < numClients; i++) {
-    close(clients[i]);
+    if (clientThreads[i] > 0) {
+      pthread_cancel(clientThreads[i]);
+    }
+    if (clients[i] > 0) {
+      close(clients[i]);
+    }
   }
+
   free(clients);
+  free(clientThreads);
   clients = NULL;
+  clientThreads = NULL;
   numClients = 0;
+
+  stopClients = 0;
   pthread_mutex_unlock(&clients_mutex);
 }
 
-// Function to process commands from the pipe
+// Función para procesar comandos desde la tubería
 void processCommand(char *command) {
   char *cmd = strtok(command, ";");
   if (strcmp(cmd, "connect") == 0) {
@@ -150,7 +206,7 @@ void processCommand(char *command) {
   }
 }
 
-// Function to read from a pipe
+// Función para leer desde una tubería
 void *readPipe(void * /*unused*/) {
   int fd;
   while ((fd = open(pipePath, O_RDONLY)) < 0) {
@@ -193,14 +249,14 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  // Create a thread to read from the pipe
+  // Crear un hilo para leer desde la tubería
   pthread_t pipeThread;
   if (pthread_create(&pipeThread, NULL, readPipe, NULL) != 0) {
     perror("Error creating pipe reading thread");
     exit(1);
   }
 
-  // Wait for the thread to finish
+  // Esperar a que el hilo termine
   pthread_join(pipeThread, NULL);
 
   return 0;
