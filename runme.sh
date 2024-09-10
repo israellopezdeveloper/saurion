@@ -51,7 +51,7 @@ make_exec() {
 
 clear
 
-configure &&
+configure --enable-build-mode=debug &&
 	make_exec &&
 	make_exec check &&
 	make_exec maintainer-clean

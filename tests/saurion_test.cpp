@@ -1,30 +1,30 @@
-#include <fcntl.h>     // for open, O_WRONLY
-#include <pthread.h>   // for pthread_mutex_lock, pthread_mutex_unlock
-#include <sys/stat.h>  // for mkfifo
-#include <sys/types.h> // for ssize_t, pid_t
-#include <sys/wait.h>  // for waitpid
-#include <time.h>      // for time
-#include <unistd.h>    // for dup2, close, execvp, fork, unlink, STDER...
+#include <fcntl.h>      // for open, O_WRONLY
+#include <pthread.h>    // for pthread_mutex_lock, pthread_mutex_unlock
+#include <sys/stat.h>   // for mkfifo
+#include <sys/types.h>  // for ssize_t, pid_t
+#include <sys/wait.h>   // for waitpid
+#include <time.h>       // for time
+#include <unistd.h>     // for dup2, close, execvp, fork, unlink, STDER...
 
-#include <algorithm>        // for remove
-#include <csignal>          // for size_t, signal, SIGINT
-#include <cstdint>          // for uint32_t
-#include <cstdio>           // for fflush, fprintf, perror, remove, FILE, NULL
-#include <cstdlib>          // for exit, free, malloc, rand, srand
-#include <cstring>          // for memset, strcpy
-#include <filesystem>       // for directory_iterator, path, directory_entry
-#include <fstream>          // for basic_ostream, operator<<, endl, basic_i...
-#include <initializer_list> // for initializer_list
-#include <iostream>         // for cout, cerr
-#include <regex>            // for regex_match, regex
-#include <sstream>          // for basic_stringstream
-#include <string>           // for char_traits, basic_string, allocator
-#include <thread>           // for thread
-#include <vector>           // for vector
+#include <algorithm>         // for remove
+#include <csignal>           // for size_t, signal, SIGINT
+#include <cstdint>           // for uint32_t
+#include <cstdio>            // for fflush, fprintf, perror, remove, FILE, NULL
+#include <cstdlib>           // for exit, free, malloc, rand, srand
+#include <cstring>           // for memset, strcpy
+#include <filesystem>        // for directory_iterator, path, directory_entry
+#include <fstream>           // for basic_ostream, operator<<, endl, basic_i...
+#include <initializer_list>  // for initializer_list
+#include <iostream>          // for cout, cerr
+#include <regex>             // for regex_match, regex
+#include <sstream>           // for basic_stringstream
+#include <string>            // for char_traits, basic_string, allocator
+#include <thread>            // for thread
+#include <vector>            // for vector
 
-#include "config.h"      // for ERROR_CODE, LOG_END, LOG_INIT, CHUNK_SZ
-#include "low_saurion.h" // for saurion, saurion_send, EXTERNAL_set_socket
-#include "gtest/gtest.h" // for Message, EXPECT_EQ, TestPartResult, Test...
+#include "config.h"       // for ERROR_CODE, LOG_END, LOG_INIT, CHUNK_SZ
+#include "gtest/gtest.h"  // for Message, EXPECT_EQ, TestPartResult, Test...
+#include "low_saurion.h"  // for saurion, saurion_send, EXTERNAL_set_socket
 
 #define PORT 8080
 
@@ -38,7 +38,7 @@ char *get_executable_directory(char *buffer, size_t size) {
     // Remove the executable name from the path to get the directory
     char *last_slash = strrchr(buffer, '/');
     if (last_slash != NULL) {
-      *last_slash = '\0'; // Replace the last slash with a null terminator
+      *last_slash = '\0';  // Replace the last slash with a null terminator
     }
   } else {
     perror("readlink");
@@ -72,17 +72,17 @@ struct summary {
 void signalHandler(int signum);
 
 class LowSaurionTest : public ::testing::Test {
-public:
+ public:
   struct saurion *saurion;
   static std::thread *sender;
   static char *fifo_name;
   static FILE *fifo_write;
 
-protected:
+ protected:
   static char *generate_random_fifo_name() {
     fifo_name = (char *)malloc(FIFO_LENGTH);
     if (!fifo_name) {
-      return NULL; // Handle error
+      return NULL;  // Handle error
     }
 
     strcpy(fifo_name, FIFO);
@@ -123,34 +123,32 @@ protected:
         get_executable_directory(executable_dir, sizeof(executable_dir));
         char script_path[1024];
         snprintf(script_path, sizeof(script_path), "%s/client", executable_dir);
-        printf("-->-->-->%s\n", script_path);
 
         for (char *item : {(char *)script_path, (char *)"-p", fifo_name}) {
           exec_args.push_back(item);
         }
         exec_args.push_back(nullptr);
-        int dev_null = open("/dev/null", O_WRONLY);
-        if (dev_null == -1) {
-          perror("Failed to open /dev/null");
-          exit(ERROR_CODE);
-        }
-
-        // Redirige stdout a /dev/null
-        if (dup2(dev_null, STDOUT_FILENO) == -1) {
-          perror("Failed to redirect stdout");
-          exit(ERROR_CODE);
-        }
-
-        // Redirige stderr a /dev/null
-        if (dup2(dev_null, STDERR_FILENO) == -1) {
-          perror("Failed to redirect stderr");
-          exit(ERROR_CODE);
-        }
-
-        close(dev_null);
+        /*int dev_null = open("/dev/null", O_WRONLY);*/
+        /*if (dev_null == -1) {*/
+        /*  perror("Failed to open /dev/null");*/
+        /*  exit(ERROR_CODE);*/
+        /*}*/
+        /**/
+        /*// Redirige stdout a /dev/null*/
+        /*if (dup2(dev_null, STDOUT_FILENO) == -1) {*/
+        /*  perror("Failed to redirect stdout");*/
+        /*  exit(ERROR_CODE);*/
+        /*}*/
+        /**/
+        /*// Redirige stderr a /dev/null*/
+        /*if (dup2(dev_null, STDERR_FILENO) == -1) {*/
+        /*  perror("Failed to redirect stderr");*/
+        /*  exit(ERROR_CODE);*/
+        /*}*/
+        /**/
+        /*close(dev_null);*/
 
         // Ejecuta el comando y ignora el retorno
-        printf("==>==>==>%s\n", script_path);
         execvp(script_path, const_cast<char *const *>(exec_args.data()));
       }
       int status;
@@ -191,8 +189,7 @@ protected:
       pthread_cond_signal(&summary.connected_c);
       pthread_mutex_unlock(&summary.connected_m);
     };
-    saurion->cb.on_readed = [](int, const void *const, const ssize_t size,
-                               void *) -> void {
+    saurion->cb.on_readed = [](int, const void *const, const ssize_t size, void *) -> void {
       pthread_mutex_lock(&summary.readed_m);
       summary.readed += size;
       pthread_cond_signal(&summary.readed_c);
@@ -215,8 +212,7 @@ protected:
       pthread_cond_signal(&summary.connected_c);
       pthread_mutex_unlock(&summary.connected_m);
     };
-    saurion->cb.on_error = [](int, const char *const, const ssize_t,
-                              void *) -> void {};
+    saurion->cb.on_error = [](int, const char *const, const ssize_t, void *) -> void {};
     if (!saurion_start(saurion)) {
       exit(ERROR_CODE);
     }
@@ -268,26 +264,25 @@ protected:
 
   static void connect_clients(uint32_t n) {
     fprintf(fifo_write, "connect;%d\n", n);
-    fflush(fifo_write); // Asegurarse de que el buffer se escribe en el FIFO
+    fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
   }
 
   static void disconnect_clients() {
-    fprintf(fifo_write, "disconnect\n");
-    fflush(fifo_write); // Asegurarse de que el buffer se escribe en el FIFO
+    fprintf(fifo_write, "disconnect;\n");
+    fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
   }
 
   static void send_clients(uint32_t n, const char *const msg, uint32_t delay) {
     fprintf(fifo_write, "send;%d;%s;%d\n", n, msg, delay);
-    fflush(fifo_write); // Asegurarse de que el buffer se escribe en el FIFO
+    fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
   }
 
   static void close_clients() {
-    fprintf(fifo_write, "close\n");
-    fflush(fifo_write); // Asegurarse de que el buffer se escribe en el FIFO
+    fprintf(fifo_write, "close;\n");
+    fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
   }
 
-  void saurion_sends_to_client(int sfd, uint32_t n,
-                               const char *const msg) const {
+  void saurion_sends_to_client(int sfd, uint32_t n, const char *const msg) const {
     for (uint32_t i = 0; i < n; ++i) {
       saurion_send(saurion, sfd, msg);
     }
@@ -301,8 +296,7 @@ protected:
     }
   }
 
-  static size_t countOccurrences(std::string &content,
-                                 const std::string &search) {
+  static size_t countOccurrences(std::string &content, const std::string &search) {
     size_t count = 0;
     size_t pos = content.find(search);
     while (pos != std::string::npos) {
@@ -329,7 +323,7 @@ protected:
     return occurrences;
   }
 
-private:
+ private:
   void deleteLogFiles() {
     for (const auto &entry : std::filesystem::directory_iterator("/tmp/")) {
       const auto &path = entry.path();
@@ -354,8 +348,7 @@ void signalHandler(int signum) {
   if (std::remove(LowSaurionTest::fifo_name) != 0) {
     std::cerr << "Error al eliminar " << LowSaurionTest::fifo_name << std::endl;
   } else {
-    std::cout << LowSaurionTest::fifo_name << " eliminado exitosamente."
-              << std::endl;
+    std::cout << LowSaurionTest::fifo_name << " eliminado exitosamente." << std::endl;
   }
   std::regex pattern("^saurion_sender.*\\.log$");
 
@@ -367,8 +360,7 @@ void signalHandler(int signum) {
           std::filesystem::remove(entry.path());
           std::cout << "Archivo borrado: " << filename << std::endl;
         } catch (const std::filesystem::filesystem_error &e) {
-          std::cerr << "Error al borrar " << filename << ": " << e.what()
-                    << std::endl;
+          std::cerr << "Error al borrar " << filename << ": " << e.what() << std::endl;
         }
       }
     }

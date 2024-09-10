@@ -207,7 +207,10 @@ void processCommand(char *command) {
 }
 
 // Función para leer desde una tubería
-void *readPipe(void * /*unused*/) {
+void *readPipe(void *arg) {
+  if (arg) {
+    free(arg);
+  }
   int fd;
   while ((fd = open(pipePath, O_RDONLY)) < 0) {
     perror("Error opening pipe");
