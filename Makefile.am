@@ -41,7 +41,7 @@ lib_libsaurion_la_LDFLAGS = -version-info 1:0:0
 
 check_PROGRAMS = tests/client tests/threadpool_test tests/saurion_test tests/linked_list_test
 
-tests_client_SOURCES = tests/client.c
+tests_client_SOURCES = tests/client.cpp
 
 tests_threadpool_test_SOURCES = tests/threadpool_test.cpp include/threadpool.hpp
 tests_threadpool_test_CXXFLAGS = $(GTEST_INCLUDE)

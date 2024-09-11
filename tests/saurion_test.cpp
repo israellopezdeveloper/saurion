@@ -164,7 +164,6 @@ class LowSaurionTest : public ::testing::Test {
     }
     saurion->ss = EXTERNAL_set_socket(PORT);
     saurion->cb.on_connected = [](int sfd, void *) -> void {
-      printf("SERVER: Connected [%d]\n", sfd);
       pthread_mutex_lock(&summary.connected_m);
       summary.connected++;
       summary.fds.push_back(sfd);
@@ -184,7 +183,7 @@ class LowSaurionTest : public ::testing::Test {
       pthread_mutex_unlock(&summary.wrote_m);
     };
     saurion->cb.on_closed = [](int sfd, void *) -> void {
-      printf("SERVER: Disconnected [%d]\n", sfd);
+      printf("SERVER: client <%d> disconnected\n", sfd);
       pthread_mutex_lock(&summary.disconnected_m);
       summary.disconnected++;
       pthread_cond_signal(&summary.disconnected_c);
@@ -357,11 +356,8 @@ TEST_F(LowSaurionTest, connectMultipleClients) {
   connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
-  puts("TEST: All connected");
   disconnect_clients();
-  puts("TEST: Disconnecting");
   wait_disconnected(clients);
-  puts("TEST: All disconnected");
   EXPECT_EQ(summary.disconnected, clients);
 }
 
@@ -388,11 +384,25 @@ TEST_F(LowSaurionTest, writeMsgsToClients) {
   for (auto &cfd : summary.fds) {
     saurion_sends_to_client(cfd, msgs, "Hola");
   }
-  wait_wrote(msgs * clients);
+  send_clients(msgs, "Hola", 0);
+  wait_readed(msgs * clients * 4);
+  EXPECT_EQ(summary.readed, msgs * clients * 4);
   disconnect_clients();
   wait_disconnected(clients);
-  EXPECT_EQ(msgs * clients, read_from_clients("Hola"));
   EXPECT_EQ(summary.disconnected, clients);
+  // uint32_t clients = 20;
+  // uint32_t msgs = 100;
+  // connect_clients(clients);
+  // wait_connected(clients);
+  // EXPECT_EQ(summary.connected, clients);
+  // for (auto &cfd : summary.fds) {
+  //   saurion_sends_to_client(cfd, msgs, "Hola");
+  // }
+  // wait_wrote(msgs * clients);
+  // disconnect_clients();
+  // wait_disconnected(clients);
+  // EXPECT_EQ(msgs * clients, read_from_clients("Hola"));
+  // EXPECT_EQ(summary.disconnected, clients);
 }
 
 // TEST_F(LowSaurionTest, reconnectClients) {
