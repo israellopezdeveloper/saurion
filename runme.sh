@@ -21,7 +21,7 @@ banner() {
 }
 
 wait_key() {
-	if STOPPABLE; then
+	if ${STOPPABLE}; then
 		echo -e -n "${GREEN}Press any key to continue${RESET}"
 		read -s -n 1 key
 		echo ""
@@ -52,6 +52,7 @@ make_exec() {
 clear
 
 configure --enable-build-mode=debug &&
+	make_exec compile_commands &&
 	make_exec &&
 	make_exec check &&
 	make_exec maintainer-clean

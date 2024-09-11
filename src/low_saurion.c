@@ -12,18 +12,17 @@
 
 #include "linked_list.h"
 
-#define EVENT_TYPE_ACCEPT                                                      \
-  0 //! @brief Tipo de evento para aceptar una nueva conexión.
-#define EVENT_TYPE_READ 1  //! @brief Tipo de evento para leer datos.
-#define EVENT_TYPE_WRITE 2 //! @brief Tipo de evento para escribir datos.
-#define EVENT_TYPE_WAIT 3  //! @brief Tipo de evento para esperar.
-#define EVENT_TYPE_ERROR 4 //! @brief Tipo de evento para indicar un error.
+#define EVENT_TYPE_ACCEPT 0  //! @brief Tipo de evento para aceptar una nueva conexión.
+#define EVENT_TYPE_READ 1    //! @brief Tipo de evento para leer datos.
+#define EVENT_TYPE_WRITE 2   //! @brief Tipo de evento para escribir datos.
+#define EVENT_TYPE_WAIT 3    //! @brief Tipo de evento para esperar.
+#define EVENT_TYPE_ERROR 4   //! @brief Tipo de evento para indicar un error.
 
 struct request {
   void *prev;
   size_t prev_size;
   size_t prev_remain;
-  size_t next_iov;
+  int next_iov;
   size_t next_offset;
   int event_type;
   int iovec_count;
@@ -44,8 +43,7 @@ static uint32_t next(struct saurion *s) {
   return s->next;
 }
 
-static void free_request(struct request *req, void **children_ptr,
-                         size_t amount) {
+static void free_request(struct request *req, void **children_ptr, size_t amount) {
   if (children_ptr) {
     free(children_ptr);
   }
@@ -56,8 +54,7 @@ static void free_request(struct request *req, void **children_ptr,
 }
 
 [[nodiscard]]
-static int initialize_iovec(struct iovec *iov, size_t amount, size_t pos,
-                            void *msg, uint8_t h) {
+static int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, uint8_t h) {
   if (!iov || !iov->iov_base) {
     return ERROR_CODE;
   }
@@ -91,8 +88,8 @@ static int initialize_iovec(struct iovec *iov, size_t amount, size_t pos,
 }
 
 [[nodiscard]]
-static int allocate_iovec(struct iovec *iov, size_t amount, size_t pos,
-                          size_t size, void **chd_ptr) {
+static int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size,
+                          void **chd_ptr) {
   iov->iov_base = malloc(CHUNK_SZ);
   if (!iov->iov_base) {
     return ERROR_CODE;
@@ -106,15 +103,14 @@ static int allocate_iovec(struct iovec *iov, size_t amount, size_t pos,
 }
 
 [[nodiscard]]
-static int set_request(struct request **r, struct Node **l, size_t s, void *m,
-                       uint8_t h) {
+static int set_request(struct request **r, struct Node **l, size_t s, void *m, uint8_t h) {
   if (h) {
     s += (8 + 1);
   }
   size_t amount = s / CHUNK_SZ;
   amount = amount + (s % CHUNK_SZ == 0 ? 0 : 1);
-  struct request *temp = (struct request *)malloc(
-      sizeof(struct request) + sizeof(struct iovec) * amount);
+  struct request *temp =
+      (struct request *)malloc(sizeof(struct request) + sizeof(struct iovec) * amount);
   if (!temp) {
     return ERROR_CODE;
   }
@@ -163,8 +159,7 @@ static int set_request(struct request **r, struct Node **l, size_t s, void *m,
 }
 
 /*********************************** ADDERS ***********************************/
-static void add_accept(struct saurion *const s,
-                       const struct sockaddr_in *const ca,
+static void add_accept(struct saurion *const s, const struct sockaddr_in *const ca,
                        socklen_t *const cal) {
   int res = ERROR_CODE;
   pthread_mutex_lock(&s->m_rings[0]);
@@ -260,8 +255,7 @@ static void add_read(struct saurion *const s, const int client_socket) {
   pthread_mutex_unlock(&s->m_rings[sel]);
 }
 
-static void add_read_continue(struct saurion *const s, struct request *oreq,
-                              const int sel) {
+static void add_read_continue(struct saurion *const s, struct request *oreq, const int sel) {
   pthread_mutex_lock(&s->m_rings[sel]);
   int res = ERROR_CODE;
   while (res != SUCCESS_CODE) {
@@ -276,8 +270,7 @@ static void add_read_continue(struct saurion *const s, struct request *oreq,
       res = ERROR_CODE;
       continue;
     }
-    io_uring_prep_readv(sqe, oreq->client_socket, &oreq->iov[0],
-                        oreq->iovec_count, 0);
+    io_uring_prep_readv(sqe, oreq->client_socket, &oreq->iov[0], oreq->iovec_count, 0);
     io_uring_sqe_set_data(sqe, oreq);
     if (io_uring_submit(ring) < 0) {
       free(sqe);
@@ -290,8 +283,7 @@ static void add_read_continue(struct saurion *const s, struct request *oreq,
   pthread_mutex_unlock(&s->m_rings[sel]);
 }
 
-static void add_write(struct saurion *const s, int fd, const char *const str,
-                      const int sel) {
+static void add_write(struct saurion *const s, int fd, const char *const str, const int sel) {
   int res = ERROR_CODE;
   pthread_mutex_lock(&s->m_rings[sel]);
   while (res != SUCCESS_CODE) {
@@ -309,8 +301,7 @@ static void add_write(struct saurion *const s, int fd, const char *const str,
     }
     req->event_type = EVENT_TYPE_WRITE;
     req->client_socket = fd;
-    io_uring_prep_writev(sqe, req->client_socket, req->iov, req->iovec_count,
-                         0);
+    io_uring_prep_writev(sqe, req->client_socket, req->iov, req->iovec_count, 0);
     io_uring_sqe_set_data(sqe, req);
     if (io_uring_submit(ring) < 0) {
       free(sqe);
@@ -324,8 +315,7 @@ static void add_write(struct saurion *const s, int fd, const char *const str,
   pthread_mutex_unlock(&s->m_rings[sel]);
 }
 
-/*********************************** HANDLERS
- * ***********************************/
+/*********************************** HANDLERS ***********************************/
 static void handle_accept(const struct saurion *const s, const int fd) {
   if (s->cb.on_connected) {
     s->cb.on_connected(fd, s->cb.on_connected_arg);
@@ -339,15 +329,12 @@ static void read_chunk(void **dest, size_t *len, struct request *const req) {
   }
   // Inicialización
   size_t msg_size, o_s = 0, o_iov = req->next_offset;
-  if (req->prev && req->prev_size &&
-      req->prev_remain) { // Mensaje previo no completado
+  if (req->prev && req->prev_size && req->prev_remain) {  // Mensaje previo no completado
     msg_size = req->prev_size;
     o_s = req->prev_size - req->prev_remain;
     *dest = req->prev;
-  } else if (req->next_iov ||
-             req->next_offset) { // Hay varios mensajes leyendo el último
-    msg_size = *(size_t *)((char *)req->iov[req->next_iov].iov_base +
-                           req->next_offset);
+  } else if (req->next_iov || req->next_offset) {  // Hay varios mensajes leyendo el último
+    msg_size = *(size_t *)((char *)req->iov[req->next_iov].iov_base + req->next_offset);
     o_s = 0;
     *dest = malloc(msg_size + 1);
     if (!*dest) {
@@ -355,7 +342,7 @@ static void read_chunk(void **dest, size_t *len, struct request *const req) {
     }
     ((char *)*dest)[msg_size] = 0;
     o_iov += sizeof(size_t);
-  } else { // Leyendo el primer mensaje
+  } else {  // Leyendo el primer mensaje
     msg_size = *(size_t *)((char *)req->iov[0].iov_base);
     o_s = 0;
     if (msg_size > req->iov[0].iov_len) {
@@ -408,13 +395,11 @@ static void read_chunk(void **dest, size_t *len, struct request *const req) {
   }
 }
 
-static void handle_read(struct saurion *const s, struct request *const req,
-                        int bytes) {
+static void handle_read(struct saurion *const s, struct request *const req, int bytes) {
   void *msg = NULL;
   int last_bytes = bytes % CHUNK_SZ;
   last_bytes = (!last_bytes ? CHUNK_SZ : last_bytes);
-  int index = (req->iovec_count > 0) ? (req->iovec_count - 1) : 0;
-  req->iov[index].iov_len = last_bytes;
+  req->iov[MAX(req->iovec_count - 1, 0)].iov_len = last_bytes;
   size_t len = 0;
   while (1) {
     read_chunk(&msg, &len, req);
@@ -430,8 +415,7 @@ static void handle_read(struct saurion *const s, struct request *const req,
     // Hay previo y se ha completado
     if (req->prev && req->prev_size && !req->prev_remain) {
       if (s->cb.on_readed) {
-        s->cb.on_readed(req->client_socket, req->prev, req->prev_size,
-                        s->cb.on_readed_arg);
+        s->cb.on_readed(req->client_socket, req->prev, req->prev_size, s->cb.on_readed_arg);
       }
       free(req->prev);
       req->prev_size = 0;
@@ -451,8 +435,7 @@ static void handle_read(struct saurion *const s, struct request *const req,
     }
     // Hay un único mensaje y se ha completado
     if (s->cb.on_readed && msg) {
-      s->cb.on_readed(req->client_socket, msg, strlen(msg),
-                      s->cb.on_readed_arg);
+      s->cb.on_readed(req->client_socket, msg, strlen(msg), s->cb.on_readed_arg);
     }
     free(msg);
     msg = NULL;
@@ -467,25 +450,21 @@ static void handle_write(const struct saurion *const s, const int fd) {
   }
 }
 
-static void handle_error(const struct saurion *const s,
-                         const struct request *const req) {
+static void handle_error(const struct saurion *const s, const struct request *const req) {
   if (s->cb.on_error) {
     const char *resp = "ERROR";
-    s->cb.on_error(req->client_socket, resp, (ssize_t)strlen(resp),
-                   s->cb.on_error_arg);
+    s->cb.on_error(req->client_socket, resp, (ssize_t)strlen(resp), s->cb.on_error_arg);
   }
 }
 
-static void handle_close(const struct saurion *const s,
-                         const struct request *const req) {
+static void handle_close(const struct saurion *const s, const struct request *const req) {
   if (s->cb.on_closed) {
     s->cb.on_closed(req->client_socket, s->cb.on_closed_arg);
   }
   close(req->client_socket);
 }
 
-/*********************************** INTERFACE
- * ***********************************/
+/*********************************** INTERFACE ***********************************/
 int EXTERNAL_set_socket(const int p) {
   int sock = 0;
   struct sockaddr_in srv_addr;
@@ -631,8 +610,7 @@ void saurion_worker_master(void *arg) {
       free(cqe);
       return;
     }
-    struct request *req =
-        (struct request *)cqe->user_data; // NOLINT(performance-no-int-to-ptr)
+    struct request *req = (struct request *)cqe->user_data;  // NOLINT(performance-no-int-to-ptr)
     if (!req) {
       io_uring_cqe_seen(&s->rings[0], cqe);
       continue;
@@ -649,28 +627,28 @@ void saurion_worker_master(void *arg) {
     /* Mark this request as processed */
     io_uring_cqe_seen(&s->rings[0], cqe);
     switch (req->event_type) {
-    case EVENT_TYPE_ACCEPT:
-      handle_accept(s, cqe->res);
-      add_accept(s, &client_addr, &client_addr_len);
-      add_read(s, cqe->res);
-      list_delete_node(&s->list, req);
-      break;
-    case EVENT_TYPE_READ:
-      if (cqe->res < 0) {
-        handle_error(s, req);
-      }
-      if (cqe->res < 1) {
-        handle_close(s, req);
-      }
-      if (cqe->res > 0) {
-        handle_read(s, req, cqe->res);
-      }
-      list_delete_node(&s->list, req);
-      break;
-    case EVENT_TYPE_WRITE:
-      handle_write(s, req->client_socket);
-      list_delete_node(&s->list, req);
-      break;
+      case EVENT_TYPE_ACCEPT:
+        handle_accept(s, cqe->res);
+        add_accept(s, &client_addr, &client_addr_len);
+        add_read(s, cqe->res);
+        list_delete_node(&s->list, req);
+        break;
+      case EVENT_TYPE_READ:
+        if (cqe->res < 0) {
+          handle_error(s, req);
+        }
+        if (cqe->res < 1) {
+          handle_close(s, req);
+        }
+        if (cqe->res > 0) {
+          handle_read(s, req, cqe->res);
+        }
+        list_delete_node(&s->list, req);
+        break;
+      case EVENT_TYPE_WRITE:
+        handle_write(s, req->client_socket);
+        list_delete_node(&s->list, req);
+        break;
     }
   }
   pthread_mutex_lock(&s->status_m);
@@ -717,22 +695,22 @@ void saurion_worker_slave(void *arg) {
     /* Mark this request as processed */
     io_uring_cqe_seen(&ring, cqe);
     switch (req->event_type) {
-    case EVENT_TYPE_READ:
-      if (cqe->res < 0) {
-        handle_error(s, req);
-      }
-      if (cqe->res < 1) {
-        handle_close(s, req);
-      }
-      if (cqe->res > 0) {
-        handle_read(s, req, cqe->res);
-      }
-      list_delete_node(&s->list, req);
-      break;
-    case EVENT_TYPE_WRITE:
-      handle_write(s, req->client_socket);
-      list_delete_node(&s->list, req);
-      break;
+      case EVENT_TYPE_READ:
+        if (cqe->res < 0) {
+          handle_error(s, req);
+        }
+        if (cqe->res < 1) {
+          handle_close(s, req);
+        }
+        if (cqe->res > 0) {
+          handle_read(s, req, cqe->res);
+        }
+        list_delete_node(&s->list, req);
+        break;
+      case EVENT_TYPE_WRITE:
+        handle_write(s, req->client_socket);
+        list_delete_node(&s->list, req);
+        break;
     }
   }
   pthread_mutex_lock(&s->status_m);
@@ -792,7 +770,6 @@ void saurion_destroy(struct saurion *const s) {
 /*! TODO: Cambiar a void
  *  \todo Cambiar a void
  */
-void saurion_send(struct saurion *const s, const int fd,
-                  const char *const msg) {
+void saurion_send(struct saurion *const s, const int fd, const char *const msg) {
   add_write(s, fd, msg, next(s));
 }

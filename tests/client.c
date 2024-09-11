@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <pthread.h>
@@ -6,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -16,7 +18,7 @@ int numClients = 0;
 int *clients = NULL;
 pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 char *pipePath = NULL;
-int stopClients = 0;              // Bandera para detener a los hilos de los clientes
+volatile int stopClients = 0;     // Bandera para detener a los hilos de los clientes
 pthread_t *clientThreads = NULL;  // Array para almacenar los hilos de los clientes
 
 // Estructura para pasar los datos al hilo del cliente
@@ -32,35 +34,53 @@ void error(const char *msg) {
 }
 
 // Función que se ejecutará en el hilo para leer el socket
+
 void *clientHandler(void *arg) {
   ClientData *clientData = (ClientData *)arg;
   int sockfd = clientData->sockfd;
   FILE *logFile = clientData->logFile;
-  free(clientData);
   uint64_t expectedLength = 0;
   char buffer[1024];
 
   while (!stopClients) {
-    int n = read(sockfd, buffer, sizeof(buffer));
-    if (n < 0) {
-      perror("Error reading from socket");
-      break;
-    } else if (n == 0) {
-      // Conexión cerrada
-      break;
-    }
+    printf("CLIENT: stopClients => %d\n", stopClients);
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(sockfd, &readfds);
 
-    if (expectedLength == 0 && n >= 8) {
-      memcpy(&expectedLength, buffer, 8);
-      expectedLength = ntohl(expectedLength);
-    }
+    // Tiempo de espera de 1 segundo para la llamada select
+    struct timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 10000;
 
-    fprintf(logFile, "%s", buffer + 8);  // Escribir datos en el archivo de log
-    fflush(logFile);                     // Asegurar que los datos se escriban inmediatamente
+    int activity = select(sockfd + 1, &readfds, NULL, NULL, &timeout);
+
+    if (activity < 0 && errno != EINTR) {
+      perror("Error in select");
+      break;
+    } else if (activity > 0 && FD_ISSET(sockfd, &readfds)) {
+      // Hay datos disponibles para leer
+      int n = read(sockfd, buffer, sizeof(buffer));
+      if (n < 0) {
+        break;
+      } else if (n == 0) {
+        // Conexión cerrada
+        break;
+      }
+
+      if (expectedLength == 0 && n >= 8) {
+        memcpy(&expectedLength, buffer, 8);
+        expectedLength = ntohl(expectedLength);
+      }
+
+      fprintf(logFile, "%s", buffer + 8);  // Escribir datos en el archivo de log
+      fflush(logFile);                     // Asegurar que los datos se escriban inmediatamente
+    }
   }
 
   fclose(logFile);
   close(sockfd);
+  free(clientData);
   return NULL;
 }
 
@@ -160,6 +180,7 @@ void sendMessages(int n, const char *msg, int delay) {
 
 // Función para desconectar a todos los clientes
 void disconnectClients() {
+  puts("CLIENTS: disconect");
   pthread_mutex_lock(&clients_mutex);
 
   // Establecer la bandera para detener los hilos
@@ -167,11 +188,9 @@ void disconnectClients() {
 
   // Esperar a que los hilos terminen
   for (int i = 0; i < numClients; i++) {
+    printf("CLIENTS: waiting for disconect [%d]", clients[i]);
     if (clientThreads[i] > 0) {
-      pthread_cancel(clientThreads[i]);
-    }
-    if (clients[i] > 0) {
-      close(clients[i]);
+      pthread_join(clientThreads[i], NULL);
     }
   }
 

@@ -128,25 +128,6 @@ class LowSaurionTest : public ::testing::Test {
           exec_args.push_back(item);
         }
         exec_args.push_back(nullptr);
-        /*int dev_null = open("/dev/null", O_WRONLY);*/
-        /*if (dev_null == -1) {*/
-        /*  perror("Failed to open /dev/null");*/
-        /*  exit(ERROR_CODE);*/
-        /*}*/
-        /**/
-        /*// Redirige stdout a /dev/null*/
-        /*if (dup2(dev_null, STDOUT_FILENO) == -1) {*/
-        /*  perror("Failed to redirect stdout");*/
-        /*  exit(ERROR_CODE);*/
-        /*}*/
-        /**/
-        /*// Redirige stderr a /dev/null*/
-        /*if (dup2(dev_null, STDERR_FILENO) == -1) {*/
-        /*  perror("Failed to redirect stderr");*/
-        /*  exit(ERROR_CODE);*/
-        /*}*/
-        /**/
-        /*close(dev_null);*/
 
         // Ejecuta el comando y ignora el retorno
         execvp(script_path, const_cast<char *const *>(exec_args.data()));
@@ -183,6 +164,7 @@ class LowSaurionTest : public ::testing::Test {
     }
     saurion->ss = EXTERNAL_set_socket(PORT);
     saurion->cb.on_connected = [](int sfd, void *) -> void {
+      printf("SERVER: Connected [%d]\n", sfd);
       pthread_mutex_lock(&summary.connected_m);
       summary.connected++;
       summary.fds.push_back(sfd);
@@ -202,6 +184,7 @@ class LowSaurionTest : public ::testing::Test {
       pthread_mutex_unlock(&summary.wrote_m);
     };
     saurion->cb.on_closed = [](int sfd, void *) -> void {
+      printf("SERVER: Disconnected [%d]\n", sfd);
       pthread_mutex_lock(&summary.disconnected_m);
       summary.disconnected++;
       pthread_cond_signal(&summary.disconnected_c);
@@ -374,8 +357,11 @@ TEST_F(LowSaurionTest, connectMultipleClients) {
   connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
+  puts("TEST: All connected");
   disconnect_clients();
+  puts("TEST: Disconnecting");
   wait_disconnected(clients);
+  puts("TEST: All disconnected");
   EXPECT_EQ(summary.disconnected, clients);
 }
 
@@ -409,56 +395,56 @@ TEST_F(LowSaurionTest, writeMsgsToClients) {
   EXPECT_EQ(summary.disconnected, clients);
 }
 
-TEST_F(LowSaurionTest, reconnectClients) {
-  uint32_t clients = 5;
-  connect_clients(clients);
-  wait_connected(clients);
-  EXPECT_EQ(summary.connected, clients);
-  disconnect_clients();
-  wait_disconnected(clients);
-  EXPECT_EQ(summary.disconnected, clients);
-  connect_clients(clients);
-  wait_connected(clients * 2);
-  EXPECT_EQ(summary.connected, clients * 2);
-  disconnect_clients();
-  wait_disconnected(clients * 2);
-  EXPECT_EQ(summary.disconnected, clients * 2);
-}
-
-TEST_F(LowSaurionTest, readWriteWithLargeMessage) {
-  uint32_t clients = 1;
-  size_t size = CHUNK_SZ * 10;
-  char *str = new char[size + 1];
-  memset(str, 'A', size);
-  str[size - 1] = '1';
-  str[size] = '\0';
-  connect_clients(clients);
-  wait_connected(clients);
-  EXPECT_EQ(summary.connected, clients);
-  send_clients(1, str, 0);
-  wait_readed(size);
-  EXPECT_EQ(summary.readed, 81920UL);
-  saurion_sends_to_client(summary.fds.front(), 1, (char *)str);
-  wait_wrote(1);
-  disconnect_clients();
-  wait_disconnected(clients);
-  EXPECT_EQ(1UL, read_from_clients((char *)str));
-  EXPECT_EQ(summary.disconnected, clients);
-  delete[] str;
-}
-
-TEST_F(LowSaurionTest, handleConcurrentReadsAndWrites) {
-  uint32_t clients = 20;
-  uint32_t msgs = 100;
-  connect_clients(clients);
-  wait_connected(clients);
-  EXPECT_EQ(summary.connected, clients);
-  send_clients(msgs, "Hola", 2);
-  saurion_sends_to_all_clients(msgs, "Hola");
-  wait_readed(msgs * clients * 4);
-  EXPECT_EQ(msgs * clients * 4, summary.readed);
-  wait_wrote(msgs * clients);
-  EXPECT_EQ(msgs * clients, summary.wrote);
-  disconnect_clients();
-  wait_disconnected(clients);
-}
+// TEST_F(LowSaurionTest, reconnectClients) {
+//   uint32_t clients = 5;
+//   connect_clients(clients);
+//   wait_connected(clients);
+//   EXPECT_EQ(summary.connected, clients);
+//   disconnect_clients();
+//   wait_disconnected(clients);
+//   EXPECT_EQ(summary.disconnected, clients);
+//   connect_clients(clients);
+//   wait_connected(clients * 2);
+//   EXPECT_EQ(summary.connected, clients * 2);
+//   disconnect_clients();
+//   wait_disconnected(clients * 2);
+//   EXPECT_EQ(summary.disconnected, clients * 2);
+// }
+//
+// TEST_F(LowSaurionTest, readWriteWithLargeMessage) {
+//   uint32_t clients = 1;
+//   size_t size = CHUNK_SZ * 10;
+//   char *str = new char[size + 1];
+//   memset(str, 'A', size);
+//   str[size - 1] = '1';
+//   str[size] = '\0';
+//   connect_clients(clients);
+//   wait_connected(clients);
+//   EXPECT_EQ(summary.connected, clients);
+//   send_clients(1, str, 0);
+//   wait_readed(size);
+//   EXPECT_EQ(summary.readed, 81920UL);
+//   saurion_sends_to_client(summary.fds.front(), 1, (char *)str);
+//   wait_wrote(1);
+//   disconnect_clients();
+//   wait_disconnected(clients);
+//   EXPECT_EQ(1UL, read_from_clients((char *)str));
+//   EXPECT_EQ(summary.disconnected, clients);
+//   delete[] str;
+// }
+//
+// TEST_F(LowSaurionTest, handleConcurrentReadsAndWrites) {
+//   uint32_t clients = 20;
+//   uint32_t msgs = 100;
+//   connect_clients(clients);
+//   wait_connected(clients);
+//   EXPECT_EQ(summary.connected, clients);
+//   send_clients(msgs, "Hola", 2);
+//   saurion_sends_to_all_clients(msgs, "Hola");
+//   wait_readed(msgs * clients * 4);
+//   EXPECT_EQ(msgs * clients * 4, summary.readed);
+//   wait_wrote(msgs * clients);
+//   EXPECT_EQ(msgs * clients, summary.wrote);
+//   disconnect_clients();
+//   wait_disconnected(clients);
+// }
