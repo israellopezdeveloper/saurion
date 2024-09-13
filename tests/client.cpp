@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <string.h>
 #include <sys/mman.h>  // Para memoria compartida
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -11,6 +12,7 @@
 #include <unistd.h>
 
 #include <atomic>
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -92,6 +94,8 @@ void makeSocketNonBlocking() {
 
 void parseMessages(char *buffer, ssize_t bytes_read, std::ofstream &logStream) {
   ssize_t offset = 0;
+  buffer[8 + 4] = 0;
+  printf("==>==>%s\n", buffer + 8);
 
   while ((bytes_read > 0) && (offset + sizeof(uint64_t) <= static_cast<size_t>(bytes_read))) {
     // Leer el entero de 64 bits (8 bytes) que indica la longitud del mensaje
@@ -167,15 +171,15 @@ void createClient(int clientId) {
     makeSocketNonBlocking();
 
     char buffer[4096];
+    memset(buffer, 0, 4096);
 
     // Leer datos del servidor en modo no bloqueante
     while (keepRunning) {
       // Leer si hay datos disponibles
-      /*printf("CLIENT <%d>: init read\n", getpid());*/
       ssize_t len = read(sockfd, buffer, sizeof(buffer));
-      /*printf("CLIENT <%d>: end read\n", getpid());*/
 
       if (len > 0) {
+        printf("RAW READ: %s\n", buffer);
         parseMessages(buffer, len, logStream);
       } else if (len == 0) {
         // El servidor cerró la conexión
@@ -231,7 +235,6 @@ void disconnectClients() {
       std::cout << "Cliente " << pid << " terminó por señal " << WTERMSIG(status) << std::endl;
     }
   }
-  puts("All disconnected");
   clients.clear();
   numClients = 0;
 }

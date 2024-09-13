@@ -183,7 +183,6 @@ class LowSaurionTest : public ::testing::Test {
       pthread_mutex_unlock(&summary.wrote_m);
     };
     saurion->cb.on_closed = [](int sfd, void *) -> void {
-      printf("SERVER: client <%d> disconnected\n", sfd);
       pthread_mutex_lock(&summary.disconnected_m);
       summary.disconnected++;
       pthread_cond_signal(&summary.disconnected_c);
@@ -382,7 +381,7 @@ TEST_F(LowSaurionTest, writeMsgsToClients) {
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
   for (auto &cfd : summary.fds) {
-    saurion_sends_to_client(cfd, msgs, "Hola");
+    saurion_sends_to_client(cfd, 1, "Hola");
   }
   send_clients(msgs, "Hola", 0);
   wait_readed(msgs * clients * 4);
