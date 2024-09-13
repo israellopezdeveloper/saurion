@@ -98,3 +98,5 @@ TEST(LowSaurion, creates_iovecs_correctly) {
     check_iovec(chunks * CHUNK_SZ + extra, 1);
   }
 }
+
+TEST(LowSaurion, freeARequestStructure) {}

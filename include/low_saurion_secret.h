@@ -72,6 +72,7 @@ int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size, vo
 int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, size_t size,
                      uint8_t h);
 
+void free_request(struct request *req, void **children_ptr, size_t amount);
 #ifdef __cplusplus
 }
 #endif

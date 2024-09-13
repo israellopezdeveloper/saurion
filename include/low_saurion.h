@@ -31,7 +31,7 @@
    │    Header        │       Body         │  Footer  │
    │  (64 bits: 9000) │   (Message Data)   │ (1 byte) │
    └──────────────────┴────────────────────┴──────────┘
- * @endverbatim
+ @endverbatim
  *
  * The structure of the `iovec` division is:
  *
@@ -49,7 +49,7 @@
    ├─────────────────────────────────────────┼───────────────────────┤
    │ 816 bytes of message, 1 byte footer (0) │ 817                   │
    └─────────────────────────────────────────┴───────────────────────┘
- * @endverbatim
+ @endverbatim
 
  * @author Israel
  * @date 2024

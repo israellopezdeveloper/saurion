@@ -43,14 +43,17 @@ static uint32_t next(struct saurion *s) {
   return s->next;
 }
 
-static void free_request(struct request *req, void **children_ptr, size_t amount) {
+void free_request(struct request *req, void **children_ptr, size_t amount) {
   if (children_ptr) {
     free(children_ptr);
+    children_ptr = NULL;
   }
   for (size_t i = 0; i < amount; ++i) {
     free(req->iov[i].iov_base);
+    req->iov[i].iov_base = NULL;
   }
   free(req);
+  req = NULL;
 }
 
 [[nodiscard]]
@@ -99,7 +102,7 @@ int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size, vo
 [[nodiscard]]
 static int set_request(struct request **r, struct Node **l, size_t s, void *m, uint8_t h) {
   if (h) {
-    s += (8 + 1);
+    s += (sizeof(size_t) + 1);
   }
   size_t amount = s / CHUNK_SZ;
   amount = amount + (s % CHUNK_SZ == 0 ? 0 : 1);
@@ -346,7 +349,7 @@ static void read_chunk(void **dest, size_t *len, struct request *const req) {
       }
       *dest = req->prev;
       req->prev_size = msg_size;
-      req->prev_remain = msg_size - (req->iov[0].iov_len - 8);
+      req->prev_remain = msg_size - (req->iov[0].iov_len - sizeof(size_t));
     } else {
       *dest = malloc(msg_size + 1);
       if (!*dest) {
@@ -393,7 +396,8 @@ static void handle_read(struct saurion *const s, struct request *const req, int 
   void *msg = NULL;
   int last_bytes = bytes % CHUNK_SZ;
   last_bytes = (!last_bytes ? CHUNK_SZ : last_bytes);
-  req->iov[MAX(req->iovec_count - 1, 0)].iov_len = last_bytes;
+  size_t pos = (req->iovec_count > 0) ? req->iovec_count - 1 : 0;
+  req->iov[pos].iov_len = last_bytes;
   size_t len = 0;
   while (1) {
     read_chunk(&msg, &len, req);
