@@ -51,7 +51,7 @@ make_exec() {
 
 clear
 
-configure --enable-build-mode=debug &&
+configure --enable-doxygen-doc &&
 	make_exec compile_commands &&
 	make_exec &&
 	make_exec check &&

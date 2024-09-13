@@ -1,3 +1,59 @@
+/*!
+ * @file
+ * @brief The messages are composed of three main parts:
+ *  - A header, which is an unsigned 64-bit number representing the length of the message body.
+ *  - A body, which contains the actual message data.
+ *  - A footer, which consists of 8 bits set to 0.
+ *
+ * For example, for a message with 9000 bytes of content, the header would contain the number 9000,
+ * the body would consist of those 9000 bytes, and the footer would be 1 byte set to 0.
+ *
+ * When these messages are sent to the kernel, they are divided into chunks using `iovec`. Each
+ * chunk can hold a maximum of 8192 bytes and contains two fields:
+ *  - `iov_base`, which is an array where the chunk of the message is stored.
+ *  - `iov_len`, the number of bytes used in the `iov_base` array.
+ *
+ * For the message with 9000 bytes, the `iovec` division would look like this:
+ *
+ * - The first `iovec` would contain:
+ *   - 8 bytes for the header (the length of the message body, 9000).
+ *   - 8184 bytes of the message body.
+ *   - `iov_len` would be 8192 bytes in total.
+ *
+ * - The second `iovec` would contain:
+ *   - The remaining 816 bytes of the message body.
+ *   - 1 byte for the footer (set to 0).
+ *   - `iov_len` would be 817 bytes in total.
+ *
+ * The structure of the message is as follows:
+ * @verbatim
+   ┌──────────────────┬────────────────────┬──────────┐
+   │    Header        │       Body         │  Footer  │
+   │  (64 bits: 9000) │   (Message Data)   │ (1 byte) │
+   └──────────────────┴────────────────────┴──────────┘
+ * @endverbatim
+ *
+ * The structure of the `iovec` division is:
+ *
+ * @verbatim
+   First iovec (8192 bytes):
+   ┌─────────────────────────────────────────┬───────────────────────┐
+   │ iov_base                                │ iov_len               │
+   ├─────────────────────────────────────────┼───────────────────────┤
+   │ 8 bytes header, 8184 bytes of message   │ 8192                  │
+   └─────────────────────────────────────────┴───────────────────────┘
+
+   Second iovec (817 bytes):
+   ┌─────────────────────────────────────────┬───────────────────────┐
+   │ iov_base                                │ iov_len               │
+   ├─────────────────────────────────────────┼───────────────────────┤
+   │ 816 bytes of message, 1 byte footer (0) │ 817                   │
+   └─────────────────────────────────────────┴───────────────────────┘
+ * @endverbatim
+
+ * @author Israel
+ * @date 2024
+ */
 #ifndef LOW_SAURION_H
 #define LOW_SAURION_H
 

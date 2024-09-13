@@ -1,64 +1,3 @@
-/*!
- * @file
-
- * @brief The messages are composed of three main parts:
- *  - A header, which is an unsigned 64-bit number representing the length of the message body.
- *  - A body, which contains the actual message data.
- *  - A footer, which consists of 8 bits set to 0.
- *
- * For example, for a message with 9000 bytes of content, the header would contain the number 9000,
- * the body would consist of those 9000 bytes, and the footer would be 1 byte set to 0.
- *
- * When these messages are sent to the kernel, they are divided into chunks using `iovec`. Each
- * chunk can hold a maximum of 8192 bytes and contains two fields:
- *  - `iov_base`, which is an array where the chunk of the message is stored.
- *  - `iov_len`, the number of bytes used in the `iov_base` array.
- *
- * For the message with 9000 bytes, the `iovec` division would look like this:
- *
- * - The first `iovec` would contain:
- *   - 8 bytes for the header (the length of the message body, 9000).
- *   - 8184 bytes of the message body.
- *   - `iov_len` would be 8192 bytes in total.
- *
- * - The second `iovec` would contain:
- *   - The remaining 816 bytes of the message body.
- *   - 1 byte for the footer (set to 0).
- *   - `iov_len` would be 817 bytes in total.
- *
- * The structure of the message is as follows:
- *
- * @verbatim
- * ┌──────────────────┬────────────────────┬──────────┐
- * │    Header        │       Body         │  Footer  │
- * │  (64 bits: 9000) │   (Message Data)   │ (1 byte) │
- * └──────────────────┴────────────────────┴──────────┘
- * @endverbatim
- *
- * The structure of the `iovec` division is:
- *
- * @verbatim
- * First iovec (8192 bytes):
- * ┌─────────────────────────────────────────┬───────────────────────┐
- * │ iov_base                                │ iov_len               │
- * ├─────────────────────────────────────────┼───────────────────────┤
- * │ 8 bytes header, 8184 bytes of message   │ 8192                  │
- * └─────────────────────────────────────────┴───────────────────────┘
- *
- * Second iovec (8192 bytes):
- * ┌─────────────────────────────────────────┬───────────────────────┐
- * │ iov_base                                │ iov_len               │
- * ├─────────────────────────────────────────┼───────────────────────┤
- * │ 816 bytes of message, 1 byte footer (0) │ 817                   │
- * └─────────────────────────────────────────┴───────────────────────┘
- * @endverbatim
- *
- * In this way, the message is efficiently split across two `iovec` structures, ensuring that
- * each chunk is appropriately sized for sending to the kernel.
- *
- * @author Israel
- * @date 2024
- */
 #include "low_saurion.h"
 
 #include <liburing.h>
@@ -115,8 +54,8 @@ static void free_request(struct request *req, void **children_ptr, size_t amount
 }
 
 [[nodiscard]]
-static int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, size_t size,
-                            uint8_t h) {
+int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, size_t size,
+                     uint8_t h) {
   if (!iov || !iov->iov_base) {
     return ERROR_CODE;
   }
@@ -143,35 +82,8 @@ static int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *
   return SUCCESS_CODE;
 }
 
-/*!
- * @brief This function allocates memory for each `struct iovec`
- *
- * This function allocates memory for each `struct iovec`. Every `struct iovec`
- * consists of two member variables:
- *   - `iov_base`, a `void *` array that will hold the data. All of them will
- *     allocate the same amount of memory (CHUNK_SZ) to avoid memory
- * fragmentation.
- *   - `iov_len`, an integer representing the size of the data stored in the
- *     `iovec`. The data size is CHUNK_SZ unless it's the last one, in which
- *     case it will hold the remaining bytes. In addition to initialization,
- *     the function adds the pointers to the allocated memory into a child array
- *     to simplify memory deallocation later on.
- *
- * @param iov Structure to initialize.
- * @param amount Total number of `iovec` to initialize.
- * @param pos Current position of the `iovec` within the total `iovec` (\p amount).
- * @param size Total size of the data to be stored in the `iovec`.
- * @param chd_ptr Array to hold the pointers to the allocated memory.
- *
- * @retval ERROR_CODE if there was an error during memory allocation.
- * @retval SUCCESS_CODE if the operation was successful.
- *
- * @note The last `iovec` will allocate only the remaining bytes if the total
- * size is not a multiple of CHUNK_SZ.
- */
 [[nodiscard]]
-static int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size,
-                          void **chd_ptr) {
+int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size, void **chd_ptr) {
   iov->iov_base = malloc(CHUNK_SZ);
   if (!iov->iov_base) {
     return ERROR_CODE;
@@ -849,9 +761,6 @@ void saurion_destroy(struct saurion *const s) {
   free(s);
 }
 
-/*! TODO: Cambiar a void
- *  \todo Cambiar a void
- */
 void saurion_send(struct saurion *const s, const int fd, const char *const msg) {
   add_write(s, fd, msg, next(s));
 }

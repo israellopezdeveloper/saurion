@@ -53,8 +53,7 @@ tests_linked_list_test_CXXFLAGS = $(GTEST_INCLUDE)
 tests_linked_list_test_LDADD = lib/libsaurion.la lib/libthreadpool.la $(GTEST_LIBS)
 tests_linked_list_test_LDFLAGS = -static -lpthread
 
-# Migrar los scripts a C
-tests_saurion_test_SOURCES = tests/saurion_test.cpp include/low_saurion.h include/saurion.hpp
+tests_saurion_test_SOURCES = tests/low_saurion_test.cpp include/low_saurion.h include/saurion.hpp include/low_saurion_secret.h
 tests_saurion_test_CXXFLAGS = $(GTEST_INCLUDE)
 tests_saurion_test_LDADD = lib/libsaurion.la lib/libthreadpool.la $(GTEST_LIBS)
 tests_saurion_test_LDFLAGS = -static -lpthread -luring

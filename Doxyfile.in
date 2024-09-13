@@ -6,15 +6,59 @@ PROJECT_NUMBER         = @VERSION@
 
 # Input/output options
 OUTPUT_DIRECTORY       = docs
-GENERATE_HTML          = YES
-GENERATE_LATEX         = YES
+CREATE_SUBDIRS         = YES
 
-# LaTeX/PDF options
-LATEX_OUTPUT           = latex
-PDF_HYPERLINKS         = YES
-USE_PDFLATEX           = YES
-
-# Sources
-INPUT                  = src include
+# Input settings
+INPUT                  =  @top_srcdir@/src @top_srcdir@/include
+FILE_PATTERNS          = *.c *.cpp *.h *.hpp
 RECURSIVE              = YES
 
+# Build related settings
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+
+# Documented source code
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+STRIP_CODE_COMMENTS    = YES
+
+# Output formats
+GENERATE_HTML          = YES
+GENERATE_LATEX         = YES
+GENERATE_MAN           = NO
+GENERATE_XML           = NO
+EXTRA_PACKAGES         = [utf8]{inputenc}
+LATEX_CMD_NAME         = xelatex
+
+# HTML settings
+HTML_OUTPUT            = html
+HTML_FILE_EXTENSION    = .html
+HTML_HEADER            =
+HTML_FOOTER            =
+HTML_STYLESHEET        =
+HTML_EXTRA_STYLESHEET  =
+
+# Warn about undocumented members
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = YES
+
+# Index options
+GENERATE_INDEX         = YES
+GENERATE_TREEVIEW      = YES
+FULL_PATH_NAMES        = YES
+
+# Preprocessor settings
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = NO
+EXPAND_ONLY_PREDEF     = NO
+SEARCH_INCLUDES        = YES
+INCLUDE_PATH           = include
+INCLUDE_FILE_PATTERNS  = *.h *.hpp
+
+# External documentation
+TAGFILES               =
+GENERATE_TAGFILE       =
+ALLEXTERNALS           = NO
