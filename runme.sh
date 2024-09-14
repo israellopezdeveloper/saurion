@@ -39,7 +39,7 @@ configure() {
 	autoreconf --install
 
 	mkdir "${SCRIPT_PATH}/build"
-	cd $_
+	cd "${SCRIPT_PATH}/build"
 	${SCRIPT_PATH}/configure ${params} &&
 		wait_key
 }
