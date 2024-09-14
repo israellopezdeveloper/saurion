@@ -3,6 +3,7 @@
 #include <bits/types/struct_iovec.h>
 
 #include <cstddef>
+#include <cstdlib>
 #include <cstring>
 
 #include "config.h"
@@ -38,7 +39,7 @@ void fill_with_alphabet(char *str, size_t length, uint8_t h) {
 }
 
 static void check_iovec(size_t content_size, uint8_t h) {
-  void *msg = malloc(content_size);
+  void *msg = (content_size > 0 ? malloc(content_size) : NULL);
   fill_with_alphabet((char *)msg, content_size, h);
   size_t full_size = content_size + (h ? sizeof(size_t) + 1 : 0);
   content_size -= (h ? 0 : sizeof(size_t) + 1);
@@ -81,7 +82,6 @@ static void check_iovec(size_t content_size, uint8_t h) {
   free(msg);
 }
 
-/*TEST(LowSaurion, creates_iovecs_correctly) { check_iovec(4, 1); }*/
 TEST(LowSaurion, creates_iovecs_correctly) {
   EXPECT_EQ(1, 1);
   check_iovec(CHUNK_SZ / 2, 1);
@@ -99,4 +99,41 @@ TEST(LowSaurion, creates_iovecs_correctly) {
   }
 }
 
-TEST(LowSaurion, freeARequestStructure) {}
+TEST(LowSaurion, tries_alloc_null_iovec) {
+  struct iovec *iovec_null = NULL;
+  int res = allocate_iovec(iovec_null, 0, 0, 0, NULL);
+  EXPECT_EQ(res, ERROR_CODE);
+}
+
+TEST(LowSaurion, tries_init_null_iovec) {
+  struct iovec *iovec_null = NULL;
+  int res = initialize_iovec(iovec_null, 0, 0, NULL, 0, 1);
+  EXPECT_EQ(res, ERROR_CODE);
+}
+
+TEST(LowSaurion, create_iovec_for_null_msg) {
+  check_iovec(0, 1);
+  check_iovec(0, 0);
+}
+
+TEST(LowSaurion, test_set_request) {
+  struct request *req = NULL;
+  struct Node *list = NULL;
+  size_t size = 2.5 * CHUNK_SZ;
+  char *msg = (char *)malloc(size);
+  fill_with_alphabet(msg, size, 0);
+  int res = set_request(&req, &list, size, msg, 1);
+  EXPECT_EQ(req->prev, nullptr);
+  EXPECT_EQ(req->prev_size, 0UL);
+  EXPECT_EQ(req->prev_remain, 0UL);
+  EXPECT_EQ(req->next_iov, 0);
+  EXPECT_EQ(req->next_offset, 0UL);
+  EXPECT_EQ(req->iovec_count, 3);
+  EXPECT_EQ(res, SUCCESS_CODE);
+  req->client_socket = 123;
+  req->event_type = 456;
+  res = set_request(&req, &list, size, msg, 1);
+  EXPECT_EQ(res, SUCCESS_CODE);
+  EXPECT_EQ(req->client_socket, 123);
+  EXPECT_EQ(req->event_type, 456);
+}

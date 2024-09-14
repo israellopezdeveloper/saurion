@@ -10,6 +10,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
+#include "config.h"
 #include "linked_list.h"
 
 #define EVENT_TYPE_ACCEPT 0  //! @brief Tipo de evento para aceptar una nueva conexión.
@@ -54,6 +55,8 @@ void free_request(struct request *req, void **children_ptr, size_t amount) {
   }
   free(req);
   req = NULL;
+  free(children_ptr);
+  children_ptr = NULL;
 }
 
 [[nodiscard]]
@@ -87,6 +90,9 @@ int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, si
 
 [[nodiscard]]
 int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size, void **chd_ptr) {
+  if (!iov) {
+    return ERROR_CODE;
+  }
   iov->iov_base = malloc(CHUNK_SZ);
   if (!iov->iov_base) {
     return ERROR_CODE;
@@ -100,7 +106,7 @@ int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size, vo
 }
 
 [[nodiscard]]
-static int set_request(struct request **r, struct Node **l, size_t s, void *m, uint8_t h) {
+int set_request(struct request **r, struct Node **l, size_t s, void *m, uint8_t h) {
   if (h) {
     s += (sizeof(size_t) + 1);
   }
@@ -137,18 +143,15 @@ static int set_request(struct request **r, struct Node **l, size_t s, void *m, u
   for (size_t i = 0; i < amount; ++i) {
     if (!allocate_iovec(&req->iov[i], amount, i, s, children_ptr)) {
       free_request(req, children_ptr, amount);
-      free(children_ptr);
       return ERROR_CODE;
     }
     if (!initialize_iovec(&req->iov[i], amount, i, m, s, h)) {
       free_request(req, children_ptr, amount);
-      free(children_ptr);
       return ERROR_CODE;
     }
   }
   if (list_insert(l, req, amount, children_ptr)) {
     free_request(req, children_ptr, amount);
-    free(children_ptr);
     return ERROR_CODE;
   }
   free(children_ptr);

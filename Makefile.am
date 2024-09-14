@@ -39,23 +39,13 @@ lib_libthreadpool_la_LDFLAGS = -version-info 1:0:0
 lib_libsaurion_la_SOURCES = src/linked_list.c include/linked_list.h src/low_saurion.c include/low_saurion.h src/saurion.cpp include/saurion.hpp include/config.h
 lib_libsaurion_la_LDFLAGS = -version-info 1:0:0
 
-check_PROGRAMS = tests/client tests/threadpool_test tests/saurion_test tests/linked_list_test
+check_PROGRAMS = tests/client tests/saurion_test
 
 tests_client_SOURCES = tests/client.cpp
 
-tests_threadpool_test_SOURCES = tests/threadpool_test.cpp include/threadpool.hpp
-tests_threadpool_test_CXXFLAGS = $(GTEST_INCLUDE)
-tests_threadpool_test_LDADD = lib/libthreadpool.la $(GTEST_LIBS)
-tests_threadpool_test_LDFLAGS = -static -lpthread
-
-tests_linked_list_test_SOURCES = tests/linked_list_test.cpp include/linked_list.h
-tests_linked_list_test_CXXFLAGS = $(GTEST_INCLUDE)
-tests_linked_list_test_LDADD = lib/libsaurion.la lib/libthreadpool.la $(GTEST_LIBS)
-tests_linked_list_test_LDFLAGS = -static -lpthread
-
-tests_saurion_test_SOURCES = tests/low_saurion_test.cpp include/low_saurion.h include/saurion.hpp include/low_saurion_secret.h
+tests_saurion_test_SOURCES = tests/low_saurion_test.cpp include/low_saurion.h include/saurion.hpp include/low_saurion_secret.h tests/threadpool_test.cpp include/threadpool.hpp tests/linked_list_test.cpp include/linked_list.h
 tests_saurion_test_CXXFLAGS = $(GTEST_INCLUDE)
 tests_saurion_test_LDADD = lib/libsaurion.la lib/libthreadpool.la $(GTEST_LIBS)
 tests_saurion_test_LDFLAGS = -static -lpthread -luring
 
-TESTS = tests/threadpool_test tests/linked_list_test tests/saurion_test
+TESTS = tests/saurion_test

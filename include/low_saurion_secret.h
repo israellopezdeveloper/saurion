@@ -1,12 +1,25 @@
 #ifndef LOW_SAURION_SECRET_H
 #define LOW_SAURION_SECRET_H
 
+#include <bits/types/struct_iovec.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct request {
+  void *prev;
+  size_t prev_size;
+  size_t prev_remain;
+  int next_iov;
+  size_t next_offset;
+  int event_type;
+  int iovec_count;
+  int client_socket;
+  struct iovec iov[];
+};
 
 /*!
  * @brief This function allocates memory for each `struct iovec`
@@ -72,7 +85,33 @@ int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size, vo
 int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, size_t size,
                      uint8_t h);
 
-void free_request(struct request *req, void **children_ptr, size_t amount);
+/**
+ * @brief Sets up a request and allocates iovec structures for data handling in liburing.
+ *
+ * This function configures a request structure that will be used to send or receive data
+ * through liburing's submission queues. It allocates the necessary iovec structures to
+ * split the data into manageable chunks, and optionally adds a header if specified.
+ * The request is inserted into a list tracking active requests for proper memory management
+ * and deallocation upon completion.
+ *
+ * @param r Pointer to a pointer to the request structure. If NULL, a new request is created.
+ * @param l Pointer to the list of active requests (Node list) where the request will be inserted.
+ * @param s Size of the data to be handled. Adjusted if the header flag (h) is true.
+ * @param m Pointer to the memory block containing the data to be processed.
+ * @param h Header flag. If true, a header (sizeof(size_t) + 1) is added to the iovec data.
+ *
+ * @return int Returns SUCCESS_CODE on success, or ERROR_CODE on failure (memory allocation issues
+ * or insertion failure).
+ * @retval SUCCESS_CODE The request was successfully set up and inserted into the list.
+ * @retval ERROR_CODE Memory allocation failed, or there was an error inserting the request into the
+ * list.
+ *
+ * @note The function handles memory allocation for the request and iovec structures, and ensures
+ *       that the memory is freed properly if an error occurs. Pointers to the iovec blocks
+ *       (children_ptr) are managed and used for proper memory deallocation.
+ */
+[[nodiscard]]
+int set_request(struct request **r, struct Node **l, size_t s, void *m, uint8_t h);
 #ifdef __cplusplus
 }
 #endif
