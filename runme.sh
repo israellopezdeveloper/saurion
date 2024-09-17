@@ -82,7 +82,7 @@ show_help() {
 }
 
 loop_execution() {
-	make_exec compile_commands || continue
+	make_exec compile_commands || true
 	local executed=0
 	while true; do
 		if [ ${executed} -eq 1 ]; then
@@ -103,15 +103,15 @@ loop_execution() {
 		}
 
 		if $MEMLEAK_ENABLED; then
-			run_leak_check || continue
+			run_leak_check || true
 		fi
 
 		if $COVERAGE_ENABLED; then
-			run_coverage_tests || continue
+			run_coverage_tests || true
 		fi
 
 		if $DOCS_ENABLED; then
-			generate_documentation || continue
+			generate_documentation || true
 		fi
 
 	done

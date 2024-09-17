@@ -1,9 +1,11 @@
 #include "low_saurion.h"
 
 #include <bits/types/struct_iovec.h>
+#include <gtest/gtest.h>
 
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
@@ -11,60 +13,138 @@
 #include "gtest/gtest.h"
 #include "low_saurion_secret.h"
 
-void fill_with_alphabet(char *str, size_t length, uint8_t h) {
-  const char *alphabet = "abcdefghijklmnopqrstuvwxyz";  // El alfabeto
-  int alphabet_len = 26;                                // Longitud del alfabeto
+void fill_with_alphabet(char **s, size_t length, uint8_t h) {
+  const char *alphabet = "abcdefghijklmnopqrstuvwxyz";
+  int alphabet_len = 26;
 
+  size_t wrapper = sizeof(uint64_t) + sizeof(char);
   if (h) {
+    size_t msg_size = length + wrapper;
+    *s = (char *)malloc(msg_size);
+    *(uint64_t *)(*s) = length;
+    int pos = sizeof(uint64_t);
     for (size_t i = 0; i < length; i++) {
-      str[i] = alphabet[i % alphabet_len];  // Ciclar a través del alfabeto
+      (*s)[pos] = alphabet[i % alphabet_len];
+      pos++;
     }
+    (*s)[msg_size - 1] = 0;
   } else {
-    size_t wrapper = sizeof(uint64_t) + sizeof(char);
-    size_t content_size = (length - wrapper);
-    if (length >= wrapper) {
-      memset(str, content_size, sizeof(uint64_t));
-      int pos = sizeof(uint64_t);
-      for (size_t i = 0; i < content_size; i++) {
-        str[pos] = alphabet[i % alphabet_len];  // Ciclar a través del alfabeto
-        pos++;
-      }
-
-      str[length - 1] = '\0';  // Asegurarse de que la cadena esté terminada con '\0'
+    *s = (char *)malloc(length + 1);
+    int pos = 0;
+    for (size_t i = 0; i < length; i++) {
+      (*s)[pos] = alphabet[i % alphabet_len];
+      pos++;
     }
+    (*s)[length] = 0;
   }
 }
 
-static void check_iovec(size_t content_size, uint8_t h) {
-  void *msg = (content_size > 0 ? malloc(content_size) : NULL);
-  fill_with_alphabet((char *)msg, content_size, h);
-  size_t full_size = content_size + (h ? sizeof(uint64_t) + 1 : 0);
-  content_size -= (h ? 0 : sizeof(uint64_t) + 1);
+TEST(Tools, alphabet_with_header) {
+  char *str = NULL;
+  size_t size = 4;
+  fill_with_alphabet(&str, size, 1);
+  EXPECT_NE(str, nullptr);
+  uint64_t content_size = *(uint64_t *)str;
+  char *str_content = str + sizeof(uint64_t);
+  uint8_t foot = *(uint8_t *)(str + content_size);
+  EXPECT_EQ(content_size, size);
+  EXPECT_STREQ(str_content, "abcd");
+  EXPECT_EQ(foot, 0);
+  free(str);
+}
+
+TEST(Tools, alphabet_without_header) {
+  char *str = NULL;
+  size_t size = 4;
+  fill_with_alphabet(&str, size, 0);
+  EXPECT_NE(str, nullptr);
+  EXPECT_EQ(strlen(str), size);
+  EXPECT_STREQ(str, "abcd");
+  free(str);
+}
+
+TEST(Tools, null_length_with_header) {
+  char *str = NULL;
+  size_t size = 0;
+  fill_with_alphabet(&str, size, 1);
+  EXPECT_NE(str, nullptr);
+  uint64_t content_size = *(uint64_t *)str;
+  char *str_content = str + sizeof(uint64_t);
+  uint8_t foot = *(uint8_t *)(str + content_size);
+  EXPECT_EQ(content_size, size);
+  EXPECT_STREQ(str_content, "");
+  EXPECT_EQ(foot, 0);
+  free(str);
+}
+
+TEST(Tools, null_length_without_header) {
+  char *str = NULL;
+  size_t size = 0;
+  fill_with_alphabet(&str, size, 0);
+  EXPECT_NE(str, nullptr);
+  EXPECT_EQ(strlen(str), size);
+  EXPECT_STREQ(str, "");
+  free(str);
+}
+
+/*!
+ * Cuando a check_iovec se le envia que ha de ejecutarse:
+ *   CON HEADER -> quiere decir que se va a simular unos iovecs en los que se ha de generar el
+ * header, por lo que generamos un mensaje de entrada SIN header (UNA SALIDA)
+ *
+ *   SIN HEADER -> quiere decir que se va a simular unos iovecs en los que no se han de generar
+ * header, por lo que generamos un mensaje CON header (UNA ENTRADA).
+ */
+static void check_iovec(size_t size, uint8_t h) {
+  // mensaje de entrada
+  void *msg = NULL;
+  fill_with_alphabet((char **)&msg, size, !h);
+
+  // full_size, content_size y amount
+  uint64_t full_size = size + (h ? sizeof(uint64_t) + 1 : 0);
+  uint64_t content_size = size;
   size_t amount = full_size / CHUNK_SZ;
   amount = amount + (full_size % CHUNK_SZ ? 1 : 0);
-  int res = 0;
+
+  // iovec y chd_ptr
   struct iovec *iovecs = (struct iovec *)malloc(amount * sizeof(struct iovec));
   void **chd_ptr = (void **)malloc(amount * sizeof(void *));
+
   char *msg_ptr = (char *)msg;
   char iov_str[CHUNK_SZ + 1];
   memset(iov_str, 0, CHUNK_SZ + 1);
   char orig_str[CHUNK_SZ + 1];
   memset(orig_str, 0, CHUNK_SZ + 1);
+
+  int res = 0;
   for (size_t i = 0; i < amount; ++i) {
+    // alojamos los iovecs reservando el tamaño del mensaje completo
     res = allocate_iovec(&iovecs[i], amount, i, full_size, chd_ptr);
     EXPECT_EQ(res, SUCCESS_CODE);
-    size_t exp_iov_len =
-        ((i + 1) < amount ? CHUNK_SZ : (content_size + (sizeof(uint64_t) + 1)) % CHUNK_SZ);
+
+    // IOV_LEN esperado
+    //   - n -> CHUNK_SZ
+    //   - ultimo -> full_size % CHUNK_SZ (+1 si es 0)
+    uint64_t exp_iov_len = ((i + 1) == amount ? full_size % CHUNK_SZ : CHUNK_SZ);
     exp_iov_len = (exp_iov_len == 0 ? CHUNK_SZ : exp_iov_len);
     EXPECT_EQ(exp_iov_len, iovecs[i].iov_len);
-    res = initialize_iovec(&iovecs[i], amount, i, msg, content_size, 1);
+
+    // Inicializamos iovec
+    res = initialize_iovec(&iovecs[i], amount, i, msg, content_size, h);
     EXPECT_EQ(res, SUCCESS_CODE);
+
+    // Si es el primero verificar el tamaño del contenido
     if (i == 0) {
-      EXPECT_EQ(*((size_t *)iovecs[i].iov_base), content_size);
+      EXPECT_EQ(*((uint64_t *)iovecs[i].iov_base), content_size);
     }
+
+    // Descargar el contenido el iovec, tanto con header como sin el la salida es la misma
+    //   i = 0 -> se desplaza 8 bytes -> `len` - 8 | `offset` = 8
+    //   n -> `len` | `offset` = 0
+    //   i = amount -> se quita el foot -> `len` - 1
     size_t str_len =
-        iovecs[i].iov_len - (h && i == 0 ? sizeof(uint64_t) : 0) - ((i + 1) == amount ? 1 : 0);
-    strncpy(iov_str, (char *)iovecs[i].iov_base + (h && i == 0 ? sizeof(uint64_t) : 0), str_len);
+        iovecs[i].iov_len - (i == 0 ? sizeof(uint64_t) : 0) - ((i + 1) == amount ? 1 : 0);
+    strncpy(iov_str, (char *)iovecs[i].iov_base + (i == 0 ? sizeof(uint64_t) : 0), str_len);
     strncpy(orig_str, msg_ptr, str_len);
     iov_str[str_len] = 0;
     orig_str[str_len] = 0;
@@ -134,8 +214,8 @@ TEST(LowSaurion, set_request_first_creation_and_reset) {
   struct request *req = NULL;
   struct Node *list = NULL;
   size_t size = 2.5 * CHUNK_SZ;
-  char *msg = (char *)malloc(size);
-  fill_with_alphabet(msg, size, 0);
+  char *msg = NULL;
+  fill_with_alphabet(&msg, size, 0);
   int res = set_request(&req, &list, size, msg, 1);
   EXPECT_EQ(req->prev, nullptr);
   EXPECT_EQ(req->prev_size, 0UL);
@@ -150,14 +230,15 @@ TEST(LowSaurion, set_request_first_creation_and_reset) {
   EXPECT_EQ(res, SUCCESS_CODE);
   EXPECT_EQ(req->client_socket, 123);
   EXPECT_EQ(req->event_type, 456);
+  free(msg);
 }
 
 TEST(LowSaurion, test_free_request) {
   struct request *req = NULL;
   struct Node *list = NULL;
   size_t size = 2.5 * CHUNK_SZ;
-  char *msg = (char *)malloc(size);
-  fill_with_alphabet(msg, size, 0);
+  char *msg = NULL;
+  fill_with_alphabet(&msg, size, 0);
   int res = set_request(&req, &list, size, msg, 1);
   EXPECT_EQ(req->prev, nullptr);
   EXPECT_EQ(req->prev_size, 0UL);
@@ -167,6 +248,7 @@ TEST(LowSaurion, test_free_request) {
   EXPECT_EQ(req->iovec_count, 3UL);
   EXPECT_EQ(res, SUCCESS_CODE);
   free_request(req, NULL, 0);
+  free(msg);
 }
 
 TEST(LowSaurion, EmptyRequest) {
@@ -208,40 +290,39 @@ TEST(LowSaurion, SingleMessageComplete) {
   free(dest);
 }
 
-// TEST(LowSaurion, MessageSpanningMultipleIovecs) {
-//   // Caso en el que un mensaje se divide en múltiples iovecs
-//   char *message = (char *)malloc(2.5 * CHUNK_SZ + 1);
-//   fill_with_alphabet(message, 2.5 * CHUNK_SZ + 1, 0);
-//   size_t msg_size = strlen(message);
-//
-//   // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
-//   struct request *req = NULL;
-//   struct Node *list = NULL;
-//   int res = set_request(&req, &list, msg_size, message, 1);
-//   EXPECT_EQ(res, SUCCESS_CODE);
-//   EXPECT_EQ(req->prev_size, 0UL);
-//   EXPECT_EQ(req->prev_remain, 0UL);
-//   EXPECT_EQ(req->next_iov, 0UL);
-//   EXPECT_EQ(req->next_offset, 0UL);
-//   EXPECT_EQ(req->iovec_count, 3UL);
-//   EXPECT_EQ(*(size_t *)req->iov[0].iov_base, 2.5 * CHUNK_SZ);
-//
-//   void *dest = nullptr;
-//   size_t len = 0;
-//
-//   res = read_chunk(&dest, &len, req);
-//
-//   EXPECT_EQ(res, SUCCESS_CODE);
-//   ASSERT_NE(dest, nullptr);
-//   EXPECT_EQ(len, msg_size);
-//   EXPECT_STREQ((char *)dest, message);
-//
-//   // Limpieza
-//   free_request(req, NULL, 0);
-//   free(message);
-//   free(dest);
-// }
-//
+TEST(LowSaurion, MessageSpanningMultipleIovecs) {
+  // Caso en el que un mensaje se divide en múltiples iovecs
+  char *message = NULL;
+  fill_with_alphabet(&message, 1.5 * CHUNK_SZ, 0);
+  size_t msg_size = strlen(message);
+
+  // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
+  struct request *req = NULL;
+  struct Node *list = NULL;
+  int res = set_request(&req, &list, msg_size, message, 1);
+  EXPECT_EQ(res, SUCCESS_CODE);
+  EXPECT_EQ(req->prev_size, 0UL);
+  EXPECT_EQ(req->prev_remain, 0UL);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, 0UL);
+  EXPECT_EQ(req->iovec_count, 2UL);
+  EXPECT_EQ(*(size_t *)req->iov[0].iov_base, 1.5 * CHUNK_SZ);
+
+  void *dest = nullptr;
+  size_t len = 0;
+
+  res = read_chunk(&dest, &len, req);
+
+  EXPECT_EQ(res, SUCCESS_CODE);
+  ASSERT_NE(dest, nullptr);
+  EXPECT_EQ(len, msg_size);
+  printf("==>%s\n", (char *)dest);
+
+  // Limpieza
+  free_request(req, NULL, 0);
+  free(dest);
+}
+
 // TEST(LowSaurion, IncompleteMessage) {
 //   // Caso en el que el mensaje es incompleto y se almacenará en req->prev
 //   char *message = (char *)malloc(2.5 * CHUNK_SZ + 1);
