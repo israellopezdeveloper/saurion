@@ -3,6 +3,8 @@
 #include <liburing.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,10 +25,10 @@ struct request {
   void *prev;
   size_t prev_size;
   size_t prev_remain;
-  int next_iov;
+  size_t next_iov;
   size_t next_offset;
   int event_type;
-  int iovec_count;
+  size_t iovec_count;
   int client_socket;
   struct iovec iov[];
 };
@@ -60,7 +62,7 @@ void free_request(struct request *req, void **children_ptr, size_t amount) {
 }
 
 [[nodiscard]]
-int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, size_t size,
+int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, const void *msg, size_t size,
                      uint8_t h) {
   if (!iov || !iov->iov_base) {
     return ERROR_CODE;
@@ -71,11 +73,11 @@ int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, si
     char *orig = (char *)msg + pos * CHUNK_SZ;
     if (h) {
       if (pos == 0) {
-        memcpy(dest, &size, sizeof(size_t));
-        dest += sizeof(size_t);
-        len -= sizeof(size_t);
+        memcpy(dest, &size, sizeof(uint64_t));
+        dest += sizeof(uint64_t);
+        len -= sizeof(uint64_t);
       } else {
-        orig -= sizeof(size_t);
+        orig -= sizeof(uint64_t);
       }
       if ((pos + 1) == amount) {
         --len;
@@ -90,7 +92,7 @@ int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, si
 
 [[nodiscard]]
 int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size, void **chd_ptr) {
-  if (!iov) {
+  if (!iov || !chd_ptr) {
     return ERROR_CODE;
   }
   iov->iov_base = malloc(CHUNK_SZ);
@@ -106,9 +108,9 @@ int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size, vo
 }
 
 [[nodiscard]]
-int set_request(struct request **r, struct Node **l, size_t s, void *m, uint8_t h) {
+int set_request(struct request **r, struct Node **l, size_t s, const void *m, uint8_t h) {
   if (h) {
-    s += (sizeof(size_t) + 1);
+    s += (sizeof(uint64_t) + 1);
   }
   size_t amount = s / CHUNK_SZ;
   amount = amount + (s % CHUNK_SZ == 0 ? 0 : 1);
@@ -138,6 +140,7 @@ int set_request(struct request **r, struct Node **l, size_t s, void *m, uint8_t 
   req->iovec_count = (int)amount;
   void **children_ptr = (void **)malloc(amount * sizeof(void *));
   if (!children_ptr) {
+    free_request(req, children_ptr, 0);
     return ERROR_CODE;
   }
   for (size_t i = 0; i < amount; ++i) {
@@ -322,80 +325,136 @@ static void handle_accept(const struct saurion *const s, const int fd) {
   }
 }
 
-static void read_chunk(void **dest, size_t *len, struct request *const req) {
-  // Verificación inicial
+[[nodiscard]]
+int read_chunk(void **dest, size_t *len, struct request *const req) {
+  //< @todo add message contraint
+  // Initial checks
   if (req->iovec_count == 0) {
-    return;
+    return ERROR_CODE;
   }
-  // Inicialización
-  size_t msg_size, o_s = 0, o_iov = req->next_offset;
-  if (req->prev && req->prev_size && req->prev_remain) {  // Mensaje previo no completado
-    msg_size = req->prev_size;
-    o_s = req->prev_size - req->prev_remain;
-    *dest = req->prev;
-  } else if (req->next_iov || req->next_offset) {  // Hay varios mensajes leyendo el último
-    msg_size = *(size_t *)((char *)req->iov[req->next_iov].iov_base + req->next_offset);
-    o_s = 0;
-    *dest = malloc(msg_size + 1);
-    if (!*dest) {
-      return;
-    }
-    ((char *)*dest)[msg_size] = 0;
-    o_iov += sizeof(size_t);
-  } else {  // Leyendo el primer mensaje
-    msg_size = *(size_t *)((char *)req->iov[0].iov_base);
-    o_s = 0;
-    if (msg_size > req->iov[0].iov_len) {
-      req->prev = malloc(msg_size);
-      if (!req->prev) {
-        return;
-      }
+
+  // Initizalization
+  size_t max_iov_cont = 0;  //< Total size of request
+  for (size_t i = 0; i < req->iovec_count; ++i) {
+    max_iov_cont += req->iov[i].iov_len;
+  }
+  size_t cont_sz = 0;       //< Message content size
+  size_t cont_rem = 0;      //< Remaining bytes of message content
+  size_t msg_rem = 0;       //< Message (content + header + foot) remaining bytes
+  size_t curr_iov = 0;      //< IOVEC num currently reading
+  size_t curr_iov_off = 0;  //< Offset in bytes of the current IOVEC
+  size_t dest_off = 0;      //< Write offset on the destiny array
+  void *dest_ptr = NULL;    //< Destiny pointer, could be dest or prev
+  if (req->prev && req->prev_size && req->prev_remain) {
+    // There's a previous unfinished message
+    cont_sz = req->prev_size;
+    cont_rem = req->prev_remain;
+    msg_rem = cont_rem + 1;
+    curr_iov = 0;
+    curr_iov_off = 0;
+    dest_off = cont_sz - cont_rem;
+    if (msg_rem <= max_iov_cont) {
       *dest = req->prev;
-      req->prev_size = msg_size;
-      req->prev_remain = msg_size - (req->iov[0].iov_len - sizeof(size_t));
+      dest_ptr = *dest;
     } else {
-      *dest = malloc(msg_size + 1);
-      if (!*dest) {
-        return;
-      }
-      ((char *)*dest)[msg_size] = 0;
+      dest_ptr = req->prev;
+      *dest = NULL;
     }
-    o_iov += sizeof(size_t);
-  }
-  // Bucle principal de copia
-  char *src;
-  size_t readed = 0, curr_len = 0;
-  int i = 0;
-  for (i = req->next_iov; i < req->iovec_count; ++i) {
-    src = (char *)req->iov[i].iov_base + o_iov;
-    curr_len = MIN(msg_size - o_s, req->iov[i].iov_len - o_iov);
-    memcpy((char *)*dest + o_s, src, curr_len);
-    readed += curr_len + 9;
-    o_s += curr_len;
-    o_iov = 0;
-  }
-  // Actualización del estado
-  --i;
-  i = MAX(i, 0);
-  int has_prev = req->prev && req->prev_size;
-  int has_next = ((req->next_offset + readed) < req->iov[i].iov_len) ? 1 : 0;
-  *len = msg_size;
-  if (has_prev) {
-    req->prev = *dest;
-    req->prev_size = msg_size;
-    req->prev_remain = req->prev_size - o_s;
-    *len = 0;
-  }
-  if (has_next) {
-    req->next_iov = i;
-    req->next_offset += curr_len + 9;
+  } else if (req->next_iov || req->next_offset) {
+    // Reading the next message
+    curr_iov = req->next_iov;
+    curr_iov_off = req->next_offset;
+    cont_sz = *((size_t *)req->iov[curr_iov].iov_base + curr_iov_off);
+    curr_iov_off += sizeof(uint64_t);
+    cont_rem = cont_sz;
+    msg_rem = cont_rem + 1;
+    dest_off = cont_sz - cont_rem;
+    if (msg_rem <= max_iov_cont) {
+      dest_ptr = *dest;
+    } else {
+      dest_ptr = req->prev;
+      *dest = NULL;
+    }
+    dest_ptr = malloc(cont_sz);
   } else {
-    req->next_iov = 0;
-    req->next_offset = 0;
+    // Reading the first message
+    curr_iov = 0;
+    curr_iov_off = 0;
+    cont_sz = *((size_t *)req->iov[curr_iov].iov_base + curr_iov_off);
+    curr_iov_off += sizeof(uint64_t);
+    cont_rem = cont_sz;
+    msg_rem = cont_rem + 1;
+    dest_off = cont_sz - cont_rem;
+    if (msg_rem <= max_iov_cont) {
+      dest_ptr = *dest;
+    } else {
+      dest_ptr = req->prev;
+      *dest = NULL;
+    }
+    dest_ptr = malloc(cont_sz);
   }
+  /*! Remaining bytes of the message (content + header + foot) stored in the current IOVEC */
+  size_t curr_iov_msg_rem = MIN(cont_rem, (req->iov[curr_iov].iov_len - curr_iov_off));
+
+  // Copy loop
+  uint8_t ok = 1UL;
+  while (1) {
+    memcpy(dest_ptr + dest_off, req->iov[curr_iov].iov_base + curr_iov_off, curr_iov_msg_rem);
+    dest_off += curr_iov_msg_rem;
+    curr_iov_off += curr_iov_msg_rem;
+    msg_rem -= curr_iov_msg_rem;
+    cont_rem -= curr_iov_msg_rem;
+    if (cont_rem <= 0) {
+      // Finish reading
+      ++curr_iov_off;
+      printf("curr_iov = %zu\n", curr_iov);
+      printf("curr_iov_off = %zu\n", curr_iov_off);
+      printf("str => %c\n", *((uint8_t *)(req->iov[curr_iov].iov_base + curr_iov_off - 1)));
+      if (*((uint8_t *)(req->iov[curr_iov].iov_base + curr_iov_off)) != 0) {
+        ok = 0UL;
+      }
+      break;
+    }
+    if (curr_iov_off >= (req->iov[curr_iov].iov_len)) {
+      ++curr_iov;
+      if (curr_iov >= req->iovec_count) {
+        break;
+      }
+      curr_iov_off = 0;
+    }
+  }
+
+  // Update status
+  if (req->prev) {
+    req->prev_size = cont_sz;
+    req->prev_remain = cont_rem;
+  } else {
+    req->prev_size = 0;
+    req->prev_remain = 0;
+  }
+  if (curr_iov < req->iovec_count) {
+    if (req->iov[curr_iov].iov_len < curr_iov_off) {
+      req->next_iov = curr_iov;
+      req->next_offset = curr_iov_off;
+    }
+  }
+
+  // Finish
+  if (!ok) {
+    // Esto solo es posible si no se encuentra un 0 al final del la lectura
+    // buscar el siguiente 0 y ... probar fortuna
+    free(dest_ptr);
+    dest_ptr = NULL;
+    *dest = NULL;
+    *len = 0;
+    return ERROR_CODE;
+  }
+  return SUCCESS_CODE;
 }
 
 static void handle_read(struct saurion *const s, struct request *const req, int bytes) {
+  //< @todo validar `msg_size`, crear maximos
+  //< @todo validar `offsets`
   void *msg = NULL;
   int last_bytes = bytes % CHUNK_SZ;
   last_bytes = (!last_bytes ? CHUNK_SZ : last_bytes);
@@ -403,7 +462,8 @@ static void handle_read(struct saurion *const s, struct request *const req, int 
   req->iov[pos].iov_len = last_bytes;
   size_t len = 0;
   while (1) {
-    read_chunk(&msg, &len, req);
+    int res = read_chunk(&msg, &len, req);
+    printf("-->%d\n", res);
     // Hay siguiente
     if (req->next_iov || req->next_offset) {
       if (s->cb.on_readed && msg) {

@@ -8,20 +8,27 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+/*!
+ * @cond
+ * This is hidden from the documentation.
+ */
 struct request {
   void *prev;
   size_t prev_size;
   size_t prev_remain;
-  int next_iov;
+  size_t next_iov;
   size_t next_offset;
   int event_type;
-  int iovec_count;
+  size_t iovec_count;
   int client_socket;
   struct iovec iov[];
 };
+/*! @endcond */
 
 /*!
+ * @defgroup LowSaurion
+ *
+ * @private
  * @brief This function allocates memory for each `struct iovec`
  *
  * This function allocates memory for each `struct iovec`. Every `struct iovec`
@@ -46,11 +53,14 @@ struct request {
  *
  * @note The last `iovec` will allocate only the remaining bytes if the total
  * size is not a multiple of CHUNK_SZ.
+ *
+ * @{
  */
 [[nodiscard]]
 int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size, void **chd_ptr);
 
 /*!
+ * @private
  * @brief Initializes a specified `iovec` structure with a message fragment.
  *
  * This function populates the `iov_base` of the `iovec` structure with a portion
@@ -82,10 +92,11 @@ int allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size, vo
  *          essentially resetting the buffer.
  */
 [[nodiscard]]
-int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, size_t size,
+int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, const void *msg, size_t size,
                      uint8_t h);
 
 /**
+ * @private
  * @brief Sets up a request and allocates iovec structures for data handling in liburing.
  *
  * This function configures a request structure that will be used to send or receive data
@@ -98,7 +109,7 @@ int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, si
  * @param l Pointer to the list of active requests (Node list) where the request will be inserted.
  * @param s Size of the data to be handled. Adjusted if the header flag (h) is true.
  * @param m Pointer to the memory block containing the data to be processed.
- * @param h Header flag. If true, a header (sizeof(size_t) + 1) is added to the iovec data.
+ * @param h Header flag. If true, a header (sizeof(uint64_t) + 1) is added to the iovec data.
  *
  * @return int Returns SUCCESS_CODE on success, or ERROR_CODE on failure (memory allocation issues
  * or insertion failure).
@@ -111,7 +122,61 @@ int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, void *msg, si
  *       (children_ptr) are managed and used for proper memory deallocation.
  */
 [[nodiscard]]
-int set_request(struct request **r, struct Node **l, size_t s, void *m, uint8_t h);
+int set_request(struct request **r, struct Node **l, size_t s, const void *m, uint8_t h);
+
+/**
+ * @private
+ * @brief Reads a message chunk from the request's iovec buffers, handling messages that may span
+ * multiple iovec entries.
+ *
+ * This function processes data from a `struct request`, which contains an array of `iovec`
+ * structures representing buffered data. Each message in the buffers starts with a `size_t` value
+ * indicating the size of the message, followed by the message content. The function reads the
+ * message size, allocates a buffer for the message content, and copies the data from the iovec
+ * buffers into this buffer. It handles messages that span multiple iovec entries and manages
+ * incomplete messages by storing partial data within the request structure for subsequent reads.
+ *
+ * @param[out] dest Pointer to a variable where the address of the allocated message buffer will be
+ * stored. The buffer is allocated by the function and must be freed by the caller.
+ * @param[out] len  Pointer to a `size_t` variable where the length of the read message will be
+ * stored. If a complete message is read, `*len` is set to the message size. If the message is
+ * incomplete, `*len` is set to 0.
+ * @param[in,out] req Pointer to a `struct request` containing the iovec buffers and state
+ * information. The function updates the request's state to track the current position within the
+ * iovecs and any incomplete messages.
+ *
+ * The `struct request` is defined as:
+ *
+ * @code
+ * struct request {
+ *   void *prev;
+ *   size_t prev_size;
+ *   size_t prev_remain;
+ *   int next_iov;
+ *   size_t next_offset;
+ *   int event_type;
+ *   int iovec_count;
+ *   int client_socket;
+ *   struct iovec iov[];
+ * };
+ * @endcode
+ *
+ * @note The function assumes that each message is prefixed with its size (of type `size_t`), and
+ * that messages may span multiple iovec entries. It also assumes that the data in the iovec buffers
+ * is valid and properly aligned for reading `size_t` values.
+ *
+ * @warning The caller is responsible for freeing the allocated message buffer pointed to by `*dest`
+ * when it is no longer needed.
+ *
+ * @return None.
+ */
+[[nodiscard]]
+int read_chunk(void **dest, size_t *len, struct request *const req);
+
+void free_request(struct request *req, void **children_ptr, size_t amount);
+/*!
+ * @}
+ */
 #ifdef __cplusplus
 }
 #endif

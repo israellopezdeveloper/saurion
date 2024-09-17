@@ -18,6 +18,8 @@ EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = YES
 EXTRACT_STATIC         = YES
 EXTRACT_LOCAL_CLASSES  = YES
+EXCLUDE_SYMBOLS        = __attribute__
+
 
 # Documented source code
 SOURCE_BROWSER         = YES
@@ -29,8 +31,6 @@ GENERATE_HTML          = YES
 GENERATE_LATEX         = YES
 GENERATE_MAN           = NO
 GENERATE_XML           = NO
-EXTRA_PACKAGES         = [utf8]{inputenc}
-LATEX_CMD_NAME         = xelatex
 
 # HTML settings
 HTML_OUTPUT            = html

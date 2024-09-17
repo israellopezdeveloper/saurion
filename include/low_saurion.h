@@ -1,6 +1,17 @@
 /*!
- * @file
- * @brief The messages are composed of three main parts:
+ * @defgroup LowSaurion
+ *
+ * @brief The `saurion` class is designed to efficiently handle asynchronous input/output events on
+ * Linux systems using the `io_uring` API. Its main purpose is to manage network operations such as
+ * socket connections, reads, writes, and closures by leveraging an event-driven model that enhances
+ * performance and scalability in highly concurrent applications.
+ *
+ * The main structure, `saurion`, encapsulates `io_uring` rings and facilitates synchronization
+ * between multiple threads through the use of mutexes and a thread pool that distributes operations
+ * in parallel. This allows efficient handling of I/O operations across several sockets
+ * simultaneously, without blocking threads during operations.
+ *
+ * The messages are composed of three main parts:
  *  - A header, which is an unsigned 64-bit number representing the length of the message body.
  *  - A body, which contains the actual message data.
  *  - A footer, which consists of 8 bits set to 0.
@@ -27,32 +38,62 @@
  *
  * The structure of the message is as follows:
  * @verbatim
-   ┌──────────────────┬────────────────────┬──────────┐
-   │    Header        │       Body         │  Footer  │
-   │  (64 bits: 9000) │   (Message Data)   │ (1 byte) │
-   └──────────────────┴────────────────────┴──────────┘
+   +------------------+--------------------+----------+
+   |    Header        |       Body         |  Footer  |
+   |  (64 bits: 9000) |   (Message Data)   | (1 byte) |
+   +------------------+--------------------+----------+
  @endverbatim
  *
  * The structure of the `iovec` division is:
  *
  * @verbatim
    First iovec (8192 bytes):
-   ┌─────────────────────────────────────────┬───────────────────────┐
-   │ iov_base                                │ iov_len               │
-   ├─────────────────────────────────────────┼───────────────────────┤
-   │ 8 bytes header, 8184 bytes of message   │ 8192                  │
-   └─────────────────────────────────────────┴───────────────────────┘
+   +-----------------------------------------+-----------------------+
+   | iov_base                                | iov_len               |
+   +-----------------------------------------+-----------------------+
+   | 8 bytes header, 8184 bytes of message   | 8192                  |
+   +-----------------------------------------+-----------------------+
 
    Second iovec (817 bytes):
-   ┌─────────────────────────────────────────┬───────────────────────┐
-   │ iov_base                                │ iov_len               │
-   ├─────────────────────────────────────────┼───────────────────────┤
-   │ 816 bytes of message, 1 byte footer (0) │ 817                   │
-   └─────────────────────────────────────────┴───────────────────────┘
+   +-----------------------------------------+-----------------------+
+   | iov_base                                | iov_len               |
+   +-----------------------------------------+-----------------------+
+   | 816 bytes of message, 1 byte footer (0) | 817                   |
+   +-----------------------------------------+-----------------------+
  @endverbatim
-
+ *
+ * Each I/O event can be monitored and managed through custom callbacks that handle connection,
+ * read, write, close, or error events on the sockets.
+ *
+ * Basic usage example:
+ *
+ * @code
+ * // Create the saurion structure with 4 threads
+ * struct saurion *s = saurion_create(4);
+ *
+ * // Start event processing
+ * if (saurion_start(s) != 0) {
+ *     // Handle the error
+ * }
+ *
+ * // Send a message through a socket
+ * saurion_send(s, socket_fd, "Hello, World!");
+ *
+ * // Stop event processing
+ * saurion_stop(s);
+ *
+ * // Destroy the structure and free resources
+ * saurion_destroy(s);
+ * @endcode
+ *
+ * In this example, the `saurion` structure is created with 4 threads to handle the workload. Event
+ * processing is started, allowing it to accept connections and manage I/O operations on sockets.
+ * After sending a message through a socket, the system can be stopped, and the resources are freed.
+ *
  * @author Israel
  * @date 2024
+ *
+ * @{
  */
 #ifndef LOW_SAURION_H
 #define LOW_SAURION_H
@@ -69,141 +110,173 @@
 extern "C" {
 #endif
 
+/*!
+ * @brief Defines the memory alignment size for structures in the `saurion` class.
+ *
+ * `PACKING_SZ` is used to ensure that certain structures, such as `saurion_callbacks`,
+ * are aligned to a specific memory boundary. This can improve memory access performance
+ * and ensure compatibility with certain hardware architectures that require specific alignment.
+ *
+ * In this case, the value is set to 128 bytes, meaning that structures marked with
+ * `__attribute__((aligned(PACKING_SZ)))` will be aligned to 128-byte boundaries.
+ *
+ * Proper alignment can be particularly important in multithreaded environments or
+ * when working with low-level system APIs like `io_uring`, where unaligned memory
+ * accesses may introduce performance penalties.
+ *
+ * Adjusting `PACKING_SZ` may be necessary depending on the hardware platform or
+ * specific performance requirements.
+ */
 #define PACKING_SZ 128
 
 /*!
- * @brief Estructura principal para el manejo de io_uring y eventos de socket.
+ * @brief Main structure for managing io_uring and socket events.
  *
- * Esta estructura contiene todos los datos necesarios para manejar la cola de eventos
- * de io_uring, así como los callbacks para los eventos de socket.
+ * This structure contains all the necessary data to handle the io_uring event queue
+ * and the callbacks for socket events, enabling efficient asynchronous I/O operations.
  */
 struct saurion {
-  struct io_uring *rings;   /**< Array de estructuras io_uring para manejar la cola de eventos. */
-  pthread_mutex_t *m_rings; /**< Array de mutex para proteger los anillos */
-  int ss;                   /**< Descriptor de socket del servidor. */
-  int *efds;                /**< Descriptores de eventfd para señales internas. */
-  struct Node *list;        /**< Lista enlazada para almacenar las solicitudes en curso. */
-  pthread_mutex_t status_m; /**< Mutex para proteger el estado de la estructura. */
-  pthread_cond_t status_c;  /**< Condición para señalar cambios en el estado. */
-  int status;               /**< Estado actual de la estructura. */
-  ThreadPool *pool;         /**< Pool de Threads para ejecutar en paralelo las operaciones */
-  uint32_t n_threads;       /**< Numero de threads */
-  uint32_t next;            /**< Ring al cual añadir evento. */
+  struct io_uring *rings; /**< Array of io_uring structures for managing the event queue. */
+  pthread_mutex_t
+      *m_rings; /**< Array of mutexes to protect the io_uring rings during concurrent access. */
+  int ss;       /**< Server socket descriptor for accepting connections. */
+  int *efds;    /**< Eventfd descriptors used for internal signaling between threads. */
+  struct Node *list;        /**< Linked list for storing active requests. */
+  pthread_mutex_t status_m; /**< Mutex to protect the state of the structure. */
+  pthread_cond_t status_c;  /**< Condition variable to signal changes in the structure's state. */
+  int status;               /**< Current status of the structure (e.g., running, stopped). */
+  ThreadPool *pool;         /**< Thread pool for executing tasks in parallel. */
+  uint32_t n_threads;       /**< Number of threads in the thread pool. */
+  uint32_t next;            /**< Index of the next io_uring ring to which an event will be added. */
 
   /*!
-   * @brief Estructura de callbacks para manejar los eventos de socket.
+   * @brief Structure containing callback functions to handle socket events.
    *
-   * Esta estructura contiene punteros a funciones de callback para manejar
-   * los eventos de conexión, lectura, escritura, cierre y error.
+   * This structure holds pointers to callback functions for handling events
+   * such as connection establishment, reading, writing, closing, and errors
+   * on sockets. Each callback has an associated argument pointer that can be
+   * passed along when the callback is invoked.
    */
   struct saurion_callbacks {
     /*!
-     * @brief Callback para el evento de conexión.
+     * @brief Callback for handling new connections.
      *
-     * @param fd Descriptor de archivo del socket conectado.
-     * @param arg Argumento adicional proporcionado por el usuario.
+     * @param fd File descriptor of the connected socket.
+     * @param arg Additional user-provided argument.
      */
     void (*on_connected)(const int fd, void *arg);
-    void *on_connected_arg; /**< Argumento adicional para el callback de conexión. */
+    void *on_connected_arg; /**< Additional argument for the connection callback. */
 
     /*!
-     * @brief Callback para el evento de lectura.
+     * @brief Callback for handling read events.
      *
-     * @param fd Descriptor de archivo del socket.
-     * @param content Puntero al contenido leído.
-     * @param len Longitud del contenido leído.
-     * @param arg Argumento adicional proporcionado por el usuario.
+     * @param fd File descriptor of the socket.
+     * @param content Pointer to the data that was read.
+     * @param len Length of the data that was read.
+     * @param arg Additional user-provided argument.
      */
     void (*on_readed)(const int fd, const void *const content, const ssize_t len, void *arg);
-    void *on_readed_arg; /**< Argumento adicional para el callback de lectura. */
+    void *on_readed_arg; /**< Additional argument for the read callback. */
 
     /*!
-     * @brief Callback para el evento de escritura.
+     * @brief Callback for handling write events.
      *
-     * @param fd Descriptor de archivo del socket.
-     * @param arg Argumento adicional proporcionado por el usuario.
+     * @param fd File descriptor of the socket.
+     * @param arg Additional user-provided argument.
      */
     void (*on_wrote)(const int fd, void *arg);
-    void *on_wrote_arg; /**< Argumento adicional para el callback de escritura. */
+    void *on_wrote_arg; /**< Additional argument for the write callback. */
 
     /*!
-     * @brief Callback para el evento de cierre.
+     * @brief Callback for handling socket closures.
      *
-     * @param fd Descriptor de archivo del socket cerrado.
-     * @param arg Argumento adicional proporcionado por el usuario.
+     * @param fd File descriptor of the closed socket.
+     * @param arg Additional user-provided argument.
      */
     void (*on_closed)(const int fd, void *arg);
-    void *on_closed_arg; /**< Argumento adicional para el callback de cierre. */
+    void *on_closed_arg; /**< Additional argument for the close callback. */
 
     /*!
-     * @brief Callback para el evento de error.
+     * @brief Callback for handling error events.
      *
-     * @param fd Descriptor de archivo del socket.
-     * @param content Puntero al contenido leído.
-     * @param len Longitud del contenido leído.
-     * @param arg Argumento adicional proporcionado por el usuario.
+     * @param fd File descriptor of the socket where the error occurred.
+     * @param content Pointer to the error message.
+     * @param len Length of the error message.
+     * @param arg Additional user-provided argument.
      */
     void (*on_error)(const int fd, const char *const content, const ssize_t len, void *arg);
-    void *on_error_arg; /**< Argumento adicional para el callback de error. */
+    void *on_error_arg; /**< Additional argument for the error callback. */
   } __attribute__((aligned(PACKING_SZ))) cb;
 } __attribute__((aligned(PACKING_SZ)));
 
-/*! TODO: Eliminar
- *  \todo Eliminar
+/*!
+ *  @todo Eliminar
  */
 int EXTERNAL_set_socket(int p);
 
 /*!
- * @brief Crea una instancia de la estructura saurion.
+ * @public
+ * @brief Creates an instance of the `saurion` structure.
  *
- * Esta función inicializa la estructura saurion, configura el eventfd y la cola de io_uring,
- * y prepara la estructura para su uso.
+ * This function initializes the `saurion` structure, sets up the eventfd, and configures
+ * the io_uring queue, preparing it for use. It also sets up the thread pool and
+ * any necessary synchronization mechanisms.
  *
- * @return struct saurion* Puntero a la estructura saurion creada, o NULL en caso de error.
+ * @param n_threads The number of threads to initialize in the thread pool.
+ * @return struct saurion* A pointer to the newly created `saurion` structure, or NULL if an error
+ * occurs.
  */
 [[nodiscard]]
 struct saurion *saurion_create(uint32_t n_threads);
 
 /*!
- * @brief Inicia el procesamiento de eventos en la estructura saurion.
+ * @public
+ * @brief Starts event processing in the `saurion` structure.
  *
- * Esta función inicia la aceptación de conexiones y el procesamiento de eventos de io_uring.
- * Se ejecuta en un bucle hasta que se recibe una señal de parada.
+ * This function begins accepting socket connections and handling io_uring events in a loop.
+ * It will run continuously until a stop signal is received, allowing the application
+ * to manage multiple socket events asynchronously.
  *
- * @param s Puntero a la estructura saurion.
- * @return int 0 en caso de éxito, 1 en caso de error.
+ * @param s Pointer to the `saurion` structure.
+ * @return int Returns 0 on success, or 1 if an error occurs.
  */
 [[nodiscard]]
 int saurion_start(struct saurion *s);
 
 /*!
- * @brief Detiene el procesamiento de eventos en la estructura saurion.
+ * @public
+ * @brief Stops event processing in the `saurion` structure.
  *
- * Esta función envía una señal al eventfd para indicar que se debe detener el bucle de eventos.
+ * This function sends a signal to the eventfd, indicating that the event loop should stop.
+ * It gracefully shuts down the processing of any remaining events before exiting.
  *
- * @param s Puntero a la estructura saurion.
+ * @param s Pointer to the `saurion` structure.
  */
 void saurion_stop(const struct saurion *s);
 
 /*!
- * @brief Destruye la estructura saurion y libera los recursos asociados.
+ * @public
+ * @brief Destroys the `saurion` structure and frees all associated resources.
  *
- * Esta función espera a que se detenga el procesamiento de eventos, libera la memoria
- * de la estructura saurion y cierra los descriptores de archivo.
+ * This function waits for the event processing to stop, frees the memory used by
+ * the `saurion` structure, and closes any open file descriptors. It ensures that
+ * no resources are leaked when the structure is no longer needed.
  *
- * @param s Puntero a la estructura saurion.
+ * @param s Pointer to the `saurion` structure.
  */
 void saurion_destroy(struct saurion *s);
 
 /*!
- * @brief Envía un mensaje a través de un socket utilizando io_uring.
+ * @public
+ * @brief Sends a message through a socket using io_uring.
  *
- * Esta función prepara y envía un mensaje a través del socket especificado utilizando
- * la cola de eventos de io_uring.
+ * This function prepares and sends a message through the specified socket using
+ * the io_uring event queue. The message is split into iovec structures for efficient
+ * transmission and sent asynchronously.
  *
- * @param s Puntero a la estructura saurion.
- * @param fd Descriptor de archivo del socket al que se enviará el mensaje.
- * @param msg Puntero a la cadena de caracteres que se enviará.
+ * @param s Pointer to the `saurion` structure.
+ * @param fd File descriptor of the socket to which the message will be sent.
+ * @param msg Pointer to the character string (message) to be sent.
  */
 void saurion_send(struct saurion *s, const int fd, const char *const msg);
 
@@ -212,3 +285,7 @@ void saurion_send(struct saurion *s, const int fd, const char *const msg);
 #endif
 
 #endif  // !LOW_SAURION_H
+
+/*!
+ * @}
+ */
