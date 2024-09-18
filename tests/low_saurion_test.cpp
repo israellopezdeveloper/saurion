@@ -316,69 +316,68 @@ TEST(LowSaurion, MessageSpanningMultipleIovecs) {
   EXPECT_EQ(res, SUCCESS_CODE);
   ASSERT_NE(dest, nullptr);
   EXPECT_EQ(len, msg_size);
-  printf("==>%s\n", (char *)dest);
 
   // Limpieza
   free_request(req, NULL, 0);
   free(dest);
 }
 
-// TEST(LowSaurion, IncompleteMessage) {
-//   // Caso en el que el mensaje es incompleto y se almacenará en req->prev
-//   char *message = (char *)malloc(2.5 * CHUNK_SZ + 1);
-//   fill_with_alphabet(message, 2.5 * CHUNK_SZ + 1, 0);
-//   size_t msg_size = strlen(message);
-//
-//   // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
-//   struct request *req = NULL;
-//   struct Node *list = NULL;
-//   int res = set_request(&req, &list, msg_size, message, 1);
-//   req->iovec_count = 1;
-//   EXPECT_EQ(res, SUCCESS_CODE);
-//   EXPECT_EQ(req->prev_size, 0UL);
-//   EXPECT_EQ(req->prev_remain, 0UL);
-//   EXPECT_EQ(req->next_iov, 0UL);
-//   EXPECT_EQ(req->next_offset, 0UL);
-//   EXPECT_EQ(req->iovec_count, 1UL);
-//   EXPECT_EQ(*(size_t *)req->iov[0].iov_base, 2.5 * CHUNK_SZ);
-//
-//   void *dest = nullptr;
-//   size_t len = 0;
-//
-//   res = read_chunk(&dest, &len, req);
-//
-//   EXPECT_EQ(res, SUCCESS_CODE);
-//   // Como el mensaje es incompleto, dest debería ser nullptr y len debería ser 0
-//   EXPECT_EQ(dest, nullptr);
-//   EXPECT_EQ(len, 0u);
-//
-//   // Verificar que req->prev tiene los datos parciales
-//   ASSERT_NE(req->prev, nullptr);
-//   EXPECT_EQ(req->prev_size, msg_size);
-//   EXPECT_EQ(req->prev_remain, msg_size - (CHUNK_SZ - sizeof(uint64_t)));
-//
-//   // Simular la llegada del resto del mensaje en un nuevo iovec
-//   free(message);
-//   message = NULL;
-//   message = (char *)malloc(req->prev_remain + 1);
-//   memset(message, 'A', req->prev_remain);
-//   message[req->prev_remain] = 0;
-//   msg_size = strlen(message);
-//   res = set_request(&req, &list, msg_size, message, 0);
-//   EXPECT_EQ(res, SUCCESS_CODE);
-//   EXPECT_NE(req->prev, nullptr);
-//   EXPECT_EQ(req->prev_remain, msg_size);
-//
-//   res = read_chunk(&dest, &len, req);
-//
-//   EXPECT_EQ(res, SUCCESS_CODE);
-//   ASSERT_NE(dest, nullptr);
-//   // EXPECT_EQ(len, msg_size);
-//   // EXPECT_STREQ((char *)dest, message);
-//
-//   // // Limpieza
-//   // free(dest);
-//   // free(buffer);
-//   // free(buffer2);
-//   // free(req.prev);
-// }
+TEST(LowSaurion, PreviousUnfinishedMessage) {
+  // Caso en el que un mensaje se divide en múltiples iovecs
+  char *message = NULL;
+  fill_with_alphabet(&message, 2.5 * CHUNK_SZ, 0);
+  size_t msg_size = strlen(message);
+
+  // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
+  struct request *req = NULL;
+  struct Node *list = NULL;
+  int res = set_request(&req, &list, msg_size, message, 1);
+  EXPECT_EQ(res, SUCCESS_CODE);
+  EXPECT_EQ(req->prev_size, 0UL);
+  EXPECT_EQ(req->prev_remain, 0UL);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, 0UL);
+  EXPECT_EQ(req->iovec_count, 3UL);
+  EXPECT_EQ(*(size_t *)req->iov[0].iov_base, 2.5 * CHUNK_SZ);
+
+  req->iovec_count = 1;
+
+  void *dest = nullptr;
+  size_t len = 0;
+
+  res = read_chunk(&dest, &len, req);
+
+  EXPECT_EQ(res, SUCCESS_CODE);
+  ASSERT_EQ(dest, nullptr);
+  EXPECT_EQ(len, 0UL);
+  EXPECT_NE(req->prev, nullptr);
+  EXPECT_EQ(req->prev_size, msg_size);
+  size_t readed = CHUNK_SZ - sizeof(size_t);
+  EXPECT_EQ(req->prev_remain, msg_size - readed);
+
+  res = set_request(&req, &list, req->prev_remain, message + readed, 0);
+  EXPECT_EQ(res, SUCCESS_CODE);
+
+  req->iovec_count = 1;
+
+  res = read_chunk(&dest, &len, req);
+  EXPECT_EQ(res, SUCCESS_CODE);
+  ASSERT_EQ(dest, nullptr);
+  EXPECT_EQ(len, 0UL);
+  EXPECT_NE(req->prev, nullptr);
+  EXPECT_EQ(req->prev_size, msg_size);
+  readed = 2 * CHUNK_SZ - sizeof(size_t);
+  EXPECT_EQ(req->prev_remain, msg_size - readed);
+
+  res = set_request(&req, &list, req->prev_remain, message + readed, 0);
+  EXPECT_EQ(res, SUCCESS_CODE);
+
+  res = read_chunk(&dest, &len, req);
+  EXPECT_EQ(res, SUCCESS_CODE);
+  ASSERT_NE(dest, nullptr);
+  EXPECT_EQ(len, msg_size);
+
+  // Limpieza
+  free_request(req, NULL, 0);
+  free(dest);
+}

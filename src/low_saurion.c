@@ -355,10 +355,12 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     curr_iov = 0;
     curr_iov_off = 0;
     dest_off = cont_sz - cont_rem;
-    if (msg_rem <= max_iov_cont) {
-      *dest = malloc(cont_sz);
+    if (cont_rem <= max_iov_cont) {
       *dest = req->prev;
       dest_ptr = *dest;
+      req->prev = NULL;
+      req->prev_size = 0;
+      req->prev_remain = 0;
     } else {
       req->prev = malloc(cont_sz);
       dest_ptr = req->prev;
@@ -373,7 +375,7 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     cont_rem = cont_sz;
     msg_rem = cont_rem + 1;
     dest_off = cont_sz - cont_rem;
-    if (msg_rem <= max_iov_cont) {
+    if (cont_rem <= max_iov_cont) {
       *dest = malloc(cont_sz);
       dest_ptr = *dest;
     } else {
@@ -390,7 +392,7 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     cont_rem = cont_sz;
     msg_rem = cont_rem + 1;
     dest_off = cont_sz - cont_rem;
-    if (msg_rem <= max_iov_cont) {
+    if (cont_rem <= max_iov_cont) {
       *dest = malloc(cont_sz);
       dest_ptr = *dest;
     } else {
@@ -400,11 +402,12 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     }
   }
   /*! Remaining bytes of the message (content + header + foot) stored in the current IOVEC */
-  size_t curr_iov_msg_rem = MIN(cont_rem, (req->iov[curr_iov].iov_len - curr_iov_off));
+  size_t curr_iov_msg_rem = 0;
 
   // Copy loop
   uint8_t ok = 1UL;
   while (1) {
+    curr_iov_msg_rem = MIN(cont_rem, (req->iov[curr_iov].iov_len - curr_iov_off));
     memcpy(dest_ptr + dest_off, req->iov[curr_iov].iov_base + curr_iov_off, curr_iov_msg_rem);
     dest_off += curr_iov_msg_rem;
     curr_iov_off += curr_iov_msg_rem;
@@ -415,11 +418,12 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
       if (*((uint8_t *)(req->iov[curr_iov].iov_base + curr_iov_off)) != 0) {
         ok = 0UL;
       }
+      *len = cont_sz;
       break;
     }
     if (curr_iov_off >= (req->iov[curr_iov].iov_len)) {
       ++curr_iov;
-      if (curr_iov >= req->iovec_count) {
+      if (curr_iov == req->iovec_count) {
         break;
       }
       curr_iov_off = 0;
@@ -427,6 +431,7 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
   }
 
   // Update status
+  printf("prev = %s | dest = %s\n", (req->prev ? "NO NULL" : NULL), (*dest ? "NO NULL" : "NULL"));
   if (req->prev) {
     req->prev_size = cont_sz;
     req->prev_remain = cont_rem;
@@ -451,7 +456,6 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     *len = 0;
     return ERROR_CODE;
   }
-  *len = cont_sz;
   return SUCCESS_CODE;
 }
 
