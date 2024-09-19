@@ -2,6 +2,7 @@
 
 #include <bits/types/struct_iovec.h>
 #include <gtest/gtest.h>
+#include <string.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -381,3 +382,296 @@ TEST(LowSaurion, PreviousUnfinishedMessage) {
   free_request(req, NULL, 0);
   free(dest);
 }
+
+TEST(LowSaurion, MultipleMessagesInOneIovec) {
+  char *msg1 = NULL;
+  size_t size1 = 3;
+  char *msg2 = NULL;
+  size_t size2 = 4;
+  char *msg3 = NULL;
+  size_t size3 = 5;
+  size_t offset = 0;
+  fill_with_alphabet(&msg1, size1, 1);
+  fill_with_alphabet(&msg2, size2, 1);
+  fill_with_alphabet(&msg3, size3, 1);
+
+  const size_t wrapper = sizeof(uint64_t) + 1;
+  size_t total_size = size1 + size2 + size3 + 3 * wrapper;
+  char *msgs = (char *)malloc(total_size);
+  memcpy(msgs, msg1, size1 + wrapper);
+  offset += size1 + wrapper;
+  memcpy(msgs + offset, msg2, size2 + wrapper);
+  offset += size2 + wrapper;
+  memcpy(msgs + offset, msg3, size3 + wrapper);
+
+  struct request *req = NULL;
+  struct Node *list = NULL;
+
+  int res = set_request(&req, &list, total_size, msgs, 0);
+  EXPECT_EQ(res, SUCCESS_CODE);
+  EXPECT_EQ(req->prev_size, 0UL);
+  EXPECT_EQ(req->prev_remain, 0UL);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, 0UL);
+  EXPECT_EQ(req->iovec_count, 1UL);
+  offset = 0;
+  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size1);
+  offset += sizeof(uint64_t) + size1;
+  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  offset += 1;
+  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size2);
+  offset += sizeof(uint64_t) + size2;
+  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  offset += 1;
+  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size3);
+  offset += sizeof(uint64_t) + size3;
+  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+
+  void *dest = nullptr;
+  size_t len = 0;
+
+  res = read_chunk(&dest, &len, req);
+
+  EXPECT_EQ(res, SUCCESS_CODE);
+  ASSERT_NE(dest, nullptr);
+  EXPECT_EQ(len, size1);
+  EXPECT_EQ(strncmp((char *)dest, msg1 + sizeof(uint64_t), size1), 0);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, size1 + wrapper);
+
+  res = read_chunk(&dest, &len, req);
+
+  EXPECT_EQ(res, SUCCESS_CODE);
+  ASSERT_NE(dest, nullptr);
+  EXPECT_EQ(len, size2);
+  EXPECT_EQ(strncmp((char *)dest, msg2 + sizeof(uint64_t), size2), 0);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, size1 + size2 + 2 * wrapper);
+
+  res = read_chunk(&dest, &len, req);
+
+  EXPECT_EQ(res, SUCCESS_CODE);
+  ASSERT_NE(dest, nullptr);
+  EXPECT_EQ(len, size3);
+  EXPECT_EQ(strncmp((char *)dest, msg3 + sizeof(uint64_t), size3), 0);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, 0UL);
+}
+
+TEST(LowSaurion, MultipleMessagesInOneIovecLastIncomplete) {
+  char *msg1 = NULL;
+  size_t size1 = 3;
+  char *msg2 = NULL;
+  size_t size2 = 4;
+  char *msg3 = NULL;
+  size_t size3 = 5;
+  size_t offset = 0;
+  fill_with_alphabet(&msg1, size1, 1);
+  fill_with_alphabet(&msg2, size2, 1);
+  fill_with_alphabet(&msg3, size3, 1);
+
+  const size_t wrapper = sizeof(uint64_t) + 1;
+  size_t total_size = size1 + size2 + size3 + 3 * wrapper;
+  char *msgs = (char *)malloc(total_size);
+  memcpy(msgs, msg1, size1 + wrapper);
+  offset += size1 + wrapper;
+  memcpy(msgs + offset, msg2, size2 + wrapper);
+  offset += size2 + wrapper;
+  memcpy(msgs + offset, msg3, size3 + wrapper);
+
+  struct request *req = NULL;
+  struct Node *list = NULL;
+
+  int res = set_request(&req, &list, total_size, msgs, 0);
+  EXPECT_EQ(res, SUCCESS_CODE);
+  EXPECT_EQ(req->prev_size, 0UL);
+  EXPECT_EQ(req->prev_remain, 0UL);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, 0UL);
+  EXPECT_EQ(req->iovec_count, 1UL);
+  req->iov[0].iov_len -= 3;
+  offset = 0;
+  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size1);
+  offset += sizeof(uint64_t) + size1;
+  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  offset += 1;
+  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size2);
+  offset += sizeof(uint64_t) + size2;
+  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  offset += 1;
+  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size3);
+  offset += sizeof(uint64_t) + size3;
+  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+
+  void *dest = nullptr;
+  size_t len = 0;
+
+  res = read_chunk(&dest, &len, req);
+
+  EXPECT_EQ(res, SUCCESS_CODE);
+  ASSERT_NE(dest, nullptr);
+  EXPECT_EQ(len, size1);
+  EXPECT_EQ(strncmp((char *)dest, msg1 + sizeof(uint64_t), size1), 0);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, size1 + wrapper);
+
+  res = read_chunk(&dest, &len, req);
+
+  EXPECT_EQ(res, SUCCESS_CODE);
+  ASSERT_NE(dest, nullptr);
+  EXPECT_EQ(len, size2);
+  EXPECT_EQ(strncmp((char *)dest, msg2 + sizeof(uint64_t), size2), 0);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, size1 + size2 + 2 * wrapper);
+
+  res = read_chunk(&dest, &len, req);
+
+  EXPECT_EQ(res, SUCCESS_CODE);
+  ASSERT_EQ(dest, nullptr);
+  EXPECT_EQ(len, 0UL);
+  EXPECT_NE(req->prev, nullptr);
+  EXPECT_EQ(req->prev_size, size3);
+  size_t readed = size3 - 2;
+  EXPECT_EQ(req->prev_remain, size3 - readed);
+}
+
+TEST(LowSaurion, MultipleMessagesInOneIovecSecondMalformed) {
+  char *msg1 = NULL;
+  size_t size1 = 10;
+  char *msg2 = NULL;
+  size_t size2 = 40;
+  char *msg3 = NULL;
+  size_t size3 = 50;
+  size_t offset = 0;
+  fill_with_alphabet(&msg1, size1, 1);
+  fill_with_alphabet(&msg2, size2, 1);
+  fill_with_alphabet(&msg3, size3, 1);
+
+  const size_t wrapper = sizeof(uint64_t) + 1;
+  size_t total_size = size1 + size2 + size3 + 3 * wrapper - 10;
+  char *msgs = (char *)malloc(total_size);
+  memcpy(msgs, msg1, size1 + wrapper);
+  offset += size1 + wrapper;
+  memcpy(msgs + offset, msg2, size2 + wrapper);
+  offset += size2 + wrapper - 10;
+  memcpy(msgs + offset, msg3, size3 + wrapper);
+  EXPECT_EQ(*(uint64_t *)(msgs + offset), size3);
+
+  struct request *req = NULL;
+  struct Node *list = NULL;
+
+  int res = set_request(&req, &list, total_size, msgs, 0);
+  EXPECT_EQ(res, SUCCESS_CODE);
+  EXPECT_EQ(req->prev_size, 0UL);
+  EXPECT_EQ(req->prev_remain, 0UL);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, 0UL);
+  EXPECT_EQ(req->iovec_count, 1UL);
+  offset = 0;
+  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size1);
+  offset += sizeof(uint64_t) + size1;
+  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  offset += 1;
+  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size2);
+  offset += sizeof(uint64_t) + size2;
+  EXPECT_NE(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  offset += 1 - 10;
+  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size3);
+  offset += sizeof(uint64_t) + size3;
+  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+
+  void *dest = nullptr;
+  size_t len = 0;
+
+  res = read_chunk(&dest, &len, req);
+
+  EXPECT_EQ(res, SUCCESS_CODE);
+  ASSERT_NE(dest, nullptr);
+  EXPECT_EQ(len, size1);
+  EXPECT_EQ(strncmp((char *)dest, msg1 + sizeof(uint64_t), size1), 0);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, size1 + wrapper);
+
+  res = read_chunk(&dest, &len, req);
+
+  EXPECT_EQ(res, ERROR_CODE);
+  ASSERT_EQ(dest, nullptr);
+  EXPECT_EQ(len, 0UL);
+  EXPECT_EQ(req->prev, nullptr);
+  EXPECT_EQ(req->prev_remain, 0UL);
+  EXPECT_EQ(req->prev_size, 0UL);
+  EXPECT_EQ(req->next_offset, 0UL);
+}
+
+TEST(LowSaurion, MultipleMessagesInOneIovecSecondAndThirdMalformed) {
+  char *msg1 = NULL;
+  size_t size1 = 10;
+  char *msg2 = NULL;
+  size_t size2 = 40;
+  char *msg3 = NULL;
+  size_t size3 = 50;
+  size_t offset = 0;
+  fill_with_alphabet(&msg1, size1, 1);
+  fill_with_alphabet(&msg2, size2, 1);
+  fill_with_alphabet(&msg3, size3, 1);
+
+  const size_t wrapper = sizeof(uint64_t) + 1;
+  size_t total_size = size1 + size2 + size3 + 3 * wrapper - 10 - 5;
+  char *msgs = (char *)malloc(total_size);
+  memcpy(msgs, msg1, size1 + wrapper);
+  offset += size1 + wrapper;
+  memcpy(msgs + offset, msg2, size2 + wrapper);
+  offset += size2 + wrapper - 10;
+  memcpy(msgs + offset, msg3, size3 + wrapper - 5);
+  EXPECT_EQ(*(uint64_t *)(msgs + offset), size3);
+
+  struct request *req = NULL;
+  struct Node *list = NULL;
+
+  int res = set_request(&req, &list, total_size, msgs, 0);
+  EXPECT_EQ(res, SUCCESS_CODE);
+  EXPECT_EQ(req->prev_size, 0UL);
+  EXPECT_EQ(req->prev_remain, 0UL);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, 0UL);
+  EXPECT_EQ(req->iovec_count, 1UL);
+  offset = 0;
+  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size1);
+  offset += sizeof(uint64_t) + size1;
+  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  offset += 1;
+  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size2);
+  offset += sizeof(uint64_t) + size2;
+  EXPECT_NE(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  offset += 1 - 10;
+  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size3);
+  offset += sizeof(uint64_t) + size3;
+  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+
+  void *dest = nullptr;
+  size_t len = 0;
+
+  res = read_chunk(&dest, &len, req);
+
+  EXPECT_EQ(res, SUCCESS_CODE);
+  ASSERT_NE(dest, nullptr);
+  EXPECT_EQ(len, size1);
+  EXPECT_EQ(strncmp((char *)dest, msg1 + sizeof(uint64_t), size1), 0);
+  EXPECT_EQ(req->next_iov, 0UL);
+  EXPECT_EQ(req->next_offset, size1 + wrapper);
+
+  res = read_chunk(&dest, &len, req);
+
+  EXPECT_EQ(res, ERROR_CODE);
+  ASSERT_EQ(dest, nullptr);
+  EXPECT_EQ(len, 0UL);
+  EXPECT_EQ(req->prev, nullptr);
+  EXPECT_EQ(req->prev_remain, 0UL);
+  EXPECT_EQ(req->prev_size, 0UL);
+  EXPECT_EQ(req->next_offset, 0UL);
+}
+
+// Test restantes:
+//  - Request con UN mensaje mal formado (`content_size` incorrecto):
+//    - El `content_size` < `strlen(content)` -> Siguente mensaje es uno nuevo
+//    - El `content_size` > `strlen(content)` -> Content continua y el siguiente mensaje es nuevo

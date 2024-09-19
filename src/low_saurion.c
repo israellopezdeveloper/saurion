@@ -370,18 +370,19 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     // Reading the next message
     curr_iov = req->next_iov;
     curr_iov_off = req->next_offset;
-    cont_sz = *((size_t *)req->iov[curr_iov].iov_base + curr_iov_off);
+    cont_sz = *((size_t *)(req->iov[curr_iov].iov_base + curr_iov_off));
     curr_iov_off += sizeof(uint64_t);
     cont_rem = cont_sz;
     msg_rem = cont_rem + 1;
     dest_off = cont_sz - cont_rem;
-    if (cont_rem <= max_iov_cont) {
+    if ((curr_iov_off + cont_rem + 1) <= max_iov_cont) {
       *dest = malloc(cont_sz);
       dest_ptr = *dest;
     } else {
       req->prev = malloc(cont_sz);
       dest_ptr = req->prev;
       *dest = NULL;
+      *len = 0;
     }
   } else {
     // Reading the first message
@@ -419,6 +420,7 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
         ok = 0UL;
       }
       *len = cont_sz;
+      ++curr_iov_off;
       break;
     }
     if (curr_iov_off >= (req->iov[curr_iov].iov_len)) {
@@ -431,18 +433,22 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
   }
 
   // Update status
-  printf("prev = %s | dest = %s\n", (req->prev ? "NO NULL" : NULL), (*dest ? "NO NULL" : "NULL"));
   if (req->prev) {
     req->prev_size = cont_sz;
     req->prev_remain = cont_rem;
+    *dest = NULL;
+    len = 0;
   } else {
     req->prev_size = 0;
     req->prev_remain = 0;
   }
   if (curr_iov < req->iovec_count) {
-    if (req->iov[curr_iov].iov_len < curr_iov_off) {
+    if (req->iov[curr_iov].iov_len > curr_iov_off) {
       req->next_iov = curr_iov;
       req->next_offset = curr_iov_off;
+    } else {
+      req->next_iov = 0;
+      req->next_offset = 0;
     }
   }
 
@@ -454,6 +460,18 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     dest_ptr = NULL;
     *dest = NULL;
     *len = 0;
+    req->next_iov = 0;
+    req->next_offset = 0;
+    for (size_t i = curr_iov; i < req->iovec_count; ++i) {
+      for (size_t j = curr_iov_off; j < req->iov[i].iov_len; ++j) {
+        uint8_t foot = *(uint8_t *)(req->iov[i].iov_base + j);
+        if (foot == 0) {
+          req->next_iov = i;
+          req->next_offset = (j + 1) % req->iov[i].iov_len;
+          return ERROR_CODE;
+        }
+      }
+    }
     return ERROR_CODE;
   }
   return SUCCESS_CODE;
