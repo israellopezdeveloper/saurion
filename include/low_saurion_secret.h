@@ -145,22 +145,6 @@ int set_request(struct request **r, struct Node **l, size_t s, const void *m, ui
  * information. The function updates the request's state to track the current position within the
  * iovecs and any incomplete messages.
  *
- * The `struct request` is defined as:
- *
- * @code
- * struct request {
- *   void *prev;
- *   size_t prev_size;
- *   size_t prev_remain;
- *   int next_iov;
- *   size_t next_offset;
- *   int event_type;
- *   int iovec_count;
- *   int client_socket;
- *   struct iovec iov[];
- * };
- * @endcode
- *
  * @note The function assumes that each message is prefixed with its size (of type `size_t`), and
  * that messages may span multiple iovec entries. It also assumes that the data in the iovec buffers
  * is valid and properly aligned for reading `size_t` values.
@@ -168,7 +152,12 @@ int set_request(struct request **r, struct Node **l, size_t s, const void *m, ui
  * @warning The caller is responsible for freeing the allocated message buffer pointed to by `*dest`
  * when it is no longer needed.
  *
- * @return None.
+ * @return int Returns SUCCESS_CODE on success, or ERROR_CODE on failure (malformed msg).
+ * @retval SUCCESS_CODE No malformed message found.
+ * @retval ERROR_CODE Malformed message found.
+ * @todo add message contraint
+ * @todo validar `msg_size`, crear maximos
+ * @todo validar `offsets`
  */
 [[nodiscard]]
 int read_chunk(void **dest, size_t *len, struct request *const req);

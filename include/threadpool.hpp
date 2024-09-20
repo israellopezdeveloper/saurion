@@ -5,7 +5,6 @@
 #include <bits/types/sig_atomic_t.h>
 #include <pthread.h>
 
-#include <cstddef>
 #include <cstdint>
 #include <queue>
 #include <unordered_map>

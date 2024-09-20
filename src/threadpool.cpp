@@ -4,7 +4,6 @@
 
 #include <pthread.h>
 
-#include <cstdio>
 #include <stdexcept>
 
 using TP = ThreadPool;

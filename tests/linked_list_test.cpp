@@ -2,9 +2,6 @@
 
 #include <sys/uio.h>  // for iovec
 
-#include <cstdlib>  // for malloc, free
-#include <cstring>  // for strcpy, strlen
-
 #include "gtest/gtest.h"  // for AssertionResult, Message, TestInfo (ptr only)
 
 #define N_ITEMS 100

@@ -1,11 +1,8 @@
-#include <stdint.h>  // for uint32_t
-
-#include <iostream>   // for basic_ostream, basic_ios, basic_ostream::o...
-#include <stdexcept>  // for logic_error, out_of_range, runtime_error
-#include <thread>     // for thread
-
-#include "gtest/gtest.h"   // for Test, Message, TestInfo (ptr only), TEST
 #include "threadpool.hpp"  // for ThreadPool
+
+#include <thread>  // for thread
+
+#include "gtest/gtest.h"  // for Test, Message, TestInfo (ptr only), TEST
 
 void taskWithError(void* /*unused*/) { throw std::runtime_error("Error dentro de la tarea"); }
 
@@ -467,6 +464,7 @@ TEST(ThreadPoolTest, TryToCloseDefaultQueue) {
   ThreadPool pool;
   pool.init();
   for (int i = 0; i < 1000; ++i) {
-    ASSERT_NO_THROW({ pool.remove_queue(0); });  // Intentar eliminar la cola de tareas predeterminada
+    ASSERT_NO_THROW(
+        { pool.remove_queue(0); });  // Intentar eliminar la cola de tareas predeterminada
   }
 }

@@ -1,17 +1,7 @@
-#include "low_saurion.h"
-
 #include <bits/types/struct_iovec.h>
 #include <gtest/gtest.h>
-#include <string.h>
-
-#include <cstddef>
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 
 #include "config.h"
-#include "gtest/gtest.h"
 #include "low_saurion_secret.h"
 
 void fill_with_alphabet(char **s, size_t length, uint8_t h) {
@@ -160,7 +150,7 @@ static void check_iovec(size_t size, uint8_t h) {
   free(msg);
 }
 
-TEST(LowSaurion, initialize_correct_with_header) {
+TEST(saurion_LowLevel, initialize_correct_with_header) {
   const char *message = "Hola, Mundo!";
   size_t content_size = strlen(message);
   size_t msg_size = content_size + (sizeof(uint64_t) + 1);
@@ -177,7 +167,7 @@ TEST(LowSaurion, initialize_correct_with_header) {
   EXPECT_EQ(*((char *)iovec[0].iov_base + sizeof(uint64_t) + content_size), 0);
 }
 
-TEST(LowSaurion, creates_iovecs_correctly) {
+TEST(saurion_LowLevel, creates_iovecs_correctly) {
   EXPECT_EQ(1, 1);
   check_iovec(CHUNK_SZ / 2, 1);
   check_iovec(CHUNK_SZ + 53, 1);
@@ -194,24 +184,24 @@ TEST(LowSaurion, creates_iovecs_correctly) {
   }
 }
 
-TEST(LowSaurion, tries_alloc_null_iovec) {
+TEST(saurion_LowLevel, tries_alloc_null_iovec) {
   struct iovec *iovec_null = NULL;
   int res = allocate_iovec(iovec_null, 0, 0, 0, NULL);
   EXPECT_EQ(res, ERROR_CODE);
 }
 
-TEST(LowSaurion, tries_init_null_iovec) {
+TEST(saurion_LowLevel, tries_init_null_iovec) {
   struct iovec *iovec_null = NULL;
   int res = initialize_iovec(iovec_null, 0, 0, NULL, 0, 1);
   EXPECT_EQ(res, ERROR_CODE);
 }
 
-TEST(LowSaurion, create_iovec_for_null_msg) {
+TEST(saurion_LowLevel, create_iovec_for_null_msg) {
   check_iovec(0, 1);
   check_iovec(0, 0);
 }
 
-TEST(LowSaurion, set_request_first_creation_and_reset) {
+TEST(saurion_LowLevel, set_request_first_creation_and_reset) {
   struct request *req = NULL;
   struct Node *list = NULL;
   size_t size = 2.5 * CHUNK_SZ;
@@ -234,7 +224,7 @@ TEST(LowSaurion, set_request_first_creation_and_reset) {
   free(msg);
 }
 
-TEST(LowSaurion, test_free_request) {
+TEST(saurion_LowLevel, test_free_request) {
   struct request *req = NULL;
   struct Node *list = NULL;
   size_t size = 2.5 * CHUNK_SZ;
@@ -252,7 +242,7 @@ TEST(LowSaurion, test_free_request) {
   free(msg);
 }
 
-TEST(LowSaurion, EmptyRequest) {
+TEST(saurion_LowLevel, EmptyRequest) {
   // Caso en el que req->iovec_count == 0
   struct request req = {};
   req.iovec_count = 0;
@@ -266,7 +256,7 @@ TEST(LowSaurion, EmptyRequest) {
   EXPECT_EQ(len, 0u);
 }
 
-TEST(LowSaurion, SingleMessageComplete) {
+TEST(saurion_LowLevel, SingleMessageComplete) {
   // Caso en el que hay un mensaje completo en un solo iovec
   const char *message = "Hola, Mundo!";
   size_t msg_size = strlen(message);
@@ -291,7 +281,7 @@ TEST(LowSaurion, SingleMessageComplete) {
   free(dest);
 }
 
-TEST(LowSaurion, MessageSpanningMultipleIovecs) {
+TEST(saurion_LowLevel, MessageSpanningMultipleIovecs) {
   // Caso en el que un mensaje se divide en múltiples iovecs
   char *message = NULL;
   fill_with_alphabet(&message, 1.5 * CHUNK_SZ, 0);
@@ -323,7 +313,7 @@ TEST(LowSaurion, MessageSpanningMultipleIovecs) {
   free(dest);
 }
 
-TEST(LowSaurion, PreviousUnfinishedMessage) {
+TEST(saurion_LowLevel, PreviousUnfinishedMessage) {
   // Caso en el que un mensaje se divide en múltiples iovecs
   char *message = NULL;
   fill_with_alphabet(&message, 2.5 * CHUNK_SZ, 0);
@@ -383,7 +373,7 @@ TEST(LowSaurion, PreviousUnfinishedMessage) {
   free(dest);
 }
 
-TEST(LowSaurion, MultipleMessagesInOneIovec) {
+TEST(saurion_LowLevel, MultipleMessagesInOneIovec) {
   char *msg1 = NULL;
   size_t size1 = 3;
   char *msg2 = NULL;
@@ -458,7 +448,7 @@ TEST(LowSaurion, MultipleMessagesInOneIovec) {
   EXPECT_EQ(req->next_offset, 0UL);
 }
 
-TEST(LowSaurion, MultipleMessagesInOneIovecLastIncomplete) {
+TEST(saurion_LowLevel, MultipleMessagesInOneIovecLastIncomplete) {
   char *msg1 = NULL;
   size_t size1 = 3;
   char *msg2 = NULL;
@@ -535,7 +525,7 @@ TEST(LowSaurion, MultipleMessagesInOneIovecLastIncomplete) {
   EXPECT_EQ(req->prev_remain, size3 - readed);
 }
 
-TEST(LowSaurion, MultipleMessagesInOneIovecSecondMalformed) {
+TEST(saurion_LowLevel, MultipleMessagesInOneIovecSecondMalformed) {
   char *msg1 = NULL;
   size_t size1 = 10;
   char *msg2 = NULL;
@@ -603,7 +593,7 @@ TEST(LowSaurion, MultipleMessagesInOneIovecSecondMalformed) {
   EXPECT_EQ(req->next_offset, 0UL);
 }
 
-TEST(LowSaurion, MultipleMessagesInOneIovecSecondAndThirdMalformed) {
+TEST(saurion_LowLevel, MultipleMessagesInOneIovecSecondAndThirdMalformed) {
   char *msg1 = NULL;
   size_t size1 = 10;
   char *msg2 = NULL;
@@ -670,8 +660,3 @@ TEST(LowSaurion, MultipleMessagesInOneIovecSecondAndThirdMalformed) {
   EXPECT_EQ(req->prev_size, 0UL);
   EXPECT_EQ(req->next_offset, 0UL);
 }
-
-// Test restantes:
-//  - Request con UN mensaje mal formado (`content_size` incorrecto):
-//    - El `content_size` < `strlen(content)` -> Siguente mensaje es uno nuevo
-//    - El `content_size` > `strlen(content)` -> Content continua y el siguiente mensaje es nuevo

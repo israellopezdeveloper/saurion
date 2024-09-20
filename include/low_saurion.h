@@ -100,7 +100,6 @@
 
 #include <liburing.h>
 #include <pthread.h>
-#include <stdint.h>
 
 #include "config.h"
 #include "cthreadpool.hpp"

@@ -1,19 +1,9 @@
 #include "low_saurion.h"
 
-#include <liburing.h>
 #include <netinet/in.h>
-#include <pthread.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/eventfd.h>
-#include <sys/uio.h>
-#include <unistd.h>
-
-#include "config.h"
-#include "linked_list.h"
 
 #define EVENT_TYPE_ACCEPT 0  //! @brief Tipo de evento para aceptar una nueva conexión.
 #define EVENT_TYPE_READ 1    //! @brief Tipo de evento para leer datos.
@@ -329,7 +319,6 @@ static void handle_accept(const struct saurion *const s, const int fd) {
 
 [[nodiscard]]
 int read_chunk(void **dest, size_t *len, struct request *const req) {
-  //< @todo add message contraint
   // Initial checks
   if (req->iovec_count == 0) {
     return ERROR_CODE;
@@ -342,7 +331,6 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
   }
   size_t cont_sz = 0;       //< Message content size
   size_t cont_rem = 0;      //< Remaining bytes of message content
-  size_t msg_rem = 0;       //< Message (content + header + foot) remaining bytes
   size_t curr_iov = 0;      //< IOVEC num currently reading
   size_t curr_iov_off = 0;  //< Offset in bytes of the current IOVEC
   size_t dest_off = 0;      //< Write offset on the destiny array
@@ -351,7 +339,6 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     // There's a previous unfinished message
     cont_sz = req->prev_size;
     cont_rem = req->prev_remain;
-    msg_rem = cont_rem + 1;
     curr_iov = 0;
     curr_iov_off = 0;
     dest_off = cont_sz - cont_rem;
@@ -373,7 +360,6 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     cont_sz = *((size_t *)(req->iov[curr_iov].iov_base + curr_iov_off));
     curr_iov_off += sizeof(uint64_t);
     cont_rem = cont_sz;
-    msg_rem = cont_rem + 1;
     dest_off = cont_sz - cont_rem;
     if ((curr_iov_off + cont_rem + 1) <= max_iov_cont) {
       *dest = malloc(cont_sz);
@@ -391,7 +377,6 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     cont_sz = *((size_t *)(req->iov[curr_iov].iov_base + curr_iov_off));
     curr_iov_off += sizeof(uint64_t);
     cont_rem = cont_sz;
-    msg_rem = cont_rem + 1;
     dest_off = cont_sz - cont_rem;
     if (cont_rem <= max_iov_cont) {
       *dest = malloc(cont_sz);
@@ -412,7 +397,6 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     memcpy(dest_ptr + dest_off, req->iov[curr_iov].iov_base + curr_iov_off, curr_iov_msg_rem);
     dest_off += curr_iov_msg_rem;
     curr_iov_off += curr_iov_msg_rem;
-    msg_rem -= curr_iov_msg_rem;
     cont_rem -= curr_iov_msg_rem;
     if (cont_rem <= 0) {
       // Finish reading
@@ -477,18 +461,13 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
   return SUCCESS_CODE;
 }
 
-static void handle_read(struct saurion *const s, struct request *const req, int bytes) {
-  //< @todo validar `msg_size`, crear maximos
-  //< @todo validar `offsets`
+static void handle_read(struct saurion *const s, struct request *const req) {
   void *msg = NULL;
-  int last_bytes = bytes % CHUNK_SZ;
-  last_bytes = (!last_bytes ? CHUNK_SZ : last_bytes);
-  size_t pos = (req->iovec_count > 0) ? req->iovec_count - 1 : 0;
-  req->iov[pos].iov_len = last_bytes;
   size_t len = 0;
   while (1) {
-    int res = read_chunk(&msg, &len, req);
-    printf("-->%d\n", res);
+    if (!read_chunk(&msg, &len, req)) {
+      break;
+    }
     // Hay siguiente
     if (req->next_iov || req->next_offset) {
       if (s->cb.on_readed && msg) {
@@ -727,7 +706,7 @@ void saurion_worker_master(void *arg) {
           handle_close(s, req);
         }
         if (cqe->res > 0) {
-          handle_read(s, req, cqe->res);
+          handle_read(s, req);
         }
         list_delete_node(&s->list, req);
         break;
@@ -789,7 +768,7 @@ void saurion_worker_slave(void *arg) {
           handle_close(s, req);
         }
         if (cqe->res > 0) {
-          handle_read(s, req, cqe->res);
+          handle_read(s, req);
         }
         list_delete_node(&s->list, req);
         break;
