@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 
 #include <atomic>
+#include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <iostream>

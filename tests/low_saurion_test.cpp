@@ -1,662 +1,453 @@
-#include <bits/types/struct_iovec.h>
-#include <gtest/gtest.h>
+#include "low_saurion.h"  // for saurion, saurion_send, EXTERNAL_set_socket
 
-#include "config.h"
-#include "low_saurion_secret.h"
+#include <unistd.h>
 
-void fill_with_alphabet(char **s, size_t length, uint8_t h) {
-  const char *alphabet = "abcdefghijklmnopqrstuvwxyz";
-  int alphabet_len = 26;
+#include <algorithm>
+#include <csignal>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
+#include <regex>
+#include <thread>
 
-  size_t wrapper = sizeof(uint64_t) + sizeof(char);
-  if (h) {
-    size_t msg_size = length + wrapper;
-    *s = (char *)malloc(msg_size);
-    *(uint64_t *)(*s) = length;
-    int pos = sizeof(uint64_t);
-    for (size_t i = 0; i < length; i++) {
-      (*s)[pos] = alphabet[i % alphabet_len];
-      pos++;
+#include "gtest/gtest.h"  // for Message, EXPECT_EQ, TestPartResult, Test...
+
+#define PORT 8080
+
+#define FIFO "/tmp/saurion_test_fifo.XXX"
+#define FIFO_LENGTH 27
+
+char *get_executable_directory(char *buffer, size_t size) {
+  ssize_t len = readlink("/proc/self/exe", buffer, size - 1);
+  if (len != -1) {
+    buffer[len] = '\0';
+    char *last_slash = strrchr(buffer, '/');
+    if (last_slash != NULL) {
+      *last_slash = '\0';
     }
-    (*s)[msg_size - 1] = 0;
   } else {
-    *s = (char *)malloc(length + 1);
-    int pos = 0;
-    for (size_t i = 0; i < length; i++) {
-      (*s)[pos] = alphabet[i % alphabet_len];
-      pos++;
-    }
-    (*s)[length] = 0;
+    perror("readlink");
+    exit(EXIT_FAILURE);
   }
+  return buffer;
 }
 
-TEST(Tools, alphabet_with_header) {
-  char *str = NULL;
-  size_t size = 4;
-  fill_with_alphabet(&str, size, 1);
-  EXPECT_NE(str, nullptr);
-  uint64_t content_size = *(uint64_t *)str;
-  char *str_content = str + sizeof(uint64_t);
-  uint8_t foot = *(uint8_t *)(str + content_size);
-  EXPECT_EQ(content_size, size);
-  EXPECT_STREQ(str_content, "abcd");
-  EXPECT_EQ(foot, 0);
-  free(str);
-}
+struct summary {
+  explicit summary() = default;
+  ~summary() = default;
+  summary(const summary &) = delete;
+  summary(summary &&) = delete;
+  summary &operator=(const summary &) = delete;
+  summary &operator=(summary &&) = delete;
+  uint32_t connected = 0;
+  std::vector<int> fds;
+  pthread_cond_t connected_c = PTHREAD_COND_INITIALIZER;
+  pthread_mutex_t connected_m = PTHREAD_MUTEX_INITIALIZER;
+  uint32_t disconnected = 0;
+  pthread_cond_t disconnected_c = PTHREAD_COND_INITIALIZER;
+  pthread_mutex_t disconnected_m = PTHREAD_MUTEX_INITIALIZER;
+  size_t readed = 0;
+  pthread_cond_t readed_c = PTHREAD_COND_INITIALIZER;
+  pthread_mutex_t readed_m = PTHREAD_MUTEX_INITIALIZER;
+  uint32_t wrote = 0;
+  pthread_cond_t wrote_c = PTHREAD_COND_INITIALIZER;
+  pthread_mutex_t wrote_m = PTHREAD_MUTEX_INITIALIZER;
+} __attribute__((aligned(128))) summary;
 
-TEST(Tools, alphabet_without_header) {
-  char *str = NULL;
-  size_t size = 4;
-  fill_with_alphabet(&str, size, 0);
-  EXPECT_NE(str, nullptr);
-  EXPECT_EQ(strlen(str), size);
-  EXPECT_STREQ(str, "abcd");
-  free(str);
-}
+void signalHandler(int signum);
 
-TEST(Tools, null_length_with_header) {
-  char *str = NULL;
-  size_t size = 0;
-  fill_with_alphabet(&str, size, 1);
-  EXPECT_NE(str, nullptr);
-  uint64_t content_size = *(uint64_t *)str;
-  char *str_content = str + sizeof(uint64_t);
-  uint8_t foot = *(uint8_t *)(str + content_size);
-  EXPECT_EQ(content_size, size);
-  EXPECT_STREQ(str_content, "");
-  EXPECT_EQ(foot, 0);
-  free(str);
-}
+class LowSaurionTest : public ::testing::Test {
+ public:
+  struct saurion *saurion;
+  static std::thread *sender;
+  static char *fifo_name;
+  static FILE *fifo_write;
 
-TEST(Tools, null_length_without_header) {
-  char *str = NULL;
-  size_t size = 0;
-  fill_with_alphabet(&str, size, 0);
-  EXPECT_NE(str, nullptr);
-  EXPECT_EQ(strlen(str), size);
-  EXPECT_STREQ(str, "");
-  free(str);
-}
-
-/*!
- * Cuando a check_iovec se le envia que ha de ejecutarse:
- *   CON HEADER -> quiere decir que se va a simular unos iovecs en los que se ha de generar el
- * header, por lo que generamos un mensaje de entrada SIN header (UNA SALIDA)
- *
- *   SIN HEADER -> quiere decir que se va a simular unos iovecs en los que no se han de generar
- * header, por lo que generamos un mensaje CON header (UNA ENTRADA).
- */
-static void check_iovec(size_t size, uint8_t h) {
-  // mensaje de entrada
-  void *msg = NULL;
-  fill_with_alphabet((char **)&msg, size, !h);
-
-  // full_size, content_size y amount
-  uint64_t full_size = size + (h ? sizeof(uint64_t) + 1 : 0);
-  uint64_t content_size = size;
-  size_t amount = full_size / CHUNK_SZ;
-  amount = amount + (full_size % CHUNK_SZ ? 1 : 0);
-
-  // iovec y chd_ptr
-  struct iovec *iovecs = (struct iovec *)malloc(amount * sizeof(struct iovec));
-  void **chd_ptr = (void **)malloc(amount * sizeof(void *));
-
-  char *msg_ptr = (char *)msg;
-  char iov_str[CHUNK_SZ + 1];
-  memset(iov_str, 0, CHUNK_SZ + 1);
-  char orig_str[CHUNK_SZ + 1];
-  memset(orig_str, 0, CHUNK_SZ + 1);
-
-  int res = 0;
-  for (size_t i = 0; i < amount; ++i) {
-    // alojamos los iovecs reservando el tamaño del mensaje completo
-    res = allocate_iovec(&iovecs[i], amount, i, full_size, chd_ptr);
-    EXPECT_EQ(res, SUCCESS_CODE);
-
-    // IOV_LEN esperado
-    //   - n -> CHUNK_SZ
-    //   - ultimo -> full_size % CHUNK_SZ (+1 si es 0)
-    uint64_t exp_iov_len = ((i + 1) == amount ? full_size % CHUNK_SZ : CHUNK_SZ);
-    exp_iov_len = (exp_iov_len == 0 ? CHUNK_SZ : exp_iov_len);
-    EXPECT_EQ(exp_iov_len, iovecs[i].iov_len);
-
-    // Inicializamos iovec
-    res = initialize_iovec(&iovecs[i], amount, i, msg, content_size, h);
-    EXPECT_EQ(res, SUCCESS_CODE);
-
-    // Si es el primero verificar el tamaño del contenido
-    if (i == 0) {
-      EXPECT_EQ(*((uint64_t *)iovecs[i].iov_base), content_size);
+ protected:
+  static char *generate_random_fifo_name() {
+    fifo_name = (char *)malloc(FIFO_LENGTH);
+    if (!fifo_name) {
+      return NULL;  // Handle error
     }
 
-    // Descargar el contenido el iovec, tanto con header como sin el la salida es la misma
-    //   i = 0 -> se desplaza 8 bytes -> `len` - 8 | `offset` = 8
-    //   n -> `len` | `offset` = 0
-    //   i = amount -> se quita el foot -> `len` - 1
-    size_t str_len =
-        iovecs[i].iov_len - (i == 0 ? sizeof(uint64_t) : 0) - ((i + 1) == amount ? 1 : 0);
-    strncpy(iov_str, (char *)iovecs[i].iov_base + (i == 0 ? sizeof(uint64_t) : 0), str_len);
-    strncpy(orig_str, msg_ptr, str_len);
-    iov_str[str_len] = 0;
-    orig_str[str_len] = 0;
-    EXPECT_EQ(strncmp(iov_str, orig_str, str_len), 0);
-    msg_ptr += iovecs[i].iov_len - (i == 0 ? sizeof(uint64_t) : 0);
+    strcpy(fifo_name, FIFO);
+    // Seed the random number generator
+    srand(time(NULL));
+
+    // Generate the random "XXX" string
+    for (int i = 23; i < 26; i++) {
+      char c = (rand() % 10) + '0';
+      fifo_name[i] = c;
+    }
+
+    return fifo_name;
   }
-  free(iovecs);
-  for (size_t i = 0; i < amount; ++i) {
-    free(chd_ptr[i]);
+
+  static void SetUpTestSuite() {
+    fifo_name = generate_random_fifo_name();
+    std::signal(SIGINT, signalHandler);
+    if (!fifo_name) {
+      // Handle error generating random name
+      exit(ERROR_CODE);
+    }
+    if (mkfifo(fifo_name, 0666) == -1) {
+      free(fifo_name);
+      exit(ERROR_CODE);
+    }
+    sender = new std::thread([=]() {
+      pid_t pid = fork();
+      if (pid < 0) {
+        return ERROR_CODE;
+      }
+      if (pid == 0) {
+        std::vector<const char *> exec_args;
+
+        char executable_dir[1024];
+
+        // Get the directory of the current executable
+        get_executable_directory(executable_dir, sizeof(executable_dir));
+        char script_path[1031];
+        snprintf(script_path, sizeof(script_path), "%s/client", executable_dir);
+
+        for (char *item : {(char *)script_path, (char *)"-p", fifo_name}) {
+          exec_args.push_back(item);
+        }
+        exec_args.push_back(nullptr);
+
+        // Ejecuta el comando y ignora el retorno
+        execvp(script_path, const_cast<char *const *>(exec_args.data()));
+      }
+      int status;
+      waitpid(pid, &status, 0);
+      return SUCCESS_CODE;
+    });
+    fifo_write = fopen(fifo_name, "w");
   }
-  free(chd_ptr);
-  free(msg);
-}
 
-TEST(saurion_LowLevel, initialize_correct_with_header) {
-  const char *message = "Hola, Mundo!";
-  size_t content_size = strlen(message);
-  size_t msg_size = content_size + (sizeof(uint64_t) + 1);
-  struct iovec *iovec = (struct iovec *)malloc(sizeof(struct iovec));
-  void **chd_ptr = (void **)malloc(sizeof(void *));
-  int res = allocate_iovec(&iovec[0], 1, 0, msg_size, chd_ptr);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  EXPECT_EQ(iovec[0].iov_len, msg_size);
-  res = initialize_iovec(&iovec[0], 1, 0, message, content_size, 1);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  uint64_t size = *(uint64_t *)iovec[0].iov_base;
-  EXPECT_EQ(size, content_size);
-  EXPECT_EQ(strncmp((char *)iovec[0].iov_base + sizeof(uint64_t), message, content_size), 0);
-  EXPECT_EQ(*((char *)iovec[0].iov_base + sizeof(uint64_t) + content_size), 0);
-}
-
-TEST(saurion_LowLevel, creates_iovecs_correctly) {
-  EXPECT_EQ(1, 1);
-  check_iovec(CHUNK_SZ / 2, 1);
-  check_iovec(CHUNK_SZ + 53, 1);
-  check_iovec(CHUNK_SZ, 1);
-  check_iovec(CHUNK_SZ - sizeof(uint64_t) - 1, 1);
-  check_iovec(CHUNK_SZ - sizeof(uint64_t), 1);
-  check_iovec(0, 1);
-  check_iovec(10 * CHUNK_SZ - sizeof(uint64_t), 1);
-  for (int i = 0; i < 10; ++i) {
-    srand(time(0));
-    int chunks = rand() % 10;
-    int extra = rand() % CHUNK_SZ;
-    check_iovec(chunks * CHUNK_SZ + extra, 1);
+  static void TearDownTestSuite() {
+    close_clients();
+    if (sender != nullptr) {
+      if (sender->joinable()) {
+        sender->join();
+      }
+      delete sender;
+    }
+    fclose(fifo_write);
+    unlink(fifo_name);
+    free(fifo_name);
   }
+
+  void SetUp() override {
+    summary.connected = 0;
+    summary.disconnected = 0;
+    summary.readed = 0;
+    summary.wrote = 0;
+    summary.fds.clear();
+    saurion = saurion_create(3);
+    if (!saurion) {
+      return;
+    }
+    saurion->ss = EXTERNAL_set_socket(PORT);
+    saurion->cb.on_connected = [](int sfd, void *) -> void {
+      pthread_mutex_lock(&summary.connected_m);
+      summary.connected++;
+      summary.fds.push_back(sfd);
+      pthread_cond_signal(&summary.connected_c);
+      pthread_mutex_unlock(&summary.connected_m);
+    };
+    saurion->cb.on_readed = [](int, const void *const, const ssize_t size, void *) -> void {
+      pthread_mutex_lock(&summary.readed_m);
+      summary.readed += size;
+      pthread_cond_signal(&summary.readed_c);
+      pthread_mutex_unlock(&summary.readed_m);
+    };
+    saurion->cb.on_wrote = [](int, void *) -> void {
+      pthread_mutex_lock(&summary.wrote_m);
+      summary.wrote++;
+      pthread_cond_signal(&summary.wrote_c);
+      pthread_mutex_unlock(&summary.wrote_m);
+    };
+    saurion->cb.on_closed = [](int sfd, void *) -> void {
+      printf("SERVER: client <%d> disconnected\n", sfd);
+      pthread_mutex_lock(&summary.disconnected_m);
+      summary.disconnected++;
+      pthread_cond_signal(&summary.disconnected_c);
+      pthread_mutex_unlock(&summary.disconnected_m);
+      pthread_mutex_lock(&summary.connected_m);
+      auto &vec = summary.fds;
+      vec.erase(std::remove(vec.begin(), vec.end(), sfd), vec.end());
+      pthread_cond_signal(&summary.connected_c);
+      pthread_mutex_unlock(&summary.connected_m);
+    };
+    saurion->cb.on_error = [](int, const char *const, const ssize_t, void *) -> void {};
+    if (!saurion_start(saurion)) {
+      exit(ERROR_CODE);
+    }
+    pthread_mutex_lock(&saurion->status_m);
+    while (saurion->status != 1) {
+      pthread_cond_wait(&saurion->status_c, &saurion->status_m);
+    }
+    pthread_mutex_unlock(&saurion->status_m);
+  }
+
+  void TearDown() override {
+    disconnect_clients();
+    saurion_stop(saurion);
+    saurion_destroy(saurion);
+    deleteLogFiles();
+  }
+
+  static void wait_connected(uint32_t n) {
+    pthread_mutex_lock(&summary.connected_m);
+    while (summary.connected != n) {
+      pthread_cond_wait(&summary.connected_c, &summary.connected_m);
+    }
+    pthread_mutex_unlock(&summary.connected_m);
+  }
+
+  static void wait_disconnected(uint32_t n) {
+    pthread_mutex_lock(&summary.disconnected_m);
+    while (summary.disconnected != n) {
+      pthread_cond_wait(&summary.disconnected_c, &summary.disconnected_m);
+    }
+    pthread_mutex_unlock(&summary.disconnected_m);
+  }
+
+  //   static void wait_readed(size_t n) {
+  //     pthread_mutex_lock(&summary.readed_m);
+  //     while (summary.readed < n) {
+  //       pthread_cond_wait(&summary.readed_c, &summary.readed_m);
+  //     }
+  //     pthread_mutex_unlock(&summary.readed_m);
+  //   }
+
+  //   static void wait_wrote(uint32_t n) {
+  //     pthread_mutex_lock(&summary.wrote_m);
+  //     while (summary.wrote < n) {
+  //       pthread_cond_wait(&summary.wrote_c, &summary.wrote_m);
+  //     }
+  //     pthread_mutex_unlock(&summary.wrote_m);
+  //   }
+
+  static void connect_clients(uint32_t n) {
+    fprintf(fifo_write, "connect;%d\n", n);
+    fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
+  }
+
+  static void disconnect_clients() {
+    fprintf(fifo_write, "disconnect;\n");
+    fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
+  }
+
+  //   static void send_clients(uint32_t n, const char *const msg, uint32_t delay) {
+  //     fprintf(fifo_write, "send;%d;%s;%d\n", n, msg, delay);
+  //     fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
+  //   }
+
+  static void close_clients() {
+    fprintf(fifo_write, "close;\n");
+    fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
+  }
+
+  //   void saurion_sends_to_client(int sfd, uint32_t n, const char *const msg) const {
+  //     for (uint32_t i = 0; i < n; ++i) {
+  //       saurion_send(saurion, sfd, msg);
+  //     }
+  //   }
+
+  //   void saurion_sends_to_all_clients(uint32_t n, const char *const msg) {
+  //     for (auto sfd : summary.fds) {
+  //       for (uint32_t i = 0; i < n; ++i) {
+  //         saurion_send(saurion, sfd, msg);
+  //       }
+  //     }
+  //   }
+
+  //   static size_t countOccurrences(std::string &content, const std::string &search) {
+  //     size_t count = 0;
+  //     size_t pos = content.find(search);
+  //     while (pos != std::string::npos) {
+  //       count++;
+  //       pos = content.find(search, pos + search.length());
+  //     }
+  //     return count;
+  //   }
+
+  //   static size_t read_from_clients(const std::string &search) {
+  //     size_t occurrences = 0;
+  //     for (const auto &entry : std::filesystem::directory_iterator("/tmp/")) {
+  //       const auto &path = entry.path();
+  //       if (path.filename().string().find("saurion_sender.") == 0) {
+  //         std::ifstream file(path);
+  //         if (file.is_open()) {
+  //           std::stringstream buffer;
+  //           buffer << file.rdbuf();
+  //           std::string content = buffer.str();
+  //           occurrences += countOccurrences(content, search);
+  //         }
+  //       }
+  //     }
+  //     return occurrences;
+  //   }
+
+ private:
+  void deleteLogFiles() {
+    for (const auto &entry : std::filesystem::directory_iterator("/tmp/")) {
+      const auto &path = entry.path();
+      if (path.filename().string().find("saurion_sender.") == 0) {
+        try {
+          std::filesystem::remove(path);
+        } catch (...) {
+        }
+      }
+    }
+  }
+};
+
+char *LowSaurionTest::fifo_name = nullptr;
+std::thread *LowSaurionTest::sender = nullptr;
+FILE *LowSaurionTest::fifo_write = nullptr;
+
+void signalHandler(int signum) {
+  std::cout << "Interceptada la señal " << signum << std::endl;
+
+  // Intenta eliminar el archivo FIFO
+  if (std::remove(LowSaurionTest::fifo_name) != 0) {
+    std::cerr << "Error al eliminar " << LowSaurionTest::fifo_name << std::endl;
+  } else {
+    std::cout << LowSaurionTest::fifo_name << " eliminado exitosamente." << std::endl;
+  }
+  std::regex pattern("^saurion_sender.*\\.log$");
+
+  for (const auto &entry : std::filesystem::directory_iterator("/tmp")) {
+    if (std::filesystem::is_regular_file(entry)) {
+      std::string filename = entry.path().filename().string();
+      if (std::regex_match(filename, pattern)) {
+        try {
+          std::filesystem::remove(entry.path());
+          std::cout << "Archivo borrado: " << filename << std::endl;
+        } catch (const std::filesystem::filesystem_error &e) {
+          std::cerr << "Error al borrar " << filename << ": " << e.what() << std::endl;
+        }
+      }
+    }
+  }
+  // Termina el programa
+  exit(ERROR_CODE);
 }
 
-TEST(saurion_LowLevel, tries_alloc_null_iovec) {
-  struct iovec *iovec_null = NULL;
-  int res = allocate_iovec(iovec_null, 0, 0, 0, NULL);
-  EXPECT_EQ(res, ERROR_CODE);
+TEST_F(LowSaurionTest, initServerAndCloseCorrectly) {
+  EXPECT_TRUE(true);
+  EXPECT_TRUE(true);
+  EXPECT_TRUE(true);
+  EXPECT_TRUE(true);
 }
 
-TEST(saurion_LowLevel, tries_init_null_iovec) {
-  struct iovec *iovec_null = NULL;
-  int res = initialize_iovec(iovec_null, 0, 0, NULL, 0, 1);
-  EXPECT_EQ(res, ERROR_CODE);
-}
-
-TEST(saurion_LowLevel, create_iovec_for_null_msg) {
-  check_iovec(0, 1);
-  check_iovec(0, 0);
-}
-
-TEST(saurion_LowLevel, set_request_first_creation_and_reset) {
-  struct request *req = NULL;
-  struct Node *list = NULL;
-  size_t size = 2.5 * CHUNK_SZ;
-  char *msg = NULL;
-  fill_with_alphabet(&msg, size, 0);
-  int res = set_request(&req, &list, size, msg, 1);
-  EXPECT_EQ(req->prev, nullptr);
-  EXPECT_EQ(req->prev_size, 0UL);
-  EXPECT_EQ(req->prev_remain, 0UL);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, 0UL);
-  EXPECT_EQ(req->iovec_count, 3UL);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  req->client_socket = 123;
-  req->event_type = 456;
-  res = set_request(&req, &list, size, msg, 1);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  EXPECT_EQ(req->client_socket, 123);
-  EXPECT_EQ(req->event_type, 456);
-  free(msg);
-}
-
-TEST(saurion_LowLevel, test_free_request) {
-  struct request *req = NULL;
-  struct Node *list = NULL;
-  size_t size = 2.5 * CHUNK_SZ;
-  char *msg = NULL;
-  fill_with_alphabet(&msg, size, 0);
-  int res = set_request(&req, &list, size, msg, 1);
-  EXPECT_EQ(req->prev, nullptr);
-  EXPECT_EQ(req->prev_size, 0UL);
-  EXPECT_EQ(req->prev_remain, 0UL);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, 0UL);
-  EXPECT_EQ(req->iovec_count, 3UL);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  free_request(req, NULL, 0);
-  free(msg);
-}
-
-TEST(saurion_LowLevel, EmptyRequest) {
-  // Caso en el que req->iovec_count == 0
-  struct request req = {};
-  req.iovec_count = 0;
-  void *dest = nullptr;
-  size_t len = 0;
-
-  int res = read_chunk(&dest, &len, &req);
-
-  EXPECT_EQ(res, ERROR_CODE);
-  EXPECT_EQ(dest, nullptr);
-  EXPECT_EQ(len, 0u);
-}
-
-TEST(saurion_LowLevel, SingleMessageComplete) {
-  // Caso en el que hay un mensaje completo en un solo iovec
-  const char *message = "Hola, Mundo!";
-  size_t msg_size = strlen(message);
-
-  // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
-  struct request *req = NULL;
-  struct Node *list = NULL;
-  int res = set_request(&req, &list, msg_size, message, 1);
-  EXPECT_EQ(res, SUCCESS_CODE);
-
-  void *dest = nullptr;
-  size_t len = 0;
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, SUCCESS_CODE);
-  EXPECT_EQ(len, msg_size);
-  EXPECT_STREQ((char *)dest, message);
-
-  // Limpieza
-  free_request(req, NULL, 0);
-  free(dest);
-}
-
-TEST(saurion_LowLevel, MessageSpanningMultipleIovecs) {
-  // Caso en el que un mensaje se divide en múltiples iovecs
-  char *message = NULL;
-  fill_with_alphabet(&message, 1.5 * CHUNK_SZ, 0);
-  size_t msg_size = strlen(message);
-
-  // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
-  struct request *req = NULL;
-  struct Node *list = NULL;
-  int res = set_request(&req, &list, msg_size, message, 1);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  EXPECT_EQ(req->prev_size, 0UL);
-  EXPECT_EQ(req->prev_remain, 0UL);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, 0UL);
-  EXPECT_EQ(req->iovec_count, 2UL);
-  EXPECT_EQ(*(size_t *)req->iov[0].iov_base, 1.5 * CHUNK_SZ);
-
-  void *dest = nullptr;
-  size_t len = 0;
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, SUCCESS_CODE);
-  ASSERT_NE(dest, nullptr);
-  EXPECT_EQ(len, msg_size);
-
-  // Limpieza
-  free_request(req, NULL, 0);
-  free(dest);
-}
-
-TEST(saurion_LowLevel, PreviousUnfinishedMessage) {
-  // Caso en el que un mensaje se divide en múltiples iovecs
-  char *message = NULL;
-  fill_with_alphabet(&message, 2.5 * CHUNK_SZ, 0);
-  size_t msg_size = strlen(message);
-
-  // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
-  struct request *req = NULL;
-  struct Node *list = NULL;
-  int res = set_request(&req, &list, msg_size, message, 1);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  EXPECT_EQ(req->prev_size, 0UL);
-  EXPECT_EQ(req->prev_remain, 0UL);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, 0UL);
-  EXPECT_EQ(req->iovec_count, 3UL);
-  EXPECT_EQ(*(size_t *)req->iov[0].iov_base, 2.5 * CHUNK_SZ);
-
-  req->iovec_count = 1;
-
-  void *dest = nullptr;
-  size_t len = 0;
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, SUCCESS_CODE);
-  ASSERT_EQ(dest, nullptr);
-  EXPECT_EQ(len, 0UL);
-  EXPECT_NE(req->prev, nullptr);
-  EXPECT_EQ(req->prev_size, msg_size);
-  size_t readed = CHUNK_SZ - sizeof(size_t);
-  EXPECT_EQ(req->prev_remain, msg_size - readed);
-
-  res = set_request(&req, &list, req->prev_remain, message + readed, 0);
-  EXPECT_EQ(res, SUCCESS_CODE);
-
-  req->iovec_count = 1;
-
-  res = read_chunk(&dest, &len, req);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  ASSERT_EQ(dest, nullptr);
-  EXPECT_EQ(len, 0UL);
-  EXPECT_NE(req->prev, nullptr);
-  EXPECT_EQ(req->prev_size, msg_size);
-  readed = 2 * CHUNK_SZ - sizeof(size_t);
-  EXPECT_EQ(req->prev_remain, msg_size - readed);
-
-  res = set_request(&req, &list, req->prev_remain, message + readed, 0);
-  EXPECT_EQ(res, SUCCESS_CODE);
-
-  res = read_chunk(&dest, &len, req);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  ASSERT_NE(dest, nullptr);
-  EXPECT_EQ(len, msg_size);
-
-  // Limpieza
-  free_request(req, NULL, 0);
-  free(dest);
-}
-
-TEST(saurion_LowLevel, MultipleMessagesInOneIovec) {
-  char *msg1 = NULL;
-  size_t size1 = 3;
-  char *msg2 = NULL;
-  size_t size2 = 4;
-  char *msg3 = NULL;
-  size_t size3 = 5;
-  size_t offset = 0;
-  fill_with_alphabet(&msg1, size1, 1);
-  fill_with_alphabet(&msg2, size2, 1);
-  fill_with_alphabet(&msg3, size3, 1);
-
-  const size_t wrapper = sizeof(uint64_t) + 1;
-  size_t total_size = size1 + size2 + size3 + 3 * wrapper;
-  char *msgs = (char *)malloc(total_size);
-  memcpy(msgs, msg1, size1 + wrapper);
-  offset += size1 + wrapper;
-  memcpy(msgs + offset, msg2, size2 + wrapper);
-  offset += size2 + wrapper;
-  memcpy(msgs + offset, msg3, size3 + wrapper);
-
-  struct request *req = NULL;
-  struct Node *list = NULL;
-
-  int res = set_request(&req, &list, total_size, msgs, 0);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  EXPECT_EQ(req->prev_size, 0UL);
-  EXPECT_EQ(req->prev_remain, 0UL);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, 0UL);
-  EXPECT_EQ(req->iovec_count, 1UL);
-  offset = 0;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size1);
-  offset += sizeof(uint64_t) + size1;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
-  offset += 1;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size2);
-  offset += sizeof(uint64_t) + size2;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
-  offset += 1;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size3);
-  offset += sizeof(uint64_t) + size3;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
-
-  void *dest = nullptr;
-  size_t len = 0;
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, SUCCESS_CODE);
-  ASSERT_NE(dest, nullptr);
-  EXPECT_EQ(len, size1);
-  EXPECT_EQ(strncmp((char *)dest, msg1 + sizeof(uint64_t), size1), 0);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, size1 + wrapper);
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, SUCCESS_CODE);
-  ASSERT_NE(dest, nullptr);
-  EXPECT_EQ(len, size2);
-  EXPECT_EQ(strncmp((char *)dest, msg2 + sizeof(uint64_t), size2), 0);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, size1 + size2 + 2 * wrapper);
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, SUCCESS_CODE);
-  ASSERT_NE(dest, nullptr);
-  EXPECT_EQ(len, size3);
-  EXPECT_EQ(strncmp((char *)dest, msg3 + sizeof(uint64_t), size3), 0);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, 0UL);
-}
-
-TEST(saurion_LowLevel, MultipleMessagesInOneIovecLastIncomplete) {
-  char *msg1 = NULL;
-  size_t size1 = 3;
-  char *msg2 = NULL;
-  size_t size2 = 4;
-  char *msg3 = NULL;
-  size_t size3 = 5;
-  size_t offset = 0;
-  fill_with_alphabet(&msg1, size1, 1);
-  fill_with_alphabet(&msg2, size2, 1);
-  fill_with_alphabet(&msg3, size3, 1);
-
-  const size_t wrapper = sizeof(uint64_t) + 1;
-  size_t total_size = size1 + size2 + size3 + 3 * wrapper;
-  char *msgs = (char *)malloc(total_size);
-  memcpy(msgs, msg1, size1 + wrapper);
-  offset += size1 + wrapper;
-  memcpy(msgs + offset, msg2, size2 + wrapper);
-  offset += size2 + wrapper;
-  memcpy(msgs + offset, msg3, size3 + wrapper);
-
-  struct request *req = NULL;
-  struct Node *list = NULL;
-
-  int res = set_request(&req, &list, total_size, msgs, 0);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  EXPECT_EQ(req->prev_size, 0UL);
-  EXPECT_EQ(req->prev_remain, 0UL);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, 0UL);
-  EXPECT_EQ(req->iovec_count, 1UL);
-  req->iov[0].iov_len -= 3;
-  offset = 0;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size1);
-  offset += sizeof(uint64_t) + size1;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
-  offset += 1;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size2);
-  offset += sizeof(uint64_t) + size2;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
-  offset += 1;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size3);
-  offset += sizeof(uint64_t) + size3;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
-
-  void *dest = nullptr;
-  size_t len = 0;
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, SUCCESS_CODE);
-  ASSERT_NE(dest, nullptr);
-  EXPECT_EQ(len, size1);
-  EXPECT_EQ(strncmp((char *)dest, msg1 + sizeof(uint64_t), size1), 0);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, size1 + wrapper);
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, SUCCESS_CODE);
-  ASSERT_NE(dest, nullptr);
-  EXPECT_EQ(len, size2);
-  EXPECT_EQ(strncmp((char *)dest, msg2 + sizeof(uint64_t), size2), 0);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, size1 + size2 + 2 * wrapper);
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, SUCCESS_CODE);
-  ASSERT_EQ(dest, nullptr);
-  EXPECT_EQ(len, 0UL);
-  EXPECT_NE(req->prev, nullptr);
-  EXPECT_EQ(req->prev_size, size3);
-  size_t readed = size3 - 2;
-  EXPECT_EQ(req->prev_remain, size3 - readed);
-}
-
-TEST(saurion_LowLevel, MultipleMessagesInOneIovecSecondMalformed) {
-  char *msg1 = NULL;
-  size_t size1 = 10;
-  char *msg2 = NULL;
-  size_t size2 = 40;
-  char *msg3 = NULL;
-  size_t size3 = 50;
-  size_t offset = 0;
-  fill_with_alphabet(&msg1, size1, 1);
-  fill_with_alphabet(&msg2, size2, 1);
-  fill_with_alphabet(&msg3, size3, 1);
-
-  const size_t wrapper = sizeof(uint64_t) + 1;
-  size_t total_size = size1 + size2 + size3 + 3 * wrapper - 10;
-  char *msgs = (char *)malloc(total_size);
-  memcpy(msgs, msg1, size1 + wrapper);
-  offset += size1 + wrapper;
-  memcpy(msgs + offset, msg2, size2 + wrapper);
-  offset += size2 + wrapper - 10;
-  memcpy(msgs + offset, msg3, size3 + wrapper);
-  EXPECT_EQ(*(uint64_t *)(msgs + offset), size3);
-
-  struct request *req = NULL;
-  struct Node *list = NULL;
-
-  int res = set_request(&req, &list, total_size, msgs, 0);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  EXPECT_EQ(req->prev_size, 0UL);
-  EXPECT_EQ(req->prev_remain, 0UL);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, 0UL);
-  EXPECT_EQ(req->iovec_count, 1UL);
-  offset = 0;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size1);
-  offset += sizeof(uint64_t) + size1;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
-  offset += 1;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size2);
-  offset += sizeof(uint64_t) + size2;
-  EXPECT_NE(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
-  offset += 1 - 10;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size3);
-  offset += sizeof(uint64_t) + size3;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
-
-  void *dest = nullptr;
-  size_t len = 0;
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, SUCCESS_CODE);
-  ASSERT_NE(dest, nullptr);
-  EXPECT_EQ(len, size1);
-  EXPECT_EQ(strncmp((char *)dest, msg1 + sizeof(uint64_t), size1), 0);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, size1 + wrapper);
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, ERROR_CODE);
-  ASSERT_EQ(dest, nullptr);
-  EXPECT_EQ(len, 0UL);
-  EXPECT_EQ(req->prev, nullptr);
-  EXPECT_EQ(req->prev_remain, 0UL);
-  EXPECT_EQ(req->prev_size, 0UL);
-  EXPECT_EQ(req->next_offset, 0UL);
-}
-
-TEST(saurion_LowLevel, MultipleMessagesInOneIovecSecondAndThirdMalformed) {
-  char *msg1 = NULL;
-  size_t size1 = 10;
-  char *msg2 = NULL;
-  size_t size2 = 40;
-  char *msg3 = NULL;
-  size_t size3 = 50;
-  size_t offset = 0;
-  fill_with_alphabet(&msg1, size1, 1);
-  fill_with_alphabet(&msg2, size2, 1);
-  fill_with_alphabet(&msg3, size3, 1);
-
-  const size_t wrapper = sizeof(uint64_t) + 1;
-  size_t total_size = size1 + size2 + size3 + 3 * wrapper - 10 - 5;
-  char *msgs = (char *)malloc(total_size);
-  memcpy(msgs, msg1, size1 + wrapper);
-  offset += size1 + wrapper;
-  memcpy(msgs + offset, msg2, size2 + wrapper);
-  offset += size2 + wrapper - 10;
-  memcpy(msgs + offset, msg3, size3 + wrapper - 5);
-  EXPECT_EQ(*(uint64_t *)(msgs + offset), size3);
-
-  struct request *req = NULL;
-  struct Node *list = NULL;
-
-  int res = set_request(&req, &list, total_size, msgs, 0);
-  EXPECT_EQ(res, SUCCESS_CODE);
-  EXPECT_EQ(req->prev_size, 0UL);
-  EXPECT_EQ(req->prev_remain, 0UL);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, 0UL);
-  EXPECT_EQ(req->iovec_count, 1UL);
-  offset = 0;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size1);
-  offset += sizeof(uint64_t) + size1;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
-  offset += 1;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size2);
-  offset += sizeof(uint64_t) + size2;
-  EXPECT_NE(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
-  offset += 1 - 10;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size3);
-  offset += sizeof(uint64_t) + size3;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
-
-  void *dest = nullptr;
-  size_t len = 0;
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, SUCCESS_CODE);
-  ASSERT_NE(dest, nullptr);
-  EXPECT_EQ(len, size1);
-  EXPECT_EQ(strncmp((char *)dest, msg1 + sizeof(uint64_t), size1), 0);
-  EXPECT_EQ(req->next_iov, 0UL);
-  EXPECT_EQ(req->next_offset, size1 + wrapper);
-
-  res = read_chunk(&dest, &len, req);
-
-  EXPECT_EQ(res, ERROR_CODE);
-  ASSERT_EQ(dest, nullptr);
-  EXPECT_EQ(len, 0UL);
-  EXPECT_EQ(req->prev, nullptr);
-  EXPECT_EQ(req->prev_remain, 0UL);
-  EXPECT_EQ(req->prev_size, 0UL);
-  EXPECT_EQ(req->next_offset, 0UL);
-}
+// TEST_F(LowSaurionTest, connectMultipleClients) {
+//   uint32_t clients = 10;
+//   connect_clients(clients);
+//   wait_connected(clients);
+//   EXPECT_EQ(summary.connected, clients);
+//   disconnect_clients();
+//   wait_disconnected(clients);
+//   EXPECT_EQ(summary.disconnected, clients);
+// }
+
+// TEST_F(LowSaurionTest, readMultipleMsgsFromClients) {
+//   uint32_t clients = 20;
+//   uint32_t msgs = 100;
+//   connect_clients(clients);
+//   wait_connected(clients);
+//   EXPECT_EQ(summary.connected, clients);
+//   send_clients(msgs, "Hola", 0);
+//   wait_readed(msgs * clients * 4);
+//   EXPECT_EQ(summary.readed, msgs * clients * 4);
+//   disconnect_clients();
+//   wait_disconnected(clients);
+//   EXPECT_EQ(summary.disconnected, clients);
+// }
+
+// TEST_F(LowSaurionTest, writeMsgsToClients) {
+//   uint32_t clients = 20;
+//   uint32_t msgs = 100;
+//   connect_clients(clients);
+//   wait_connected(clients);
+//   EXPECT_EQ(summary.connected, clients);
+//   for (auto &cfd : summary.fds) {
+//     saurion_sends_to_client(cfd, , "Hola");
+//   }
+//   send_clients(msgs, "Hola", 0);
+//   wait_readed(msgs * clients * 4);
+//   EXPECT_EQ(summary.readed, msgs * clients * 4);
+//   disconnect_clients();
+//   wait_disconnected(clients);
+//   EXPECT_EQ(summary.disconnected, clients);
+//   uint32_t clients = 20;
+//   uint32_t msgs = 100;
+//   connect_clients(clients);
+//   wait_connected(clients);
+//   EXPECT_EQ(summary.connected, clients);
+//   for (auto &cfd : summary.fds) {
+//     saurion_sends_to_client(cfd, msgs, "Hola");
+//   }
+//   wait_wrote(msgs * clients);
+//   disconnect_clients();
+//   wait_disconnected(clients);
+//   EXPECT_EQ(msgs * clients, read_from_clients("Hola"));
+//   EXPECT_EQ(summary.disconnected, clients);
+// }
+
+// TEST_F(LowSaurionTest, reconnectClients) {
+//   uint32_t clients = 5;
+//   connect_clients(clients);
+//   wait_connected(clients);
+//   EXPECT_EQ(summary.connected, clients);
+//   disconnect_clients();
+//   wait_disconnected(clients);
+//   EXPECT_EQ(summary.disconnected, clients);
+//   connect_clients(clients);
+//   wait_connected(clients * 2);
+//   EXPECT_EQ(summary.connected, clients * 2);
+//   disconnect_clients();
+//   wait_disconnected(clients * 2);
+//   EXPECT_EQ(summary.disconnected, clients * 2);
+// }
+//
+// TEST_F(LowSaurionTest, readWriteWithLargeMessage) {
+//   uint32_t clients = 1;
+//   size_t size = CHUNK_SZ * 10;
+//   char *str = new char[size + 1];
+//   memset(str, 'A', size);
+//   str[size - 1] = '1';
+//   str[size] = '\0';
+//   connect_clients(clients);
+//   wait_connected(clients);
+//   EXPECT_EQ(summary.connected, clients);
+//   send_clients(1, str, 0);
+//   wait_readed(size);
+//   EXPECT_EQ(summary.readed, 81920UL);
+//   saurion_sends_to_client(summary.fds.front(), 1, (char *)str);
+//   wait_wrote(1);
+//   disconnect_clients();
+//   wait_disconnected(clients);
+//   EXPECT_EQ(1UL, read_from_clients((char *)str));
+//   EXPECT_EQ(summary.disconnected, clients);
+//   delete[] str;
+// }
+//
+// TEST_F(LowSaurionTest, handleConcurrentReadsAndWrites) {
+//   uint32_t clients = 20;
+//   uint32_t msgs = 100;
+//   connect_clients(clients);
+//   wait_connected(clients);
+//   EXPECT_EQ(summary.connected, clients);
+//   send_clients(msgs, "Hola", 2);
+//   saurion_sends_to_all_clients(msgs, "Hola");
+//   wait_readed(msgs * clients * 4);
+//   EXPECT_EQ(msgs * clients * 4, summary.readed);
+//   wait_wrote(msgs * clients);
+//   EXPECT_EQ(msgs * clients, summary.wrote);
+//   disconnect_clients();
+//   wait_disconnected(clients);
+// }

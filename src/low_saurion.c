@@ -61,6 +61,7 @@ int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, const void *m
     size_t len = iov->iov_len;
     char *dest = (char *)iov->iov_base;
     char *orig = (char *)msg + pos * CHUNK_SZ;
+    size_t cpy_sz = 0;
     if (h) {
       if (pos == 0) {
         memcpy(dest, &size, sizeof(uint64_t));
@@ -71,10 +72,15 @@ int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, const void *m
       }
       if ((pos + 1) == amount) {
         --len;
-        dest[(len < size ? len : size)] = 0;
+        cpy_sz = (len < size ? len : size);
+        dest[cpy_sz] = 0;
       }
     }
-    memcpy(dest, orig, (len < size ? len : size));
+    cpy_sz = (len < size ? len : size);
+    memcpy(dest, orig, cpy_sz);
+    dest += cpy_sz;
+    size_t rem = CHUNK_SZ - (dest - (char *)iov->iov_base);
+    memset(dest, 0, rem);
   } else {
     memset((char *)iov->iov_base, 0, CHUNK_SZ);
   }
@@ -349,7 +355,6 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
       req->prev_size = 0;
       req->prev_remain = 0;
     } else {
-      req->prev = malloc(cont_sz);
       dest_ptr = req->prev;
       *dest = NULL;
     }
@@ -681,7 +686,7 @@ void saurion_worker_master(void *arg) {
       continue;
     }
     if (cqe->res < 0) {
-      free(req);
+      list_delete_node(&s->list, req);
       return;
     }
     if (req->client_socket == s->efds[0]) {
@@ -749,7 +754,7 @@ void saurion_worker_slave(void *arg) {
       continue;
     }
     if (cqe->res < 0) {
-      free(req);
+      list_delete_node(&s->list, req);
       return;
     }
     if (req->client_socket == s->efds[sel]) {
@@ -825,7 +830,9 @@ void saurion_destroy(struct saurion *const s) {
     close(s->efds[i]);
   }
   free(s->efds);
-  close(s->ss);
+  if (!s->ss) {
+    close(s->ss);
+  }
   free(s->rings);
   pthread_mutex_destroy(&s->status_m);
   pthread_cond_destroy(&s->status_c);
