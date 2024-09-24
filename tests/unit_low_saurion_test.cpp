@@ -1,6 +1,7 @@
 #include <bits/types/struct_iovec.h>
 #include <gtest/gtest.h>
 
+#include <cstdlib>
 #include <cstring>
 
 #include "config.h"
@@ -437,6 +438,7 @@ TEST(unit_saurion, MultipleMessagesInOneIovec) {
   EXPECT_EQ(strncmp((char *)dest, msg1 + sizeof(uint64_t), size1), 0);
   EXPECT_EQ(req->next_iov, 0UL);
   EXPECT_EQ(req->next_offset, size1 + wrapper);
+  free(dest);
 
   res = read_chunk(&dest, &len, req);
 
@@ -446,6 +448,7 @@ TEST(unit_saurion, MultipleMessagesInOneIovec) {
   EXPECT_EQ(strncmp((char *)dest, msg2 + sizeof(uint64_t), size2), 0);
   EXPECT_EQ(req->next_iov, 0UL);
   EXPECT_EQ(req->next_offset, size1 + size2 + 2 * wrapper);
+  free(dest);
 
   res = read_chunk(&dest, &len, req);
 
@@ -455,6 +458,7 @@ TEST(unit_saurion, MultipleMessagesInOneIovec) {
   EXPECT_EQ(strncmp((char *)dest, msg3 + sizeof(uint64_t), size3), 0);
   EXPECT_EQ(req->next_iov, 0UL);
   EXPECT_EQ(req->next_offset, 0UL);
+  free(dest);
   list_free(&list);
   free(msgs);
   free(msg1);
@@ -518,6 +522,7 @@ TEST(unit_saurion, MultipleMessagesInOneIovecLastIncomplete) {
   EXPECT_EQ(strncmp((char *)dest, msg1 + sizeof(uint64_t), size1), 0);
   EXPECT_EQ(req->next_iov, 0UL);
   EXPECT_EQ(req->next_offset, size1 + wrapper);
+  free(dest);
 
   res = read_chunk(&dest, &len, req);
 
@@ -527,6 +532,7 @@ TEST(unit_saurion, MultipleMessagesInOneIovecLastIncomplete) {
   EXPECT_EQ(strncmp((char *)dest, msg2 + sizeof(uint64_t), size2), 0);
   EXPECT_EQ(req->next_iov, 0UL);
   EXPECT_EQ(req->next_offset, size1 + size2 + 2 * wrapper);
+  free(dest);
 
   res = read_chunk(&dest, &len, req);
 
@@ -537,6 +543,7 @@ TEST(unit_saurion, MultipleMessagesInOneIovecLastIncomplete) {
   EXPECT_EQ(req->prev_size, size3);
   size_t readed = size3 - 2;
   EXPECT_EQ(req->prev_remain, size3 - readed);
+  free(req->prev);
   list_free(&list);
   free(msgs);
   free(msg1);

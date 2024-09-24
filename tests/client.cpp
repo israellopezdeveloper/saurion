@@ -29,6 +29,28 @@ void signalHandler(int signum) {
   }
 }
 
+void print_binary_from_buffer(const char *buffer) {
+  printf("[CLIENT] ");
+  // Convertir los primeros 8 bytes del buffer a un uint64_t
+  uint64_t num;
+  memcpy(&num, buffer, sizeof(uint64_t));
+
+  // Recorremos todos los bits de uint64_t, desde el más significativo hasta el menos significativo
+  for (int i = 63; i >= 0; i--) {
+    uint64_t mask = (uint64_t)1 << i;
+    if (num & mask)
+      printf("1");
+    else
+      printf("0");
+
+    // Espacio cada 8 bits (1 byte) para legibilidad
+    if (i % 8 == 0) {
+      printf(" ");
+    }
+  }
+  printf("\n");
+}
+
 // Manejador de la señal para enviar mensajes
 void sendMessagesHandler(int signum) {
   if (signum == SIGUSR2) {
@@ -49,6 +71,7 @@ void sendMessagesHandler(int signum) {
 
       // 4. Copiar la longitud del mensaje (entero de 64 bits) al buffer
       memcpy(buffer, &length, sizeof(length));
+      //print_binary_from_buffer(buffer);
 
       // 5. Copiar el mensaje de texto al buffer
       memcpy(buffer + sizeof(length), globalMessage, msg_len);
@@ -86,7 +109,6 @@ void makeSocketNonBlocking() {
 void parseMessages(char *buffer, ssize_t bytes_read, std::ofstream &logStream) {
   ssize_t offset = 0;
   buffer[8 + 4] = 0;
-  printf("==>==>%s\n", buffer + 8);
 
   while ((bytes_read > 0) && (offset + sizeof(uint64_t) <= static_cast<size_t>(bytes_read))) {
     // Leer el entero de 64 bits (8 bytes) que indica la longitud del mensaje
@@ -119,7 +141,6 @@ void parseMessages(char *buffer, ssize_t bytes_read, std::ofstream &logStream) {
 
     // Imprimir el mensaje
     logStream.write(msg, msg_len);
-    printf("CLIENT <sock>: arrives [%lu]%s\n", msg_len, msg);
     free(msg);
   }
 }
@@ -151,7 +172,7 @@ void createClient(int clientId) {
     memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(8080);
-    inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr);  // Asumiendo localhost para la conexión
+    inet_pton(AF_INET, "localhost", &serv_addr.sin_addr);  // Asumiendo localhost para la conexión
 
     if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
       std::cerr << "Error conectando al servidor" << std::endl;
@@ -170,7 +191,6 @@ void createClient(int clientId) {
       ssize_t len = read(sockfd, buffer, sizeof(buffer));
 
       if (len > 0) {
-        printf("RAW READ: %s\n", buffer);
         parseMessages(buffer, len, logStream);
       } else if (len == 0) {
         // El servidor cerró la conexión
@@ -293,6 +313,7 @@ void readPipe(const std::string &pipePath) {
 }
 
 int main(int argc, char *argv[]) {
+  puts("[client] PASA");
   if (argc < 3) {
     std::cerr << "Uso: " << argv[0] << " -p <pipe_path>" << std::endl;
     return 1;

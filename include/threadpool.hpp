@@ -66,6 +66,7 @@ class ThreadPool {
     void push(uint32_t qid, void (*nfn)(void*), void* arg);
     Task* front(uint32_t& qid);
     void pop(uint32_t qid);
+    void clear();
 
     bool empty();
   } AsyncMultiQueue;

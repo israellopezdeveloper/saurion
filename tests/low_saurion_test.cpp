@@ -1,14 +1,17 @@
 #include "low_saurion.h"  // for saurion, saurion_send, EXTERNAL_set_socket
 
+#include <string.h>
 #include <unistd.h>
 
 #include <algorithm>
+#include <cerrno>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <regex>
+#include <stdexcept>
 #include <thread>
 
 #include "gtest/gtest.h"  // for Message, EXPECT_EQ, TestPartResult, Test...
@@ -57,7 +60,7 @@ struct summary {
 
 void signalHandler(int signum);
 
-class LowSaurionTest : public ::testing::Test {
+class low_saurion : public ::testing::Test {
  public:
   struct saurion *saurion;
   static std::thread *sender;
@@ -144,11 +147,14 @@ class LowSaurionTest : public ::testing::Test {
     summary.readed = 0;
     summary.wrote = 0;
     summary.fds.clear();
-    saurion = saurion_create(3);
+    saurion = saurion_create(NUM_CORES);
     if (!saurion) {
       return;
     }
     saurion->ss = EXTERNAL_set_socket(PORT);
+    if (!saurion->ss) {
+      throw std::runtime_error(strerror(errno));
+    }
     saurion->cb.on_connected = [](int sfd, void *) -> void {
       pthread_mutex_lock(&summary.connected_m);
       summary.connected++;
@@ -169,7 +175,6 @@ class LowSaurionTest : public ::testing::Test {
       pthread_mutex_unlock(&summary.wrote_m);
     };
     saurion->cb.on_closed = [](int sfd, void *) -> void {
-      printf("SERVER: client <%d> disconnected\n", sfd);
       pthread_mutex_lock(&summary.disconnected_m);
       summary.disconnected++;
       pthread_cond_signal(&summary.disconnected_c);
@@ -195,6 +200,7 @@ class LowSaurionTest : public ::testing::Test {
     disconnect_clients();
     saurion_stop(saurion);
     saurion_destroy(saurion);
+    close(saurion->ss);
     deleteLogFiles();
   }
 
@@ -214,13 +220,13 @@ class LowSaurionTest : public ::testing::Test {
     pthread_mutex_unlock(&summary.disconnected_m);
   }
 
-  //   static void wait_readed(size_t n) {
-  //     pthread_mutex_lock(&summary.readed_m);
-  //     while (summary.readed < n) {
-  //       pthread_cond_wait(&summary.readed_c, &summary.readed_m);
-  //     }
-  //     pthread_mutex_unlock(&summary.readed_m);
-  //   }
+  static void wait_readed(size_t n) {
+    pthread_mutex_lock(&summary.readed_m);
+    while (summary.readed < n) {
+      pthread_cond_wait(&summary.readed_c, &summary.readed_m);
+    }
+    pthread_mutex_unlock(&summary.readed_m);
+  }
 
   //   static void wait_wrote(uint32_t n) {
   //     pthread_mutex_lock(&summary.wrote_m);
@@ -240,10 +246,10 @@ class LowSaurionTest : public ::testing::Test {
     fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
   }
 
-  //   static void send_clients(uint32_t n, const char *const msg, uint32_t delay) {
-  //     fprintf(fifo_write, "send;%d;%s;%d\n", n, msg, delay);
-  //     fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
-  //   }
+  static void clients_2_saurion(uint32_t n, const char *const msg, uint32_t delay) {
+    fprintf(fifo_write, "send;%d;%s;%d\n", n, msg, delay);
+    fflush(fifo_write);
+  }
 
   static void close_clients() {
     fprintf(fifo_write, "close;\n");
@@ -305,18 +311,18 @@ class LowSaurionTest : public ::testing::Test {
   }
 };
 
-char *LowSaurionTest::fifo_name = nullptr;
-std::thread *LowSaurionTest::sender = nullptr;
-FILE *LowSaurionTest::fifo_write = nullptr;
+char *low_saurion::fifo_name = nullptr;
+std::thread *low_saurion::sender = nullptr;
+FILE *low_saurion::fifo_write = nullptr;
 
 void signalHandler(int signum) {
   std::cout << "Interceptada la señal " << signum << std::endl;
 
   // Intenta eliminar el archivo FIFO
-  if (std::remove(LowSaurionTest::fifo_name) != 0) {
-    std::cerr << "Error al eliminar " << LowSaurionTest::fifo_name << std::endl;
+  if (std::remove(low_saurion::fifo_name) != 0) {
+    std::cerr << "Error al eliminar " << low_saurion::fifo_name << std::endl;
   } else {
-    std::cout << LowSaurionTest::fifo_name << " eliminado exitosamente." << std::endl;
+    std::cout << low_saurion::fifo_name << " eliminado exitosamente." << std::endl;
   }
   std::regex pattern("^saurion_sender.*\\.log$");
 
@@ -337,38 +343,34 @@ void signalHandler(int signum) {
   exit(ERROR_CODE);
 }
 
-TEST_F(LowSaurionTest, initServerAndCloseCorrectly) {
-  EXPECT_TRUE(true);
-  EXPECT_TRUE(true);
-  EXPECT_TRUE(true);
-  EXPECT_TRUE(true);
+TEST_F(low_saurion, initServerAndCloseCorrectly) { EXPECT_TRUE(true); }
+
+TEST_F(low_saurion, connectMultipleClients) {
+  uint32_t clients = 10;
+  connect_clients(clients);
+  wait_connected(clients);
+  EXPECT_EQ(summary.connected, clients);
+  disconnect_clients();
+  wait_disconnected(clients);
+  EXPECT_EQ(summary.disconnected, clients);
 }
 
-// TEST_F(LowSaurionTest, connectMultipleClients) {
-//   uint32_t clients = 10;
-//   connect_clients(clients);
-//   wait_connected(clients);
-//   EXPECT_EQ(summary.connected, clients);
-//   disconnect_clients();
-//   wait_disconnected(clients);
-//   EXPECT_EQ(summary.disconnected, clients);
-// }
+TEST_F(low_saurion, readMultipleMsgsFromClients) {
+  uint32_t clients = 20;
+  uint32_t msgs = 5;
+  connect_clients(clients);
+  wait_connected(clients);
+  EXPECT_EQ(summary.connected, clients);
+  clients_2_saurion(msgs, "Hola", 0);
+  wait_readed(msgs * clients * 4);
+  usleep(10000);
+  // EXPECT_EQ(summary.readed, msgs * clients * 4);
+  // disconnect_clients();
+  // wait_disconnected(clients);
+  // EXPECT_EQ(summary.disconnected, clients);
+}
 
-// TEST_F(LowSaurionTest, readMultipleMsgsFromClients) {
-//   uint32_t clients = 20;
-//   uint32_t msgs = 100;
-//   connect_clients(clients);
-//   wait_connected(clients);
-//   EXPECT_EQ(summary.connected, clients);
-//   send_clients(msgs, "Hola", 0);
-//   wait_readed(msgs * clients * 4);
-//   EXPECT_EQ(summary.readed, msgs * clients * 4);
-//   disconnect_clients();
-//   wait_disconnected(clients);
-//   EXPECT_EQ(summary.disconnected, clients);
-// }
-
-// TEST_F(LowSaurionTest, writeMsgsToClients) {
+// TEST_F(low_saurion, writeMsgsToClients) {
 //   uint32_t clients = 20;
 //   uint32_t msgs = 100;
 //   connect_clients(clients);
@@ -398,7 +400,7 @@ TEST_F(LowSaurionTest, initServerAndCloseCorrectly) {
 //   EXPECT_EQ(summary.disconnected, clients);
 // }
 
-// TEST_F(LowSaurionTest, reconnectClients) {
+// TEST_F(low_saurion, reconnectClients) {
 //   uint32_t clients = 5;
 //   connect_clients(clients);
 //   wait_connected(clients);
@@ -414,7 +416,7 @@ TEST_F(LowSaurionTest, initServerAndCloseCorrectly) {
 //   EXPECT_EQ(summary.disconnected, clients * 2);
 // }
 //
-// TEST_F(LowSaurionTest, readWriteWithLargeMessage) {
+// TEST_F(low_saurion, readWriteWithLargeMessage) {
 //   uint32_t clients = 1;
 //   size_t size = CHUNK_SZ * 10;
 //   char *str = new char[size + 1];
@@ -436,7 +438,7 @@ TEST_F(LowSaurionTest, initServerAndCloseCorrectly) {
 //   delete[] str;
 // }
 //
-// TEST_F(LowSaurionTest, handleConcurrentReadsAndWrites) {
+// TEST_F(low_saurion, handleConcurrentReadsAndWrites) {
 //   uint32_t clients = 20;
 //   uint32_t msgs = 100;
 //   connect_clients(clients);

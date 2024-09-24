@@ -1,6 +1,7 @@
 #include "low_saurion.h"
 
 #include <netinet/in.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/eventfd.h>
@@ -25,6 +26,7 @@ struct request {
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
+pthread_mutex_t print_mutex;
 
 struct saurion_wrapper {
   struct saurion *s;
@@ -323,6 +325,31 @@ static void handle_accept(const struct saurion *const s, const int fd) {
   }
 }
 
+void print_binary_from_buffer(const char *buffer) {
+  pthread_mutex_lock(&print_mutex);
+  printf("[SERVER] ");
+  // Convertir los primeros 8 bytes del buffer a un uint64_t
+  uint64_t num;
+  memcpy(&num, buffer, sizeof(uint64_t));
+
+  // Recorremos todos los bits de uint64_t, desde el más significativo hasta el menos significativo
+  for (int i = 63; i >= 0; i--) {
+    uint64_t mask = (uint64_t)1 << i;
+    if (num & mask)
+      printf("1");
+    else
+      printf("0");
+
+    // Espacio cada 8 bits (1 byte) para legibilidad
+    if (i % 8 == 0) {
+      printf(" ");
+    }
+  }
+  printf("\n");
+  pthread_mutex_unlock(&print_mutex);
+  exit(1);
+}
+
 [[nodiscard]]
 int read_chunk(void **dest, size_t *len, struct request *const req) {
   // Initial checks
@@ -363,6 +390,9 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     curr_iov = req->next_iov;
     curr_iov_off = req->next_offset;
     cont_sz = *((size_t *)(req->iov[curr_iov].iov_base + curr_iov_off));
+    if (cont_sz != 4) {
+      print_binary_from_buffer(req->iov[curr_iov].iov_base + curr_iov_off);
+    }
     curr_iov_off += sizeof(uint64_t);
     cont_rem = cont_sz;
     dest_off = cont_sz - cont_rem;
@@ -380,6 +410,9 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     curr_iov = 0;
     curr_iov_off = 0;
     cont_sz = *((size_t *)(req->iov[curr_iov].iov_base + curr_iov_off));
+    if (cont_sz != 4) {
+      print_binary_from_buffer(req->iov[curr_iov].iov_base + curr_iov_off);
+    }
     curr_iov_off += sizeof(uint64_t);
     cont_rem = cont_sz;
     dest_off = cont_sz - cont_rem;
@@ -540,13 +573,13 @@ int EXTERNAL_set_socket(const int p) {
   struct sockaddr_in srv_addr;
 
   sock = socket(PF_INET, SOCK_STREAM, 0);
-  if (sock == ERROR_CODE) {
-    return SUCCESS_CODE;
+  if (sock < 1) {
+    return ERROR_CODE;
   }
 
   int enable = 1;
   if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
-    return SUCCESS_CODE;
+    return ERROR_CODE;
   }
 
   memset(&srv_addr, 0, sizeof(srv_addr));
@@ -558,14 +591,14 @@ int EXTERNAL_set_socket(const int p) {
    * socket.
    * */
   if (bind(sock, (const struct sockaddr *)&srv_addr, sizeof(srv_addr)) < 0) {
-    return SUCCESS_CODE;
+    return ERROR_CODE;
   }
 
   if (listen(sock, ACCEPT_QUEUE) < 0) {
-    return SUCCESS_CODE;
+    return ERROR_CODE;
   }
 
-  return (sock);
+  return sock;
 }
 
 struct saurion *saurion_create(uint32_t n_threads) {
@@ -680,7 +713,7 @@ void saurion_worker_master(void *arg) {
       free(cqe);
       return;
     }
-    struct request *req = (struct request *)cqe->user_data;  // NOLINT(performance-no-int-to-ptr)
+    struct request *req = (struct request *)cqe->user_data;
     if (!req) {
       io_uring_cqe_seen(&s->rings[0], cqe);
       continue;
@@ -791,6 +824,7 @@ void saurion_worker_slave(void *arg) {
 }
 
 int saurion_start(struct saurion *const s) {
+  pthread_mutex_init(&print_mutex, NULL);
   ThreadPool_init(s->pool);
   ThreadPool_add_default(s->pool, saurion_worker_master, s);
   struct saurion_wrapper *ss = NULL;

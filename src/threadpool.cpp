@@ -98,6 +98,19 @@ Task* TP::AsyncMultiQueue::front(uint32_t& qid) {
   return task;
 }
 void TP::AsyncMultiQueue::pop(uint32_t qid) { m_queues.at(qid)->pop(); }
+void TP::AsyncMultiQueue::clear() {
+  if (empty()) {
+    return;
+  }
+  auto newit = m_queues.begin();
+  while (newit != m_queues.end()) {
+    while (!newit->second->empty()) {
+      delete newit->second->front();
+      newit->second->pop();
+    }
+    ++newit;
+  }
+}
 
 bool TP::AsyncMultiQueue::empty() {
   for (auto& queue : m_queues) {
@@ -219,6 +232,7 @@ void TP::wait_empty() {
 }
 TP::~ThreadPool() {
   stop();
+  m_queues.clear();
   delete[] m_ths;
   pthread_mutex_destroy(&s_mtx);
 }
