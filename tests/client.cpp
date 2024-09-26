@@ -1,5 +1,6 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <string.h>
 #include <sys/mman.h>  // Para memoria compartida
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -11,6 +12,8 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+
+#include "low_saurion.h"
 
 std::vector<pid_t> clients;
 int numClients = 0;
@@ -29,26 +32,26 @@ void signalHandler(int signum) {
   }
 }
 
-void print_binary_from_buffer(const char *buffer) {
-  printf("[CLIENT] ");
-  // Convertir los primeros 8 bytes del buffer a un uint64_t
-  uint64_t num;
-  memcpy(&num, buffer, sizeof(uint64_t));
-
-  // Recorremos todos los bits de uint64_t, desde el más significativo hasta el menos significativo
-  for (int i = 63; i >= 0; i--) {
-    uint64_t mask = (uint64_t)1 << i;
-    if (num & mask)
-      printf("1");
-    else
-      printf("0");
-
-    // Espacio cada 8 bits (1 byte) para legibilidad
-    if (i % 8 == 0) {
-      printf(" ");
-    }
+uint64_t htonll(uint64_t value) {
+  int num = 42;
+  if (*(char *)&num == 42) {  // Little endian check
+    uint32_t high_part = htonl((uint32_t)(value >> 32));
+    uint32_t low_part = htonl((uint32_t)(value & 0xFFFFFFFFLL));
+    return ((uint64_t)low_part << 32) | high_part;
+  } else {  // Already big endian
+    return value;
   }
-  printf("\n");
+}
+
+uint64_t ntohll(uint64_t value) {
+  int num = 42;
+  if (*(char *)&num == 42) {  // Little endian check
+    uint32_t high_part = ntohl((uint32_t)(value >> 32));
+    uint32_t low_part = ntohl((uint32_t)(value & 0xFFFFFFFFLL));
+    return ((uint64_t)low_part << 32) | high_part;
+  } else {  // Already big endian
+    return value;
+  }
 }
 
 // Manejador de la señal para enviar mensajes
@@ -60,7 +63,7 @@ void sendMessagesHandler(int signum) {
       uint64_t length = (uint64_t)strlen(globalMessage);
 
       // 2. Crear un buffer que contendrá el mensaje completo
-      size_t msg_len = strlen(globalMessage) + sizeof(length) + 1;
+      uint64_t msg_len = strlen(globalMessage) + sizeof(length) + 1;
 
       // 3. Crear un buffer para almacenar todo el mensaje
       char *buffer = (char *)malloc(msg_len);
@@ -68,10 +71,11 @@ void sendMessagesHandler(int signum) {
         perror("Error en malloc");
         exit(EXIT_FAILURE);
       }
+      
+      length = htonll(length);
 
       // 4. Copiar la longitud del mensaje (entero de 64 bits) al buffer
       memcpy(buffer, &length, sizeof(length));
-      //print_binary_from_buffer(buffer);
 
       // 5. Copiar el mensaje de texto al buffer
       memcpy(buffer + sizeof(length), globalMessage, msg_len);
@@ -80,7 +84,7 @@ void sendMessagesHandler(int signum) {
       buffer[msg_len - 1] = 0;
 
       // Enviar mensaje al servidor
-      ssize_t sent = send(sockfd, buffer, msg_len, 0);
+      int64_t sent = send(sockfd, buffer, msg_len, 0);
       if (sent < 0) {
         break;
       }
@@ -106,18 +110,19 @@ void makeSocketNonBlocking() {
   }
 }
 
-void parseMessages(char *buffer, ssize_t bytes_read, std::ofstream &logStream) {
-  ssize_t offset = 0;
+void parseMessages(char *buffer, int64_t bytes_read, std::ofstream &logStream) {
+  int64_t offset = 0;
   buffer[8 + 4] = 0;
 
-  while ((bytes_read > 0) && (offset + sizeof(uint64_t) <= static_cast<size_t>(bytes_read))) {
+  while ((bytes_read > 0) && (offset + sizeof(uint64_t) <= static_cast<uint64_t>(bytes_read))) {
     // Leer el entero de 64 bits (8 bytes) que indica la longitud del mensaje
-    size_t msg_len;
+    uint64_t msg_len;
     memcpy(&msg_len, buffer + offset, sizeof(msg_len));
     offset += sizeof(msg_len);
+    msg_len = ntohll(msg_len);
 
     // Asegurarse de que tenemos suficientes bytes para el mensaje completo
-    if (offset + msg_len + 1 > static_cast<size_t>(bytes_read)) {
+    if (offset + msg_len + 1 > static_cast<uint64_t>(bytes_read)) {
       // No hay suficientes datos para completar este mensaje, esperamos más datos
       fprintf(stderr, "Datos incompletos, esperando más datos... <%lu>\n", msg_len);
       return;
@@ -188,8 +193,9 @@ void createClient(int clientId) {
     // Leer datos del servidor en modo no bloqueante
     while (keepRunning) {
       // Leer si hay datos disponibles
-      ssize_t len = read(sockfd, buffer, sizeof(buffer));
+      int64_t len = read(sockfd, buffer, sizeof(buffer));
 
+      printf("[CLIENT] msg arrives\n");
       if (len > 0) {
         parseMessages(buffer, len, logStream);
       } else if (len == 0) {
@@ -300,7 +306,7 @@ void readPipe(const std::string &pipePath) {
 
   char buffer[4096];
   std::string commandBuffer;
-  ssize_t bytesRead;
+  int64_t bytesRead;
   while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0) {
     commandBuffer.append(buffer, bytesRead);
     if (commandBuffer.find('\n') != std::string::npos) {
@@ -313,7 +319,6 @@ void readPipe(const std::string &pipePath) {
 }
 
 int main(int argc, char *argv[]) {
-  puts("[client] PASA");
   if (argc < 3) {
     std::cerr << "Uso: " << argv[0] << " -p <pipe_path>" << std::endl;
     return 1;
@@ -333,8 +338,9 @@ int main(int argc, char *argv[]) {
   }
 
   // Crear la memoria compartida para las variables
-  globalMessage = static_cast<char *>(
-      mmap(NULL, 1024 * sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0));
+  globalMessage =
+      static_cast<char *>(mmap(NULL, 10 * CHUNK_SZ * sizeof(char), PROT_READ | PROT_WRITE,
+                               MAP_SHARED | MAP_ANONYMOUS, -1, 0));
   globalMessageCount = static_cast<int *>(
       mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0));
   globalMessageDelay = static_cast<int *>(

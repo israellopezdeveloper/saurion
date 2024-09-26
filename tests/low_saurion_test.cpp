@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 #include <regex>
 #include <stdexcept>
 #include <thread>
@@ -175,6 +176,7 @@ class low_saurion : public ::testing::Test {
       pthread_mutex_unlock(&summary.wrote_m);
     };
     saurion->cb.on_closed = [](int sfd, void *) -> void {
+      printf("SERVER client %d disconnected\n", sfd);
       pthread_mutex_lock(&summary.disconnected_m);
       summary.disconnected++;
       pthread_cond_signal(&summary.disconnected_c);
@@ -228,13 +230,13 @@ class low_saurion : public ::testing::Test {
     pthread_mutex_unlock(&summary.readed_m);
   }
 
-  //   static void wait_wrote(uint32_t n) {
-  //     pthread_mutex_lock(&summary.wrote_m);
-  //     while (summary.wrote < n) {
-  //       pthread_cond_wait(&summary.wrote_c, &summary.wrote_m);
-  //     }
-  //     pthread_mutex_unlock(&summary.wrote_m);
-  //   }
+  static void wait_wrote(uint32_t n) {
+    pthread_mutex_lock(&summary.wrote_m);
+    while (summary.wrote < n) {
+      pthread_cond_wait(&summary.wrote_c, &summary.wrote_m);
+    }
+    pthread_mutex_unlock(&summary.wrote_m);
+  }
 
   static void connect_clients(uint32_t n) {
     fprintf(fifo_write, "connect;%d\n", n);
@@ -256,11 +258,11 @@ class low_saurion : public ::testing::Test {
     fflush(fifo_write);  // Asegurarse de que el buffer se escribe en el FIFO
   }
 
-  //   void saurion_sends_to_client(int sfd, uint32_t n, const char *const msg) const {
-  //     for (uint32_t i = 0; i < n; ++i) {
-  //       saurion_send(saurion, sfd, msg);
-  //     }
-  //   }
+  void saurion_2_client(int sfd, uint32_t n, const char *const msg) const {
+    for (uint32_t i = 0; i < n; ++i) {
+      saurion_send(saurion, sfd, msg);
+    }
+  }
 
   //   void saurion_sends_to_all_clients(uint32_t n, const char *const msg) {
   //     for (auto sfd : summary.fds) {
@@ -270,32 +272,33 @@ class low_saurion : public ::testing::Test {
   //     }
   //   }
 
-  //   static size_t countOccurrences(std::string &content, const std::string &search) {
-  //     size_t count = 0;
-  //     size_t pos = content.find(search);
-  //     while (pos != std::string::npos) {
-  //       count++;
-  //       pos = content.find(search, pos + search.length());
-  //     }
-  //     return count;
-  //   }
+  static size_t countOccurrences(std::string &content, const std::string &search) {
+    size_t count = 0;
+    printf(">>%s<<\n", content.c_str());
+    size_t pos = content.find(search);
+    while (pos != std::string::npos) {
+      count++;
+      pos = content.find(search, pos + search.length());
+    }
+    return count;
+  }
 
-  //   static size_t read_from_clients(const std::string &search) {
-  //     size_t occurrences = 0;
-  //     for (const auto &entry : std::filesystem::directory_iterator("/tmp/")) {
-  //       const auto &path = entry.path();
-  //       if (path.filename().string().find("saurion_sender.") == 0) {
-  //         std::ifstream file(path);
-  //         if (file.is_open()) {
-  //           std::stringstream buffer;
-  //           buffer << file.rdbuf();
-  //           std::string content = buffer.str();
-  //           occurrences += countOccurrences(content, search);
-  //         }
-  //       }
-  //     }
-  //     return occurrences;
-  //   }
+  static size_t read_from_clients(const std::string &search) {
+    size_t occurrences = 0;
+    for (const auto &entry : std::filesystem::directory_iterator("/tmp/")) {
+      const auto &path = entry.path();
+      if (path.filename().string().find("saurion_sender.") == 0) {
+        std::ifstream file(path);
+        if (file.is_open()) {
+          std::stringstream buffer;
+          buffer << file.rdbuf();
+          std::string content = buffer.str();
+          occurrences += countOccurrences(content, search);
+        }
+      }
+    }
+    return occurrences;
+  }
 
  private:
   void deleteLogFiles() {
@@ -357,87 +360,73 @@ TEST_F(low_saurion, connectMultipleClients) {
 
 TEST_F(low_saurion, readMultipleMsgsFromClients) {
   uint32_t clients = 20;
-  uint32_t msgs = 5;
+  uint32_t msgs = 100;
   connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
   clients_2_saurion(msgs, "Hola", 0);
   wait_readed(msgs * clients * 4);
-  usleep(10000);
-  // EXPECT_EQ(summary.readed, msgs * clients * 4);
-  // disconnect_clients();
-  // wait_disconnected(clients);
-  // EXPECT_EQ(summary.disconnected, clients);
+  EXPECT_EQ(summary.readed, msgs * clients * 4);
+  disconnect_clients();
+  wait_disconnected(clients);
+  EXPECT_EQ(summary.disconnected, clients);
 }
 
-// TEST_F(low_saurion, writeMsgsToClients) {
-//   uint32_t clients = 20;
-//   uint32_t msgs = 100;
-//   connect_clients(clients);
-//   wait_connected(clients);
-//   EXPECT_EQ(summary.connected, clients);
-//   for (auto &cfd : summary.fds) {
-//     saurion_sends_to_client(cfd, , "Hola");
-//   }
-//   send_clients(msgs, "Hola", 0);
-//   wait_readed(msgs * clients * 4);
-//   EXPECT_EQ(summary.readed, msgs * clients * 4);
-//   disconnect_clients();
-//   wait_disconnected(clients);
-//   EXPECT_EQ(summary.disconnected, clients);
-//   uint32_t clients = 20;
-//   uint32_t msgs = 100;
-//   connect_clients(clients);
-//   wait_connected(clients);
-//   EXPECT_EQ(summary.connected, clients);
-//   for (auto &cfd : summary.fds) {
-//     saurion_sends_to_client(cfd, msgs, "Hola");
-//   }
-//   wait_wrote(msgs * clients);
-//   disconnect_clients();
-//   wait_disconnected(clients);
-//   EXPECT_EQ(msgs * clients, read_from_clients("Hola"));
-//   EXPECT_EQ(summary.disconnected, clients);
-// }
+TEST_F(low_saurion, writeMsgsToClients) {
+  uint32_t clients = 20;
+  uint32_t msgs = 100;
+  connect_clients(clients);
+  wait_connected(clients);
+  EXPECT_EQ(summary.connected, clients);
+  for (auto &cfd : summary.fds) {
+    saurion_2_client(cfd, msgs, "Hola");
+  }
+  clients_2_saurion(msgs, "Hola", 0);
+  wait_readed(msgs * clients * 4);
+  EXPECT_EQ(summary.readed, msgs * clients * 4);
+  disconnect_clients();
+  wait_disconnected(clients);
+  EXPECT_EQ(summary.disconnected, clients);
+}
 
-// TEST_F(low_saurion, reconnectClients) {
-//   uint32_t clients = 5;
-//   connect_clients(clients);
-//   wait_connected(clients);
-//   EXPECT_EQ(summary.connected, clients);
-//   disconnect_clients();
-//   wait_disconnected(clients);
-//   EXPECT_EQ(summary.disconnected, clients);
-//   connect_clients(clients);
-//   wait_connected(clients * 2);
-//   EXPECT_EQ(summary.connected, clients * 2);
-//   disconnect_clients();
-//   wait_disconnected(clients * 2);
-//   EXPECT_EQ(summary.disconnected, clients * 2);
-// }
-//
-// TEST_F(low_saurion, readWriteWithLargeMessage) {
-//   uint32_t clients = 1;
-//   size_t size = CHUNK_SZ * 10;
-//   char *str = new char[size + 1];
-//   memset(str, 'A', size);
-//   str[size - 1] = '1';
-//   str[size] = '\0';
-//   connect_clients(clients);
-//   wait_connected(clients);
-//   EXPECT_EQ(summary.connected, clients);
-//   send_clients(1, str, 0);
-//   wait_readed(size);
-//   EXPECT_EQ(summary.readed, 81920UL);
-//   saurion_sends_to_client(summary.fds.front(), 1, (char *)str);
-//   wait_wrote(1);
-//   disconnect_clients();
-//   wait_disconnected(clients);
-//   EXPECT_EQ(1UL, read_from_clients((char *)str));
-//   EXPECT_EQ(summary.disconnected, clients);
-//   delete[] str;
-// }
-//
+TEST_F(low_saurion, reconnectClients) {
+  uint32_t clients = 5;
+  connect_clients(clients);
+  wait_connected(clients);
+  EXPECT_EQ(summary.connected, clients);
+  disconnect_clients();
+  wait_disconnected(clients);
+  EXPECT_EQ(summary.disconnected, clients);
+  connect_clients(clients);
+  wait_connected(clients * 2);
+  EXPECT_EQ(summary.connected, clients * 2);
+  disconnect_clients();
+  wait_disconnected(clients * 2);
+  EXPECT_EQ(summary.disconnected, clients * 2);
+}
+
+TEST_F(low_saurion, readWriteWithLargeMessage) {
+  uint32_t clients = 1;
+  size_t size = CHUNK_SZ * 2;
+  char *str = new char[size];
+  memset(str, 'A', size);
+  str[size - 1] = '1';
+  connect_clients(clients);
+  wait_connected(clients);
+  EXPECT_EQ(summary.connected, clients);
+  clients_2_saurion(1, str, 0);
+  wait_readed(size);
+  EXPECT_EQ(summary.readed, size);
+  printf("FDS: %zu\n", summary.fds.size());
+  saurion_2_client(summary.fds.front(), 1, (char *)str);
+  wait_wrote(1);
+  disconnect_clients();
+  wait_disconnected(clients);
+  // EXPECT_EQ(1UL, read_from_clients((char *)str));
+  EXPECT_EQ(summary.disconnected, clients);
+  delete[] str;
+}
+
 // TEST_F(low_saurion, handleConcurrentReadsAndWrites) {
 //   uint32_t clients = 20;
 //   uint32_t msgs = 100;

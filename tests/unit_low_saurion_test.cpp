@@ -1,6 +1,9 @@
 #include <bits/types/struct_iovec.h>
 #include <gtest/gtest.h>
+#include <netinet/in.h>
 
+#include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
@@ -8,17 +11,39 @@
 #include "linked_list.h"
 #include "low_saurion_secret.h"
 
+uint64_t htonll(uint64_t value) {
+  int num = 42;
+  if (*(char *)&num == 42) {  // Little endian check
+    uint32_t high_part = htonl((uint32_t)(value >> 32));
+    uint32_t low_part = htonl((uint32_t)(value & 0xFFFFFFFFLL));
+    return ((uint64_t)low_part << 32) | high_part;
+  } else {  // Already big endian
+    return value;
+  }
+}
+
+uint64_t ntohll(uint64_t value) {
+  int num = 42;
+  if (*(char *)&num == 42) {  // Little endian check
+    uint32_t high_part = ntohl((uint32_t)(value >> 32));
+    uint32_t low_part = ntohl((uint32_t)(value & 0xFFFFFFFFLL));
+    return ((uint64_t)low_part << 32) | high_part;
+  } else {  // Already big endian
+    return value;
+  }
+}
+
 void fill_with_alphabet(char **s, size_t length, uint8_t h) {
   const char *alphabet = "abcdefghijklmnopqrstuvwxyz";
   int alphabet_len = 26;
 
-  size_t wrapper = sizeof(uint64_t) + sizeof(char);
+  uint64_t wrapper = sizeof(uint64_t) + sizeof(char);
   if (h) {
-    size_t msg_size = length + wrapper;
+    uint64_t msg_size = length + wrapper;
     *s = (char *)malloc(msg_size);
-    *(uint64_t *)(*s) = length;
+    *(uint64_t *)(*s) = htonll(length);
     int pos = sizeof(uint64_t);
-    for (size_t i = 0; i < length; i++) {
+    for (uint64_t i = 0; i < length; i++) {
       (*s)[pos] = alphabet[i % alphabet_len];
       pos++;
     }
@@ -26,7 +51,7 @@ void fill_with_alphabet(char **s, size_t length, uint8_t h) {
   } else {
     *s = (char *)malloc(length + 1);
     int pos = 0;
-    for (size_t i = 0; i < length; i++) {
+    for (uint64_t i = 0; i < length; i++) {
       (*s)[pos] = alphabet[i % alphabet_len];
       pos++;
     }
@@ -36,10 +61,10 @@ void fill_with_alphabet(char **s, size_t length, uint8_t h) {
 
 TEST(Tools, alphabet_with_header) {
   char *str = NULL;
-  size_t size = 4;
+  uint64_t size = 4;
   fill_with_alphabet(&str, size, 1);
   EXPECT_NE(str, nullptr);
-  uint64_t content_size = *(uint64_t *)str;
+  uint64_t content_size = ntohll(*(uint64_t *)str);
   char *str_content = str + sizeof(uint64_t);
   uint8_t foot = *(uint8_t *)(str + content_size);
   EXPECT_EQ(content_size, size);
@@ -50,7 +75,7 @@ TEST(Tools, alphabet_with_header) {
 
 TEST(Tools, alphabet_without_header) {
   char *str = NULL;
-  size_t size = 4;
+  uint64_t size = 4;
   fill_with_alphabet(&str, size, 0);
   EXPECT_NE(str, nullptr);
   EXPECT_EQ(strlen(str), size);
@@ -60,7 +85,7 @@ TEST(Tools, alphabet_without_header) {
 
 TEST(Tools, null_length_with_header) {
   char *str = NULL;
-  size_t size = 0;
+  uint64_t size = 0;
   fill_with_alphabet(&str, size, 1);
   EXPECT_NE(str, nullptr);
   uint64_t content_size = *(uint64_t *)str;
@@ -74,7 +99,7 @@ TEST(Tools, null_length_with_header) {
 
 TEST(Tools, null_length_without_header) {
   char *str = NULL;
-  size_t size = 0;
+  uint64_t size = 0;
   fill_with_alphabet(&str, size, 0);
   EXPECT_NE(str, nullptr);
   EXPECT_EQ(strlen(str), size);
@@ -90,7 +115,7 @@ TEST(Tools, null_length_without_header) {
  *   SIN HEADER -> quiere decir que se va a simular unos iovecs en los que no se han de generar
  * header, por lo que generamos un mensaje CON header (UNA ENTRADA).
  */
-static void check_iovec(size_t size, uint8_t h) {
+static void check_iovec(uint64_t size, uint8_t h) {
   // mensaje de entrada
   void *msg = NULL;
   fill_with_alphabet((char **)&msg, size, !h);
@@ -98,7 +123,7 @@ static void check_iovec(size_t size, uint8_t h) {
   // full_size, content_size y amount
   uint64_t full_size = size + (h ? sizeof(uint64_t) + 1 : 0);
   uint64_t content_size = size;
-  size_t amount = full_size / CHUNK_SZ;
+  uint64_t amount = full_size / CHUNK_SZ;
   amount = amount + (full_size % CHUNK_SZ ? 1 : 0);
 
   // iovec y chd_ptr
@@ -112,7 +137,7 @@ static void check_iovec(size_t size, uint8_t h) {
   memset(orig_str, 0, CHUNK_SZ + 1);
 
   int res = 0;
-  for (size_t i = 0; i < amount; ++i) {
+  for (uint64_t i = 0; i < amount; ++i) {
     // alojamos los iovecs reservando el tamaño del mensaje completo
     res = allocate_iovec(&iovecs[i], amount, i, full_size, chd_ptr);
     EXPECT_EQ(res, SUCCESS_CODE);
@@ -130,14 +155,16 @@ static void check_iovec(size_t size, uint8_t h) {
 
     // Si es el primero verificar el tamaño del contenido
     if (i == 0) {
-      EXPECT_EQ(*((uint64_t *)iovecs[i].iov_base), content_size);
+      uint64_t exp_size = *((uint64_t *)iovecs[i].iov_base);
+      exp_size = ntohll(exp_size);
+      EXPECT_EQ(exp_size, content_size);
     }
 
     // Descargar el contenido el iovec, tanto con header como sin el la salida es la misma
     //   i = 0 -> se desplaza 8 bytes -> `len` - 8 | `offset` = 8
     //   n -> `len` | `offset` = 0
     //   i = amount -> se quita el foot -> `len` - 1
-    size_t str_len =
+    uint64_t str_len =
         iovecs[i].iov_len - (i == 0 ? sizeof(uint64_t) : 0) - ((i + 1) == amount ? 1 : 0);
     strncpy(iov_str, (char *)iovecs[i].iov_base + (i == 0 ? sizeof(uint64_t) : 0), str_len);
     strncpy(orig_str, msg_ptr, str_len);
@@ -147,7 +174,7 @@ static void check_iovec(size_t size, uint8_t h) {
     msg_ptr += iovecs[i].iov_len - (i == 0 ? sizeof(uint64_t) : 0);
   }
   free(iovecs);
-  for (size_t i = 0; i < amount; ++i) {
+  for (uint64_t i = 0; i < amount; ++i) {
     free(chd_ptr[i]);
   }
   free(chd_ptr);
@@ -156,8 +183,8 @@ static void check_iovec(size_t size, uint8_t h) {
 
 TEST(unit_saurion, initialize_correct_with_header) {
   const char *message = "Hola, Mundo!";
-  size_t content_size = strlen(message);
-  size_t msg_size = content_size + (sizeof(uint64_t) + 1);
+  uint64_t content_size = strlen(message);
+  uint64_t msg_size = content_size + (sizeof(uint64_t) + 1);
   struct iovec *iovec = (struct iovec *)malloc(sizeof(struct iovec));
   void **chd_ptr = (void **)malloc(sizeof(void *));
   int res = allocate_iovec(&iovec[0], 1, 0, msg_size, chd_ptr);
@@ -166,6 +193,7 @@ TEST(unit_saurion, initialize_correct_with_header) {
   res = initialize_iovec(&iovec[0], 1, 0, message, content_size, 1);
   EXPECT_EQ(res, SUCCESS_CODE);
   uint64_t size = *(uint64_t *)iovec[0].iov_base;
+  size = ntohll(size);
   EXPECT_EQ(size, content_size);
   EXPECT_EQ(strncmp((char *)iovec[0].iov_base + sizeof(uint64_t), message, content_size), 0);
   EXPECT_EQ(*((char *)iovec[0].iov_base + sizeof(uint64_t) + content_size), 0);
@@ -211,7 +239,7 @@ TEST(unit_saurion, create_iovec_for_null_msg) {
 TEST(unit_saurion, set_request_first_creation_and_reset) {
   struct request *req = NULL;
   struct Node *list = NULL;
-  size_t size = 2.5 * CHUNK_SZ;
+  uint64_t size = 2.5 * CHUNK_SZ;
   char *msg = NULL;
   fill_with_alphabet(&msg, size, 0);
   int res = set_request(&req, &list, size, msg, 1);
@@ -235,7 +263,7 @@ TEST(unit_saurion, set_request_first_creation_and_reset) {
 TEST(unit_saurion, test_free_request) {
   struct request *req = NULL;
   struct Node *list = NULL;
-  size_t size = 2.5 * CHUNK_SZ;
+  uint64_t size = 2.5 * CHUNK_SZ;
   char *msg = NULL;
   fill_with_alphabet(&msg, size, 0);
   int res = set_request(&req, &list, size, msg, 1);
@@ -255,7 +283,7 @@ TEST(unit_saurion, EmptyRequest) {
   struct request req = {};
   req.iovec_count = 0;
   void *dest = nullptr;
-  size_t len = 0;
+  uint64_t len = 0;
 
   int res = read_chunk(&dest, &len, &req);
 
@@ -267,7 +295,7 @@ TEST(unit_saurion, EmptyRequest) {
 TEST(unit_saurion, SingleMessageComplete) {
   // Caso en el que hay un mensaje completo en un solo iovec
   const char *message = "Hola, Mundo!";
-  size_t msg_size = strlen(message);
+  uint64_t msg_size = strlen(message);
 
   // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
   struct request *req = NULL;
@@ -276,7 +304,7 @@ TEST(unit_saurion, SingleMessageComplete) {
   EXPECT_EQ(res, SUCCESS_CODE);
 
   void *dest = nullptr;
-  size_t len = 0;
+  uint64_t len = 0;
 
   res = read_chunk(&dest, &len, req);
 
@@ -293,7 +321,7 @@ TEST(unit_saurion, MessageSpanningMultipleIovecs) {
   // Caso en el que un mensaje se divide en múltiples iovecs
   char *message = NULL;
   fill_with_alphabet(&message, 1.5 * CHUNK_SZ, 0);
-  size_t msg_size = strlen(message);
+  uint64_t msg_size = strlen(message);
 
   // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
   struct request *req = NULL;
@@ -305,10 +333,12 @@ TEST(unit_saurion, MessageSpanningMultipleIovecs) {
   EXPECT_EQ(req->next_iov, 0UL);
   EXPECT_EQ(req->next_offset, 0UL);
   EXPECT_EQ(req->iovec_count, 2UL);
-  EXPECT_EQ(*(size_t *)req->iov[0].iov_base, 1.5 * CHUNK_SZ);
+  uint64_t size = *(uint64_t *)req->iov[0].iov_base;
+  size = ntohll(size);
+  EXPECT_EQ(size, 1.5 * CHUNK_SZ);
 
   void *dest = nullptr;
-  size_t len = 0;
+  uint64_t len = 0;
 
   res = read_chunk(&dest, &len, req);
 
@@ -326,7 +356,7 @@ TEST(unit_saurion, PreviousUnfinishedMessage) {
   // Caso en el que un mensaje se divide en múltiples iovecs
   char *message = NULL;
   fill_with_alphabet(&message, 2.5 * CHUNK_SZ, 0);
-  size_t msg_size = strlen(message);
+  uint64_t msg_size = strlen(message);
 
   // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
   struct request *req = NULL;
@@ -338,12 +368,14 @@ TEST(unit_saurion, PreviousUnfinishedMessage) {
   EXPECT_EQ(req->next_iov, 0UL);
   EXPECT_EQ(req->next_offset, 0UL);
   EXPECT_EQ(req->iovec_count, 3UL);
-  EXPECT_EQ(*(size_t *)req->iov[0].iov_base, 2.5 * CHUNK_SZ);
+  uint64_t size = *(uint64_t *)req->iov[0].iov_base;
+  size = ntohll(size);
+  EXPECT_EQ(size, 2.5 * CHUNK_SZ);
 
   req->iovec_count = 1;
 
   void *dest = nullptr;
-  size_t len = 0;
+  uint64_t len = 0;
 
   res = read_chunk(&dest, &len, req);
 
@@ -352,7 +384,7 @@ TEST(unit_saurion, PreviousUnfinishedMessage) {
   EXPECT_EQ(len, 0UL);
   EXPECT_NE(req->prev, nullptr);
   EXPECT_EQ(req->prev_size, msg_size);
-  size_t readed = CHUNK_SZ - sizeof(size_t);
+  uint64_t readed = CHUNK_SZ - sizeof(size_t);
   EXPECT_EQ(req->prev_remain, msg_size - readed);
 
   res = set_request(&req, &list, req->prev_remain, message + readed, 0);
@@ -366,7 +398,7 @@ TEST(unit_saurion, PreviousUnfinishedMessage) {
   EXPECT_EQ(len, 0UL);
   EXPECT_NE(req->prev, nullptr);
   EXPECT_EQ(req->prev_size, msg_size);
-  readed = 2 * CHUNK_SZ - sizeof(size_t);
+  readed = 2 * CHUNK_SZ - sizeof(uint64_t);
   EXPECT_EQ(req->prev_remain, msg_size - readed);
 
   res = set_request(&req, &list, req->prev_remain, message + readed, 0);
@@ -385,18 +417,18 @@ TEST(unit_saurion, PreviousUnfinishedMessage) {
 
 TEST(unit_saurion, MultipleMessagesInOneIovec) {
   char *msg1 = NULL;
-  size_t size1 = 3;
+  uint64_t size1 = 3;
   char *msg2 = NULL;
-  size_t size2 = 4;
+  uint64_t size2 = 4;
   char *msg3 = NULL;
-  size_t size3 = 5;
-  size_t offset = 0;
+  uint64_t size3 = 5;
+  uint64_t offset = 0;
   fill_with_alphabet(&msg1, size1, 1);
   fill_with_alphabet(&msg2, size2, 1);
   fill_with_alphabet(&msg3, size3, 1);
 
-  const size_t wrapper = sizeof(uint64_t) + 1;
-  size_t total_size = size1 + size2 + size3 + 3 * wrapper;
+  const uint64_t wrapper = sizeof(uint64_t) + 1;
+  uint64_t total_size = size1 + size2 + size3 + 3 * wrapper;
   char *msgs = (char *)malloc(total_size);
   memcpy(msgs, msg1, size1 + wrapper);
   offset += size1 + wrapper;
@@ -415,20 +447,32 @@ TEST(unit_saurion, MultipleMessagesInOneIovec) {
   EXPECT_EQ(req->next_offset, 0UL);
   EXPECT_EQ(req->iovec_count, 1UL);
   offset = 0;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size1);
+  uint64_t exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size1);
   offset += sizeof(uint64_t) + size1;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, 0UL);
   offset += 1;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size2);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size2);
   offset += sizeof(uint64_t) + size2;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, 0UL);
   offset += 1;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size3);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size3);
   offset += sizeof(uint64_t) + size3;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, 0UL);
 
   void *dest = nullptr;
-  size_t len = 0;
+  uint64_t len = 0;
 
   res = read_chunk(&dest, &len, req);
 
@@ -468,18 +512,18 @@ TEST(unit_saurion, MultipleMessagesInOneIovec) {
 
 TEST(unit_saurion, MultipleMessagesInOneIovecLastIncomplete) {
   char *msg1 = NULL;
-  size_t size1 = 3;
+  uint64_t size1 = 3;
   char *msg2 = NULL;
-  size_t size2 = 4;
+  uint64_t size2 = 4;
   char *msg3 = NULL;
-  size_t size3 = 5;
-  size_t offset = 0;
+  uint64_t size3 = 5;
+  uint64_t offset = 0;
   fill_with_alphabet(&msg1, size1, 1);
   fill_with_alphabet(&msg2, size2, 1);
   fill_with_alphabet(&msg3, size3, 1);
 
-  const size_t wrapper = sizeof(uint64_t) + 1;
-  size_t total_size = size1 + size2 + size3 + 3 * wrapper;
+  const uint64_t wrapper = sizeof(uint64_t) + 1;
+  uint64_t total_size = size1 + size2 + size3 + 3 * wrapper;
   char *msgs = (char *)malloc(total_size);
   memcpy(msgs, msg1, size1 + wrapper);
   offset += size1 + wrapper;
@@ -499,20 +543,32 @@ TEST(unit_saurion, MultipleMessagesInOneIovecLastIncomplete) {
   EXPECT_EQ(req->iovec_count, 1UL);
   req->iov[0].iov_len -= 3;
   offset = 0;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size1);
+  uint64_t exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size1);
   offset += sizeof(uint64_t) + size1;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, 0UL);
   offset += 1;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size2);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size2);
   offset += sizeof(uint64_t) + size2;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, 0UL);
   offset += 1;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size3);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size3);
   offset += sizeof(uint64_t) + size3;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, 0UL);
 
   void *dest = nullptr;
-  size_t len = 0;
+  uint64_t len = 0;
 
   res = read_chunk(&dest, &len, req);
 
@@ -541,7 +597,7 @@ TEST(unit_saurion, MultipleMessagesInOneIovecLastIncomplete) {
   EXPECT_EQ(len, 0UL);
   EXPECT_NE(req->prev, nullptr);
   EXPECT_EQ(req->prev_size, size3);
-  size_t readed = size3 - 2;
+  uint64_t readed = size3 - 2;
   EXPECT_EQ(req->prev_remain, size3 - readed);
   free(req->prev);
   list_free(&list);
@@ -553,25 +609,27 @@ TEST(unit_saurion, MultipleMessagesInOneIovecLastIncomplete) {
 
 TEST(unit_saurion, MultipleMessagesInOneIovecSecondMalformed) {
   char *msg1 = NULL;
-  size_t size1 = 10;
+  uint64_t size1 = 10;
   char *msg2 = NULL;
-  size_t size2 = 40;
+  uint64_t size2 = 40;
   char *msg3 = NULL;
-  size_t size3 = 50;
-  size_t offset = 0;
+  uint64_t size3 = 50;
+  uint64_t offset = 0;
   fill_with_alphabet(&msg1, size1, 1);
   fill_with_alphabet(&msg2, size2, 1);
   fill_with_alphabet(&msg3, size3, 1);
 
-  const size_t wrapper = sizeof(uint64_t) + 1;
-  size_t total_size = size1 + size2 + size3 + 3 * wrapper - 10;
+  const uint64_t wrapper = sizeof(uint64_t) + 1;
+  uint64_t total_size = size1 + size2 + size3 + 3 * wrapper - 10;
   char *msgs = (char *)malloc(total_size);
   memcpy(msgs, msg1, size1 + wrapper);
   offset += size1 + wrapper;
   memcpy(msgs + offset, msg2, size2 + wrapper);
   offset += size2 + wrapper - 10;
   memcpy(msgs + offset, msg3, size3 + wrapper);
-  EXPECT_EQ(*(uint64_t *)(msgs + offset), size3);
+  uint64_t exp_size = *(uint64_t *)(msgs + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size3);
 
   struct request *req = NULL;
   struct Node *list = NULL;
@@ -584,20 +642,32 @@ TEST(unit_saurion, MultipleMessagesInOneIovecSecondMalformed) {
   EXPECT_EQ(req->next_offset, 0UL);
   EXPECT_EQ(req->iovec_count, 1UL);
   offset = 0;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size1);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size1);
   offset += sizeof(uint64_t) + size1;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, 0UL);
   offset += 1;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size2);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size2);
   offset += sizeof(uint64_t) + size2;
-  EXPECT_NE(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_NE(exp_size, 0UL);
   offset += 1 - 10;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size3);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size3);
   offset += sizeof(uint64_t) + size3;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, 0UL);
 
   void *dest = nullptr;
-  size_t len = 0;
+  uint64_t len = 0;
 
   res = read_chunk(&dest, &len, req);
 
@@ -627,25 +697,27 @@ TEST(unit_saurion, MultipleMessagesInOneIovecSecondMalformed) {
 
 TEST(unit_saurion, MultipleMessagesInOneIovecSecondAndThirdMalformed) {
   char *msg1 = NULL;
-  size_t size1 = 10;
+  uint64_t size1 = 10;
   char *msg2 = NULL;
-  size_t size2 = 40;
+  uint64_t size2 = 40;
   char *msg3 = NULL;
-  size_t size3 = 50;
-  size_t offset = 0;
+  uint64_t size3 = 50;
+  uint64_t offset = 0;
   fill_with_alphabet(&msg1, size1, 1);
   fill_with_alphabet(&msg2, size2, 1);
   fill_with_alphabet(&msg3, size3, 1);
 
-  const size_t wrapper = sizeof(uint64_t) + 1;
-  size_t total_size = size1 + size2 + size3 + 3 * wrapper - 10 - 5;
+  const uint64_t wrapper = sizeof(uint64_t) + 1;
+  uint64_t total_size = size1 + size2 + size3 + 3 * wrapper - 10 - 5;
   char *msgs = (char *)malloc(total_size);
   memcpy(msgs, msg1, size1 + wrapper);
   offset += size1 + wrapper;
   memcpy(msgs + offset, msg2, size2 + wrapper);
   offset += size2 + wrapper - 10;
   memcpy(msgs + offset, msg3, size3 + wrapper - 5);
-  EXPECT_EQ(*(uint64_t *)(msgs + offset), size3);
+  uint64_t exp_size = *(uint64_t *)(msgs + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size3);
 
   struct request *req = NULL;
   struct Node *list = NULL;
@@ -658,20 +730,32 @@ TEST(unit_saurion, MultipleMessagesInOneIovecSecondAndThirdMalformed) {
   EXPECT_EQ(req->next_offset, 0UL);
   EXPECT_EQ(req->iovec_count, 1UL);
   offset = 0;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size1);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size1);
   offset += sizeof(uint64_t) + size1;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, 0UL);
   offset += 1;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size2);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size2);
   offset += sizeof(uint64_t) + size2;
-  EXPECT_NE(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_NE(exp_size, 0UL);
   offset += 1 - 10;
-  EXPECT_EQ(*(size_t *)((char *)req->iov[0].iov_base + offset), size3);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, size3);
   offset += sizeof(uint64_t) + size3;
-  EXPECT_EQ(*(uint8_t *)((char *)req->iov[0].iov_base + offset), 0);
+  exp_size = *(uint64_t *)((char *)req->iov[0].iov_base + offset);
+  exp_size = ntohll(exp_size);
+  EXPECT_EQ(exp_size, 0UL);
 
   void *dest = nullptr;
-  size_t len = 0;
+  uint64_t len = 0;
 
   res = read_chunk(&dest, &len, req);
 

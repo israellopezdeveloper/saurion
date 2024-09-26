@@ -38,6 +38,28 @@ static uint32_t next(struct saurion *s) {
   return s->next;
 }
 
+static uint64_t htonll(uint64_t value) {
+  int num = 42;
+  if (*(char *)&num == 42) {  // Little endian check
+    uint32_t high_part = htonl((uint32_t)(value >> 32));
+    uint32_t low_part = htonl((uint32_t)(value & 0xFFFFFFFFLL));
+    return ((uint64_t)low_part << 32) | high_part;
+  } else {  // Already big endian
+    return value;
+  }
+}
+
+static uint64_t ntohll(uint64_t value) {
+  int num = 42;
+  if (*(char *)&num == 42) {  // Little endian check
+    uint32_t high_part = ntohl((uint32_t)(value >> 32));
+    uint32_t low_part = ntohl((uint32_t)(value & 0xFFFFFFFFLL));
+    return ((uint64_t)low_part << 32) | high_part;
+  } else {  // Already big endian
+    return value;
+  }
+}
+
 void free_request(struct request *req, void **children_ptr, size_t amount) {
   if (children_ptr) {
     free(children_ptr);
@@ -66,7 +88,8 @@ int initialize_iovec(struct iovec *iov, size_t amount, size_t pos, const void *m
     size_t cpy_sz = 0;
     if (h) {
       if (pos == 0) {
-        memcpy(dest, &size, sizeof(uint64_t));
+        uint64_t send_size = htonll(size);
+        memcpy(dest, &send_size, sizeof(uint64_t));
         dest += sizeof(uint64_t);
         len -= sizeof(uint64_t);
       } else {
@@ -287,6 +310,7 @@ static void add_read_continue(struct saurion *const s, struct request *oreq, con
 }
 
 static void add_write(struct saurion *const s, int fd, const char *const str, const int sel) {
+  printf("[SERVER] add_write\n");
   int res = ERROR_CODE;
   pthread_mutex_lock(&s->m_rings[sel]);
   while (res != SUCCESS_CODE) {
@@ -315,6 +339,7 @@ static void add_write(struct saurion *const s, int fd, const char *const str, co
     }
     res = SUCCESS_CODE;
   }
+  printf("==>==><%d> %s | %zu\n", fd, str, strlen(str));
   pthread_mutex_unlock(&s->m_rings[sel]);
 }
 
@@ -325,29 +350,17 @@ static void handle_accept(const struct saurion *const s, const int fd) {
   }
 }
 
-void print_binary_from_buffer(const char *buffer) {
-  pthread_mutex_lock(&print_mutex);
-  printf("[SERVER] ");
-  // Convertir los primeros 8 bytes del buffer a un uint64_t
-  uint64_t num;
-  memcpy(&num, buffer, sizeof(uint64_t));
+void print_bytes(const void *buff, int n) {
+  // Convertimos el puntero void* a unsigned char* para trabajar byte por byte
+  const unsigned char *byte_buff = (const unsigned char *)buff;
 
-  // Recorremos todos los bits de uint64_t, desde el más significativo hasta el menos significativo
-  for (int i = 63; i >= 0; i--) {
-    uint64_t mask = (uint64_t)1 << i;
-    if (num & mask)
-      printf("1");
-    else
-      printf("0");
-
-    // Espacio cada 8 bits (1 byte) para legibilidad
-    if (i % 8 == 0) {
+  for (int i = 0; i < n; i++) {
+    printf("%02x", byte_buff[i]);
+    if ((i + 1) % 4 == 0) {
       printf(" ");
     }
   }
   printf("\n");
-  pthread_mutex_unlock(&print_mutex);
-  exit(1);
 }
 
 [[nodiscard]]
@@ -390,9 +403,7 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     curr_iov = req->next_iov;
     curr_iov_off = req->next_offset;
     cont_sz = *((size_t *)(req->iov[curr_iov].iov_base + curr_iov_off));
-    if (cont_sz != 4) {
-      print_binary_from_buffer(req->iov[curr_iov].iov_base + curr_iov_off);
-    }
+    cont_sz = ntohll(cont_sz);
     curr_iov_off += sizeof(uint64_t);
     cont_rem = cont_sz;
     dest_off = cont_sz - cont_rem;
@@ -410,9 +421,7 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     curr_iov = 0;
     curr_iov_off = 0;
     cont_sz = *((size_t *)(req->iov[curr_iov].iov_base + curr_iov_off));
-    if (cont_sz != 4) {
-      print_binary_from_buffer(req->iov[curr_iov].iov_base + curr_iov_off);
-    }
+    cont_sz = ntohll(cont_sz);
     curr_iov_off += sizeof(uint64_t);
     cont_rem = cont_sz;
     dest_off = cont_sz - cont_rem;
@@ -465,7 +474,8 @@ int read_chunk(void **dest, size_t *len, struct request *const req) {
     req->prev_remain = 0;
   }
   if (curr_iov < req->iovec_count) {
-    if (req->iov[curr_iov].iov_len > curr_iov_off) {
+    uint64_t next_sz = *(uint64_t *)(req->iov[curr_iov].iov_base + curr_iov_off);
+    if ((req->iov[curr_iov].iov_len > curr_iov_off) && next_sz) {
       req->next_iov = curr_iov;
       req->next_offset = curr_iov_off;
     } else {
@@ -515,22 +525,6 @@ static void handle_read(struct saurion *const s, struct request *const req) {
       msg = NULL;
       continue;
     }
-    // Hay previo y se ha completado
-    if (req->prev && req->prev_size && !req->prev_remain) {
-      if (s->cb.on_readed) {
-        s->cb.on_readed(req->client_socket, req->prev, req->prev_size, s->cb.on_readed_arg);
-      }
-      free(req->prev);
-      req->prev_size = 0;
-      req->prev_remain = 0;
-      req->prev = NULL;
-      // Hay siguiente
-      if (req->next_iov || req->next_offset) {
-        continue;
-      }
-      // No hay siguiente
-      break;
-    }
     // Hay previo pero no se ha completado
     if (req->prev && req->prev_size && req->prev_remain) {
       add_read_continue(s, req, next(s));
@@ -538,7 +532,7 @@ static void handle_read(struct saurion *const s, struct request *const req) {
     }
     // Hay un único mensaje y se ha completado
     if (s->cb.on_readed && msg) {
-      s->cb.on_readed(req->client_socket, msg, strlen(msg), s->cb.on_readed_arg);
+      s->cb.on_readed(req->client_socket, msg, len, s->cb.on_readed_arg);
     }
     free(msg);
     msg = NULL;
