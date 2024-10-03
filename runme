@@ -248,7 +248,7 @@ else
     if [ "${option_flag_value}" = true ]; then
       make_target_var="MAKE_TARGETS_${option}"
       make_target_value=$(eval echo \$$make_target_var)
-      run_make_target "${make_target_value}"
+      run_make_target "${make_target_value}" || exit 1
     fi
   done
   if [ "${OPTION_FLAGS_noclean}" != true ]; then
