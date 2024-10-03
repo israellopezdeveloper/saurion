@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -eu
-
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 
 # Los códigos de color se eliminan ya que el uso de "\e" y "-e" en echo no es compatible con POSIX
