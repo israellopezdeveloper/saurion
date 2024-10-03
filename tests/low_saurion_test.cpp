@@ -417,13 +417,12 @@ TEST_F(low_saurion, readWriteWithLargeMessage) {
   clients_2_saurion(1, str, 0);
   wait_readed(size);
   EXPECT_EQ(summary.readed, size);
-  printf("FDS: %zu\n", summary.fds.size());
   saurion_2_client(summary.fds.front(), 1, (char *)str);
   wait_wrote(1);
+  EXPECT_EQ(summary.disconnected, clients);
   disconnect_clients();
   wait_disconnected(clients);
   // EXPECT_EQ(1UL, read_from_clients((char *)str));
-  EXPECT_EQ(summary.disconnected, clients);
   delete[] str;
 }
 

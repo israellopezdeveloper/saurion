@@ -193,9 +193,8 @@ void createClient(int clientId) {
     // Leer datos del servidor en modo no bloqueante
     while (keepRunning) {
       // Leer si hay datos disponibles
-      int64_t len = read(sockfd, buffer, sizeof(buffer));
+      ssize_t len = read(sockfd, buffer, sizeof(buffer));
 
-      printf("[CLIENT] msg arrives\n");
       if (len > 0) {
         parseMessages(buffer, len, logStream);
       } else if (len == 0) {
@@ -205,6 +204,8 @@ void createClient(int clientId) {
         // Error de lectura, pero no debido a que no haya datos disponibles
         std::cerr << "Error leyendo del socket: " << strerror(errno) << std::endl;
         break;
+      } else {
+        perror("Error en la lectura");
       }
 
       // Pausa breve para evitar consumir demasiados recursos
@@ -212,6 +213,7 @@ void createClient(int clientId) {
     }
     logStream.close();
     close(sockfd);
+    printf("[CLIENT] child %d ends\n", clientId);
     exit(0);  // El proceso hijo termina aquí
   } else {
     clients.push_back(pid);

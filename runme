@@ -102,7 +102,7 @@ loop_execution() {
     executed=1
     make_exec || continue
     make_exec check || {
-      find "${SCRIPT_PATH}/build/tests" -executable -name "*_test" -exec {} \; || true
+      find "${SCRIPT_PATH}/build/tests" -executable -name "*_test" -exec timeout "${TIMEOUT}" {} \; || true
     }
 
     for option in "${!MAKE_TARGETS[@]}"; do

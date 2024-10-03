@@ -339,7 +339,6 @@ static void add_write(struct saurion *const s, int fd, const char *const str, co
     }
     res = SUCCESS_CODE;
   }
-  printf("==>==><%d> %s | %zu\n", fd, str, strlen(str));
   pthread_mutex_unlock(&s->m_rings[sel]);
 }
 
