@@ -1,0 +1,61 @@
+name: CI Main Branch
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-docs:
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/ubuntu-make-doc:1.0'
+      docker_options: '--privileged --user root'
+      commands: |
+        ./runme --docs --noclean
+        tar -czf docs.tar.gz build/docs
+      artifact_path: 'docs.tar.gz'
+      artifact_name: 'documentation'
+
+  create-coverage:
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
+      docker_options: '--privileged --user root'
+      commands: |
+        ./runme --coverage --noclean
+        tar -czf coverage.tar.gz build/coverage
+      artifact_path: 'coverage.tar.gz'
+      artifact_name: 'coverage'
+
+  test-gcc:
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
+      docker_options: '--privileged --user root'
+      commands: './runme --noclean'
+
+  test-clang:
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
+      docker_options: '--privileged --user root'
+      commands: './runme --noclean'
+
+  leak-gcc:
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
+      docker_options: '--privileged --user root'
+      commands: |
+        ulimit -n 1024
+        ./runme --leak
+
+  leak-clang:
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
+      docker_options: '--privileged --user root'
+      commands: |
+        ulimit -n 1024
+        ./runme --leak

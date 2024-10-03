@@ -1,0 +1,40 @@
+name: CI Push
+
+on:
+  push:
+    branches:
+      - '**'  # Todas las ramas
+
+jobs:
+  test-gcc:
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
+      docker_options: '--privileged --user root'
+      commands: './runme --noclean'
+
+  test-clang:
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
+      docker_options: '--privileged --user root'
+      commands: './runme --noclean'
+
+  leak-gcc:
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
+      docker_options: '--privileged --user root'
+      commands: |
+        ulimit -n 1024
+        ./runme --leak
+
+  leak-clang:
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
+      docker_options: '--privileged --user root'
+      commands: |
+        ulimit -n 1024
+        ./runme --leak
+
