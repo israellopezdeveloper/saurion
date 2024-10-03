@@ -11,14 +11,14 @@ jobs:
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
       docker_options: '--privileged --user root'
-      commands: './runme --noclean'
+      commands: './runme --noclean --nocompile-commands'
 
   test-clang:
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
       docker_options: '--privileged --user root'
-      commands: './runme --noclean'
+      commands: './runme --noclean --nocompile-commands'
 
   leak-gcc:
     uses: ./.github/workflows/reusable-job.yml
@@ -27,7 +27,7 @@ jobs:
       docker_options: '--privileged --user root'
       commands: |
         ulimit -n 1024
-        ./runme --leak --noclean
+        ./runme --leak --noclean --nocompile-commands
 
   leak-clang:
     uses: ./.github/workflows/reusable-job.yml
@@ -36,5 +36,5 @@ jobs:
       docker_options: '--privileged --user root'
       commands: |
         ulimit -n 1024
-        ./runme --leak --noclean
+        ./runme --leak --noclean --nocompile-commands
 
