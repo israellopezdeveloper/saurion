@@ -7,21 +7,21 @@ on:
 
 jobs:
   test-gcc:
-    uses: .github/workflows/reusable-job.yml@feature/migrate-to-gnu
+    uses: ./.github/workflows/reusable-job.yml@feature/migrate-to-gnu
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
       docker_options: '--privileged --user root'
       commands: './runme --noclean'
 
   test-clang:
-    uses: .github/workflows/reusable-job.yml@feature/migrate-to-gnu
+    uses: ./.github/workflows/reusable-job.yml@feature/migrate-to-gnu
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
       docker_options: '--privileged --user root'
       commands: './runme --noclean'
 
   leak-gcc:
-    uses: .github/workflows/reusable-job.yml@feature/migrate-to-gnu
+    uses: ./.github/workflows/reusable-job.yml@feature/migrate-to-gnu
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
       docker_options: '--privileged --user root'
@@ -30,7 +30,7 @@ jobs:
         ./runme --leak
 
   leak-clang:
-    uses: .github/workflows/reusable-job.yml@feature/migrate-to-gnu
+    uses: ./.github/workflows/reusable-job.yml@feature/migrate-to-gnu
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
       docker_options: '--privileged --user root'
