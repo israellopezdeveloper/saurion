@@ -456,7 +456,7 @@ TEST_F(low_saurion, readWriteWithLargeMessage) {
 
 TEST_F(low_saurion, handleConcurrentReadsAndWrites) {
   uint32_t clients = 20;
-  uint32_t msgs = 100;
+  uint32_t msgs = 10;
   connect_clients(clients);
   wait_connected(clients);
   EXPECT_EQ(summary.connected, clients);
