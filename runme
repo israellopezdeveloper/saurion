@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export TERM=${TERM:-xterm}
+
 set -eu
 
 SCRIPT_PATH=$(realpath "$(dirname "$0")")
