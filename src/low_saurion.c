@@ -44,9 +44,8 @@ static uint64_t htonll(uint64_t value) {
     uint32_t high_part = htonl((uint32_t)(value >> 32));
     uint32_t low_part = htonl((uint32_t)(value & 0xFFFFFFFFLL));
     return ((uint64_t)low_part << 32) | high_part;
-  } else {  // Already big endian
-    return value;
   }
+  return value;
 }
 
 static uint64_t ntohll(uint64_t value) {
@@ -55,9 +54,8 @@ static uint64_t ntohll(uint64_t value) {
     uint32_t high_part = ntohl((uint32_t)(value >> 32));
     uint32_t low_part = ntohl((uint32_t)(value & 0xFFFFFFFFLL));
     return ((uint64_t)low_part << 32) | high_part;
-  } else {  // Already big endian
-    return value;
   }
+  return value;
 }
 
 void free_request(struct request *req, void **children_ptr, size_t amount) {
@@ -135,8 +133,8 @@ int set_request(struct request **r, struct Node **l, size_t s, const void *m, ui
   if (h) {
     full_size += (sizeof(uint64_t) + 1);
   }
-  size_t amount = s / CHUNK_SZ;
-  amount = amount + (s % CHUNK_SZ == 0 ? 0 : 1);
+  size_t amount = full_size / CHUNK_SZ;
+  amount = amount + (full_size % CHUNK_SZ == 0 ? 0 : 1);
   struct request *temp =
       (struct request *)malloc(sizeof(struct request) + sizeof(struct iovec) * amount);
   if (!temp) {
@@ -310,7 +308,6 @@ static void add_read_continue(struct saurion *const s, struct request *oreq, con
 }
 
 static void add_write(struct saurion *const s, int fd, const char *const str, const int sel) {
-  printf("[SERVER] add_write\n");
   int res = ERROR_CODE;
   pthread_mutex_lock(&s->m_rings[sel]);
   while (res != SUCCESS_CODE) {
@@ -347,19 +344,6 @@ static void handle_accept(const struct saurion *const s, const int fd) {
   if (s->cb.on_connected) {
     s->cb.on_connected(fd, s->cb.on_connected_arg);
   }
-}
-
-void print_bytes(const void *buff, int n) {
-  // Convertimos el puntero void* a unsigned char* para trabajar byte por byte
-  const unsigned char *byte_buff = (const unsigned char *)buff;
-
-  for (int i = 0; i < n; i++) {
-    printf("%02x", byte_buff[i]);
-    if ((i + 1) % 4 == 0) {
-      printf(" ");
-    }
-  }
-  printf("\n");
 }
 
 [[nodiscard]]
@@ -572,6 +556,9 @@ int EXTERNAL_set_socket(const int p) {
 
   int enable = 1;
   if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
+    return ERROR_CODE;
+  }
+  if (setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0) {
     return ERROR_CODE;
   }
 

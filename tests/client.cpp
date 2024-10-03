@@ -4,8 +4,10 @@
 #include <sys/mman.h>  // Para memoria compartida
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #include <atomic>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -71,7 +73,7 @@ void sendMessagesHandler(int signum) {
         perror("Error en malloc");
         exit(EXIT_FAILURE);
       }
-      
+
       length = htonll(length);
 
       // 4. Copiar la longitud del mensaje (entero de 64 bits) al buffer
@@ -112,7 +114,6 @@ void makeSocketNonBlocking() {
 
 void parseMessages(char *buffer, int64_t bytes_read, std::ofstream &logStream) {
   int64_t offset = 0;
-  buffer[8 + 4] = 0;
 
   while ((bytes_read > 0) && (offset + sizeof(uint64_t) <= static_cast<uint64_t>(bytes_read))) {
     // Leer el entero de 64 bits (8 bytes) que indica la longitud del mensaje
@@ -123,14 +124,16 @@ void parseMessages(char *buffer, int64_t bytes_read, std::ofstream &logStream) {
 
     // Asegurarse de que tenemos suficientes bytes para el mensaje completo
     if (offset + msg_len + 1 > static_cast<uint64_t>(bytes_read)) {
-      // No hay suficientes datos para completar este mensaje, esperamos más datos
-      fprintf(stderr, "Datos incompletos, esperando más datos... <%lu>\n", msg_len);
+      printf(
+          "No hay suficientes datos para completar este mensaje, esperamos más datos: offset = %zu "
+          "msg_len = %zu + 1 > bytes_read = %zu\n",
+          offset, msg_len, bytes_read);
       return;
     }
 
     // Leer el mensaje
     char *msg = (char *)malloc(msg_len + 1);  // +1 para agregar terminador de cadena
-    memcpy(msg, buffer + offset, msg_len);
+    memcpy(msg, (char *)(buffer + offset), msg_len);
     msg[msg_len] = '\0';  // Agregar terminador de cadena
     offset += msg_len;
 
@@ -139,7 +142,6 @@ void parseMessages(char *buffer, int64_t bytes_read, std::ofstream &logStream) {
     offset++;
 
     if (end_byte != 0) {
-      fprintf(stderr, "Error: el byte final no es 0\n");
       free(msg);
       return;
     }
@@ -180,40 +182,58 @@ void createClient(int clientId) {
     inet_pton(AF_INET, "localhost", &serv_addr.sin_addr);  // Asumiendo localhost para la conexión
 
     if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-      std::cerr << "Error conectando al servidor" << std::endl;
+      perror("Error conectando al servidor");
       exit(1);
     }
 
     // Hacer el socket no bloqueante
     makeSocketNonBlocking();
 
-    char buffer[4096];
-    memset(buffer, 0, 4096);
+    char buffer[8192];
+    memset(buffer, 0, 8192);
 
     // Leer datos del servidor en modo no bloqueante
-    while (keepRunning) {
-      // Leer si hay datos disponibles
-      ssize_t len = read(sockfd, buffer, sizeof(buffer));
+    std::vector<uint8_t> accumulatedBuffer;
+    ssize_t total_len = 0;
 
-      if (len > 0) {
-        parseMessages(buffer, len, logStream);
-      } else if (len == 0) {
-        // El servidor cerró la conexión
-        break;
-      } else if (len < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
-        // Error de lectura, pero no debido a que no haya datos disponibles
-        std::cerr << "Error leyendo del socket: " << strerror(errno) << std::endl;
-        break;
-      } else {
-        perror("Error en la lectura");
+    while (keepRunning) {
+      int dataAvailable = 3;
+
+      total_len = 0;
+      while (dataAvailable > 0) {
+        ssize_t len = read(sockfd, buffer, sizeof(buffer));
+
+        if (len > 0) {
+          // Acumular los datos leídos en el buffer
+          accumulatedBuffer.insert(accumulatedBuffer.end(), buffer, buffer + len);
+          total_len += len;
+        } else if (len == 0) {
+          // printf("El servidor cerró la conexión\n");
+          keepRunning = false;
+          break;
+        } else if (len < 0) {
+          if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            usleep(1000);
+            --dataAvailable;
+          } else {
+            // Error de lectura, pero no debido a que no haya datos disponibles
+            std::cerr << "Error leyendo del socket: " << strerror(errno) << std::endl;
+            keepRunning = false;
+            break;
+          }
+        }
       }
 
-      // Pausa breve para evitar consumir demasiados recursos
-      usleep(100000);  // Dormir 100ms para reducir el uso de CPU
+      // Procesar todos los datos acumulados en una sola llamada a parseMessages
+      if (!accumulatedBuffer.empty()) {
+        parseMessages((char *)accumulatedBuffer.data(), total_len, logStream);
+
+        // Limpiar el buffer acumulado después de procesar los mensajes
+        accumulatedBuffer.clear();
+      }
     }
     logStream.close();
     close(sockfd);
-    printf("[CLIENT] child %d ends\n", clientId);
     exit(0);  // El proceso hijo termina aquí
   } else {
     clients.push_back(pid);
