@@ -328,7 +328,7 @@ void readPipe(const std::string &pipePath) {
 
   char buffer[4096];
   std::string commandBuffer;
-  int64_t bytesRead;
+  ssize_t bytesRead;
   while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0L) {
     commandBuffer.append(buffer, bytesRead);
     if (commandBuffer.find('\n') != std::string::npos) {
