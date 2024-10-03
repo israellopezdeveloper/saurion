@@ -27,7 +27,7 @@ jobs:
       docker_options: '--privileged --user root'
       commands: |
         ulimit -n 1024
-        ./runme --leak
+        ./runme --leak --noclean
 
   leak-clang:
     uses: ./.github/workflows/reusable-job.yml
@@ -36,5 +36,5 @@ jobs:
       docker_options: '--privileged --user root'
       commands: |
         ulimit -n 1024
-        ./runme --leak
+        ./runme --leak --noclean
 

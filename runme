@@ -68,7 +68,7 @@ run_make_target() {
   banner "Running ${target}"
 
   make "${target}" &&
-    wait_key
+    wait_key || exit 1
 }
 
 show_help() {
