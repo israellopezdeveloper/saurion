@@ -581,6 +581,7 @@ int EXTERNAL_set_socket(const int p) {
   return sock;
 }
 
+[[nodiscard]]
 struct saurion *saurion_create(uint32_t n_threads) {
   // Asignar memoria
   struct saurion *p = (struct saurion *)malloc(sizeof(struct saurion));
@@ -803,6 +804,7 @@ void saurion_worker_slave(void *arg) {
   return;
 }
 
+[[nodiscard]]
 int saurion_start(struct saurion *const s) {
   pthread_mutex_init(&print_mutex, NULL);
   ThreadPool_init(s->pool);
