@@ -3,7 +3,8 @@ name: CI Main Branch
 on:
   push:
     branches:
-      - main
+      - '**'
+      #      - main
 
 jobs:
   create-docs:

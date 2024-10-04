@@ -3,7 +3,8 @@ name: CI Push
 on:
   push:
     branches:
-      - '**'  # Todas las ramas
+      - main
+      #      - '**'  # Todas las ramas
 
 jobs:
   test-gcc:
