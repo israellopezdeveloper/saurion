@@ -13,7 +13,8 @@ jobs:
       docker_options: '--privileged --user root'
       commands: |
         autoreconf --install
-        mkdir build; cd $_
+        mkdir build
+        cd build
         ../configure --enable-doxygen-doc
         make doxygen-doc
         tar -czf docs.tar.gz build/docs
