@@ -80,7 +80,9 @@ jobs:
         fetch-depth: 0
         recursive: true
     - name: Get version number
-      run: echo "VERSION=$(./configure --version | head -n1 | sed 's/.* \([0-9]\+\.[0-9]\+\.[0-9]\+\)/\1/')" >> $GITHUB_ENV
+      run: |
+        autoreconf --install
+        echo "VERSION=$(./configure --version | head -n1 | sed 's/.* \([0-9]\+\.[0-9]\+\.[0-9]\+\)/\1/')" >> $GITHUB_ENV
     - name: Create GitHub Release
       id: create_release
       uses: actions/create-release@v1
