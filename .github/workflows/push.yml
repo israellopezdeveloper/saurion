@@ -11,14 +11,14 @@ jobs:
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
       docker_options: '--privileged --user root'
-      commands: './runme --noclean'
+      commands: './runme --noclean --nocompile-commands --coverage'
 
   test-clang:
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
       docker_options: '--privileged --user root'
-      commands: './runme --noclean'
+      commands: './runme --noclean --nocompile-commands --coverage'
 
   leak-gcc:
     uses: ./.github/workflows/reusable-job.yml
@@ -27,7 +27,7 @@ jobs:
       docker_options: '--privileged --user root'
       commands: |
         ulimit -n 1024
-        ./runme --leak
+        ./runme --noclean --nocompile-commands --leak
 
   leak-clang:
     uses: ./.github/workflows/reusable-job.yml
@@ -36,5 +36,16 @@ jobs:
       docker_options: '--privileged --user root'
       commands: |
         ulimit -n 1024
-        ./runme --leak
+        ./runme --noclean --nocompile-commands --leak
+
+  create-coverage:
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
+      docker_options: '--privileged --user root'
+      commands: |
+        ./runme --coverage --noclean --nocompile-commands
+        tar -czf coverage.tar.gz build/coverage
+      artifact_path: 'coverage.tar.gz'
+      artifact_name: 'coverage'
 
