@@ -19,7 +19,7 @@ jobs:
         make doxygen-doc
         cd ..
         tar -czf docs.tar.gz build/docs
-      artifact_path: 'docs.tar.gz'
+      artifact_path: 'documentation.tar.gz'
       artifact_name: 'documentation'
 
   create-coverage:
