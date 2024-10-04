@@ -18,7 +18,7 @@ jobs:
         ../configure --enable-doxygen-doc
         make doxygen-doc
         cd ..
-        tar -czf docs.tar.gz build/docs
+        tar -czf documentation.tar.gz build/docs
       artifact_path: 'documentation.tar.gz'
       artifact_name: 'documentation'
 
