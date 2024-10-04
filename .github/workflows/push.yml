@@ -12,7 +12,10 @@ jobs:
       docker_image: 'lopoeisr/ubuntu-make-doc:1.0'
       docker_options: '--privileged --user root'
       commands: |
-        ./runme --docs --noclean --nocompile-commands
+        autoreconf --install
+        mkdir build; cd $_
+        ../configure --enable-doxygen-doc
+        make doxygen-doc
         tar -czf docs.tar.gz build/docs
       artifact_path: 'docs.tar.gz'
       artifact_name: 'documentation'
