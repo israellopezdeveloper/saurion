@@ -287,9 +287,9 @@ void closeApplication() {
 // Manejar comandos recibidos
 void handleCommand(const std::string &command) {
   std::string cmd;
-  int n = 0;
+  unsigned int n = 0;
   std::string msg;
-  int delay = 0;
+  unsigned int delay = 0;
 
   // Crear un stream a partir del string
   std::istringstream ss(command);
@@ -328,8 +328,8 @@ void readPipe(const std::string &pipePath) {
 
   char buffer[4096];
   std::string commandBuffer;
-  int64_t bytesRead;
-  while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0) {
+  ssize_t bytesRead = 0;
+  while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0L) {
     commandBuffer.append(buffer, bytesRead);
     if (commandBuffer.find('\n') != std::string::npos) {
       handleCommand(commandBuffer);
