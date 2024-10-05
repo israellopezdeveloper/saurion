@@ -7,42 +7,60 @@ on:
 
 jobs:
   create-docs:
+    name: Generating doxygen documentation
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-doc:1.0'
       docker_options: '--privileged --user root'
       commands: |
-        ./runme --docs --noclean --nocompile-commands
-        tar -czf docs.tar.gz build/docs
-      artifact_path: 'docs.tar.gz'
+        autoreconf --install
+        mkdir build
+        cd build
+        ../configure --enable-doxygen-doc
+        make doxygen-doc
+        cd ..
+        tar -czf documentation.tar.gz -C build/docs html -C latex refman.pdf
+      artifact_path: 'documentation.tar.gz'
       artifact_name: 'documentation'
 
   create-coverage:
+    name: Generating coverage
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
       docker_options: '--privileged --user root'
       commands: |
         ./runme --coverage --noclean --nocompile-commands
-        tar -czf coverage.tar.gz build/coverage
+        tar -czf coverage.tar.gz -C build/coverage .
       artifact_path: 'coverage.tar.gz'
       artifact_name: 'coverage'
 
   test-gcc:
+    name: Testing and generating binaries on GCC
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
       docker_options: '--privileged --user root'
-      commands: './runme --noclean --nocompile-commands'
+      commands: |
+        ./runme --noclean --nocompile-commands
+        tar -czf gcc-libs.tar.gz -C build/lib .
+      artifact_path: 'gcc-libs.tar.gz'
+      artifact_name: 'gcc-libs'
 
   test-clang:
+    name: Testing and generating binaries on CLANG
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
       docker_options: '--privileged --user root'
-      commands: './runme --noclean --nocompile-commands'
+      commands: |
+        ./runme --noclean --nocompile-commands
+        tar -czf clang-libs.tar.gz -C build/lib .
+      artifact_path: 'clang-libs.tar.gz'
+      artifact_name: 'clang-libs'
 
   leak-gcc:
+    name: Testing memory leaks on GCC
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
@@ -52,6 +70,7 @@ jobs:
         ./runme --leak --noclean --nocompile-commands
 
   leak-clang:
+    name: Testing memory leaks on Clang
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
