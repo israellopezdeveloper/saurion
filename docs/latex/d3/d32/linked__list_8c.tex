@@ -1,0 +1,233 @@
+\hypertarget{linked__list_8c}{}\doxysection{/\+\_\+\+\_\+w/saurion/saurion/src/linked\+\_\+list.c File Reference}
+\label{linked__list_8c}\index{/\_\_w/saurion/saurion/src/linked\_list.c@{/\_\_w/saurion/saurion/src/linked\_list.c}}
+{\ttfamily \#include \char`\"{}linked\+\_\+list.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$pthread.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+Include dependency graph for linked\+\_\+list.\+c\+:
+% FIG 0
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structNode}{Node}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structNode}{Node}} $\ast$ \mbox{\hyperlink{linked__list_8c_a918975430b04d125decf67186a4e868a}{create\+\_\+node}} (void $\ast$ptr, size\+\_\+t amount, void $\ast$$\ast$children)
+\item 
+int \mbox{\hyperlink{linked__list_8c_aee07283e23385804a1d3f880cd99731e}{list\+\_\+insert}} (struct \mbox{\hyperlink{structNode}{Node}} $\ast$$\ast$head, void $\ast$ptr, size\+\_\+t amount, void $\ast$$\ast$children)
+\item 
+void \mbox{\hyperlink{linked__list_8c_aaf693ba941ada32c9c43d3c6897e4217}{free\+\_\+node}} (struct \mbox{\hyperlink{structNode}{Node}} $\ast$current)
+\item 
+void \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\+\_\+delete\+\_\+node}} (struct \mbox{\hyperlink{structNode}{Node}} $\ast$$\ast$head, void $\ast$ptr)
+\item 
+void \mbox{\hyperlink{linked__list_8c_ac33c30e895caddc11181b50eca0ab735}{list\+\_\+free}} (struct \mbox{\hyperlink{structNode}{Node}} $\ast$$\ast$head)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+pthread\+\_\+mutex\+\_\+t \mbox{\hyperlink{linked__list_8c_a269b01c2f5e202f62eb85b91e6542661}{list\+\_\+mutex}} = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{linked__list_8c_a918975430b04d125decf67186a4e868a}\label{linked__list_8c_a918975430b04d125decf67186a4e868a}} 
+\index{linked\_list.c@{linked\_list.c}!create\_node@{create\_node}}
+\index{create\_node@{create\_node}!linked\_list.c@{linked\_list.c}}
+\doxysubsubsection{\texorpdfstring{create\_node()}{create\_node()}}
+{\footnotesize\ttfamily struct \mbox{\hyperlink{structNode}{Node}} $\ast$ create\+\_\+node (\begin{DoxyParamCaption}\item[{void $\ast$}]{ptr,  }\item[{size\+\_\+t}]{amount,  }\item[{void $\ast$$\ast$}]{children }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{linked__list_8c_source_l00017}{17}} of file \mbox{\hyperlink{linked__list_8c_source}{linked\+\_\+list.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00017                                                                     \{}
+\DoxyCodeLine{00018   \textcolor{keyword}{struct }\mbox{\hyperlink{structNode}{Node}} *new\_node = (\textcolor{keyword}{struct }\mbox{\hyperlink{structNode}{Node}} *)malloc(\textcolor{keyword}{sizeof}(\textcolor{keyword}{struct} \mbox{\hyperlink{structNode}{Node}}));}
+\DoxyCodeLine{00019   \textcolor{comment}{// LCOV\_EXCL\_START}}
+\DoxyCodeLine{00020   \textcolor{keywordflow}{if} (!new\_node) \{}
+\DoxyCodeLine{00021     \textcolor{keywordflow}{return} NULL;}
+\DoxyCodeLine{00022   \}}
+\DoxyCodeLine{00023   \textcolor{comment}{// LCOV\_EXCL\_STOP}}
+\DoxyCodeLine{00024   new\_node-\/>\mbox{\hyperlink{structNode_a174a6b1ed6b6b34a9a313ae1d686f9ee}{ptr}} = \mbox{\hyperlink{structNode_a174a6b1ed6b6b34a9a313ae1d686f9ee}{ptr}};}
+\DoxyCodeLine{00025   new\_node-\/>\mbox{\hyperlink{structNode_aeda96509e2e7bbcbb3c35c498b4f7d3a}{size}} = amount;}
+\DoxyCodeLine{00026   new\_node-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}} = NULL;}
+\DoxyCodeLine{00027   \textcolor{keywordflow}{if} (amount > 0) \{}
+\DoxyCodeLine{00028     new\_node-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}} = (\textcolor{keyword}{struct }\mbox{\hyperlink{structNode}{Node}} **)malloc(\textcolor{keyword}{sizeof}(\textcolor{keyword}{struct} \mbox{\hyperlink{structNode}{Node}} *) * amount);}
+\DoxyCodeLine{00029     \textcolor{comment}{// LCOV\_EXCL\_START}}
+\DoxyCodeLine{00030     \textcolor{keywordflow}{if} (!new\_node-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}}) \{}
+\DoxyCodeLine{00031       free(new\_node);}
+\DoxyCodeLine{00032       \textcolor{keywordflow}{return} NULL;}
+\DoxyCodeLine{00033     \}}
+\DoxyCodeLine{00034     \textcolor{comment}{// LCOV\_EXCL\_STOP}}
+\DoxyCodeLine{00035     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < amount; ++i) \{}
+\DoxyCodeLine{00036       new\_node-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}}[i] = (\textcolor{keyword}{struct }\mbox{\hyperlink{structNode}{Node}} *)malloc(\textcolor{keyword}{sizeof}(\textcolor{keyword}{struct} \mbox{\hyperlink{structNode}{Node}}));}
+\DoxyCodeLine{00037 }
+\DoxyCodeLine{00038       \textcolor{comment}{// LCOV\_EXCL\_START}}
+\DoxyCodeLine{00039       \textcolor{keywordflow}{if} (!new\_node-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}}[i]) \{}
+\DoxyCodeLine{00040         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} j = 0; j < i; ++j) \{}
+\DoxyCodeLine{00041           free(new\_node-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}}[j]);}
+\DoxyCodeLine{00042         \}}
+\DoxyCodeLine{00043         free(new\_node);}
+\DoxyCodeLine{00044         \textcolor{keywordflow}{return} NULL;}
+\DoxyCodeLine{00045       \}}
+\DoxyCodeLine{00046     \}}
+\DoxyCodeLine{00047     \textcolor{comment}{// LCOV\_EXCL\_STOP}}
+\DoxyCodeLine{00048     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < amount; ++i) \{}
+\DoxyCodeLine{00049       new\_node-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}}[i]-\/>\mbox{\hyperlink{structNode_aeda96509e2e7bbcbb3c35c498b4f7d3a}{size}} = 0;}
+\DoxyCodeLine{00050       new\_node-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}}[i]-\/>\mbox{\hyperlink{structNode_af67b110ca1a258b793bf69d306929b22}{next}} = NULL;}
+\DoxyCodeLine{00051       new\_node-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}}[i]-\/>\mbox{\hyperlink{structNode_a174a6b1ed6b6b34a9a313ae1d686f9ee}{ptr}} = \mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}}[i];}
+\DoxyCodeLine{00052       new\_node-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}}[i]-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}} = NULL;}
+\DoxyCodeLine{00053     \}}
+\DoxyCodeLine{00054   \}}
+\DoxyCodeLine{00055   new\_node-\/>\mbox{\hyperlink{structNode_af67b110ca1a258b793bf69d306929b22}{next}} = NULL;}
+\DoxyCodeLine{00056   \textcolor{keywordflow}{return} new\_node;}
+\DoxyCodeLine{00057 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{linked__list_8c_aaf693ba941ada32c9c43d3c6897e4217}\label{linked__list_8c_aaf693ba941ada32c9c43d3c6897e4217}} 
+\index{linked\_list.c@{linked\_list.c}!free\_node@{free\_node}}
+\index{free\_node@{free\_node}!linked\_list.c@{linked\_list.c}}
+\doxysubsubsection{\texorpdfstring{free\_node()}{free\_node()}}
+{\footnotesize\ttfamily void free\+\_\+node (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structNode}{Node}} $\ast$}]{current }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{linked__list_8c_source_l00081}{81}} of file \mbox{\hyperlink{linked__list_8c_source}{linked\+\_\+list.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00081                                      \{}
+\DoxyCodeLine{00082   \textcolor{keywordflow}{if} (current-\/>\mbox{\hyperlink{structNode_aeda96509e2e7bbcbb3c35c498b4f7d3a}{size}} > 0) \{}
+\DoxyCodeLine{00083     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < current-\/>\mbox{\hyperlink{structNode_aeda96509e2e7bbcbb3c35c498b4f7d3a}{size}}; ++i) \{}
+\DoxyCodeLine{00084       free(current-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}}[i]-\/>\mbox{\hyperlink{structNode_a174a6b1ed6b6b34a9a313ae1d686f9ee}{ptr}});}
+\DoxyCodeLine{00085       free(current-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}}[i]);}
+\DoxyCodeLine{00086     \}}
+\DoxyCodeLine{00087     free(current-\/>\mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}});}
+\DoxyCodeLine{00088   \}}
+\DoxyCodeLine{00089   free(current-\/>\mbox{\hyperlink{structNode_a174a6b1ed6b6b34a9a313ae1d686f9ee}{ptr}});}
+\DoxyCodeLine{00090   free(current);}
+\DoxyCodeLine{00091 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}\label{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}} 
+\index{linked\_list.c@{linked\_list.c}!list\_delete\_node@{list\_delete\_node}}
+\index{list\_delete\_node@{list\_delete\_node}!linked\_list.c@{linked\_list.c}}
+\doxysubsubsection{\texorpdfstring{list\_delete\_node()}{list\_delete\_node()}}
+{\footnotesize\ttfamily void list\+\_\+delete\+\_\+node (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structNode}{Node}} $\ast$$\ast$}]{head,  }\item[{void $\ast$}]{ptr }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{linked__list_8c_source_l00093}{93}} of file \mbox{\hyperlink{linked__list_8c_source}{linked\+\_\+list.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00093                                                      \{}
+\DoxyCodeLine{00094   pthread\_mutex\_lock(\&\mbox{\hyperlink{linked__list_8c_a269b01c2f5e202f62eb85b91e6542661}{list\_mutex}});}
+\DoxyCodeLine{00095   \textcolor{keyword}{struct }\mbox{\hyperlink{structNode}{Node}} *current = *head;}
+\DoxyCodeLine{00096   \textcolor{keyword}{struct }\mbox{\hyperlink{structNode}{Node}} *prev = NULL;}
+\DoxyCodeLine{00097 }
+\DoxyCodeLine{00098   \textcolor{comment}{// Si el nodo a eliminar es el nodo cabeza}}
+\DoxyCodeLine{00099   \textcolor{keywordflow}{if} (current \&\& current-\/>\mbox{\hyperlink{structNode_a174a6b1ed6b6b34a9a313ae1d686f9ee}{ptr}} == \mbox{\hyperlink{structNode_a174a6b1ed6b6b34a9a313ae1d686f9ee}{ptr}}) \{}
+\DoxyCodeLine{00100     *head = current-\/>\mbox{\hyperlink{structNode_af67b110ca1a258b793bf69d306929b22}{next}};}
+\DoxyCodeLine{00101     \mbox{\hyperlink{linked__list_8c_aaf693ba941ada32c9c43d3c6897e4217}{free\_node}}(current);}
+\DoxyCodeLine{00102     pthread\_mutex\_unlock(\&\mbox{\hyperlink{linked__list_8c_a269b01c2f5e202f62eb85b91e6542661}{list\_mutex}});}
+\DoxyCodeLine{00103     \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00104   \}}
+\DoxyCodeLine{00105 }
+\DoxyCodeLine{00106   \textcolor{comment}{// Buscar el nodo a eliminar}}
+\DoxyCodeLine{00107   \textcolor{keywordflow}{while} (current \&\& current-\/>\mbox{\hyperlink{structNode_a174a6b1ed6b6b34a9a313ae1d686f9ee}{ptr}} != \mbox{\hyperlink{structNode_a174a6b1ed6b6b34a9a313ae1d686f9ee}{ptr}}) \{}
+\DoxyCodeLine{00108     prev = current;}
+\DoxyCodeLine{00109     current = current-\/>\mbox{\hyperlink{structNode_af67b110ca1a258b793bf69d306929b22}{next}};}
+\DoxyCodeLine{00110   \}}
+\DoxyCodeLine{00111 }
+\DoxyCodeLine{00112   \textcolor{comment}{// Si el dato no se encuentra en la lista}}
+\DoxyCodeLine{00113   \textcolor{keywordflow}{if} (!current) \{}
+\DoxyCodeLine{00114     pthread\_mutex\_unlock(\&\mbox{\hyperlink{linked__list_8c_a269b01c2f5e202f62eb85b91e6542661}{list\_mutex}});}
+\DoxyCodeLine{00115     \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00116   \}}
+\DoxyCodeLine{00117 }
+\DoxyCodeLine{00118   \textcolor{comment}{// Desenlazar el nodo y liberarlo}}
+\DoxyCodeLine{00119   prev-\/>\mbox{\hyperlink{structNode_af67b110ca1a258b793bf69d306929b22}{next}} = current-\/>\mbox{\hyperlink{structNode_af67b110ca1a258b793bf69d306929b22}{next}};}
+\DoxyCodeLine{00120   \mbox{\hyperlink{linked__list_8c_aaf693ba941ada32c9c43d3c6897e4217}{free\_node}}(current);}
+\DoxyCodeLine{00121   pthread\_mutex\_unlock(\&\mbox{\hyperlink{linked__list_8c_a269b01c2f5e202f62eb85b91e6542661}{list\_mutex}});}
+\DoxyCodeLine{00122 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{linked__list_8c_ac33c30e895caddc11181b50eca0ab735}\label{linked__list_8c_ac33c30e895caddc11181b50eca0ab735}} 
+\index{linked\_list.c@{linked\_list.c}!list\_free@{list\_free}}
+\index{list\_free@{list\_free}!linked\_list.c@{linked\_list.c}}
+\doxysubsubsection{\texorpdfstring{list\_free()}{list\_free()}}
+{\footnotesize\ttfamily void list\+\_\+free (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structNode}{Node}} $\ast$$\ast$}]{head }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{linked__list_8c_source_l00124}{124}} of file \mbox{\hyperlink{linked__list_8c_source}{linked\+\_\+list.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00124                                    \{}
+\DoxyCodeLine{00125   pthread\_mutex\_lock(\&\mbox{\hyperlink{linked__list_8c_a269b01c2f5e202f62eb85b91e6542661}{list\_mutex}});}
+\DoxyCodeLine{00126   \textcolor{keyword}{struct }\mbox{\hyperlink{structNode}{Node}} *current = *head;}
+\DoxyCodeLine{00127   \textcolor{keyword}{struct }\mbox{\hyperlink{structNode}{Node}} *\mbox{\hyperlink{low__saurion_8h_a9b4556b86497af3cd53528515556b0f3}{next}};}
+\DoxyCodeLine{00128 }
+\DoxyCodeLine{00129   \textcolor{keywordflow}{while} (current) \{}
+\DoxyCodeLine{00130     \mbox{\hyperlink{low__saurion_8h_a9b4556b86497af3cd53528515556b0f3}{next}} = current-\/>\mbox{\hyperlink{structNode_af67b110ca1a258b793bf69d306929b22}{next}};}
+\DoxyCodeLine{00131     \mbox{\hyperlink{linked__list_8c_aaf693ba941ada32c9c43d3c6897e4217}{free\_node}}(current);}
+\DoxyCodeLine{00132     current = \mbox{\hyperlink{low__saurion_8h_a9b4556b86497af3cd53528515556b0f3}{next}};}
+\DoxyCodeLine{00133   \}}
+\DoxyCodeLine{00134 }
+\DoxyCodeLine{00135   *head = NULL;}
+\DoxyCodeLine{00136   pthread\_mutex\_unlock(\&\mbox{\hyperlink{linked__list_8c_a269b01c2f5e202f62eb85b91e6542661}{list\_mutex}});}
+\DoxyCodeLine{00137 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{linked__list_8c_aee07283e23385804a1d3f880cd99731e}\label{linked__list_8c_aee07283e23385804a1d3f880cd99731e}} 
+\index{linked\_list.c@{linked\_list.c}!list\_insert@{list\_insert}}
+\index{list\_insert@{list\_insert}!linked\_list.c@{linked\_list.c}}
+\doxysubsubsection{\texorpdfstring{list\_insert()}{list\_insert()}}
+{\footnotesize\ttfamily int list\+\_\+insert (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structNode}{Node}} $\ast$$\ast$}]{head,  }\item[{void $\ast$}]{ptr,  }\item[{size\+\_\+t}]{amount,  }\item[{void $\ast$$\ast$}]{children }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{linked__list_8c_source_l00059}{59}} of file \mbox{\hyperlink{linked__list_8c_source}{linked\+\_\+list.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00059                                                                                \{}
+\DoxyCodeLine{00060   \textcolor{keyword}{struct }\mbox{\hyperlink{structNode}{Node}} *new\_node = \mbox{\hyperlink{linked__list_8c_a918975430b04d125decf67186a4e868a}{create\_node}}(\mbox{\hyperlink{structNode_a174a6b1ed6b6b34a9a313ae1d686f9ee}{ptr}}, amount, \mbox{\hyperlink{structNode_a3d857c2fdb25634fe92ca32ff006c233}{children}});}
+\DoxyCodeLine{00061   \textcolor{comment}{// LCOV\_EXCL\_START}}
+\DoxyCodeLine{00062   \textcolor{keywordflow}{if} (!new\_node) \{}
+\DoxyCodeLine{00063     \textcolor{keywordflow}{return} 1;}
+\DoxyCodeLine{00064   \}}
+\DoxyCodeLine{00065   \textcolor{comment}{// LCOV\_EXCL\_STOP}}
+\DoxyCodeLine{00066   pthread\_mutex\_lock(\&\mbox{\hyperlink{linked__list_8c_a269b01c2f5e202f62eb85b91e6542661}{list\_mutex}});}
+\DoxyCodeLine{00067   \textcolor{keywordflow}{if} (!*head) \{}
+\DoxyCodeLine{00068     *head = new\_node;}
+\DoxyCodeLine{00069     pthread\_mutex\_unlock(\&\mbox{\hyperlink{linked__list_8c_a269b01c2f5e202f62eb85b91e6542661}{list\_mutex}});}
+\DoxyCodeLine{00070     \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{00071   \}}
+\DoxyCodeLine{00072   \textcolor{keyword}{struct }\mbox{\hyperlink{structNode}{Node}} *temp = *head;}
+\DoxyCodeLine{00073   \textcolor{keywordflow}{while} (temp-\/>\mbox{\hyperlink{structNode_af67b110ca1a258b793bf69d306929b22}{next}}) \{}
+\DoxyCodeLine{00074     temp = temp-\/>\mbox{\hyperlink{structNode_af67b110ca1a258b793bf69d306929b22}{next}};}
+\DoxyCodeLine{00075   \}}
+\DoxyCodeLine{00076   temp-\/>\mbox{\hyperlink{structNode_af67b110ca1a258b793bf69d306929b22}{next}} = new\_node;}
+\DoxyCodeLine{00077   pthread\_mutex\_unlock(\&\mbox{\hyperlink{linked__list_8c_a269b01c2f5e202f62eb85b91e6542661}{list\_mutex}});}
+\DoxyCodeLine{00078   \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{00079 \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{linked__list_8c_a269b01c2f5e202f62eb85b91e6542661}\label{linked__list_8c_a269b01c2f5e202f62eb85b91e6542661}} 
+\index{linked\_list.c@{linked\_list.c}!list\_mutex@{list\_mutex}}
+\index{list\_mutex@{list\_mutex}!linked\_list.c@{linked\_list.c}}
+\doxysubsubsection{\texorpdfstring{list\_mutex}{list\_mutex}}
+{\footnotesize\ttfamily pthread\+\_\+mutex\+\_\+t list\+\_\+mutex = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER}
+
+
+
+Definition at line \mbox{\hyperlink{linked__list_8c_source_l00014}{14}} of file \mbox{\hyperlink{linked__list_8c_source}{linked\+\_\+list.\+c}}.
+

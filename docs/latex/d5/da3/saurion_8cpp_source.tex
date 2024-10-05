@@ -1,0 +1,61 @@
+\hypertarget{saurion_8cpp_source}{}\doxysection{saurion.\+cpp}
+\label{saurion_8cpp_source}\index{/\_\_w/saurion/saurion/src/saurion.cpp@{/\_\_w/saurion/saurion/src/saurion.cpp}}
+\mbox{\hyperlink{saurion_8cpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00001}00001 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{saurion_8hpp}{saurion.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00002}00002 }
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00003}00003 \textcolor{preprocessor}{\#include <cstdint>}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00004}00004 }
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00005}00005 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{low__saurion_8h}{low\_saurion.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00006}00006 }
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00007}\mbox{\hyperlink{classSaurion_a56b8393a788078d51ad08792ccdcd713}{00007}} \mbox{\hyperlink{classSaurion_a56b8393a788078d51ad08792ccdcd713}{Saurion::Saurion}}(\textcolor{keyword}{const} uint32\_t thds, \textcolor{keyword}{const} \textcolor{keywordtype}{int} sck) \textcolor{keyword}{noexcept} \{}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00008}00008   this-\/>s = \mbox{\hyperlink{group__LowSaurion_gae589ab08ed623ad2ab6d13beec33b131}{saurion\_create}}(thds);}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00009}00009   \textcolor{keywordflow}{if} (!this-\/>s) \{}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00010}00010     \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00011}00011   \}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00012}00012   this-\/>s-\/>ss = sck;}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00013}00013 \}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00014}00014 }
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00015}\mbox{\hyperlink{classSaurion_a3ea35eafe420d514b0147d69c745e7df}{00015}} \mbox{\hyperlink{classSaurion_a3ea35eafe420d514b0147d69c745e7df}{Saurion::\string~Saurion}}() \{ \mbox{\hyperlink{group__LowSaurion_ga7893ccf90a98845d5d95ffda0260d0b8}{saurion\_destroy}}(this-\/>\mbox{\hyperlink{classSaurion_a6f75f768b084ef03214b178d3746f142}{s}}); \}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00016}00016 }
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00017}\mbox{\hyperlink{classSaurion_ad5408d5b521e109da8c5c32b134c1fb4}{00017}} \textcolor{keywordtype}{void} \mbox{\hyperlink{classSaurion_ad5408d5b521e109da8c5c32b134c1fb4}{Saurion::init}}() noexcept \{}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00018}00018   \textcolor{keywordflow}{if} (!\mbox{\hyperlink{group__LowSaurion_gaeeab8302b41112175566881a1b7bf905}{saurion\_start}}(this-\/>\mbox{\hyperlink{classSaurion_a6f75f768b084ef03214b178d3746f142}{s}})) \{}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00019}00019     \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00020}00020   \}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00021}00021 \}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00022}00022 }
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00023}\mbox{\hyperlink{classSaurion_aeb75b8b41463e2a5b10ca446f36ebe00}{00023}} \textcolor{keywordtype}{void} \mbox{\hyperlink{classSaurion_aeb75b8b41463e2a5b10ca446f36ebe00}{Saurion::stop}}() noexcept \{ \mbox{\hyperlink{group__LowSaurion_ga9f32b41ec23178c2a693fec057b96532}{saurion\_stop}}(this-\/>\mbox{\hyperlink{classSaurion_a6f75f768b084ef03214b178d3746f142}{s}}); \}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00024}00024 }
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00025}\mbox{\hyperlink{classSaurion_af1563e363c5a007289e6aa3a4d59860e}{00025}} \mbox{\hyperlink{classSaurion}{Saurion}} *\mbox{\hyperlink{classSaurion_af1563e363c5a007289e6aa3a4d59860e}{Saurion::on\_connected}}(\mbox{\hyperlink{classSaurion_a1a4646725512c48c9bc44af91fc826eb}{Saurion::ConnectedCb}} ncb, \textcolor{keywordtype}{void} *arg) \textcolor{keyword}{noexcept} \{}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00026}00026   s-\/>cb.\mbox{\hyperlink{classSaurion_af1563e363c5a007289e6aa3a4d59860e}{on\_connected}} = ncb;}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00027}00027   s-\/>cb.on\_connected\_arg = arg;}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00028}00028   \textcolor{keywordflow}{return} \textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00029}00029 \}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00030}00030 }
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00031}\mbox{\hyperlink{classSaurion_a4739a8d5e3b2ae2618ea602c7d9e046b}{00031}} \mbox{\hyperlink{classSaurion}{Saurion}} *\mbox{\hyperlink{classSaurion_a4739a8d5e3b2ae2618ea602c7d9e046b}{Saurion::on\_readed}}(\mbox{\hyperlink{classSaurion_a2cacb6e2775688b834247cf95bab0518}{Saurion::ReadedCb}} ncb, \textcolor{keywordtype}{void} *arg) \textcolor{keyword}{noexcept} \{}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00032}00032   s-\/>cb.\mbox{\hyperlink{classSaurion_a4739a8d5e3b2ae2618ea602c7d9e046b}{on\_readed}} = ncb;}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00033}00033   s-\/>cb.on\_readed\_arg = arg;}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00034}00034   \textcolor{keywordflow}{return} \textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00035}00035 \}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00036}00036 }
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00037}\mbox{\hyperlink{classSaurion_a8450efc4ac6a6da43b3bad0d2f8a9b34}{00037}} \mbox{\hyperlink{classSaurion}{Saurion}} *\mbox{\hyperlink{classSaurion_a8450efc4ac6a6da43b3bad0d2f8a9b34}{Saurion::on\_wrote}}(\mbox{\hyperlink{classSaurion_a20f08b0f185563100d81c19355cc1b47}{Saurion::WroteCb}} ncb, \textcolor{keywordtype}{void} *arg) \textcolor{keyword}{noexcept} \{}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00038}00038   s-\/>cb.\mbox{\hyperlink{classSaurion_a8450efc4ac6a6da43b3bad0d2f8a9b34}{on\_wrote}} = ncb;}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00039}00039   s-\/>cb.on\_wrote\_arg = arg;}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00040}00040   \textcolor{keywordflow}{return} \textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00041}00041 \}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00042}00042 }
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00043}\mbox{\hyperlink{classSaurion_a0ad01e1c10b794fd10e5be17e9b5c4dd}{00043}} \mbox{\hyperlink{classSaurion}{Saurion}} *\mbox{\hyperlink{classSaurion_a0ad01e1c10b794fd10e5be17e9b5c4dd}{Saurion::on\_closed}}(\mbox{\hyperlink{classSaurion_a2c2ca67aafeb00369c86f62c94614225}{Saurion::ClosedCb}} ncb, \textcolor{keywordtype}{void} *arg) \textcolor{keyword}{noexcept} \{}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00044}00044   s-\/>cb.\mbox{\hyperlink{classSaurion_a0ad01e1c10b794fd10e5be17e9b5c4dd}{on\_closed}} = ncb;}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00045}00045   s-\/>cb.on\_closed\_arg = arg;}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00046}00046   \textcolor{keywordflow}{return} \textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00047}00047 \}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00048}00048 }
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00049}\mbox{\hyperlink{classSaurion_a6a2ce2d5d7d62c110702c51b73a56a8d}{00049}} \mbox{\hyperlink{classSaurion}{Saurion}} *\mbox{\hyperlink{classSaurion_a6a2ce2d5d7d62c110702c51b73a56a8d}{Saurion::on\_error}}(\mbox{\hyperlink{classSaurion_af58c5aaaa5171a6b71c9e62c34db5fce}{Saurion::ErrorCb}} ncb, \textcolor{keywordtype}{void} *arg) \textcolor{keyword}{noexcept} \{}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00050}00050   s-\/>cb.\mbox{\hyperlink{classSaurion_a6a2ce2d5d7d62c110702c51b73a56a8d}{on\_error}} = ncb;}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00051}00051   s-\/>cb.on\_error\_arg = arg;}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00052}00052   \textcolor{keywordflow}{return} \textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00053}00053 \}}
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00054}00054 }
+\DoxyCodeLine{\Hypertarget{saurion_8cpp_source_l00055}\mbox{\hyperlink{classSaurion_af652625283a9752d16d7a24b35cec14d}{00055}} \textcolor{keywordtype}{void} \mbox{\hyperlink{classSaurion_af652625283a9752d16d7a24b35cec14d}{Saurion::send}}(\textcolor{keyword}{const} \textcolor{keywordtype}{int} fd, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *\textcolor{keyword}{const} msg) \textcolor{keyword}{noexcept} \{ \mbox{\hyperlink{group__LowSaurion_gadd63cf225e55bcf4cd22ddcbd9d1c9b7}{saurion\_send}}(this-\/>s, fd, msg); \}}
+
+\end{DoxyCode}

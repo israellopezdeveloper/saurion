@@ -1,0 +1,746 @@
+\hypertarget{low__saurion_8c}{}\doxysection{/\+\_\+\+\_\+w/saurion/saurion/src/low\+\_\+saurion.c File Reference}
+\label{low__saurion_8c}\index{/\_\_w/saurion/saurion/src/low\_saurion.c@{/\_\_w/saurion/saurion/src/low\_saurion.c}}
+{\ttfamily \#include \char`\"{}low\+\_\+saurion.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$netinet/in.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$sys/eventfd.\+h$>$}\newline
+Include dependency graph for low\+\_\+saurion.\+c\+:
+% FIG 0
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structrequest}{request}}
+\item 
+struct \mbox{\hyperlink{structsaurion__wrapper}{saurion\+\_\+wrapper}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{low__saurion_8c_a96a7a2db32d44325af7e4db5fe599675}{EVENT\+\_\+\+TYPE\+\_\+\+ACCEPT}}~0
+\item 
+\#define \mbox{\hyperlink{low__saurion_8c_a1f7c29ac665cde9aa26808bb269837d9}{EVENT\+\_\+\+TYPE\+\_\+\+READ}}~1
+\item 
+\#define \mbox{\hyperlink{low__saurion_8c_a387dc1b3761c4fd9e9b40030bc5b78c8}{EVENT\+\_\+\+TYPE\+\_\+\+WRITE}}~2
+\item 
+\#define \mbox{\hyperlink{low__saurion_8c_a59fc72da421a569911ec34c1c0537e9d}{EVENT\+\_\+\+TYPE\+\_\+\+WAIT}}~3
+\item 
+\#define \mbox{\hyperlink{low__saurion_8c_a7a838ec11db7afb74af46c55e0cb6e43}{EVENT\+\_\+\+TYPE\+\_\+\+ERROR}}~4
+\item 
+\#define \mbox{\hyperlink{low__saurion_8c_a3acffbd305ee72dcd4593c0d8af64a4f}{MIN}}(a,  b)~((a) $<$ (b) ? (a) \+: (b))
+\item 
+\#define \mbox{\hyperlink{low__saurion_8c_afa99ec4acc4ecb2dc3c2d05da15d0e3f}{MAX}}(a,  b)~((a) $>$ (b) ? (a) \+: (b))
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static uint32\+\_\+t \mbox{\hyperlink{low__saurion_8c_a7919e576d3fdccbefb75bee92abd5cc3}{next}} (struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$s)
+\item 
+static uint64\+\_\+t \mbox{\hyperlink{low__saurion_8c_a00d80bc019becac44a598996923faecf}{htonll}} (uint64\+\_\+t value)
+\item 
+static uint64\+\_\+t \mbox{\hyperlink{low__saurion_8c_a5fae4cad12b0ca469184e097624aea08}{ntohll}} (uint64\+\_\+t value)
+\item 
+void \mbox{\hyperlink{group__LowSaurion_ga0f9760bc800b946244ccf790081e6bb3}{free\+\_\+request}} (struct \mbox{\hyperlink{structrequest}{request}} $\ast$req, void $\ast$$\ast$children\+\_\+ptr, size\+\_\+t amount)
+\item 
+int \mbox{\hyperlink{group__LowSaurion_gae64e81c0ce5f52d51684d8f1129e6076}{initialize\+\_\+iovec}} (struct iovec $\ast$iov, size\+\_\+t amount, size\+\_\+t pos, const void $\ast$msg, size\+\_\+t size, uint8\+\_\+t h)
+\begin{DoxyCompactList}\small\item\em Initializes a specified {\ttfamily iovec} structure with a message fragment. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{group__LowSaurion_ga1c329b9155a9159b696b60247c9b328b}{allocate\+\_\+iovec}} (struct iovec $\ast$iov, size\+\_\+t amount, size\+\_\+t pos, size\+\_\+t size, void $\ast$$\ast$chd\+\_\+ptr)
+\item 
+int \mbox{\hyperlink{group__LowSaurion_gaddb696f3c38e160dde5a5de6e6e10f70}{set\+\_\+request}} (struct \mbox{\hyperlink{structrequest}{request}} $\ast$$\ast$r, struct \mbox{\hyperlink{structNode}{Node}} $\ast$$\ast$l, size\+\_\+t s, const void $\ast$m, uint8\+\_\+t h)
+\begin{DoxyCompactList}\small\item\em Sets up a request and allocates iovec structures for data handling in liburing. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{low__saurion_8c_a40aa700cf97b0ad654fe0aff06644ae9}{add\+\_\+accept}} (struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s, const struct sockaddr\+\_\+in $\ast$const ca, socklen\+\_\+t $\ast$const cal)
+\item 
+static void \mbox{\hyperlink{low__saurion_8c_a2794e5aada66af40962e04b938bbd88a}{add\+\_\+efd}} (struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s, const int client\+\_\+socket, int sel)
+\item 
+static void \mbox{\hyperlink{low__saurion_8c_a2299a2be116729fdb774a5e655ff9f83}{add\+\_\+read}} (struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s, const int client\+\_\+socket)
+\item 
+static void \mbox{\hyperlink{low__saurion_8c_ab40f6349969e5ce57e654ddb9eaf827a}{add\+\_\+read\+\_\+continue}} (struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s, struct \mbox{\hyperlink{structrequest}{request}} $\ast$oreq, const int sel)
+\item 
+static void \mbox{\hyperlink{low__saurion_8c_a39042ff39576b4db8db514acd6e9a224}{add\+\_\+write}} (struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s, int fd, const char $\ast$const str, const int sel)
+\item 
+static void \mbox{\hyperlink{low__saurion_8c_aff870d06aed2384abd16b89b4e6429d8}{handle\+\_\+accept}} (const struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s, const int fd)
+\item 
+int \mbox{\hyperlink{group__LowSaurion_gaec24df6ee2f4999bf64acf5fc42ed019}{read\+\_\+chunk}} (void $\ast$$\ast$dest, size\+\_\+t $\ast$len, struct \mbox{\hyperlink{structrequest}{request}} $\ast$const req)
+\begin{DoxyCompactList}\small\item\em Reads a message chunk from the request\textquotesingle{}s iovec buffers, handling messages that may span multiple iovec entries. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{low__saurion_8c_a97aee33e3c5728a7d986b2f42e7bb82a}{handle\+\_\+read}} (struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s, struct \mbox{\hyperlink{structrequest}{request}} $\ast$const req)
+\item 
+static void \mbox{\hyperlink{low__saurion_8c_a94c77ae2935117db01e434b37204b649}{handle\+\_\+write}} (const struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s, const int fd)
+\item 
+static void \mbox{\hyperlink{low__saurion_8c_a79a329a1b1fcd31d446b309eb0d73849}{handle\+\_\+error}} (const struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s, const struct \mbox{\hyperlink{structrequest}{request}} $\ast$const req)
+\item 
+static void \mbox{\hyperlink{low__saurion_8c_a6590a961ce99bb8a6f0fdd151f394afa}{handle\+\_\+close}} (const struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s, const struct \mbox{\hyperlink{structrequest}{request}} $\ast$const req)
+\item 
+int \mbox{\hyperlink{group__LowSaurion_ga4a0bc8233ca030e29b9b94aed0177392}{EXTERNAL\+\_\+set\+\_\+socket}} (const int p)
+\item 
+struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$ \mbox{\hyperlink{group__LowSaurion_gae589ab08ed623ad2ab6d13beec33b131}{saurion\+\_\+create}} (uint32\+\_\+t \mbox{\hyperlink{low__saurion_8h_a7001c0d6b3bf1fa114a0d230c6190e3d}{n\+\_\+threads}})
+\begin{DoxyCompactList}\small\item\em Creates an instance of the {\ttfamily saurion} structure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{low__saurion_8c_a30bb7d15272a20fb689bf9fada1737fa}{saurion\+\_\+worker\+\_\+master}} (void $\ast$arg)
+\item 
+void \mbox{\hyperlink{low__saurion_8c_a70abc87ee43c0e1b7059ec16e975afca}{saurion\+\_\+worker\+\_\+slave}} (void $\ast$arg)
+\item 
+int \mbox{\hyperlink{group__LowSaurion_gaeeab8302b41112175566881a1b7bf905}{saurion\+\_\+start}} (struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s)
+\begin{DoxyCompactList}\small\item\em Starts event processing in the {\ttfamily saurion} structure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{group__LowSaurion_ga9f32b41ec23178c2a693fec057b96532}{saurion\+\_\+stop}} (const struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s)
+\begin{DoxyCompactList}\small\item\em Stops event processing in the {\ttfamily saurion} structure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{group__LowSaurion_ga7893ccf90a98845d5d95ffda0260d0b8}{saurion\+\_\+destroy}} (struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s)
+\begin{DoxyCompactList}\small\item\em Destroys the {\ttfamily saurion} structure and frees all associated resources. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{group__LowSaurion_gadd63cf225e55bcf4cd22ddcbd9d1c9b7}{saurion\+\_\+send}} (struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const s, const int fd, const char $\ast$const msg)
+\begin{DoxyCompactList}\small\item\em Sends a message through a socket using io\+\_\+uring. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+pthread\+\_\+mutex\+\_\+t \mbox{\hyperlink{low__saurion_8c_adcba6f6935d1807493e731cc5e79a661}{print\+\_\+mutex}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{low__saurion_8c_a96a7a2db32d44325af7e4db5fe599675}\label{low__saurion_8c_a96a7a2db32d44325af7e4db5fe599675}} 
+\index{low\_saurion.c@{low\_saurion.c}!EVENT\_TYPE\_ACCEPT@{EVENT\_TYPE\_ACCEPT}}
+\index{EVENT\_TYPE\_ACCEPT@{EVENT\_TYPE\_ACCEPT}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{EVENT\_TYPE\_ACCEPT}{EVENT\_TYPE\_ACCEPT}}
+{\footnotesize\ttfamily \#define EVENT\+\_\+\+TYPE\+\_\+\+ACCEPT~0}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00009}{9}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+\mbox{\Hypertarget{low__saurion_8c_a7a838ec11db7afb74af46c55e0cb6e43}\label{low__saurion_8c_a7a838ec11db7afb74af46c55e0cb6e43}} 
+\index{low\_saurion.c@{low\_saurion.c}!EVENT\_TYPE\_ERROR@{EVENT\_TYPE\_ERROR}}
+\index{EVENT\_TYPE\_ERROR@{EVENT\_TYPE\_ERROR}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{EVENT\_TYPE\_ERROR}{EVENT\_TYPE\_ERROR}}
+{\footnotesize\ttfamily \#define EVENT\+\_\+\+TYPE\+\_\+\+ERROR~4}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00013}{13}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+\mbox{\Hypertarget{low__saurion_8c_a1f7c29ac665cde9aa26808bb269837d9}\label{low__saurion_8c_a1f7c29ac665cde9aa26808bb269837d9}} 
+\index{low\_saurion.c@{low\_saurion.c}!EVENT\_TYPE\_READ@{EVENT\_TYPE\_READ}}
+\index{EVENT\_TYPE\_READ@{EVENT\_TYPE\_READ}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{EVENT\_TYPE\_READ}{EVENT\_TYPE\_READ}}
+{\footnotesize\ttfamily \#define EVENT\+\_\+\+TYPE\+\_\+\+READ~1}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00010}{10}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+\mbox{\Hypertarget{low__saurion_8c_a59fc72da421a569911ec34c1c0537e9d}\label{low__saurion_8c_a59fc72da421a569911ec34c1c0537e9d}} 
+\index{low\_saurion.c@{low\_saurion.c}!EVENT\_TYPE\_WAIT@{EVENT\_TYPE\_WAIT}}
+\index{EVENT\_TYPE\_WAIT@{EVENT\_TYPE\_WAIT}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{EVENT\_TYPE\_WAIT}{EVENT\_TYPE\_WAIT}}
+{\footnotesize\ttfamily \#define EVENT\+\_\+\+TYPE\+\_\+\+WAIT~3}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00012}{12}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+\mbox{\Hypertarget{low__saurion_8c_a387dc1b3761c4fd9e9b40030bc5b78c8}\label{low__saurion_8c_a387dc1b3761c4fd9e9b40030bc5b78c8}} 
+\index{low\_saurion.c@{low\_saurion.c}!EVENT\_TYPE\_WRITE@{EVENT\_TYPE\_WRITE}}
+\index{EVENT\_TYPE\_WRITE@{EVENT\_TYPE\_WRITE}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{EVENT\_TYPE\_WRITE}{EVENT\_TYPE\_WRITE}}
+{\footnotesize\ttfamily \#define EVENT\+\_\+\+TYPE\+\_\+\+WRITE~2}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00011}{11}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+\mbox{\Hypertarget{low__saurion_8c_afa99ec4acc4ecb2dc3c2d05da15d0e3f}\label{low__saurion_8c_afa99ec4acc4ecb2dc3c2d05da15d0e3f}} 
+\index{low\_saurion.c@{low\_saurion.c}!MAX@{MAX}}
+\index{MAX@{MAX}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{MAX}{MAX}}
+{\footnotesize\ttfamily \#define MAX(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b }\end{DoxyParamCaption})~((a) $>$ (b) ? (a) \+: (b))}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00028}{28}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+\mbox{\Hypertarget{low__saurion_8c_a3acffbd305ee72dcd4593c0d8af64a4f}\label{low__saurion_8c_a3acffbd305ee72dcd4593c0d8af64a4f}} 
+\index{low\_saurion.c@{low\_saurion.c}!MIN@{MIN}}
+\index{MIN@{MIN}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{MIN}{MIN}}
+{\footnotesize\ttfamily \#define MIN(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b }\end{DoxyParamCaption})~((a) $<$ (b) ? (a) \+: (b))}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00027}{27}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{low__saurion_8c_a40aa700cf97b0ad654fe0aff06644ae9}\label{low__saurion_8c_a40aa700cf97b0ad654fe0aff06644ae9}} 
+\index{low\_saurion.c@{low\_saurion.c}!add\_accept@{add\_accept}}
+\index{add\_accept@{add\_accept}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{add\_accept()}{add\_accept()}}
+{\footnotesize\ttfamily static void add\+\_\+accept (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const}]{s,  }\item[{const struct sockaddr\+\_\+in $\ast$const}]{ca,  }\item[{socklen\+\_\+t $\ast$const}]{cal }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00186}{186}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00187                                              \{}
+\DoxyCodeLine{00188   \textcolor{keywordtype}{int} res = ERROR\_CODE;}
+\DoxyCodeLine{00189   pthread\_mutex\_lock(\&s-\/>\mbox{\hyperlink{structsaurion_ad3305571e32bbb72bc95caefbb68b030}{m\_rings}}[0]);}
+\DoxyCodeLine{00190   \textcolor{keywordflow}{while} (res != SUCCESS\_CODE) \{}
+\DoxyCodeLine{00191     \textcolor{keyword}{struct }io\_uring\_sqe *sqe = io\_uring\_get\_sqe(\&s-\/>\mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}[0]);}
+\DoxyCodeLine{00192     \textcolor{keywordflow}{while} (!sqe) \{}
+\DoxyCodeLine{00193       sqe = io\_uring\_get\_sqe(\&s-\/>\mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}[0]);}
+\DoxyCodeLine{00194       usleep(TIMEOUT\_RETRY);}
+\DoxyCodeLine{00195     \}}
+\DoxyCodeLine{00196     \textcolor{keyword}{struct }\mbox{\hyperlink{structrequest}{request}} *req = NULL;}
+\DoxyCodeLine{00197     \textcolor{keywordflow}{if} (!\mbox{\hyperlink{group__LowSaurion_gaddb696f3c38e160dde5a5de6e6e10f70}{set\_request}}(\&req, \&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, 0, NULL, 0)) \{}
+\DoxyCodeLine{00198       free(sqe);}
+\DoxyCodeLine{00199       usleep(TIMEOUT\_RETRY);}
+\DoxyCodeLine{00200       res = ERROR\_CODE;}
+\DoxyCodeLine{00201       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00202     \}}
+\DoxyCodeLine{00203     req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}} = 0;}
+\DoxyCodeLine{00204     req-\/>\mbox{\hyperlink{structrequest_a9cba15f1748716ffe6869a271c1ccc4d}{event\_type}} = \mbox{\hyperlink{low__saurion_8c_a96a7a2db32d44325af7e4db5fe599675}{EVENT\_TYPE\_ACCEPT}};}
+\DoxyCodeLine{00205     io\_uring\_prep\_accept(sqe, s-\/>\mbox{\hyperlink{structsaurion_ae85c8eed456efd00dcc93d005b0ad99c}{ss}}, (\textcolor{keyword}{struct} sockaddr *)ca, cal, 0);}
+\DoxyCodeLine{00206     io\_uring\_sqe\_set\_data(sqe, req);}
+\DoxyCodeLine{00207     \textcolor{keywordflow}{if} (io\_uring\_submit(\&s-\/>\mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}[0]) < 0) \{}
+\DoxyCodeLine{00208       free(sqe);}
+\DoxyCodeLine{00209       \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00210       usleep(TIMEOUT\_RETRY);}
+\DoxyCodeLine{00211       res = ERROR\_CODE;}
+\DoxyCodeLine{00212       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00213     \}}
+\DoxyCodeLine{00214     res = SUCCESS\_CODE;}
+\DoxyCodeLine{00215   \}}
+\DoxyCodeLine{00216   pthread\_mutex\_unlock(\&s-\/>\mbox{\hyperlink{structsaurion_ad3305571e32bbb72bc95caefbb68b030}{m\_rings}}[0]);}
+\DoxyCodeLine{00217 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_a2794e5aada66af40962e04b938bbd88a}\label{low__saurion_8c_a2794e5aada66af40962e04b938bbd88a}} 
+\index{low\_saurion.c@{low\_saurion.c}!add\_efd@{add\_efd}}
+\index{add\_efd@{add\_efd}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{add\_efd()}{add\_efd()}}
+{\footnotesize\ttfamily static void add\+\_\+efd (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const}]{s,  }\item[{const int}]{client\+\_\+socket,  }\item[{int}]{sel }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00219}{219}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00219                                                                                \{}
+\DoxyCodeLine{00220   pthread\_mutex\_lock(\&s-\/>\mbox{\hyperlink{structsaurion_ad3305571e32bbb72bc95caefbb68b030}{m\_rings}}[sel]);}
+\DoxyCodeLine{00221   \textcolor{keywordtype}{int} res = ERROR\_CODE;}
+\DoxyCodeLine{00222   \textcolor{keywordflow}{while} (res != SUCCESS\_CODE) \{}
+\DoxyCodeLine{00223     \textcolor{keyword}{struct }io\_uring *ring = \&s-\/>\mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}[sel];}
+\DoxyCodeLine{00224     \textcolor{keyword}{struct }io\_uring\_sqe *sqe = io\_uring\_get\_sqe(ring);}
+\DoxyCodeLine{00225     \textcolor{keywordflow}{while} (!sqe) \{}
+\DoxyCodeLine{00226       sqe = io\_uring\_get\_sqe(ring);}
+\DoxyCodeLine{00227       usleep(TIMEOUT\_RETRY);}
+\DoxyCodeLine{00228     \}}
+\DoxyCodeLine{00229     \textcolor{keyword}{struct }\mbox{\hyperlink{structrequest}{request}} *req = NULL;}
+\DoxyCodeLine{00230     \textcolor{keywordflow}{if} (!\mbox{\hyperlink{group__LowSaurion_gaddb696f3c38e160dde5a5de6e6e10f70}{set\_request}}(\&req, \&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, CHUNK\_SZ, NULL, 0)) \{}
+\DoxyCodeLine{00231       free(sqe);}
+\DoxyCodeLine{00232       res = ERROR\_CODE;}
+\DoxyCodeLine{00233       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00234     \}}
+\DoxyCodeLine{00235     req-\/>\mbox{\hyperlink{structrequest_a9cba15f1748716ffe6869a271c1ccc4d}{event\_type}} = \mbox{\hyperlink{low__saurion_8c_a1f7c29ac665cde9aa26808bb269837d9}{EVENT\_TYPE\_READ}};}
+\DoxyCodeLine{00236     req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}} = \mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}};}
+\DoxyCodeLine{00237     io\_uring\_prep\_readv(sqe, \mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}}, \&req-\/>\mbox{\hyperlink{structrequest_ae23ac64f6ae30671afc753260ef411fd}{iov}}[0], req-\/>\mbox{\hyperlink{structrequest_a1291bf32fbcafa3bb4b348578db09a9f}{iovec\_count}}, 0);}
+\DoxyCodeLine{00238     io\_uring\_sqe\_set\_data(sqe, req);}
+\DoxyCodeLine{00239     \textcolor{keywordflow}{if} (io\_uring\_submit(ring) < 0) \{}
+\DoxyCodeLine{00240       free(sqe);}
+\DoxyCodeLine{00241       \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00242       res = ERROR\_CODE;}
+\DoxyCodeLine{00243       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00244     \}}
+\DoxyCodeLine{00245     res = SUCCESS\_CODE;}
+\DoxyCodeLine{00246   \}}
+\DoxyCodeLine{00247   pthread\_mutex\_unlock(\&s-\/>\mbox{\hyperlink{structsaurion_ad3305571e32bbb72bc95caefbb68b030}{m\_rings}}[sel]);}
+\DoxyCodeLine{00248 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_a2299a2be116729fdb774a5e655ff9f83}\label{low__saurion_8c_a2299a2be116729fdb774a5e655ff9f83}} 
+\index{low\_saurion.c@{low\_saurion.c}!add\_read@{add\_read}}
+\index{add\_read@{add\_read}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{add\_read()}{add\_read()}}
+{\footnotesize\ttfamily static void add\+\_\+read (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const}]{s,  }\item[{const int}]{client\+\_\+socket }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00250}{250}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00250                                                                        \{}
+\DoxyCodeLine{00251   \textcolor{keywordtype}{int} sel = \mbox{\hyperlink{low__saurion_8c_a7919e576d3fdccbefb75bee92abd5cc3}{next}}(s);}
+\DoxyCodeLine{00252   \textcolor{keywordtype}{int} res = ERROR\_CODE;}
+\DoxyCodeLine{00253   pthread\_mutex\_lock(\&s-\/>\mbox{\hyperlink{structsaurion_ad3305571e32bbb72bc95caefbb68b030}{m\_rings}}[sel]);}
+\DoxyCodeLine{00254   \textcolor{keywordflow}{while} (res != SUCCESS\_CODE) \{}
+\DoxyCodeLine{00255     \textcolor{keyword}{struct }io\_uring *ring = \&s-\/>\mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}[sel];}
+\DoxyCodeLine{00256     \textcolor{keyword}{struct }io\_uring\_sqe *sqe = io\_uring\_get\_sqe(ring);}
+\DoxyCodeLine{00257     \textcolor{keywordflow}{while} (!sqe) \{}
+\DoxyCodeLine{00258       sqe = io\_uring\_get\_sqe(ring);}
+\DoxyCodeLine{00259       usleep(TIMEOUT\_RETRY);}
+\DoxyCodeLine{00260     \}}
+\DoxyCodeLine{00261     \textcolor{keyword}{struct }\mbox{\hyperlink{structrequest}{request}} *req = NULL;}
+\DoxyCodeLine{00262     \textcolor{keywordflow}{if} (!\mbox{\hyperlink{group__LowSaurion_gaddb696f3c38e160dde5a5de6e6e10f70}{set\_request}}(\&req, \&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, CHUNK\_SZ, NULL, 0)) \{}
+\DoxyCodeLine{00263       free(sqe);}
+\DoxyCodeLine{00264       res = ERROR\_CODE;}
+\DoxyCodeLine{00265       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00266     \}}
+\DoxyCodeLine{00267     req-\/>\mbox{\hyperlink{structrequest_a9cba15f1748716ffe6869a271c1ccc4d}{event\_type}} = \mbox{\hyperlink{low__saurion_8c_a1f7c29ac665cde9aa26808bb269837d9}{EVENT\_TYPE\_READ}};}
+\DoxyCodeLine{00268     req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}} = \mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}};}
+\DoxyCodeLine{00269     io\_uring\_prep\_readv(sqe, \mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}}, \&req-\/>\mbox{\hyperlink{structrequest_ae23ac64f6ae30671afc753260ef411fd}{iov}}[0], req-\/>\mbox{\hyperlink{structrequest_a1291bf32fbcafa3bb4b348578db09a9f}{iovec\_count}}, 0);}
+\DoxyCodeLine{00270     io\_uring\_sqe\_set\_data(sqe, req);}
+\DoxyCodeLine{00271     \textcolor{keywordflow}{if} (io\_uring\_submit(ring) < 0) \{}
+\DoxyCodeLine{00272       free(sqe);}
+\DoxyCodeLine{00273       \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00274       res = ERROR\_CODE;}
+\DoxyCodeLine{00275       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00276     \}}
+\DoxyCodeLine{00277     res = SUCCESS\_CODE;}
+\DoxyCodeLine{00278   \}}
+\DoxyCodeLine{00279   pthread\_mutex\_unlock(\&s-\/>\mbox{\hyperlink{structsaurion_ad3305571e32bbb72bc95caefbb68b030}{m\_rings}}[sel]);}
+\DoxyCodeLine{00280 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_ab40f6349969e5ce57e654ddb9eaf827a}\label{low__saurion_8c_ab40f6349969e5ce57e654ddb9eaf827a}} 
+\index{low\_saurion.c@{low\_saurion.c}!add\_read\_continue@{add\_read\_continue}}
+\index{add\_read\_continue@{add\_read\_continue}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{add\_read\_continue()}{add\_read\_continue()}}
+{\footnotesize\ttfamily static void add\+\_\+read\+\_\+continue (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const}]{s,  }\item[{struct \mbox{\hyperlink{structrequest}{request}} $\ast$}]{oreq,  }\item[{const int}]{sel }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00282}{282}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00282                                                                                             \{}
+\DoxyCodeLine{00283   pthread\_mutex\_lock(\&s-\/>\mbox{\hyperlink{structsaurion_ad3305571e32bbb72bc95caefbb68b030}{m\_rings}}[sel]);}
+\DoxyCodeLine{00284   \textcolor{keywordtype}{int} res = ERROR\_CODE;}
+\DoxyCodeLine{00285   \textcolor{keywordflow}{while} (res != SUCCESS\_CODE) \{}
+\DoxyCodeLine{00286     \textcolor{keyword}{struct }io\_uring *ring = \&s-\/>\mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}[sel];}
+\DoxyCodeLine{00287     \textcolor{keyword}{struct }io\_uring\_sqe *sqe = io\_uring\_get\_sqe(ring);}
+\DoxyCodeLine{00288     \textcolor{keywordflow}{while} (!sqe) \{}
+\DoxyCodeLine{00289       sqe = io\_uring\_get\_sqe(ring);}
+\DoxyCodeLine{00290       usleep(TIMEOUT\_RETRY);}
+\DoxyCodeLine{00291     \}}
+\DoxyCodeLine{00292     \textcolor{keywordflow}{if} (!\mbox{\hyperlink{group__LowSaurion_gaddb696f3c38e160dde5a5de6e6e10f70}{set\_request}}(\&oreq, \&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, oreq-\/>\mbox{\hyperlink{structrequest_acb69c014fb67502b59cd112d3758569f}{prev\_remain}}, NULL, 0)) \{}
+\DoxyCodeLine{00293       free(sqe);}
+\DoxyCodeLine{00294       res = ERROR\_CODE;}
+\DoxyCodeLine{00295       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00296     \}}
+\DoxyCodeLine{00297     io\_uring\_prep\_readv(sqe, oreq-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}}, \&oreq-\/>\mbox{\hyperlink{structrequest_ae23ac64f6ae30671afc753260ef411fd}{iov}}[0], oreq-\/>\mbox{\hyperlink{structrequest_a1291bf32fbcafa3bb4b348578db09a9f}{iovec\_count}}, 0);}
+\DoxyCodeLine{00298     io\_uring\_sqe\_set\_data(sqe, oreq);}
+\DoxyCodeLine{00299     \textcolor{keywordflow}{if} (io\_uring\_submit(ring) < 0) \{}
+\DoxyCodeLine{00300       free(sqe);}
+\DoxyCodeLine{00301       \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, oreq);}
+\DoxyCodeLine{00302       res = ERROR\_CODE;}
+\DoxyCodeLine{00303       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00304     \}}
+\DoxyCodeLine{00305     res = SUCCESS\_CODE;}
+\DoxyCodeLine{00306   \}}
+\DoxyCodeLine{00307   pthread\_mutex\_unlock(\&s-\/>\mbox{\hyperlink{structsaurion_ad3305571e32bbb72bc95caefbb68b030}{m\_rings}}[sel]);}
+\DoxyCodeLine{00308 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_a39042ff39576b4db8db514acd6e9a224}\label{low__saurion_8c_a39042ff39576b4db8db514acd6e9a224}} 
+\index{low\_saurion.c@{low\_saurion.c}!add\_write@{add\_write}}
+\index{add\_write@{add\_write}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{add\_write()}{add\_write()}}
+{\footnotesize\ttfamily static void add\+\_\+write (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const}]{s,  }\item[{int}]{fd,  }\item[{const char $\ast$const}]{str,  }\item[{const int}]{sel }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00310}{310}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00310                                                                                              \{}
+\DoxyCodeLine{00311   \textcolor{keywordtype}{int} res = ERROR\_CODE;}
+\DoxyCodeLine{00312   pthread\_mutex\_lock(\&s-\/>\mbox{\hyperlink{structsaurion_ad3305571e32bbb72bc95caefbb68b030}{m\_rings}}[sel]);}
+\DoxyCodeLine{00313   \textcolor{keywordflow}{while} (res != SUCCESS\_CODE) \{}
+\DoxyCodeLine{00314     \textcolor{keyword}{struct }io\_uring *ring = \&s-\/>\mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}[sel];}
+\DoxyCodeLine{00315     \textcolor{keyword}{struct }io\_uring\_sqe *sqe = io\_uring\_get\_sqe(ring);}
+\DoxyCodeLine{00316     \textcolor{keywordflow}{while} (!sqe) \{}
+\DoxyCodeLine{00317       sqe = io\_uring\_get\_sqe(ring);}
+\DoxyCodeLine{00318       usleep(TIMEOUT\_RETRY);}
+\DoxyCodeLine{00319     \}}
+\DoxyCodeLine{00320     \textcolor{keyword}{struct }\mbox{\hyperlink{structrequest}{request}} *req = NULL;}
+\DoxyCodeLine{00321     \textcolor{keywordflow}{if} (!\mbox{\hyperlink{group__LowSaurion_gaddb696f3c38e160dde5a5de6e6e10f70}{set\_request}}(\&req, \&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, strlen(str), (\textcolor{keywordtype}{void} *)str, 1)) \{}
+\DoxyCodeLine{00322       free(sqe);}
+\DoxyCodeLine{00323       res = ERROR\_CODE;}
+\DoxyCodeLine{00324       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00325     \}}
+\DoxyCodeLine{00326     req-\/>\mbox{\hyperlink{structrequest_a9cba15f1748716ffe6869a271c1ccc4d}{event\_type}} = \mbox{\hyperlink{low__saurion_8c_a387dc1b3761c4fd9e9b40030bc5b78c8}{EVENT\_TYPE\_WRITE}};}
+\DoxyCodeLine{00327     req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}} = fd;}
+\DoxyCodeLine{00328     io\_uring\_prep\_writev(sqe, req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}}, req-\/>\mbox{\hyperlink{structrequest_ae23ac64f6ae30671afc753260ef411fd}{iov}}, req-\/>\mbox{\hyperlink{structrequest_a1291bf32fbcafa3bb4b348578db09a9f}{iovec\_count}}, 0);}
+\DoxyCodeLine{00329     io\_uring\_sqe\_set\_data(sqe, req);}
+\DoxyCodeLine{00330     \textcolor{keywordflow}{if} (io\_uring\_submit(ring) < 0) \{}
+\DoxyCodeLine{00331       free(sqe);}
+\DoxyCodeLine{00332       \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00333       res = ERROR\_CODE;}
+\DoxyCodeLine{00334       usleep(TIMEOUT\_RETRY);}
+\DoxyCodeLine{00335       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00336     \}}
+\DoxyCodeLine{00337     res = SUCCESS\_CODE;}
+\DoxyCodeLine{00338   \}}
+\DoxyCodeLine{00339   pthread\_mutex\_unlock(\&s-\/>\mbox{\hyperlink{structsaurion_ad3305571e32bbb72bc95caefbb68b030}{m\_rings}}[sel]);}
+\DoxyCodeLine{00340 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_aff870d06aed2384abd16b89b4e6429d8}\label{low__saurion_8c_aff870d06aed2384abd16b89b4e6429d8}} 
+\index{low\_saurion.c@{low\_saurion.c}!handle\_accept@{handle\_accept}}
+\index{handle\_accept@{handle\_accept}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{handle\_accept()}{handle\_accept()}}
+{\footnotesize\ttfamily static void handle\+\_\+accept (\begin{DoxyParamCaption}\item[{const struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const}]{s,  }\item[{const int}]{fd }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00343}{343}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00343                                                                        \{}
+\DoxyCodeLine{00344   \textcolor{keywordflow}{if} (s-\/>cb.on\_connected) \{}
+\DoxyCodeLine{00345     s-\/>cb.on\_connected(fd, s-\/>cb.on\_connected\_arg);}
+\DoxyCodeLine{00346   \}}
+\DoxyCodeLine{00347 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_a6590a961ce99bb8a6f0fdd151f394afa}\label{low__saurion_8c_a6590a961ce99bb8a6f0fdd151f394afa}} 
+\index{low\_saurion.c@{low\_saurion.c}!handle\_close@{handle\_close}}
+\index{handle\_close@{handle\_close}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{handle\_close()}{handle\_close()}}
+{\footnotesize\ttfamily static void handle\+\_\+close (\begin{DoxyParamCaption}\item[{const struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const}]{s,  }\item[{const struct \mbox{\hyperlink{structrequest}{request}} $\ast$const}]{req }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00540}{540}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00540                                                                                          \{}
+\DoxyCodeLine{00541   \textcolor{keywordflow}{if} (s-\/>cb.on\_closed) \{}
+\DoxyCodeLine{00542     s-\/>cb.on\_closed(req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}}, s-\/>cb.on\_closed\_arg);}
+\DoxyCodeLine{00543   \}}
+\DoxyCodeLine{00544   close(req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}});}
+\DoxyCodeLine{00545 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_a79a329a1b1fcd31d446b309eb0d73849}\label{low__saurion_8c_a79a329a1b1fcd31d446b309eb0d73849}} 
+\index{low\_saurion.c@{low\_saurion.c}!handle\_error@{handle\_error}}
+\index{handle\_error@{handle\_error}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{handle\_error()}{handle\_error()}}
+{\footnotesize\ttfamily static void handle\+\_\+error (\begin{DoxyParamCaption}\item[{const struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const}]{s,  }\item[{const struct \mbox{\hyperlink{structrequest}{request}} $\ast$const}]{req }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00533}{533}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00533                                                                                          \{}
+\DoxyCodeLine{00534   \textcolor{keywordflow}{if} (s-\/>cb.on\_error) \{}
+\DoxyCodeLine{00535     \textcolor{keyword}{const} \textcolor{keywordtype}{char} *resp = \textcolor{stringliteral}{"{}ERROR"{}};}
+\DoxyCodeLine{00536     s-\/>cb.on\_error(req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}}, resp, (ssize\_t)strlen(resp), s-\/>cb.on\_error\_arg);}
+\DoxyCodeLine{00537   \}}
+\DoxyCodeLine{00538 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_a97aee33e3c5728a7d986b2f42e7bb82a}\label{low__saurion_8c_a97aee33e3c5728a7d986b2f42e7bb82a}} 
+\index{low\_saurion.c@{low\_saurion.c}!handle\_read@{handle\_read}}
+\index{handle\_read@{handle\_read}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{handle\_read()}{handle\_read()}}
+{\footnotesize\ttfamily static void handle\+\_\+read (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const}]{s,  }\item[{struct \mbox{\hyperlink{structrequest}{request}} $\ast$const}]{req }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00495}{495}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00495                                                                             \{}
+\DoxyCodeLine{00496   \textcolor{keywordtype}{void} *msg = NULL;}
+\DoxyCodeLine{00497   \textcolor{keywordtype}{size\_t} len = 0;}
+\DoxyCodeLine{00498   \textcolor{keywordflow}{while} (1) \{}
+\DoxyCodeLine{00499     \textcolor{keywordflow}{if} (!\mbox{\hyperlink{group__LowSaurion_gaec24df6ee2f4999bf64acf5fc42ed019}{read\_chunk}}(\&msg, \&len, req)) \{}
+\DoxyCodeLine{00500       \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00501     \}}
+\DoxyCodeLine{00502     \textcolor{comment}{// Hay siguiente}}
+\DoxyCodeLine{00503     \textcolor{keywordflow}{if} (req-\/>\mbox{\hyperlink{structrequest_a4aba582d3fcf1110aa8f272d5b038a3d}{next\_iov}} || req-\/>\mbox{\hyperlink{structrequest_a03abde14b48986b40d827b22e4ddfb2d}{next\_offset}}) \{}
+\DoxyCodeLine{00504       \textcolor{keywordflow}{if} (s-\/>cb.on\_readed \&\& msg) \{}
+\DoxyCodeLine{00505         s-\/>cb.on\_readed(req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}}, msg, len, s-\/>cb.on\_readed\_arg);}
+\DoxyCodeLine{00506       \}}
+\DoxyCodeLine{00507       free(msg);}
+\DoxyCodeLine{00508       msg = NULL;}
+\DoxyCodeLine{00509       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00510     \}}
+\DoxyCodeLine{00511     \textcolor{comment}{// Hay previo pero no se ha completado}}
+\DoxyCodeLine{00512     \textcolor{keywordflow}{if} (req-\/>\mbox{\hyperlink{structrequest_ab8f409ae411cecc817a691455830f700}{prev}} \&\& req-\/>\mbox{\hyperlink{structrequest_a02dc8e759c5216e1b7f7c908a0e0481f}{prev\_size}} \&\& req-\/>\mbox{\hyperlink{structrequest_acb69c014fb67502b59cd112d3758569f}{prev\_remain}}) \{}
+\DoxyCodeLine{00513       \mbox{\hyperlink{low__saurion_8c_ab40f6349969e5ce57e654ddb9eaf827a}{add\_read\_continue}}(s, req, \mbox{\hyperlink{low__saurion_8c_a7919e576d3fdccbefb75bee92abd5cc3}{next}}(s));}
+\DoxyCodeLine{00514       \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00515     \}}
+\DoxyCodeLine{00516     \textcolor{comment}{// Hay un único mensaje y se ha completado}}
+\DoxyCodeLine{00517     \textcolor{keywordflow}{if} (s-\/>cb.on\_readed \&\& msg) \{}
+\DoxyCodeLine{00518       s-\/>cb.on\_readed(req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}}, msg, len, s-\/>cb.on\_readed\_arg);}
+\DoxyCodeLine{00519     \}}
+\DoxyCodeLine{00520     free(msg);}
+\DoxyCodeLine{00521     msg = NULL;}
+\DoxyCodeLine{00522     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00523   \}}
+\DoxyCodeLine{00524   \mbox{\hyperlink{low__saurion_8c_a2299a2be116729fdb774a5e655ff9f83}{add\_read}}(s, req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}});}
+\DoxyCodeLine{00525 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_a94c77ae2935117db01e434b37204b649}\label{low__saurion_8c_a94c77ae2935117db01e434b37204b649}} 
+\index{low\_saurion.c@{low\_saurion.c}!handle\_write@{handle\_write}}
+\index{handle\_write@{handle\_write}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{handle\_write()}{handle\_write()}}
+{\footnotesize\ttfamily static void handle\+\_\+write (\begin{DoxyParamCaption}\item[{const struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$const}]{s,  }\item[{const int}]{fd }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00527}{527}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00527                                                                       \{}
+\DoxyCodeLine{00528   \textcolor{keywordflow}{if} (s-\/>cb.on\_wrote) \{}
+\DoxyCodeLine{00529     s-\/>cb.on\_wrote(fd, s-\/>cb.on\_wrote\_arg);}
+\DoxyCodeLine{00530   \}}
+\DoxyCodeLine{00531 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_a00d80bc019becac44a598996923faecf}\label{low__saurion_8c_a00d80bc019becac44a598996923faecf}} 
+\index{low\_saurion.c@{low\_saurion.c}!htonll@{htonll}}
+\index{htonll@{htonll}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{htonll()}{htonll()}}
+{\footnotesize\ttfamily static uint64\+\_\+t htonll (\begin{DoxyParamCaption}\item[{uint64\+\_\+t}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00041}{41}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00041                                        \{}
+\DoxyCodeLine{00042   \textcolor{keywordtype}{int} num = 42;}
+\DoxyCodeLine{00043   \textcolor{keywordflow}{if} (*(\textcolor{keywordtype}{char} *)\&num == 42) \{  \textcolor{comment}{// Little endian check}}
+\DoxyCodeLine{00044     uint32\_t high\_part = htonl((uint32\_t)(value >> 32));}
+\DoxyCodeLine{00045     uint32\_t low\_part = htonl((uint32\_t)(value \& 0xFFFFFFFFLL));}
+\DoxyCodeLine{00046     \textcolor{keywordflow}{return} ((uint64\_t)low\_part << 32) | high\_part;}
+\DoxyCodeLine{00047   \}}
+\DoxyCodeLine{00048   \textcolor{keywordflow}{return} value;}
+\DoxyCodeLine{00049 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_a7919e576d3fdccbefb75bee92abd5cc3}\label{low__saurion_8c_a7919e576d3fdccbefb75bee92abd5cc3}} 
+\index{low\_saurion.c@{low\_saurion.c}!next@{next}}
+\index{next@{next}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{next()}{next()}}
+{\footnotesize\ttfamily static uint32\+\_\+t next (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structsaurion}{saurion}} $\ast$}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00036}{36}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00036                                         \{}
+\DoxyCodeLine{00037   s-\/>\mbox{\hyperlink{structsaurion_a2742eddc30d4e4409b9f1a98cf7eb054}{next}} = (s-\/>\mbox{\hyperlink{structsaurion_a2742eddc30d4e4409b9f1a98cf7eb054}{next}} + 1) \% s-\/>\mbox{\hyperlink{structsaurion_aee308efd9e70f3b38da24483a3f74413}{n\_threads}};}
+\DoxyCodeLine{00038   \textcolor{keywordflow}{return} s-\/>\mbox{\hyperlink{structsaurion_a2742eddc30d4e4409b9f1a98cf7eb054}{next}};}
+\DoxyCodeLine{00039 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_a5fae4cad12b0ca469184e097624aea08}\label{low__saurion_8c_a5fae4cad12b0ca469184e097624aea08}} 
+\index{low\_saurion.c@{low\_saurion.c}!ntohll@{ntohll}}
+\index{ntohll@{ntohll}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{ntohll()}{ntohll()}}
+{\footnotesize\ttfamily static uint64\+\_\+t ntohll (\begin{DoxyParamCaption}\item[{uint64\+\_\+t}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00051}{51}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00051                                        \{}
+\DoxyCodeLine{00052   \textcolor{keywordtype}{int} num = 42;}
+\DoxyCodeLine{00053   \textcolor{keywordflow}{if} (*(\textcolor{keywordtype}{char} *)\&num == 42) \{  \textcolor{comment}{// Little endian check}}
+\DoxyCodeLine{00054     uint32\_t high\_part = ntohl((uint32\_t)(value >> 32));}
+\DoxyCodeLine{00055     uint32\_t low\_part = ntohl((uint32\_t)(value \& 0xFFFFFFFFLL));}
+\DoxyCodeLine{00056     \textcolor{keywordflow}{return} ((uint64\_t)low\_part << 32) | high\_part;}
+\DoxyCodeLine{00057   \}}
+\DoxyCodeLine{00058   \textcolor{keywordflow}{return} value;}
+\DoxyCodeLine{00059 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_a30bb7d15272a20fb689bf9fada1737fa}\label{low__saurion_8c_a30bb7d15272a20fb689bf9fada1737fa}} 
+\index{low\_saurion.c@{low\_saurion.c}!saurion\_worker\_master@{saurion\_worker\_master}}
+\index{saurion\_worker\_master@{saurion\_worker\_master}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{saurion\_worker\_master()}{saurion\_worker\_master()}}
+{\footnotesize\ttfamily void saurion\+\_\+worker\+\_\+master (\begin{DoxyParamCaption}\item[{void $\ast$}]{arg }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00677}{677}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00677                                       \{}
+\DoxyCodeLine{00678   \textcolor{keyword}{struct }\mbox{\hyperlink{structsaurion}{saurion}} *\textcolor{keyword}{const} s = (\textcolor{keyword}{struct }\mbox{\hyperlink{structsaurion}{saurion}} *)arg;}
+\DoxyCodeLine{00679   \textcolor{keyword}{struct }io\_uring ring = s-\/>\mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}[0];}
+\DoxyCodeLine{00680   \textcolor{keyword}{struct }io\_uring\_cqe *cqe = NULL;}
+\DoxyCodeLine{00681   \textcolor{keyword}{struct }sockaddr\_in client\_addr;}
+\DoxyCodeLine{00682   socklen\_t client\_addr\_len = \textcolor{keyword}{sizeof}(client\_addr);}
+\DoxyCodeLine{00683 }
+\DoxyCodeLine{00684   \mbox{\hyperlink{low__saurion_8c_a2794e5aada66af40962e04b938bbd88a}{add\_efd}}(s, s-\/>\mbox{\hyperlink{structsaurion_a08e1b7aa083a0d311658ff7072ae7a46}{efds}}[0], 0);}
+\DoxyCodeLine{00685   \mbox{\hyperlink{low__saurion_8c_a40aa700cf97b0ad654fe0aff06644ae9}{add\_accept}}(s, \&client\_addr, \&client\_addr\_len);}
+\DoxyCodeLine{00686 }
+\DoxyCodeLine{00687   pthread\_mutex\_lock(\&s-\/>\mbox{\hyperlink{structsaurion_ad05334ffef73d89577b3bc60ecc11283}{status\_m}});}
+\DoxyCodeLine{00688   s-\/>\mbox{\hyperlink{structsaurion_a342abf92b861ebc82e50349fe31246e2}{status}} = 1;}
+\DoxyCodeLine{00689   pthread\_cond\_signal(\&s-\/>\mbox{\hyperlink{structsaurion_add5f25d5f709bda89fa5461eecdc2b2e}{status\_c}});}
+\DoxyCodeLine{00690   pthread\_mutex\_unlock(\&s-\/>\mbox{\hyperlink{structsaurion_ad05334ffef73d89577b3bc60ecc11283}{status\_m}});}
+\DoxyCodeLine{00691   \textcolor{keywordflow}{while} (1) \{}
+\DoxyCodeLine{00692     \textcolor{keywordtype}{int} ret = io\_uring\_wait\_cqe(\&ring, \&cqe);}
+\DoxyCodeLine{00693     \textcolor{keywordflow}{if} (ret < 0) \{}
+\DoxyCodeLine{00694       free(cqe);}
+\DoxyCodeLine{00695       \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00696     \}}
+\DoxyCodeLine{00697     \textcolor{keyword}{struct }\mbox{\hyperlink{structrequest}{request}} *req = (\textcolor{keyword}{struct }\mbox{\hyperlink{structrequest}{request}} *)cqe-\/>user\_data;}
+\DoxyCodeLine{00698     if (!req) \{}
+\DoxyCodeLine{00699       io\_uring\_cqe\_seen(\&s-\/>\mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}[0], cqe);}
+\DoxyCodeLine{00700       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00701     \}}
+\DoxyCodeLine{00702     \textcolor{keywordflow}{if} (cqe-\/>res < 0) \{}
+\DoxyCodeLine{00703       \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00704       \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00705     \}}
+\DoxyCodeLine{00706     \textcolor{keywordflow}{if} (req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}} == s-\/>\mbox{\hyperlink{structsaurion_a08e1b7aa083a0d311658ff7072ae7a46}{efds}}[0]) \{}
+\DoxyCodeLine{00707       io\_uring\_cqe\_seen(\&s-\/>\mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}[0], cqe);}
+\DoxyCodeLine{00708       \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00709       \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00710     \}}
+\DoxyCodeLine{00711     \textcolor{comment}{/* Mark this request as processed */}}
+\DoxyCodeLine{00712     io\_uring\_cqe\_seen(\&s-\/>\mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}[0], cqe);}
+\DoxyCodeLine{00713     \textcolor{keywordflow}{switch} (req-\/>\mbox{\hyperlink{structrequest_a9cba15f1748716ffe6869a271c1ccc4d}{event\_type}}) \{}
+\DoxyCodeLine{00714       \textcolor{keywordflow}{case} \mbox{\hyperlink{low__saurion_8c_a96a7a2db32d44325af7e4db5fe599675}{EVENT\_TYPE\_ACCEPT}}:}
+\DoxyCodeLine{00715         \mbox{\hyperlink{low__saurion_8c_aff870d06aed2384abd16b89b4e6429d8}{handle\_accept}}(s, cqe-\/>res);}
+\DoxyCodeLine{00716         \mbox{\hyperlink{low__saurion_8c_a40aa700cf97b0ad654fe0aff06644ae9}{add\_accept}}(s, \&client\_addr, \&client\_addr\_len);}
+\DoxyCodeLine{00717         \mbox{\hyperlink{low__saurion_8c_a2299a2be116729fdb774a5e655ff9f83}{add\_read}}(s, cqe-\/>res);}
+\DoxyCodeLine{00718         \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00719         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00720       \textcolor{keywordflow}{case} \mbox{\hyperlink{low__saurion_8c_a1f7c29ac665cde9aa26808bb269837d9}{EVENT\_TYPE\_READ}}:}
+\DoxyCodeLine{00721         \textcolor{keywordflow}{if} (cqe-\/>res < 0) \{}
+\DoxyCodeLine{00722           \mbox{\hyperlink{low__saurion_8c_a79a329a1b1fcd31d446b309eb0d73849}{handle\_error}}(s, req);}
+\DoxyCodeLine{00723         \}}
+\DoxyCodeLine{00724         \textcolor{keywordflow}{if} (cqe-\/>res < 1) \{}
+\DoxyCodeLine{00725           \mbox{\hyperlink{low__saurion_8c_a6590a961ce99bb8a6f0fdd151f394afa}{handle\_close}}(s, req);}
+\DoxyCodeLine{00726         \}}
+\DoxyCodeLine{00727         \textcolor{keywordflow}{if} (cqe-\/>res > 0) \{}
+\DoxyCodeLine{00728           \mbox{\hyperlink{low__saurion_8c_a97aee33e3c5728a7d986b2f42e7bb82a}{handle\_read}}(s, req);}
+\DoxyCodeLine{00729         \}}
+\DoxyCodeLine{00730         \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00731         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00732       \textcolor{keywordflow}{case} \mbox{\hyperlink{low__saurion_8c_a387dc1b3761c4fd9e9b40030bc5b78c8}{EVENT\_TYPE\_WRITE}}:}
+\DoxyCodeLine{00733         \mbox{\hyperlink{low__saurion_8c_a94c77ae2935117db01e434b37204b649}{handle\_write}}(s, req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}});}
+\DoxyCodeLine{00734         \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00735         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00736     \}}
+\DoxyCodeLine{00737   \}}
+\DoxyCodeLine{00738   pthread\_mutex\_lock(\&s-\/>\mbox{\hyperlink{structsaurion_ad05334ffef73d89577b3bc60ecc11283}{status\_m}});}
+\DoxyCodeLine{00739   s-\/>\mbox{\hyperlink{structsaurion_a342abf92b861ebc82e50349fe31246e2}{status}} = 2;}
+\DoxyCodeLine{00740   pthread\_cond\_signal(\&s-\/>\mbox{\hyperlink{structsaurion_add5f25d5f709bda89fa5461eecdc2b2e}{status\_c}});}
+\DoxyCodeLine{00741   pthread\_mutex\_unlock(\&s-\/>\mbox{\hyperlink{structsaurion_ad05334ffef73d89577b3bc60ecc11283}{status\_m}});}
+\DoxyCodeLine{00742   \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00743 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{low__saurion_8c_a70abc87ee43c0e1b7059ec16e975afca}\label{low__saurion_8c_a70abc87ee43c0e1b7059ec16e975afca}} 
+\index{low\_saurion.c@{low\_saurion.c}!saurion\_worker\_slave@{saurion\_worker\_slave}}
+\index{saurion\_worker\_slave@{saurion\_worker\_slave}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{saurion\_worker\_slave()}{saurion\_worker\_slave()}}
+{\footnotesize\ttfamily void saurion\+\_\+worker\+\_\+slave (\begin{DoxyParamCaption}\item[{void $\ast$}]{arg }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00745}{745}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00745                                      \{}
+\DoxyCodeLine{00746   \textcolor{keyword}{struct }\mbox{\hyperlink{structsaurion__wrapper}{saurion\_wrapper}} *\textcolor{keyword}{const} \mbox{\hyperlink{low__saurion_8h_a9a57016e056d7d2ce6d2417340c4429e}{ss}} = (\textcolor{keyword}{struct }\mbox{\hyperlink{structsaurion__wrapper}{saurion\_wrapper}} *)arg;}
+\DoxyCodeLine{00747   \textcolor{keyword}{struct }\mbox{\hyperlink{structsaurion}{saurion}} *s = \mbox{\hyperlink{low__saurion_8h_a9a57016e056d7d2ce6d2417340c4429e}{ss}}-\/>s;}
+\DoxyCodeLine{00748   \textcolor{keyword}{const} \textcolor{keywordtype}{int} sel = \mbox{\hyperlink{low__saurion_8h_a9a57016e056d7d2ce6d2417340c4429e}{ss}}-\/>sel;}
+\DoxyCodeLine{00749   free(\mbox{\hyperlink{low__saurion_8h_a9a57016e056d7d2ce6d2417340c4429e}{ss}});}
+\DoxyCodeLine{00750   \textcolor{keyword}{struct }io\_uring ring = s-\/>\mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}[sel];}
+\DoxyCodeLine{00751   \textcolor{keyword}{struct }io\_uring\_cqe *cqe = NULL;}
+\DoxyCodeLine{00752 }
+\DoxyCodeLine{00753   \mbox{\hyperlink{low__saurion_8c_a2794e5aada66af40962e04b938bbd88a}{add\_efd}}(s, s-\/>\mbox{\hyperlink{structsaurion_a08e1b7aa083a0d311658ff7072ae7a46}{efds}}[sel], sel);}
+\DoxyCodeLine{00754 }
+\DoxyCodeLine{00755   pthread\_mutex\_lock(\&s-\/>\mbox{\hyperlink{structsaurion_ad05334ffef73d89577b3bc60ecc11283}{status\_m}});}
+\DoxyCodeLine{00756   s-\/>\mbox{\hyperlink{structsaurion_a342abf92b861ebc82e50349fe31246e2}{status}} = 1;}
+\DoxyCodeLine{00757   pthread\_cond\_signal(\&s-\/>\mbox{\hyperlink{structsaurion_add5f25d5f709bda89fa5461eecdc2b2e}{status\_c}});}
+\DoxyCodeLine{00758   pthread\_mutex\_unlock(\&s-\/>\mbox{\hyperlink{structsaurion_ad05334ffef73d89577b3bc60ecc11283}{status\_m}});}
+\DoxyCodeLine{00759   \textcolor{keywordflow}{while} (1) \{}
+\DoxyCodeLine{00760     \textcolor{keywordtype}{int} ret = io\_uring\_wait\_cqe(\&ring, \&cqe);}
+\DoxyCodeLine{00761     \textcolor{keywordflow}{if} (ret < 0) \{}
+\DoxyCodeLine{00762       free(cqe);}
+\DoxyCodeLine{00763       \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00764     \}}
+\DoxyCodeLine{00765     \textcolor{keyword}{struct }\mbox{\hyperlink{structrequest}{request}} *req = (\textcolor{keyword}{struct }\mbox{\hyperlink{structrequest}{request}} *)cqe-\/>user\_data;}
+\DoxyCodeLine{00766     if (!req) \{}
+\DoxyCodeLine{00767       io\_uring\_cqe\_seen(\&ring, cqe);}
+\DoxyCodeLine{00768       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00769     \}}
+\DoxyCodeLine{00770     \textcolor{keywordflow}{if} (cqe-\/>res < 0) \{}
+\DoxyCodeLine{00771       \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00772       \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00773     \}}
+\DoxyCodeLine{00774     \textcolor{keywordflow}{if} (req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}} == s-\/>\mbox{\hyperlink{structsaurion_a08e1b7aa083a0d311658ff7072ae7a46}{efds}}[sel]) \{}
+\DoxyCodeLine{00775       io\_uring\_cqe\_seen(\&ring, cqe);}
+\DoxyCodeLine{00776       \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00777       \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00778     \}}
+\DoxyCodeLine{00779     \textcolor{comment}{/* Mark this request as processed */}}
+\DoxyCodeLine{00780     io\_uring\_cqe\_seen(\&ring, cqe);}
+\DoxyCodeLine{00781     \textcolor{keywordflow}{switch} (req-\/>\mbox{\hyperlink{structrequest_a9cba15f1748716ffe6869a271c1ccc4d}{event\_type}}) \{}
+\DoxyCodeLine{00782       \textcolor{keywordflow}{case} \mbox{\hyperlink{low__saurion_8c_a1f7c29ac665cde9aa26808bb269837d9}{EVENT\_TYPE\_READ}}:}
+\DoxyCodeLine{00783         \textcolor{keywordflow}{if} (cqe-\/>res < 0) \{}
+\DoxyCodeLine{00784           \mbox{\hyperlink{low__saurion_8c_a79a329a1b1fcd31d446b309eb0d73849}{handle\_error}}(s, req);}
+\DoxyCodeLine{00785         \}}
+\DoxyCodeLine{00786         \textcolor{keywordflow}{if} (cqe-\/>res < 1) \{}
+\DoxyCodeLine{00787           \mbox{\hyperlink{low__saurion_8c_a6590a961ce99bb8a6f0fdd151f394afa}{handle\_close}}(s, req);}
+\DoxyCodeLine{00788         \}}
+\DoxyCodeLine{00789         \textcolor{keywordflow}{if} (cqe-\/>res > 0) \{}
+\DoxyCodeLine{00790           \mbox{\hyperlink{low__saurion_8c_a97aee33e3c5728a7d986b2f42e7bb82a}{handle\_read}}(s, req);}
+\DoxyCodeLine{00791         \}}
+\DoxyCodeLine{00792         \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00793         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00794       \textcolor{keywordflow}{case} \mbox{\hyperlink{low__saurion_8c_a387dc1b3761c4fd9e9b40030bc5b78c8}{EVENT\_TYPE\_WRITE}}:}
+\DoxyCodeLine{00795         \mbox{\hyperlink{low__saurion_8c_a94c77ae2935117db01e434b37204b649}{handle\_write}}(s, req-\/>\mbox{\hyperlink{structrequest_a34dcdf74ea1d647ba95bcdd78c95c3b7}{client\_socket}});}
+\DoxyCodeLine{00796         \mbox{\hyperlink{linked__list_8c_aa32b1822e1be57484b2244e42f1d75ac}{list\_delete\_node}}(\&s-\/>\mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}, req);}
+\DoxyCodeLine{00797         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00798     \}}
+\DoxyCodeLine{00799   \}}
+\DoxyCodeLine{00800   pthread\_mutex\_lock(\&s-\/>\mbox{\hyperlink{structsaurion_ad05334ffef73d89577b3bc60ecc11283}{status\_m}});}
+\DoxyCodeLine{00801   s-\/>\mbox{\hyperlink{structsaurion_a342abf92b861ebc82e50349fe31246e2}{status}} = 2;}
+\DoxyCodeLine{00802   pthread\_cond\_signal(\&s-\/>\mbox{\hyperlink{structsaurion_add5f25d5f709bda89fa5461eecdc2b2e}{status\_c}});}
+\DoxyCodeLine{00803   pthread\_mutex\_unlock(\&s-\/>\mbox{\hyperlink{structsaurion_ad05334ffef73d89577b3bc60ecc11283}{status\_m}});}
+\DoxyCodeLine{00804   \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00805 \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{low__saurion_8c_adcba6f6935d1807493e731cc5e79a661}\label{low__saurion_8c_adcba6f6935d1807493e731cc5e79a661}} 
+\index{low\_saurion.c@{low\_saurion.c}!print\_mutex@{print\_mutex}}
+\index{print\_mutex@{print\_mutex}!low\_saurion.c@{low\_saurion.c}}
+\doxysubsubsection{\texorpdfstring{print\_mutex}{print\_mutex}}
+{\footnotesize\ttfamily pthread\+\_\+mutex\+\_\+t print\+\_\+mutex}
+
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8c_source_l00029}{29}} of file \mbox{\hyperlink{low__saurion_8c_source}{low\+\_\+saurion.\+c}}.
+

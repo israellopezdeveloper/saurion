@@ -1,0 +1,172 @@
+\hypertarget{structsaurion}{}\doxysection{saurion Struct Reference}
+\label{structsaurion}\index{saurion@{saurion}}
+
+
+Main structure for managing io\+\_\+uring and socket events.  
+
+
+
+
+{\ttfamily \#include $<$low\+\_\+saurion.\+h$>$}
+
+
+
+Collaboration diagram for saurion\+:
+% FIG 0
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structsaurion_1_1saurion__callbacks}{saurion\+\_\+callbacks}}
+\begin{DoxyCompactList}\small\item\em Structure containing callback functions to handle socket events. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+struct io\+\_\+uring $\ast$ \mbox{\hyperlink{structsaurion_a4858f070287e6269298089b993793830}{rings}}
+\item 
+pthread\+\_\+mutex\+\_\+t $\ast$ \mbox{\hyperlink{structsaurion_ad3305571e32bbb72bc95caefbb68b030}{m\+\_\+rings}}
+\item 
+int \mbox{\hyperlink{structsaurion_ae85c8eed456efd00dcc93d005b0ad99c}{ss}}
+\item 
+int $\ast$ \mbox{\hyperlink{structsaurion_a08e1b7aa083a0d311658ff7072ae7a46}{efds}}
+\item 
+struct \mbox{\hyperlink{structNode}{Node}} $\ast$ \mbox{\hyperlink{structsaurion_a63c38a9dc703180b628935d72236318f}{list}}
+\item 
+pthread\+\_\+mutex\+\_\+t \mbox{\hyperlink{structsaurion_ad05334ffef73d89577b3bc60ecc11283}{status\+\_\+m}}
+\item 
+pthread\+\_\+cond\+\_\+t \mbox{\hyperlink{structsaurion_add5f25d5f709bda89fa5461eecdc2b2e}{status\+\_\+c}}
+\item 
+int \mbox{\hyperlink{structsaurion_a342abf92b861ebc82e50349fe31246e2}{status}}
+\item 
+\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$ \mbox{\hyperlink{structsaurion_aa6d22bb06ad66a5a860fcd642b4e7905}{pool}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structsaurion_aee308efd9e70f3b38da24483a3f74413}{n\+\_\+threads}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structsaurion_a2742eddc30d4e4409b9f1a98cf7eb054}{next}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Main structure for managing io\+\_\+uring and socket events. 
+
+This structure contains all the necessary data to handle the io\+\_\+uring event queue and the callbacks for socket events, enabling efficient asynchronous I/O operations. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00137}{137}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structsaurion_a08e1b7aa083a0d311658ff7072ae7a46}\label{structsaurion_a08e1b7aa083a0d311658ff7072ae7a46}} 
+\index{saurion@{saurion}!efds@{efds}}
+\index{efds@{efds}!saurion@{saurion}}
+\doxysubsubsection{\texorpdfstring{efds}{efds}}
+{\footnotesize\ttfamily int$\ast$ saurion\+::efds}
+
+Eventfd descriptors used for internal signaling between threads. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00142}{142}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_a63c38a9dc703180b628935d72236318f}\label{structsaurion_a63c38a9dc703180b628935d72236318f}} 
+\index{saurion@{saurion}!list@{list}}
+\index{list@{list}!saurion@{saurion}}
+\doxysubsubsection{\texorpdfstring{list}{list}}
+{\footnotesize\ttfamily struct \mbox{\hyperlink{structNode}{Node}}$\ast$ saurion\+::list}
+
+Linked list for storing active requests. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00143}{143}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_ad3305571e32bbb72bc95caefbb68b030}\label{structsaurion_ad3305571e32bbb72bc95caefbb68b030}} 
+\index{saurion@{saurion}!m\_rings@{m\_rings}}
+\index{m\_rings@{m\_rings}!saurion@{saurion}}
+\doxysubsubsection{\texorpdfstring{m\_rings}{m\_rings}}
+{\footnotesize\ttfamily pthread\+\_\+mutex\+\_\+t$\ast$ saurion\+::m\+\_\+rings}
+
+Array of mutexes to protect the io\+\_\+uring rings during concurrent access. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00140}{140}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_aee308efd9e70f3b38da24483a3f74413}\label{structsaurion_aee308efd9e70f3b38da24483a3f74413}} 
+\index{saurion@{saurion}!n\_threads@{n\_threads}}
+\index{n\_threads@{n\_threads}!saurion@{saurion}}
+\doxysubsubsection{\texorpdfstring{n\_threads}{n\_threads}}
+{\footnotesize\ttfamily uint32\+\_\+t saurion\+::n\+\_\+threads}
+
+Number of threads in the thread pool. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00148}{148}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_a2742eddc30d4e4409b9f1a98cf7eb054}\label{structsaurion_a2742eddc30d4e4409b9f1a98cf7eb054}} 
+\index{saurion@{saurion}!next@{next}}
+\index{next@{next}!saurion@{saurion}}
+\doxysubsubsection{\texorpdfstring{next}{next}}
+{\footnotesize\ttfamily uint32\+\_\+t saurion\+::next}
+
+Index of the next io\+\_\+uring ring to which an event will be added. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00149}{149}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_aa6d22bb06ad66a5a860fcd642b4e7905}\label{structsaurion_aa6d22bb06ad66a5a860fcd642b4e7905}} 
+\index{saurion@{saurion}!pool@{pool}}
+\index{pool@{pool}!saurion@{saurion}}
+\doxysubsubsection{\texorpdfstring{pool}{pool}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classThreadPool}{Thread\+Pool}}$\ast$ saurion\+::pool}
+
+Thread pool for executing tasks in parallel. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00147}{147}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_a4858f070287e6269298089b993793830}\label{structsaurion_a4858f070287e6269298089b993793830}} 
+\index{saurion@{saurion}!rings@{rings}}
+\index{rings@{rings}!saurion@{saurion}}
+\doxysubsubsection{\texorpdfstring{rings}{rings}}
+{\footnotesize\ttfamily struct io\+\_\+uring$\ast$ saurion\+::rings}
+
+Array of io\+\_\+uring structures for managing the event queue. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00138}{138}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_ae85c8eed456efd00dcc93d005b0ad99c}\label{structsaurion_ae85c8eed456efd00dcc93d005b0ad99c}} 
+\index{saurion@{saurion}!ss@{ss}}
+\index{ss@{ss}!saurion@{saurion}}
+\doxysubsubsection{\texorpdfstring{ss}{ss}}
+{\footnotesize\ttfamily int saurion\+::ss}
+
+Server socket descriptor for accepting connections. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00141}{141}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_a342abf92b861ebc82e50349fe31246e2}\label{structsaurion_a342abf92b861ebc82e50349fe31246e2}} 
+\index{saurion@{saurion}!status@{status}}
+\index{status@{status}!saurion@{saurion}}
+\doxysubsubsection{\texorpdfstring{status}{status}}
+{\footnotesize\ttfamily int saurion\+::status}
+
+Current status of the structure (e.\+g., running, stopped). 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00146}{146}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_add5f25d5f709bda89fa5461eecdc2b2e}\label{structsaurion_add5f25d5f709bda89fa5461eecdc2b2e}} 
+\index{saurion@{saurion}!status\_c@{status\_c}}
+\index{status\_c@{status\_c}!saurion@{saurion}}
+\doxysubsubsection{\texorpdfstring{status\_c}{status\_c}}
+{\footnotesize\ttfamily pthread\+\_\+cond\+\_\+t saurion\+::status\+\_\+c}
+
+Condition variable to signal changes in the structure\textquotesingle{}s state. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00145}{145}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_ad05334ffef73d89577b3bc60ecc11283}\label{structsaurion_ad05334ffef73d89577b3bc60ecc11283}} 
+\index{saurion@{saurion}!status\_m@{status\_m}}
+\index{status\_m@{status\_m}!saurion@{saurion}}
+\doxysubsubsection{\texorpdfstring{status\_m}{status\_m}}
+{\footnotesize\ttfamily pthread\+\_\+mutex\+\_\+t saurion\+::status\+\_\+m}
+
+Mutex to protect the state of the structure. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00144}{144}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+\_\+\+\_\+w/saurion/saurion/include/\mbox{\hyperlink{low__saurion_8h}{low\+\_\+saurion.\+h}}\end{DoxyCompactItemize}

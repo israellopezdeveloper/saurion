@@ -1,0 +1,236 @@
+\hypertarget{structThreadPool_1_1AsyncQueue}{}\doxysection{Thread\+Pool\+::Async\+Queue Struct Reference}
+\label{structThreadPool_1_1AsyncQueue}\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_aa26d62e8948391895058149d5300fec1}{Async\+Queue}} (uint32\+\_\+t cnt)
+\item 
+\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a00f850d0a2d43cc77e9031490759a9b6}{$\sim$\+Async\+Queue}} ()
+\item 
+\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a206e10b39c26a3f7c435dbfb74bf50e1}{Async\+Queue}} (const \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}} \&)=delete
+\item 
+\mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}} \& \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a04cf023b930124ddee0978b17f53f027}{operator=}} (const \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}} \&)=delete
+\item 
+\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ac4412663b25de78fc191e8dad5213273}{Async\+Queue}} (\mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}} \&\&)=delete
+\item 
+\mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}} \& \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a260c8c88e2700020be447b7e4a837d61}{operator=}} (\mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}} \&\&)=delete
+\item 
+void \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae2ef0870e03b76660ddbc7a53d306666}{push}} (\mbox{\hyperlink{structTask}{Task}} $\ast$task)
+\item 
+\mbox{\hyperlink{structTask}{Task}} $\ast$ \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a0cd344b0df862d2901a909cb8d8371e2}{front}} ()
+\item 
+void \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a51a58ceac4f25ddabaf1aecebe0f0bed}{pop}} ()
+\item 
+bool \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a5c60e2a1afc2f18224aa5f8af8b6cea8}{empty}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::queue$<$ \mbox{\hyperlink{structTask}{Task}} $\ast$ $>$ \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}{m\+\_\+queue}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a013dbc0b2337c125a3c7180b53282eff}{m\+\_\+max}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a144b01235cf14228722e03b6dbb4e2a0}{m\+\_\+cnt}}
+\item 
+pthread\+\_\+mutex\+\_\+t \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\+\_\+mtx}} = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00029}{29}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_aa26d62e8948391895058149d5300fec1}\label{structThreadPool_1_1AsyncQueue_aa26d62e8948391895058149d5300fec1}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!AsyncQueue@{AsyncQueue}}
+\index{AsyncQueue@{AsyncQueue}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{AsyncQueue()}{AsyncQueue()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{TP\+::\+Async\+Queue\+::\+Async\+Queue}} (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{cnt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00016}{16}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00016 : \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a013dbc0b2337c125a3c7180b53282eff}{m\_max}}(cnt), \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a144b01235cf14228722e03b6dbb4e2a0}{m\_cnt}}(0) \{\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_a00f850d0a2d43cc77e9031490759a9b6}\label{structThreadPool_1_1AsyncQueue_a00f850d0a2d43cc77e9031490759a9b6}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!````~AsyncQueue@{$\sim$AsyncQueue}}
+\index{````~AsyncQueue@{$\sim$AsyncQueue}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{$\sim$AsyncQueue()}{~AsyncQueue()}}
+{\footnotesize\ttfamily TP\+::\+Async\+Queue\+::$\sim$\+Async\+Queue (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00018}{18}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00018 \{ pthread\_mutex\_destroy(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}}); \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_a206e10b39c26a3f7c435dbfb74bf50e1}\label{structThreadPool_1_1AsyncQueue_a206e10b39c26a3f7c435dbfb74bf50e1}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!AsyncQueue@{AsyncQueue}}
+\index{AsyncQueue@{AsyncQueue}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{AsyncQueue()}{AsyncQueue()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Thread\+Pool\+::\+Async\+Queue\+::\+Async\+Queue}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}} \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_ac4412663b25de78fc191e8dad5213273}\label{structThreadPool_1_1AsyncQueue_ac4412663b25de78fc191e8dad5213273}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!AsyncQueue@{AsyncQueue}}
+\index{AsyncQueue@{AsyncQueue}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{AsyncQueue()}{AsyncQueue()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Thread\+Pool\+::\+Async\+Queue\+::\+Async\+Queue}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}} \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_a5c60e2a1afc2f18224aa5f8af8b6cea8}\label{structThreadPool_1_1AsyncQueue_a5c60e2a1afc2f18224aa5f8af8b6cea8}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!empty@{empty}}
+\index{empty@{empty}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{empty()}{empty()}}
+{\footnotesize\ttfamily bool TP\+::\+Async\+Queue\+::empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00043}{43}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00043                          \{}
+\DoxyCodeLine{00044   pthread\_mutex\_lock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{00045   \textcolor{keywordtype}{bool} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a5c60e2a1afc2f18224aa5f8af8b6cea8}{empty}} = \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}{m\_queue}}.empty();}
+\DoxyCodeLine{00046   pthread\_mutex\_unlock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{00047   \textcolor{keywordflow}{return} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a5c60e2a1afc2f18224aa5f8af8b6cea8}{empty}};}
+\DoxyCodeLine{00048 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_a0cd344b0df862d2901a909cb8d8371e2}\label{structThreadPool_1_1AsyncQueue_a0cd344b0df862d2901a909cb8d8371e2}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!front@{front}}
+\index{front@{front}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{front()}{front()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structTask}{Task}} $\ast$ TP\+::\+Async\+Queue\+::front (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00025}{25}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00025                           \{}
+\DoxyCodeLine{00026   pthread\_mutex\_lock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{00027   \textcolor{keywordflow}{if} ((\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a144b01235cf14228722e03b6dbb4e2a0}{m\_cnt}} >= \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a013dbc0b2337c125a3c7180b53282eff}{m\_max}}) \&\& (\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a013dbc0b2337c125a3c7180b53282eff}{m\_max}} != 0)) \{}
+\DoxyCodeLine{00028     pthread\_mutex\_unlock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{00029     \textcolor{keywordflow}{throw} std::out\_of\_range(\textcolor{stringliteral}{"{}reached max parallel tasks"{}});}
+\DoxyCodeLine{00030   \}}
+\DoxyCodeLine{00031   \mbox{\hyperlink{structTask}{Task}}* task = \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}{m\_queue}}.front();}
+\DoxyCodeLine{00032   \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}{m\_queue}}.pop();}
+\DoxyCodeLine{00033   ++\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a144b01235cf14228722e03b6dbb4e2a0}{m\_cnt}};}
+\DoxyCodeLine{00034   pthread\_mutex\_unlock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{00035   \textcolor{keywordflow}{return} task;}
+\DoxyCodeLine{00036 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_a260c8c88e2700020be447b7e4a837d61}\label{structThreadPool_1_1AsyncQueue_a260c8c88e2700020be447b7e4a837d61}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!operator=@{operator=}}
+\index{operator=@{operator=}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}} \& Thread\+Pool\+::\+Async\+Queue\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}} \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_a04cf023b930124ddee0978b17f53f027}\label{structThreadPool_1_1AsyncQueue_a04cf023b930124ddee0978b17f53f027}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!operator=@{operator=}}
+\index{operator=@{operator=}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}} \& Thread\+Pool\+::\+Async\+Queue\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}} \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_a51a58ceac4f25ddabaf1aecebe0f0bed}\label{structThreadPool_1_1AsyncQueue_a51a58ceac4f25ddabaf1aecebe0f0bed}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!pop@{pop}}
+\index{pop@{pop}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{pop()}{pop()}}
+{\footnotesize\ttfamily void TP\+::\+Async\+Queue\+::pop (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00037}{37}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00037                        \{}
+\DoxyCodeLine{00038   pthread\_mutex\_lock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{00039   -\/-\/\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a144b01235cf14228722e03b6dbb4e2a0}{m\_cnt}};}
+\DoxyCodeLine{00040   pthread\_mutex\_unlock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{00041 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_ae2ef0870e03b76660ddbc7a53d306666}\label{structThreadPool_1_1AsyncQueue_ae2ef0870e03b76660ddbc7a53d306666}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!push@{push}}
+\index{push@{push}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{push()}{push()}}
+{\footnotesize\ttfamily void TP\+::\+Async\+Queue\+::push (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structTask}{Task}} $\ast$}]{task }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00020}{20}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00020                                   \{}
+\DoxyCodeLine{00021   pthread\_mutex\_lock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{00022   \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}{m\_queue}}.push(task);}
+\DoxyCodeLine{00023   pthread\_mutex\_unlock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{00024 \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_a144b01235cf14228722e03b6dbb4e2a0}\label{structThreadPool_1_1AsyncQueue_a144b01235cf14228722e03b6dbb4e2a0}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!m\_cnt@{m\_cnt}}
+\index{m\_cnt@{m\_cnt}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{m\_cnt}{m\_cnt}}
+{\footnotesize\ttfamily uint32\+\_\+t Thread\+Pool\+::\+Async\+Queue\+::m\+\_\+cnt\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_a013dbc0b2337c125a3c7180b53282eff}\label{structThreadPool_1_1AsyncQueue_a013dbc0b2337c125a3c7180b53282eff}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!m\_max@{m\_max}}
+\index{m\_max@{m\_max}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{m\_max}{m\_max}}
+{\footnotesize\ttfamily uint32\+\_\+t Thread\+Pool\+::\+Async\+Queue\+::m\+\_\+max\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00032}{32}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}\label{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!m\_mtx@{m\_mtx}}
+\index{m\_mtx@{m\_mtx}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{m\_mtx}{m\_mtx}}
+{\footnotesize\ttfamily pthread\+\_\+mutex\+\_\+t Thread\+Pool\+::\+Async\+Queue\+::m\+\_\+mtx = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00034}{34}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+\mbox{\Hypertarget{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}\label{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}} 
+\index{ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}!m\_queue@{m\_queue}}
+\index{m\_queue@{m\_queue}!ThreadPool::AsyncQueue@{ThreadPool::AsyncQueue}}
+\doxysubsubsection{\texorpdfstring{m\_queue}{m\_queue}}
+{\footnotesize\ttfamily std\+::queue$<$\mbox{\hyperlink{structTask}{Task}}$\ast$$>$ Thread\+Pool\+::\+Async\+Queue\+::m\+\_\+queue\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00031}{31}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+\_\+\+\_\+w/saurion/saurion/include/\mbox{\hyperlink{threadpool_8hpp}{threadpool.\+hpp}}\item 
+/\+\_\+\+\_\+w/saurion/saurion/src/\mbox{\hyperlink{threadpool_8cpp}{threadpool.\+cpp}}\end{DoxyCompactItemize}

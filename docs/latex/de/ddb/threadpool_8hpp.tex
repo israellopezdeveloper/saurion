@@ -1,0 +1,57 @@
+\hypertarget{threadpool_8hpp}{}\doxysection{/\+\_\+\+\_\+w/saurion/saurion/include/threadpool.hpp File Reference}
+\label{threadpool_8hpp}\index{/\_\_w/saurion/saurion/include/threadpool.hpp@{/\_\_w/saurion/saurion/include/threadpool.hpp}}
+{\ttfamily \#include $<$bits/types/sig\+\_\+atomic\+\_\+t.\+h$>$}\newline
+{\ttfamily \#include $<$pthread.\+h$>$}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include $<$queue$>$}\newline
+{\ttfamily \#include $<$unordered\+\_\+map$>$}\newline
+Include dependency graph for threadpool.\+hpp\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structTask}{Task}}
+\item 
+class \mbox{\hyperlink{classThreadPool}{Thread\+Pool}}
+\item 
+struct \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Thread\+Pool\+::\+Async\+Queue}}
+\item 
+struct \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{Thread\+Pool\+::\+Async\+Multi\+Queue}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6}{Stop\+Flags}} \{ \mbox{\hyperlink{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6ac09d7c5a2161fc65c10f96ed5a46dc30}{KINDLY}} = 0x01
+, \mbox{\hyperlink{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6a2a4d3752e9aa5f28fc2dacb0f948de06}{FORCE}} = 0x02
+ \}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6}\label{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6}} 
+\index{threadpool.hpp@{threadpool.hpp}!StopFlags@{StopFlags}}
+\index{StopFlags@{StopFlags}!threadpool.hpp@{threadpool.hpp}}
+\doxysubsubsection{\texorpdfstring{StopFlags}{StopFlags}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6}{Stop\+Flags}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{KINDLY@{KINDLY}!threadpool.hpp@{threadpool.hpp}}\index{threadpool.hpp@{threadpool.hpp}!KINDLY@{KINDLY}}}\mbox{\Hypertarget{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6ac09d7c5a2161fc65c10f96ed5a46dc30}\label{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6ac09d7c5a2161fc65c10f96ed5a46dc30}} 
+KINDLY&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{FORCE@{FORCE}!threadpool.hpp@{threadpool.hpp}}\index{threadpool.hpp@{threadpool.hpp}!FORCE@{FORCE}}}\mbox{\Hypertarget{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6a2a4d3752e9aa5f28fc2dacb0f948de06}\label{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6a2a4d3752e9aa5f28fc2dacb0f948de06}} 
+FORCE&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00012}{12}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00012 \{ \mbox{\hyperlink{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6ac09d7c5a2161fc65c10f96ed5a46dc30}{KINDLY}} = 0x01, \mbox{\hyperlink{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6a2a4d3752e9aa5f28fc2dacb0f948de06}{FORCE}} = 0x02 \};}
+
+\end{DoxyCode}

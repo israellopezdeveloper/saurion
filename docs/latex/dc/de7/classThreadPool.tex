@@ -1,0 +1,578 @@
+\hypertarget{classThreadPool}{}\doxysection{Thread\+Pool Class Reference}
+\label{classThreadPool}\index{ThreadPool@{ThreadPool}}
+
+
+{\ttfamily \#include $<$threadpool.\+hpp$>$}
+
+
+
+Collaboration diagram for Thread\+Pool\+:
+% FIG 0
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{Async\+Multi\+Queue}}
+\item 
+struct \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Async\+Queue}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classThreadPool_ad2e8fa3d824829b284bba171e03dcf95}{Thread\+Pool}} ()
+\item 
+\mbox{\hyperlink{classThreadPool_aba5982bfeb6de6d81995e6f3aeabb951}{Thread\+Pool}} (size\+\_\+t num\+\_\+threads)
+\item 
+\mbox{\hyperlink{classThreadPool_a8af7ebd9779dcab6e0a48f80e8962d08}{Thread\+Pool}} (const \mbox{\hyperlink{classThreadPool}{Thread\+Pool}} \&)=delete
+\item 
+\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} \& \mbox{\hyperlink{classThreadPool_afec5f97d2b512da75aa10897ef12a2a8}{operator=}} (const \mbox{\hyperlink{classThreadPool}{Thread\+Pool}} \&)=delete
+\item 
+\mbox{\hyperlink{classThreadPool_ad1bbb23b57e3ae24cdc7df015c49fba1}{Thread\+Pool}} (\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} \&\&)=delete
+\item 
+\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} \& \mbox{\hyperlink{classThreadPool_ad979aa170c8c04f5fb5f1d941ef9d5a2}{operator=}} (\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} \&\&)=delete
+\item 
+void \mbox{\hyperlink{classThreadPool_a53b794c6101360ebfe6a8d903ba73298}{init}} ()
+\item 
+void \mbox{\hyperlink{classThreadPool_a657bbb211644433615159cec5cd2acd5}{stop}} ()
+\item 
+void \mbox{\hyperlink{classThreadPool_a96cabae5dcc0358c6df3e303cf369456}{add}} (uint32\+\_\+t qid, void($\ast$nfn)(void $\ast$), void $\ast$arg)
+\item 
+void \mbox{\hyperlink{classThreadPool_a98fa999bd2f502ff445a3d5b3e96e808}{add}} (void($\ast$nfn)(void $\ast$), void $\ast$arg)
+\item 
+void \mbox{\hyperlink{classThreadPool_a0c4c19237914ccb2bebe50b4415b3225}{new\+\_\+queue}} (uint32\+\_\+t qid, uint32\+\_\+t cnt)
+\item 
+void \mbox{\hyperlink{classThreadPool_a585a0a22debad10c620f104b32a9bd2a}{remove\+\_\+queue}} (uint32\+\_\+t qid)
+\item 
+bool \mbox{\hyperlink{classThreadPool_a880109c459faf086a39d4406c43425ec}{empty}} ()
+\item 
+void \mbox{\hyperlink{classThreadPool_ab6f53c8947ea629b3ef5888735b8e9fc}{wait\+\_\+empty}} ()
+\item 
+\mbox{\hyperlink{classThreadPool_abacc418e6eec29811d72ff8321a7adc8}{$\sim$\+Thread\+Pool}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Thread\+Pool\+::\+Async\+Queue}} \mbox{\hyperlink{classThreadPool_a4a855bc11e3dc4832c0f9125b178365e}{Async\+Queue}}
+\item 
+typedef struct \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{Thread\+Pool\+::\+Async\+Multi\+Queue}} \mbox{\hyperlink{classThreadPool_aa0dc8853a32e5305874fbe050dcf24bb}{Async\+Multi\+Queue}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classThreadPool_a4e1ac7df975273059c4bac975f5570f9}{wait\+\_\+closeable}} ()
+\item 
+void \mbox{\hyperlink{classThreadPool_a7ca9b8d1f4f0bf4c9bc7315c1aa230e9}{thread\+\_\+worker}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void $\ast$ \mbox{\hyperlink{classThreadPool_a2fe186e06ccf4514f47f9b462ae9183f}{thread\+\_\+entry}} (void $\ast$arg)
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t \mbox{\hyperlink{classThreadPool_a8f61b969539f08f5ec7ea6b9b530f225}{m\+\_\+nth}}
+\item 
+size\+\_\+t \mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\+\_\+started}}
+\item 
+\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{Async\+Multi\+Queue}} \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\+\_\+queues}}
+\item 
+pthread\+\_\+mutex\+\_\+t \mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\+\_\+q\+\_\+mtx}} = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER
+\item 
+pthread\+\_\+cond\+\_\+t \mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\+\_\+q\+\_\+cond}} = PTHREAD\+\_\+\+COND\+\_\+\+INITIALIZER
+\item 
+pthread\+\_\+t $\ast$ \mbox{\hyperlink{classThreadPool_a96dce41bded03949a51ff92e365a127b}{m\+\_\+ths}}
+\item 
+volatile sig\+\_\+atomic\+\_\+t \mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\+\_\+fstop}}
+\item 
+volatile sig\+\_\+atomic\+\_\+t \mbox{\hyperlink{classThreadPool_a7070707fff91f286121661fe6fd31ff5}{m\+\_\+faccept}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static pthread\+\_\+mutex\+\_\+t \mbox{\hyperlink{classThreadPool_a502e221e28781edead3ca735cf7f61df}{s\+\_\+mtx}} = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00027}{27}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classThreadPool_aa0dc8853a32e5305874fbe050dcf24bb}\label{classThreadPool_aa0dc8853a32e5305874fbe050dcf24bb}} 
+\index{ThreadPool@{ThreadPool}!AsyncMultiQueue@{AsyncMultiQueue}}
+\index{AsyncMultiQueue@{AsyncMultiQueue}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{AsyncMultiQueue}{AsyncMultiQueue}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{Thread\+Pool\+::\+Async\+Multi\+Queue}} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{Thread\+Pool\+::\+Async\+Multi\+Queue}}\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classThreadPool_a4a855bc11e3dc4832c0f9125b178365e}\label{classThreadPool_a4a855bc11e3dc4832c0f9125b178365e}} 
+\index{ThreadPool@{ThreadPool}!AsyncQueue@{AsyncQueue}}
+\index{AsyncQueue@{AsyncQueue}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{AsyncQueue}{AsyncQueue}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Thread\+Pool\+::\+Async\+Queue}} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{Thread\+Pool\+::\+Async\+Queue}}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classThreadPool_ad2e8fa3d824829b284bba171e03dcf95}\label{classThreadPool_ad2e8fa3d824829b284bba171e03dcf95}} 
+\index{ThreadPool@{ThreadPool}!ThreadPool@{ThreadPool}}
+\index{ThreadPool@{ThreadPool}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{ThreadPool()}{ThreadPool()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily TP\+::\+Thread\+Pool (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00128}{128}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00128 : \mbox{\hyperlink{classThreadPool_ad2e8fa3d824829b284bba171e03dcf95}{ThreadPool}}(4) \{\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classThreadPool_aba5982bfeb6de6d81995e6f3aeabb951}\label{classThreadPool_aba5982bfeb6de6d81995e6f3aeabb951}} 
+\index{ThreadPool@{ThreadPool}!ThreadPool@{ThreadPool}}
+\index{ThreadPool@{ThreadPool}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{ThreadPool()}{ThreadPool()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily TP\+::\+Thread\+Pool (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{num\+\_\+threads }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00130}{130}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00131     : \mbox{\hyperlink{classThreadPool_a8f61b969539f08f5ec7ea6b9b530f225}{m\_nth}}(num\_threads < 2 ? 2 : num\_threads),}
+\DoxyCodeLine{00132       \mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\_started}}(0),}
+\DoxyCodeLine{00133       \mbox{\hyperlink{classThreadPool_a96dce41bded03949a51ff92e365a127b}{m\_ths}}(\textcolor{keyword}{new} pthread\_t[\mbox{\hyperlink{classThreadPool_a8f61b969539f08f5ec7ea6b9b530f225}{m\_nth}}]\{0\}),}
+\DoxyCodeLine{00134       \mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\_fstop}}(0),}
+\DoxyCodeLine{00135       \mbox{\hyperlink{classThreadPool_a7070707fff91f286121661fe6fd31ff5}{m\_faccept}}(0) \{\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classThreadPool_a8af7ebd9779dcab6e0a48f80e8962d08}\label{classThreadPool_a8af7ebd9779dcab6e0a48f80e8962d08}} 
+\index{ThreadPool@{ThreadPool}!ThreadPool@{ThreadPool}}
+\index{ThreadPool@{ThreadPool}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{ThreadPool()}{ThreadPool()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily Thread\+Pool\+::\+Thread\+Pool (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classThreadPool}{Thread\+Pool}} \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{classThreadPool_ad1bbb23b57e3ae24cdc7df015c49fba1}\label{classThreadPool_ad1bbb23b57e3ae24cdc7df015c49fba1}} 
+\index{ThreadPool@{ThreadPool}!ThreadPool@{ThreadPool}}
+\index{ThreadPool@{ThreadPool}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{ThreadPool()}{ThreadPool()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily Thread\+Pool\+::\+Thread\+Pool (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{classThreadPool_abacc418e6eec29811d72ff8321a7adc8}\label{classThreadPool_abacc418e6eec29811d72ff8321a7adc8}} 
+\index{ThreadPool@{ThreadPool}!````~ThreadPool@{$\sim$ThreadPool}}
+\index{````~ThreadPool@{$\sim$ThreadPool}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{$\sim$ThreadPool()}{~ThreadPool()}}
+{\footnotesize\ttfamily TP\+::$\sim$\+Thread\+Pool (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00233}{233}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00233                 \{}
+\DoxyCodeLine{00234   \mbox{\hyperlink{classThreadPool_a657bbb211644433615159cec5cd2acd5}{stop}}();}
+\DoxyCodeLine{00235   \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a1c8cc8a4ac6a00acdbaa911fc8553776}{clear}}();}
+\DoxyCodeLine{00236   \textcolor{keyword}{delete}[] \mbox{\hyperlink{classThreadPool_a96dce41bded03949a51ff92e365a127b}{m\_ths}};}
+\DoxyCodeLine{00237   pthread\_mutex\_destroy(\&\mbox{\hyperlink{classThreadPool_a502e221e28781edead3ca735cf7f61df}{s\_mtx}});}
+\DoxyCodeLine{00238 \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classThreadPool_a96cabae5dcc0358c6df3e303cf369456}\label{classThreadPool_a96cabae5dcc0358c6df3e303cf369456}} 
+\index{ThreadPool@{ThreadPool}!add@{add}}
+\index{add@{add}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void TP\+::add (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{qid,  }\item[{void($\ast$)(void $\ast$)}]{nfn,  }\item[{void $\ast$}]{arg }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00169}{169}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00169                                                         \{}
+\DoxyCodeLine{00170   \textcolor{keywordflow}{if} (\mbox{\hyperlink{classThreadPool_a7070707fff91f286121661fe6fd31ff5}{m\_faccept}} == 0) \{}
+\DoxyCodeLine{00171     \textcolor{keywordflow}{throw} std::logic\_error(\textcolor{stringliteral}{"{}threadpool already closed"{}});}
+\DoxyCodeLine{00172   \}}
+\DoxyCodeLine{00173   \textcolor{keywordflow}{if} (nfn == \textcolor{keyword}{nullptr}) \{}
+\DoxyCodeLine{00174     \textcolor{keywordflow}{throw} std::logic\_error(\textcolor{stringliteral}{"{}function pointer cannot be null"{}});}
+\DoxyCodeLine{00175   \}}
+\DoxyCodeLine{00176   \textcolor{keywordtype}{bool} failed = \textcolor{keyword}{false};}
+\DoxyCodeLine{00177   pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00178   \textcolor{keywordflow}{try} \{}
+\DoxyCodeLine{00179     \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a53856721537e7f73f9423474622f18b6}{push}}(qid, nfn, arg);}
+\DoxyCodeLine{00180   \} \textcolor{keywordflow}{catch} (\textcolor{keyword}{const} std::out\_of\_range\& e) \{}
+\DoxyCodeLine{00181     failed = \textcolor{keyword}{true};}
+\DoxyCodeLine{00182   \}}
+\DoxyCodeLine{00183   pthread\_cond\_signal(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}});}
+\DoxyCodeLine{00184   pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00185   \textcolor{keywordflow}{if} (failed) \{}
+\DoxyCodeLine{00186     \textcolor{keywordflow}{throw} std::out\_of\_range(\textcolor{stringliteral}{"{}queue not found"{}});}
+\DoxyCodeLine{00187   \}}
+\DoxyCodeLine{00188 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classThreadPool_a98fa999bd2f502ff445a3d5b3e96e808}\label{classThreadPool_a98fa999bd2f502ff445a3d5b3e96e808}} 
+\index{ThreadPool@{ThreadPool}!add@{add}}
+\index{add@{add}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void TP\+::add (\begin{DoxyParamCaption}\item[{void($\ast$)(void $\ast$)}]{nfn,  }\item[{void $\ast$}]{arg }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00189}{189}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00189                                           \{}
+\DoxyCodeLine{00190   \mbox{\hyperlink{classThreadPool_a96cabae5dcc0358c6df3e303cf369456}{add}}(0, nfn, arg);  \textcolor{comment}{// Agregar a la cola por defecto}}
+\DoxyCodeLine{00191 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classThreadPool_a880109c459faf086a39d4406c43425ec}\label{classThreadPool_a880109c459faf086a39d4406c43425ec}} 
+\index{ThreadPool@{ThreadPool}!empty@{empty}}
+\index{empty@{empty}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{empty()}{empty()}}
+{\footnotesize\ttfamily bool TP\+::empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00218}{218}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00218 \{ \textcolor{keywordflow}{return} \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35906460669445f515a231c0a2622128}{empty}}(); \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classThreadPool_a53b794c6101360ebfe6a8d903ba73298}\label{classThreadPool_a53b794c6101360ebfe6a8d903ba73298}} 
+\index{ThreadPool@{ThreadPool}!init@{init}}
+\index{init@{init}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily void TP\+::init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00137}{137}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00137               \{}
+\DoxyCodeLine{00138   \textcolor{keywordflow}{if} (\mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\_started}} != 0) \{}
+\DoxyCodeLine{00139     \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00140   \}}
+\DoxyCodeLine{00141   \mbox{\hyperlink{classThreadPool_a7070707fff91f286121661fe6fd31ff5}{m\_faccept}} = 1;}
+\DoxyCodeLine{00142   \mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\_fstop}} = 0;}
+\DoxyCodeLine{00143   pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_a502e221e28781edead3ca735cf7f61df}{s\_mtx}});}
+\DoxyCodeLine{00144   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < \mbox{\hyperlink{classThreadPool_a8f61b969539f08f5ec7ea6b9b530f225}{m\_nth}}; ++i) \{}
+\DoxyCodeLine{00145     pthread\_create(\&\mbox{\hyperlink{classThreadPool_a96dce41bded03949a51ff92e365a127b}{m\_ths}}[i], \textcolor{keyword}{nullptr}, \mbox{\hyperlink{classThreadPool_a2fe186e06ccf4514f47f9b462ae9183f}{thread\_entry}}, \textcolor{keyword}{this});}
+\DoxyCodeLine{00146     ++\mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\_started}};}
+\DoxyCodeLine{00147   \}}
+\DoxyCodeLine{00148   pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_a502e221e28781edead3ca735cf7f61df}{s\_mtx}});}
+\DoxyCodeLine{00149 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classThreadPool_a0c4c19237914ccb2bebe50b4415b3225}\label{classThreadPool_a0c4c19237914ccb2bebe50b4415b3225}} 
+\index{ThreadPool@{ThreadPool}!new\_queue@{new\_queue}}
+\index{new\_queue@{new\_queue}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{new\_queue()}{new\_queue()}}
+{\footnotesize\ttfamily void TP\+::new\+\_\+queue (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{qid,  }\item[{uint32\+\_\+t}]{cnt }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00192}{192}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00192                                              \{}
+\DoxyCodeLine{00193   pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00194   \textcolor{keywordflow}{try} \{}
+\DoxyCodeLine{00195     \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a54cd376b52fb0d3062f32125562fc683}{new\_queue}}(qid, cnt);}
+\DoxyCodeLine{00196   \} \textcolor{keywordflow}{catch} (\textcolor{keyword}{const} std::out\_of\_range\& e) \{}
+\DoxyCodeLine{00197     pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00198     \textcolor{keywordflow}{throw} e;}
+\DoxyCodeLine{00199   \}}
+\DoxyCodeLine{00200   pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00201 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classThreadPool_afec5f97d2b512da75aa10897ef12a2a8}\label{classThreadPool_afec5f97d2b512da75aa10897ef12a2a8}} 
+\index{ThreadPool@{ThreadPool}!operator=@{operator=}}
+\index{operator=@{operator=}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classThreadPool}{Thread\+Pool}} \& Thread\+Pool\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classThreadPool}{Thread\+Pool}} \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{classThreadPool_ad979aa170c8c04f5fb5f1d941ef9d5a2}\label{classThreadPool_ad979aa170c8c04f5fb5f1d941ef9d5a2}} 
+\index{ThreadPool@{ThreadPool}!operator=@{operator=}}
+\index{operator=@{operator=}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classThreadPool}{Thread\+Pool}} \& Thread\+Pool\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{classThreadPool_a585a0a22debad10c620f104b32a9bd2a}\label{classThreadPool_a585a0a22debad10c620f104b32a9bd2a}} 
+\index{ThreadPool@{ThreadPool}!remove\_queue@{remove\_queue}}
+\index{remove\_queue@{remove\_queue}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{remove\_queue()}{remove\_queue()}}
+{\footnotesize\ttfamily void TP\+::remove\+\_\+queue (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{qid }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00202}{202}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00202                                   \{}
+\DoxyCodeLine{00203   \textcolor{keywordflow}{if} (qid != 0) \{}
+\DoxyCodeLine{00204     \textcolor{keywordtype}{bool} failed = \textcolor{keyword}{false};}
+\DoxyCodeLine{00205     pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00206     \textcolor{keywordflow}{try} \{}
+\DoxyCodeLine{00207       \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a6808e9cb9a98710487d995fbf61bb8d8}{remove\_queue}}(qid);}
+\DoxyCodeLine{00208     \} \textcolor{keywordflow}{catch} (\textcolor{keyword}{const} std::out\_of\_range\& e) \{}
+\DoxyCodeLine{00209       failed = \textcolor{keyword}{true};}
+\DoxyCodeLine{00210     \}}
+\DoxyCodeLine{00211     pthread\_cond\_signal(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}});}
+\DoxyCodeLine{00212     pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00213     \textcolor{keywordflow}{if} (failed) \{}
+\DoxyCodeLine{00214       \textcolor{keywordflow}{throw} std::out\_of\_range(\textcolor{stringliteral}{"{}queue not found"{}});}
+\DoxyCodeLine{00215     \}}
+\DoxyCodeLine{00216   \}}
+\DoxyCodeLine{00217 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classThreadPool_a657bbb211644433615159cec5cd2acd5}\label{classThreadPool_a657bbb211644433615159cec5cd2acd5}} 
+\index{ThreadPool@{ThreadPool}!stop@{stop}}
+\index{stop@{stop}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{stop()}{stop()}}
+{\footnotesize\ttfamily void TP\+::stop (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00150}{150}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00150               \{}
+\DoxyCodeLine{00151   \textcolor{keywordflow}{if} (\mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\_started}} == 0) \{}
+\DoxyCodeLine{00152     \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00153   \}}
+\DoxyCodeLine{00154   \mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\_fstop}} = 0;}
+\DoxyCodeLine{00155   \mbox{\hyperlink{classThreadPool_a7070707fff91f286121661fe6fd31ff5}{m\_faccept}} = 0;}
+\DoxyCodeLine{00156   \mbox{\hyperlink{classThreadPool_ab6f53c8947ea629b3ef5888735b8e9fc}{wait\_empty}}();}
+\DoxyCodeLine{00157 }
+\DoxyCodeLine{00158   pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00159   \mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\_fstop}} = 1;}
+\DoxyCodeLine{00160   pthread\_cond\_broadcast(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}});}
+\DoxyCodeLine{00161   pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00162   \textcolor{comment}{// Detener los hilos}}
+\DoxyCodeLine{00163   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < \mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\_started}}; ++i) \{}
+\DoxyCodeLine{00164     pthread\_join(\mbox{\hyperlink{classThreadPool_a96dce41bded03949a51ff92e365a127b}{m\_ths}}[i], \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00165   \}}
+\DoxyCodeLine{00166   \mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\_started}} = 0;}
+\DoxyCodeLine{00167   \mbox{\hyperlink{classThreadPool_a8f61b969539f08f5ec7ea6b9b530f225}{m\_nth}} = 0;}
+\DoxyCodeLine{00168 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classThreadPool_a2fe186e06ccf4514f47f9b462ae9183f}\label{classThreadPool_a2fe186e06ccf4514f47f9b462ae9183f}} 
+\index{ThreadPool@{ThreadPool}!thread\_entry@{thread\_entry}}
+\index{thread\_entry@{thread\_entry}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{thread\_entry()}{thread\_entry()}}
+{\footnotesize\ttfamily void $\ast$ TP\+::thread\+\_\+entry (\begin{DoxyParamCaption}\item[{void $\ast$}]{arg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00265}{265}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00265                                 \{}
+\DoxyCodeLine{00266   \textcolor{keyword}{auto}* \mbox{\hyperlink{low__saurion_8h_a5ee7fcc0cfde456201a7c8d99dd20042}{pool}} = \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{classThreadPool}{TP}}*\textcolor{keyword}{>}(arg);}
+\DoxyCodeLine{00267   \mbox{\hyperlink{low__saurion_8h_a5ee7fcc0cfde456201a7c8d99dd20042}{pool}}-\/>\mbox{\hyperlink{classThreadPool_a7ca9b8d1f4f0bf4c9bc7315c1aa230e9}{thread\_worker}}();}
+\DoxyCodeLine{00268   \textcolor{keywordflow}{return} \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00269 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classThreadPool_a7ca9b8d1f4f0bf4c9bc7315c1aa230e9}\label{classThreadPool_a7ca9b8d1f4f0bf4c9bc7315c1aa230e9}} 
+\index{ThreadPool@{ThreadPool}!thread\_worker@{thread\_worker}}
+\index{thread\_worker@{thread\_worker}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{thread\_worker()}{thread\_worker()}}
+{\footnotesize\ttfamily void TP\+::thread\+\_\+worker (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00240}{240}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00240                        \{}
+\DoxyCodeLine{00241   \textcolor{comment}{// Lógica del trabajador del hilo}}
+\DoxyCodeLine{00242   uint32\_t qid = 0;}
+\DoxyCodeLine{00243   \textcolor{keywordflow}{while} (\mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\_fstop}} == 0) \{}
+\DoxyCodeLine{00244     \textcolor{comment}{// Buscar una tarea para ejecutar}}
+\DoxyCodeLine{00245     \textcolor{keywordflow}{try} \{}
+\DoxyCodeLine{00246       pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00247       \mbox{\hyperlink{structTask}{Task}}* task = \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a3b819715f6e4d8fff273c76200214fb8}{front}}(qid);}
+\DoxyCodeLine{00248       pthread\_cond\_signal(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}});}
+\DoxyCodeLine{00249       pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00250       \textcolor{keywordflow}{try} \{}
+\DoxyCodeLine{00251         task-\/>\mbox{\hyperlink{structTask_adc420632142dc624b207d1b6bbec8c6c}{function}}(task-\/>\mbox{\hyperlink{structTask_ae8fb524e61bb27a40a337fd5ac3c623e}{argument}});}
+\DoxyCodeLine{00252       \} \textcolor{keywordflow}{catch} (...) \{}
+\DoxyCodeLine{00253       \}}
+\DoxyCodeLine{00254       \textcolor{keyword}{delete} task;  \textcolor{comment}{// TODO delete task}}
+\DoxyCodeLine{00255       pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00256       \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a3c4b30b004b4706c7e7b6251f8a4ae6e}{pop}}(qid);}
+\DoxyCodeLine{00257       pthread\_cond\_broadcast(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}});}
+\DoxyCodeLine{00258       pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00259     \} \textcolor{keywordflow}{catch} (\textcolor{keyword}{const} std::out\_of\_range\& e) \{}
+\DoxyCodeLine{00260       pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00261       \mbox{\hyperlink{classThreadPool_a4e1ac7df975273059c4bac975f5570f9}{wait\_closeable}}();}
+\DoxyCodeLine{00262     \}}
+\DoxyCodeLine{00263   \}}
+\DoxyCodeLine{00264 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classThreadPool_a4e1ac7df975273059c4bac975f5570f9}\label{classThreadPool_a4e1ac7df975273059c4bac975f5570f9}} 
+\index{ThreadPool@{ThreadPool}!wait\_closeable@{wait\_closeable}}
+\index{wait\_closeable@{wait\_closeable}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{wait\_closeable()}{wait\_closeable()}}
+{\footnotesize\ttfamily void TP\+::wait\+\_\+closeable (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00219}{219}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00219                         \{}
+\DoxyCodeLine{00220   pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00221   \textcolor{keywordflow}{while} (\mbox{\hyperlink{classThreadPool_a880109c459faf086a39d4406c43425ec}{empty}}() \&\& \mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\_fstop}} == 0) \{}
+\DoxyCodeLine{00222     pthread\_cond\_wait(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}}, \&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00223   \}}
+\DoxyCodeLine{00224   pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00225 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classThreadPool_ab6f53c8947ea629b3ef5888735b8e9fc}\label{classThreadPool_ab6f53c8947ea629b3ef5888735b8e9fc}} 
+\index{ThreadPool@{ThreadPool}!wait\_empty@{wait\_empty}}
+\index{wait\_empty@{wait\_empty}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{wait\_empty()}{wait\_empty()}}
+{\footnotesize\ttfamily void TP\+::wait\+\_\+empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8cpp_source_l00226}{226}} of file \mbox{\hyperlink{threadpool_8cpp_source}{threadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00226                     \{}
+\DoxyCodeLine{00227   pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00228   \textcolor{keywordflow}{while} (!\mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35906460669445f515a231c0a2622128}{empty}}()) \{}
+\DoxyCodeLine{00229     pthread\_cond\_wait(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}}, \&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00230   \}}
+\DoxyCodeLine{00231   pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{00232 \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classThreadPool_a7070707fff91f286121661fe6fd31ff5}\label{classThreadPool_a7070707fff91f286121661fe6fd31ff5}} 
+\index{ThreadPool@{ThreadPool}!m\_faccept@{m\_faccept}}
+\index{m\_faccept@{m\_faccept}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{m\_faccept}{m\_faccept}}
+{\footnotesize\ttfamily volatile sig\+\_\+atomic\+\_\+t Thread\+Pool\+::m\+\_\+faccept\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00106}{106}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+\mbox{\Hypertarget{classThreadPool_a724835a9447646d43b01bd9fe2734890}\label{classThreadPool_a724835a9447646d43b01bd9fe2734890}} 
+\index{ThreadPool@{ThreadPool}!m\_fstop@{m\_fstop}}
+\index{m\_fstop@{m\_fstop}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{m\_fstop}{m\_fstop}}
+{\footnotesize\ttfamily volatile sig\+\_\+atomic\+\_\+t Thread\+Pool\+::m\+\_\+fstop\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00105}{105}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+\mbox{\Hypertarget{classThreadPool_a8f61b969539f08f5ec7ea6b9b530f225}\label{classThreadPool_a8f61b969539f08f5ec7ea6b9b530f225}} 
+\index{ThreadPool@{ThreadPool}!m\_nth@{m\_nth}}
+\index{m\_nth@{m\_nth}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{m\_nth}{m\_nth}}
+{\footnotesize\ttfamily size\+\_\+t Thread\+Pool\+::m\+\_\+nth\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00098}{98}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+\mbox{\Hypertarget{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}\label{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}} 
+\index{ThreadPool@{ThreadPool}!m\_q\_cond@{m\_q\_cond}}
+\index{m\_q\_cond@{m\_q\_cond}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{m\_q\_cond}{m\_q\_cond}}
+{\footnotesize\ttfamily pthread\+\_\+cond\+\_\+t Thread\+Pool\+::m\+\_\+q\+\_\+cond = PTHREAD\+\_\+\+COND\+\_\+\+INITIALIZER\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00102}{102}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+\mbox{\Hypertarget{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}\label{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}} 
+\index{ThreadPool@{ThreadPool}!m\_q\_mtx@{m\_q\_mtx}}
+\index{m\_q\_mtx@{m\_q\_mtx}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{m\_q\_mtx}{m\_q\_mtx}}
+{\footnotesize\ttfamily pthread\+\_\+mutex\+\_\+t Thread\+Pool\+::m\+\_\+q\+\_\+mtx = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00101}{101}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+\mbox{\Hypertarget{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}\label{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}} 
+\index{ThreadPool@{ThreadPool}!m\_queues@{m\_queues}}
+\index{m\_queues@{m\_queues}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{m\_queues}{m\_queues}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{Async\+Multi\+Queue}} Thread\+Pool\+::m\+\_\+queues\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00100}{100}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+\mbox{\Hypertarget{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}\label{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}} 
+\index{ThreadPool@{ThreadPool}!m\_started@{m\_started}}
+\index{m\_started@{m\_started}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{m\_started}{m\_started}}
+{\footnotesize\ttfamily size\+\_\+t Thread\+Pool\+::m\+\_\+started\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00099}{99}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+\mbox{\Hypertarget{classThreadPool_a96dce41bded03949a51ff92e365a127b}\label{classThreadPool_a96dce41bded03949a51ff92e365a127b}} 
+\index{ThreadPool@{ThreadPool}!m\_ths@{m\_ths}}
+\index{m\_ths@{m\_ths}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{m\_ths}{m\_ths}}
+{\footnotesize\ttfamily pthread\+\_\+t$\ast$ Thread\+Pool\+::m\+\_\+ths\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00104}{104}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+\mbox{\Hypertarget{classThreadPool_a502e221e28781edead3ca735cf7f61df}\label{classThreadPool_a502e221e28781edead3ca735cf7f61df}} 
+\index{ThreadPool@{ThreadPool}!s\_mtx@{s\_mtx}}
+\index{s\_mtx@{s\_mtx}!ThreadPool@{ThreadPool}}
+\doxysubsubsection{\texorpdfstring{s\_mtx}{s\_mtx}}
+{\footnotesize\ttfamily pthread\+\_\+mutex\+\_\+t TP\+::s\+\_\+mtx = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [private]}}
+
+
+
+Definition at line \mbox{\hyperlink{threadpool_8hpp_source_l00103}{103}} of file \mbox{\hyperlink{threadpool_8hpp_source}{threadpool.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+\_\+\+\_\+w/saurion/saurion/include/\mbox{\hyperlink{threadpool_8hpp}{threadpool.\+hpp}}\item 
+/\+\_\+\+\_\+w/saurion/saurion/src/\mbox{\hyperlink{threadpool_8cpp}{threadpool.\+cpp}}\end{DoxyCompactItemize}

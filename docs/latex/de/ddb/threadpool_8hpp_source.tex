@@ -1,0 +1,118 @@
+\hypertarget{threadpool_8hpp_source}{}\doxysection{threadpool.\+hpp}
+\label{threadpool_8hpp_source}\index{/\_\_w/saurion/saurion/include/threadpool.hpp@{/\_\_w/saurion/saurion/include/threadpool.hpp}}
+\mbox{\hyperlink{threadpool_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00001}00001 \textcolor{preprocessor}{\#ifndef THREADPOOL\_HPP}}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00002}00002 \textcolor{preprocessor}{\#define THREADPOOL\_HPP}}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00003}00003 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00004}00004 \textcolor{comment}{// Estructura para representar una tarea}}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00005}00005 \textcolor{preprocessor}{\#include <bits/types/sig\_atomic\_t.h>}}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00006}00006 \textcolor{preprocessor}{\#include <pthread.h>}}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00007}00007 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00008}00008 \textcolor{preprocessor}{\#include <cstdint>}}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00009}00009 \textcolor{preprocessor}{\#include <queue>}}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00010}00010 \textcolor{preprocessor}{\#include <unordered\_map>}}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00011}00011 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00012}\mbox{\hyperlink{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6a2a4d3752e9aa5f28fc2dacb0f948de06}{00012}} \textcolor{keyword}{enum} \mbox{\hyperlink{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6}{StopFlags}} \{ \mbox{\hyperlink{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6ac09d7c5a2161fc65c10f96ed5a46dc30}{KINDLY}} = 0x01, \mbox{\hyperlink{threadpool_8hpp_a563f3adc3406990c650e8cc2efdc63d6a2a4d3752e9aa5f28fc2dacb0f948de06}{FORCE}} = 0x02 \};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00013}00013 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00014}\mbox{\hyperlink{structTask}{00014}} \textcolor{keyword}{struct }\mbox{\hyperlink{structTask}{Task}} \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00015}\mbox{\hyperlink{structTask_adc420632142dc624b207d1b6bbec8c6c}{00015}}   void (*\mbox{\hyperlink{structTask_adc420632142dc624b207d1b6bbec8c6c}{function}})(\textcolor{keywordtype}{void}*);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00016}\mbox{\hyperlink{structTask_ae8fb524e61bb27a40a337fd5ac3c623e}{00016}}   \textcolor{keywordtype}{void}* \mbox{\hyperlink{structTask_ae8fb524e61bb27a40a337fd5ac3c623e}{argument}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00017}00017 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00018}00018   \textcolor{keyword}{explicit} \mbox{\hyperlink{structTask_a3dbf292367317f66f00d90d5a6db7feb}{Task}}(\textcolor{keywordtype}{void} (*nfn)(\textcolor{keywordtype}{void}*), \textcolor{keywordtype}{void}* narg);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00019}\mbox{\hyperlink{structTask_a6f23dc08d0742b7d482313301b485dfe}{00019}}   \mbox{\hyperlink{structTask_a6f23dc08d0742b7d482313301b485dfe}{Task}}(\textcolor{keyword}{const} \mbox{\hyperlink{structTask}{Task}}\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00020}\mbox{\hyperlink{structTask_ae146c98551f244f62b93bc7b4e334580}{00020}}   \mbox{\hyperlink{structTask_ae146c98551f244f62b93bc7b4e334580}{Task}}(\mbox{\hyperlink{structTask}{Task}}\&\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00021}\mbox{\hyperlink{structTask_a28266635b1b105e481d703eaffb15666}{00021}}   \mbox{\hyperlink{structTask}{Task}}\& \mbox{\hyperlink{structTask_a28266635b1b105e481d703eaffb15666}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{structTask}{Task}}\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00022}\mbox{\hyperlink{structTask_a9ea72b7f2d21107b03c5b55f250fd511}{00022}}   \mbox{\hyperlink{structTask}{Task}}\& \mbox{\hyperlink{structTask_a9ea72b7f2d21107b03c5b55f250fd511}{operator=}}(\mbox{\hyperlink{structTask}{Task}}\&\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00023}\mbox{\hyperlink{structTask_aa96ed750d563ddff7389afcb9ae5d0be}{00023}}   \mbox{\hyperlink{structTask_aa96ed750d563ddff7389afcb9ae5d0be}{\string~Task}}() = \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00024}00024 \};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00025}00025 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00026}00026 \textcolor{comment}{// Clase ThreadPool}}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00027}\mbox{\hyperlink{classThreadPool}{00027}} \textcolor{keyword}{class }\mbox{\hyperlink{classThreadPool}{ThreadPool}} \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00028}00028  \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00029}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{00029}}   \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{AsyncQueue}} \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00030}00030    \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00031}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}{00031}}     std::queue<Task*> \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}{m\_queue}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00032}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a013dbc0b2337c125a3c7180b53282eff}{00032}}     uint32\_t \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a013dbc0b2337c125a3c7180b53282eff}{m\_max}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00033}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a144b01235cf14228722e03b6dbb4e2a0}{00033}}     uint32\_t \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a144b01235cf14228722e03b6dbb4e2a0}{m\_cnt}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00034}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{00034}}     pthread\_mutex\_t \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}} = PTHREAD\_MUTEX\_INITIALIZER;}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00035}00035 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00036}00036    \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00037}00037     \textcolor{keyword}{explicit} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_aa26d62e8948391895058149d5300fec1}{AsyncQueue}}(uint32\_t cnt);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00038}00038     \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a00f850d0a2d43cc77e9031490759a9b6}{\string~AsyncQueue}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00039}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a206e10b39c26a3f7c435dbfb74bf50e1}{00039}}     \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a206e10b39c26a3f7c435dbfb74bf50e1}{AsyncQueue}}(\textcolor{keyword}{const} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{AsyncQueue}}\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00040}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a04cf023b930124ddee0978b17f53f027}{00040}}     \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{AsyncQueue}}\& \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a04cf023b930124ddee0978b17f53f027}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{AsyncQueue}}\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00041}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ac4412663b25de78fc191e8dad5213273}{00041}}     \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ac4412663b25de78fc191e8dad5213273}{AsyncQueue}}(\mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{AsyncQueue}}\&\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00042}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a260c8c88e2700020be447b7e4a837d61}{00042}}     \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{AsyncQueue}}\& \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a260c8c88e2700020be447b7e4a837d61}{operator=}}(\mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{AsyncQueue}}\&\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00043}00043 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00044}00044     \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae2ef0870e03b76660ddbc7a53d306666}{push}}(\mbox{\hyperlink{structTask}{Task}}* task);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00045}00045     \mbox{\hyperlink{structTask}{Task}}* \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a0cd344b0df862d2901a909cb8d8371e2}{front}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00046}00046     \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a51a58ceac4f25ddabaf1aecebe0f0bed}{pop}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00047}00047 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00048}00048     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a5c60e2a1afc2f18224aa5f8af8b6cea8}{empty}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00049}\mbox{\hyperlink{classThreadPool_a4a855bc11e3dc4832c0f9125b178365e}{00049}}   \} \mbox{\hyperlink{classThreadPool_a4a855bc11e3dc4832c0f9125b178365e}{AsyncQueue}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00050}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{00050}}   \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{AsyncMultiQueue}} \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00051}00051    \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00052}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{00052}}     std::unordered\_map<uint32\_t, AsyncQueue*> \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00053}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a924b3c4d16043fc4c3883c139cb489b3}{00053}}     std::unordered\_map<uint32\_t, AsyncQueue*>::iterator \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a924b3c4d16043fc4c3883c139cb489b3}{m\_it}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00054}00054 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00055}00055    \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00056}00056     \textcolor{keyword}{explicit} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_ac074507a64932a17709c5c44a91a4d16}{AsyncMultiQueue}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00057}00057     \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_ab7186e26efb28754f2dd0834e91e33b1}{\string~AsyncMultiQueue}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00058}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a910aba2e46df045b912eacab8521d092}{00058}}     \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a910aba2e46df045b912eacab8521d092}{AsyncMultiQueue}}(\textcolor{keyword}{const} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{AsyncMultiQueue}}\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00059}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a0c2644007a183adca4bf80fdee98b1b3}{00059}}     \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{AsyncMultiQueue}}\& \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a0c2644007a183adca4bf80fdee98b1b3}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{AsyncMultiQueue}}\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00060}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_aa9d6e2938cfadd6af41a6bc2a5ac28fb}{00060}}     \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_aa9d6e2938cfadd6af41a6bc2a5ac28fb}{AsyncMultiQueue}}(\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{AsyncMultiQueue}}\&\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00061}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a2150c6617322d2a68934fecde58363f4}{00061}}     \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{AsyncMultiQueue}}\& \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a2150c6617322d2a68934fecde58363f4}{operator=}}(\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{AsyncMultiQueue}}\&\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00062}00062 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00063}00063     \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a54cd376b52fb0d3062f32125562fc683}{new\_queue}}(uint32\_t qid, uint32\_t cnt);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00064}00064     \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a6808e9cb9a98710487d995fbf61bb8d8}{remove\_queue}}(uint32\_t qid);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00065}00065 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00066}00066     \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a53856721537e7f73f9423474622f18b6}{push}}(uint32\_t qid, \textcolor{keywordtype}{void} (*nfn)(\textcolor{keywordtype}{void}*), \textcolor{keywordtype}{void}* arg);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00067}00067     \mbox{\hyperlink{structTask}{Task}}* \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a3b819715f6e4d8fff273c76200214fb8}{front}}(uint32\_t\& qid);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00068}00068     \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a3c4b30b004b4706c7e7b6251f8a4ae6e}{pop}}(uint32\_t qid);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00069}00069     \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a1c8cc8a4ac6a00acdbaa911fc8553776}{clear}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00070}00070 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00071}00071     \textcolor{keywordtype}{bool} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35906460669445f515a231c0a2622128}{empty}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00072}\mbox{\hyperlink{classThreadPool_aa0dc8853a32e5305874fbe050dcf24bb}{00072}}   \} \mbox{\hyperlink{classThreadPool_aa0dc8853a32e5305874fbe050dcf24bb}{AsyncMultiQueue}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00073}00073 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00074}00074  \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00075}00075   \mbox{\hyperlink{classThreadPool_ad2e8fa3d824829b284bba171e03dcf95}{ThreadPool}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00076}00076   \textcolor{keyword}{explicit} \mbox{\hyperlink{classThreadPool_ad2e8fa3d824829b284bba171e03dcf95}{ThreadPool}}(\textcolor{keywordtype}{size\_t} num\_threads);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00077}\mbox{\hyperlink{classThreadPool_a8af7ebd9779dcab6e0a48f80e8962d08}{00077}}   \mbox{\hyperlink{classThreadPool_a8af7ebd9779dcab6e0a48f80e8962d08}{ThreadPool}}(\textcolor{keyword}{const} \mbox{\hyperlink{classThreadPool}{ThreadPool}}\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00078}\mbox{\hyperlink{classThreadPool_afec5f97d2b512da75aa10897ef12a2a8}{00078}}   \mbox{\hyperlink{classThreadPool}{ThreadPool}}\& \mbox{\hyperlink{classThreadPool_afec5f97d2b512da75aa10897ef12a2a8}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classThreadPool}{ThreadPool}}\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00079}\mbox{\hyperlink{classThreadPool_ad1bbb23b57e3ae24cdc7df015c49fba1}{00079}}   \mbox{\hyperlink{classThreadPool_ad1bbb23b57e3ae24cdc7df015c49fba1}{ThreadPool}}(\mbox{\hyperlink{classThreadPool}{ThreadPool}}\&\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00080}\mbox{\hyperlink{classThreadPool_ad979aa170c8c04f5fb5f1d941ef9d5a2}{00080}}   \mbox{\hyperlink{classThreadPool}{ThreadPool}}\& \mbox{\hyperlink{classThreadPool_ad979aa170c8c04f5fb5f1d941ef9d5a2}{operator=}}(\mbox{\hyperlink{classThreadPool}{ThreadPool}}\&\&) = \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00081}00081 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00082}00082   \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a53b794c6101360ebfe6a8d903ba73298}{init}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00083}00083   \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a657bbb211644433615159cec5cd2acd5}{stop}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00084}00084   \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a96cabae5dcc0358c6df3e303cf369456}{add}}(uint32\_t qid, \textcolor{keywordtype}{void} (*nfn)(\textcolor{keywordtype}{void}*), \textcolor{keywordtype}{void}* arg);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00085}00085   \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a96cabae5dcc0358c6df3e303cf369456}{add}}(\textcolor{keywordtype}{void} (*nfn)(\textcolor{keywordtype}{void}*), \textcolor{keywordtype}{void}* arg);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00086}00086   \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a0c4c19237914ccb2bebe50b4415b3225}{new\_queue}}(uint32\_t qid, uint32\_t cnt);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00087}00087   \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a585a0a22debad10c620f104b32a9bd2a}{remove\_queue}}(uint32\_t qid);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00088}00088   \textcolor{keywordtype}{bool} \mbox{\hyperlink{classThreadPool_a880109c459faf086a39d4406c43425ec}{empty}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00089}00089 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00090}00090  \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00091}00091   \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a4e1ac7df975273059c4bac975f5570f9}{wait\_closeable}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00092}00092 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00093}00093  \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00094}00094   \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_ab6f53c8947ea629b3ef5888735b8e9fc}{wait\_empty}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00095}00095   \mbox{\hyperlink{classThreadPool_abacc418e6eec29811d72ff8321a7adc8}{\string~ThreadPool}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00096}00096 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00097}00097  \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00098}\mbox{\hyperlink{classThreadPool_a8f61b969539f08f5ec7ea6b9b530f225}{00098}}   \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classThreadPool_a8f61b969539f08f5ec7ea6b9b530f225}{m\_nth}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00099}\mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{00099}}   \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\_started}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00100}\mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{00100}}   \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue}{AsyncMultiQueue}} \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00101}\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{00101}}   pthread\_mutex\_t \mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}} = PTHREAD\_MUTEX\_INITIALIZER;}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00102}\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{00102}}   pthread\_cond\_t \mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}} = PTHREAD\_COND\_INITIALIZER;}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00103}\mbox{\hyperlink{classThreadPool_a502e221e28781edead3ca735cf7f61df}{00103}}   \textcolor{keyword}{static} pthread\_mutex\_t \mbox{\hyperlink{classThreadPool_a502e221e28781edead3ca735cf7f61df}{s\_mtx}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00104}\mbox{\hyperlink{classThreadPool_a96dce41bded03949a51ff92e365a127b}{00104}}   pthread\_t* \mbox{\hyperlink{classThreadPool_a96dce41bded03949a51ff92e365a127b}{m\_ths}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00105}\mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{00105}}   \textcolor{keyword}{volatile} sig\_atomic\_t \mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\_fstop}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00106}\mbox{\hyperlink{classThreadPool_a7070707fff91f286121661fe6fd31ff5}{00106}}   \textcolor{keyword}{volatile} sig\_atomic\_t \mbox{\hyperlink{classThreadPool_a7070707fff91f286121661fe6fd31ff5}{m\_faccept}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00107}00107 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00108}00108   \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a7ca9b8d1f4f0bf4c9bc7315c1aa230e9}{thread\_worker}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00109}00109   \textcolor{keyword}{static} \textcolor{keywordtype}{void}* \mbox{\hyperlink{classThreadPool_a2fe186e06ccf4514f47f9b462ae9183f}{thread\_entry}}(\textcolor{keywordtype}{void}* arg);}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00110}00110 \};}
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00111}00111 }
+\DoxyCodeLine{\Hypertarget{threadpool_8hpp_source_l00112}00112 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

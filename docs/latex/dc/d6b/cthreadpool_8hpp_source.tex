@@ -1,0 +1,43 @@
+\hypertarget{cthreadpool_8hpp_source}{}\doxysection{cthreadpool.\+hpp}
+\label{cthreadpool_8hpp_source}\index{/\_\_w/saurion/saurion/include/cthreadpool.hpp@{/\_\_w/saurion/saurion/include/cthreadpool.hpp}}
+\mbox{\hyperlink{cthreadpool_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00001}00001 \textcolor{preprocessor}{\#ifndef THREADPOOL\_H}}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00002}00002 \textcolor{preprocessor}{\#define THREADPOOL\_H}}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00003}00003 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00004}00004 \textcolor{preprocessor}{\#ifdef \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00005}00005 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{threadpool_8hpp}{threadpool.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00006}00006 \textcolor{keyword}{extern} \textcolor{stringliteral}{"{}C"{}} \{}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00007}00007 \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00008}\mbox{\hyperlink{cthreadpool_8hpp_a41038e134a98ed33feac12f376a22a9d}{00008}} \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{classThreadPool}{ThreadPool}} \mbox{\hyperlink{classThreadPool}{ThreadPool}};}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00009}00009 \textcolor{preprocessor}{\#endif  }\textcolor{comment}{// \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00010}00010 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00011}00011 \mbox{\hyperlink{classThreadPool}{ThreadPool}} *\mbox{\hyperlink{cthreadpool_8hpp_a7050a8290c4fd93b7091f84097f4c1c0}{ThreadPool\_create}}(\textcolor{keywordtype}{size\_t} num\_threads);}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00012}00012 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00013}00013 \mbox{\hyperlink{classThreadPool}{ThreadPool}} *\mbox{\hyperlink{cthreadpool_8hpp_a165be899baeecc6cce412fb0ad6cd567}{ThreadPool\_create\_default}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00014}00014 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00015}00015 \textcolor{keywordtype}{void} \mbox{\hyperlink{cthreadpool_8hpp_a167313573a42e919a34b17a9cf533678}{ThreadPool\_init}}(\mbox{\hyperlink{classThreadPool}{ThreadPool}} *thp);}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00016}00016 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00017}00017 \textcolor{keywordtype}{void} \mbox{\hyperlink{cthreadpool_8hpp_a5817ccccd1c9723c682623093471e66d}{ThreadPool\_stop}}(\mbox{\hyperlink{classThreadPool}{ThreadPool}} *thp);}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00018}00018 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00019}00019 \textcolor{keywordtype}{void} \mbox{\hyperlink{cthreadpool_8hpp_a333f7837aa0b3c76bf7d8bf8b0eda6d7}{ThreadPool\_add}}(\mbox{\hyperlink{classThreadPool}{ThreadPool}} *thp, uint32\_t qid, \textcolor{keywordtype}{void} (*nfn)(\textcolor{keywordtype}{void} *), \textcolor{keywordtype}{void} *arg);}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00020}00020 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00021}00021 \textcolor{keywordtype}{void} \mbox{\hyperlink{cthreadpool_8hpp_a29da21779e6052eb5dea1707ef6e8fa8}{ThreadPool\_add\_default}}(\mbox{\hyperlink{classThreadPool}{ThreadPool}} *thp, \textcolor{keywordtype}{void} (*nfn)(\textcolor{keywordtype}{void} *), \textcolor{keywordtype}{void} *arg);}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00022}00022 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00023}00023 \textcolor{keywordtype}{void} \mbox{\hyperlink{cthreadpool_8hpp_a564a760e752a05884128a4b06fe8da90}{ThreadPool\_new\_queue}}(\mbox{\hyperlink{classThreadPool}{ThreadPool}} *thp, uint32\_t qid, uint32\_t cnt);}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00024}00024 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00025}00025 \textcolor{keywordtype}{void} \mbox{\hyperlink{cthreadpool_8hpp_ac36b3c08a8f71c070babada84b9c8dfb}{ThreadPool\_remove\_queue}}(\mbox{\hyperlink{classThreadPool}{ThreadPool}} *thp, uint32\_t qid);}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00026}00026 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00027}00027 \textcolor{keywordtype}{bool} \mbox{\hyperlink{cthreadpool_8hpp_a19f3ad52c883d0706e566f896e86c1c4}{ThreadPool\_empty}}(\mbox{\hyperlink{classThreadPool}{ThreadPool}} *thp);}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00028}00028 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00029}00029 \textcolor{keywordtype}{void} \mbox{\hyperlink{cthreadpool_8hpp_a69d71a6f02edfe47deb07aedf33c9d90}{ThreadPool\_wait\_empty}}(\mbox{\hyperlink{classThreadPool}{ThreadPool}} *thp);}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00030}00030 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00031}00031 \textcolor{keywordtype}{void} \mbox{\hyperlink{cthreadpool_8hpp_af203df90cae013853d5dde106517ae1d}{ThreadPool\_destroy}}(\mbox{\hyperlink{classThreadPool}{ThreadPool}} *thp);}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00032}00032 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00033}00033 \textcolor{preprocessor}{\#ifdef \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00034}00034 \}}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00035}00035 \textcolor{preprocessor}{\#endif  }\textcolor{comment}{// \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00036}00036 }
+\DoxyCodeLine{\Hypertarget{cthreadpool_8hpp_source_l00037}00037 \textcolor{preprocessor}{\#endif  }\textcolor{comment}{// !THREADPOOL\_H}}
+
+\end{DoxyCode}

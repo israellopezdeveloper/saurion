@@ -1,0 +1,198 @@
+\hypertarget{cthreadpool_8cpp}{}\doxysection{/\+\_\+\+\_\+w/saurion/saurion/src/cthreadpool.cpp File Reference}
+\label{cthreadpool_8cpp}\index{/\_\_w/saurion/saurion/src/cthreadpool.cpp@{/\_\_w/saurion/saurion/src/cthreadpool.cpp}}
+{\ttfamily \#include \char`\"{}cthreadpool.\+hpp\char`\"{}}\newline
+Include dependency graph for cthreadpool.\+cpp\+:
+% FIG 0
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$ \mbox{\hyperlink{cthreadpool_8cpp_a7050a8290c4fd93b7091f84097f4c1c0}{Thread\+Pool\+\_\+create}} (size\+\_\+t num\+\_\+threads)
+\item 
+\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$ \mbox{\hyperlink{cthreadpool_8cpp_a165be899baeecc6cce412fb0ad6cd567}{Thread\+Pool\+\_\+create\+\_\+default}} (void)
+\item 
+void \mbox{\hyperlink{cthreadpool_8cpp_a167313573a42e919a34b17a9cf533678}{Thread\+Pool\+\_\+init}} (\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$thp)
+\item 
+void \mbox{\hyperlink{cthreadpool_8cpp_a5817ccccd1c9723c682623093471e66d}{Thread\+Pool\+\_\+stop}} (\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$thp)
+\item 
+void \mbox{\hyperlink{cthreadpool_8cpp_a333f7837aa0b3c76bf7d8bf8b0eda6d7}{Thread\+Pool\+\_\+add}} (\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$thp, uint32\+\_\+t qid, void($\ast$nfn)(void $\ast$), void $\ast$arg)
+\item 
+void \mbox{\hyperlink{cthreadpool_8cpp_a29da21779e6052eb5dea1707ef6e8fa8}{Thread\+Pool\+\_\+add\+\_\+default}} (\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$thp, void($\ast$nfn)(void $\ast$), void $\ast$arg)
+\item 
+void \mbox{\hyperlink{cthreadpool_8cpp_a564a760e752a05884128a4b06fe8da90}{Thread\+Pool\+\_\+new\+\_\+queue}} (\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$thp, uint32\+\_\+t qid, uint32\+\_\+t cnt)
+\item 
+void \mbox{\hyperlink{cthreadpool_8cpp_ac36b3c08a8f71c070babada84b9c8dfb}{Thread\+Pool\+\_\+remove\+\_\+queue}} (\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$thp, uint32\+\_\+t qid)
+\item 
+bool \mbox{\hyperlink{cthreadpool_8cpp_a19f3ad52c883d0706e566f896e86c1c4}{Thread\+Pool\+\_\+empty}} (\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$thp)
+\item 
+void \mbox{\hyperlink{cthreadpool_8cpp_a69d71a6f02edfe47deb07aedf33c9d90}{Thread\+Pool\+\_\+wait\+\_\+empty}} (\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$thp)
+\item 
+void \mbox{\hyperlink{cthreadpool_8cpp_af203df90cae013853d5dde106517ae1d}{Thread\+Pool\+\_\+destroy}} (\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$thp)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{cthreadpool_8cpp_a333f7837aa0b3c76bf7d8bf8b0eda6d7}\label{cthreadpool_8cpp_a333f7837aa0b3c76bf7d8bf8b0eda6d7}} 
+\index{cthreadpool.cpp@{cthreadpool.cpp}!ThreadPool\_add@{ThreadPool\_add}}
+\index{ThreadPool\_add@{ThreadPool\_add}!cthreadpool.cpp@{cthreadpool.cpp}}
+\doxysubsubsection{\texorpdfstring{ThreadPool\_add()}{ThreadPool\_add()}}
+{\footnotesize\ttfamily void Thread\+Pool\+\_\+add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$}]{thp,  }\item[{uint32\+\_\+t}]{qid,  }\item[{void($\ast$)(void $\ast$)}]{nfn,  }\item[{void $\ast$}]{arg }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cthreadpool_8cpp_source_l00011}{11}} of file \mbox{\hyperlink{cthreadpool_8cpp_source}{cthreadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00011 \{ thp-\/>\mbox{\hyperlink{classThreadPool_a96cabae5dcc0358c6df3e303cf369456}{add}}(qid, nfn, arg); \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{cthreadpool_8cpp_a29da21779e6052eb5dea1707ef6e8fa8}\label{cthreadpool_8cpp_a29da21779e6052eb5dea1707ef6e8fa8}} 
+\index{cthreadpool.cpp@{cthreadpool.cpp}!ThreadPool\_add\_default@{ThreadPool\_add\_default}}
+\index{ThreadPool\_add\_default@{ThreadPool\_add\_default}!cthreadpool.cpp@{cthreadpool.cpp}}
+\doxysubsubsection{\texorpdfstring{ThreadPool\_add\_default()}{ThreadPool\_add\_default()}}
+{\footnotesize\ttfamily void Thread\+Pool\+\_\+add\+\_\+default (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$}]{thp,  }\item[{void($\ast$)(void $\ast$)}]{nfn,  }\item[{void $\ast$}]{arg }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cthreadpool_8cpp_source_l00013}{13}} of file \mbox{\hyperlink{cthreadpool_8cpp_source}{cthreadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00013 \{ thp-\/>\mbox{\hyperlink{classThreadPool_a96cabae5dcc0358c6df3e303cf369456}{add}}(nfn, arg); \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{cthreadpool_8cpp_a7050a8290c4fd93b7091f84097f4c1c0}\label{cthreadpool_8cpp_a7050a8290c4fd93b7091f84097f4c1c0}} 
+\index{cthreadpool.cpp@{cthreadpool.cpp}!ThreadPool\_create@{ThreadPool\_create}}
+\index{ThreadPool\_create@{ThreadPool\_create}!cthreadpool.cpp@{cthreadpool.cpp}}
+\doxysubsubsection{\texorpdfstring{ThreadPool\_create()}{ThreadPool\_create()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$ Thread\+Pool\+\_\+create (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{num\+\_\+threads }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cthreadpool_8cpp_source_l00003}{3}} of file \mbox{\hyperlink{cthreadpool_8cpp_source}{cthreadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00003 \{ \textcolor{keywordflow}{return} \textcolor{keyword}{new} \mbox{\hyperlink{cthreadpool_8hpp_a41038e134a98ed33feac12f376a22a9d}{ThreadPool}}(num\_threads); \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{cthreadpool_8cpp_a165be899baeecc6cce412fb0ad6cd567}\label{cthreadpool_8cpp_a165be899baeecc6cce412fb0ad6cd567}} 
+\index{cthreadpool.cpp@{cthreadpool.cpp}!ThreadPool\_create\_default@{ThreadPool\_create\_default}}
+\index{ThreadPool\_create\_default@{ThreadPool\_create\_default}!cthreadpool.cpp@{cthreadpool.cpp}}
+\doxysubsubsection{\texorpdfstring{ThreadPool\_create\_default()}{ThreadPool\_create\_default()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$ Thread\+Pool\+\_\+create\+\_\+default (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cthreadpool_8cpp_source_l00005}{5}} of file \mbox{\hyperlink{cthreadpool_8cpp_source}{cthreadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00005 \{ \textcolor{keywordflow}{return} \textcolor{keyword}{new} \mbox{\hyperlink{cthreadpool_8hpp_a41038e134a98ed33feac12f376a22a9d}{ThreadPool}}(); \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{cthreadpool_8cpp_af203df90cae013853d5dde106517ae1d}\label{cthreadpool_8cpp_af203df90cae013853d5dde106517ae1d}} 
+\index{cthreadpool.cpp@{cthreadpool.cpp}!ThreadPool\_destroy@{ThreadPool\_destroy}}
+\index{ThreadPool\_destroy@{ThreadPool\_destroy}!cthreadpool.cpp@{cthreadpool.cpp}}
+\doxysubsubsection{\texorpdfstring{ThreadPool\_destroy()}{ThreadPool\_destroy()}}
+{\footnotesize\ttfamily void Thread\+Pool\+\_\+destroy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$}]{thp }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cthreadpool_8cpp_source_l00023}{23}} of file \mbox{\hyperlink{cthreadpool_8cpp_source}{cthreadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00023 \{ \textcolor{keyword}{delete} thp; \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{cthreadpool_8cpp_a19f3ad52c883d0706e566f896e86c1c4}\label{cthreadpool_8cpp_a19f3ad52c883d0706e566f896e86c1c4}} 
+\index{cthreadpool.cpp@{cthreadpool.cpp}!ThreadPool\_empty@{ThreadPool\_empty}}
+\index{ThreadPool\_empty@{ThreadPool\_empty}!cthreadpool.cpp@{cthreadpool.cpp}}
+\doxysubsubsection{\texorpdfstring{ThreadPool\_empty()}{ThreadPool\_empty()}}
+{\footnotesize\ttfamily bool Thread\+Pool\+\_\+empty (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$}]{thp }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cthreadpool_8cpp_source_l00019}{19}} of file \mbox{\hyperlink{cthreadpool_8cpp_source}{cthreadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00019 \{ \textcolor{keywordflow}{return} thp-\/>\mbox{\hyperlink{classThreadPool_a880109c459faf086a39d4406c43425ec}{empty}}(); \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{cthreadpool_8cpp_a167313573a42e919a34b17a9cf533678}\label{cthreadpool_8cpp_a167313573a42e919a34b17a9cf533678}} 
+\index{cthreadpool.cpp@{cthreadpool.cpp}!ThreadPool\_init@{ThreadPool\_init}}
+\index{ThreadPool\_init@{ThreadPool\_init}!cthreadpool.cpp@{cthreadpool.cpp}}
+\doxysubsubsection{\texorpdfstring{ThreadPool\_init()}{ThreadPool\_init()}}
+{\footnotesize\ttfamily void Thread\+Pool\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$}]{thp }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cthreadpool_8cpp_source_l00007}{7}} of file \mbox{\hyperlink{cthreadpool_8cpp_source}{cthreadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00007 \{ thp-\/>\mbox{\hyperlink{classThreadPool_a53b794c6101360ebfe6a8d903ba73298}{init}}(); \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{cthreadpool_8cpp_a564a760e752a05884128a4b06fe8da90}\label{cthreadpool_8cpp_a564a760e752a05884128a4b06fe8da90}} 
+\index{cthreadpool.cpp@{cthreadpool.cpp}!ThreadPool\_new\_queue@{ThreadPool\_new\_queue}}
+\index{ThreadPool\_new\_queue@{ThreadPool\_new\_queue}!cthreadpool.cpp@{cthreadpool.cpp}}
+\doxysubsubsection{\texorpdfstring{ThreadPool\_new\_queue()}{ThreadPool\_new\_queue()}}
+{\footnotesize\ttfamily void Thread\+Pool\+\_\+new\+\_\+queue (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$}]{thp,  }\item[{uint32\+\_\+t}]{qid,  }\item[{uint32\+\_\+t}]{cnt }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cthreadpool_8cpp_source_l00015}{15}} of file \mbox{\hyperlink{cthreadpool_8cpp_source}{cthreadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00015 \{ thp-\/>\mbox{\hyperlink{classThreadPool_a0c4c19237914ccb2bebe50b4415b3225}{new\_queue}}(qid, cnt); \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{cthreadpool_8cpp_ac36b3c08a8f71c070babada84b9c8dfb}\label{cthreadpool_8cpp_ac36b3c08a8f71c070babada84b9c8dfb}} 
+\index{cthreadpool.cpp@{cthreadpool.cpp}!ThreadPool\_remove\_queue@{ThreadPool\_remove\_queue}}
+\index{ThreadPool\_remove\_queue@{ThreadPool\_remove\_queue}!cthreadpool.cpp@{cthreadpool.cpp}}
+\doxysubsubsection{\texorpdfstring{ThreadPool\_remove\_queue()}{ThreadPool\_remove\_queue()}}
+{\footnotesize\ttfamily void Thread\+Pool\+\_\+remove\+\_\+queue (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$}]{thp,  }\item[{uint32\+\_\+t}]{qid }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cthreadpool_8cpp_source_l00017}{17}} of file \mbox{\hyperlink{cthreadpool_8cpp_source}{cthreadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00017 \{ thp-\/>\mbox{\hyperlink{classThreadPool_a585a0a22debad10c620f104b32a9bd2a}{remove\_queue}}(qid); \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{cthreadpool_8cpp_a5817ccccd1c9723c682623093471e66d}\label{cthreadpool_8cpp_a5817ccccd1c9723c682623093471e66d}} 
+\index{cthreadpool.cpp@{cthreadpool.cpp}!ThreadPool\_stop@{ThreadPool\_stop}}
+\index{ThreadPool\_stop@{ThreadPool\_stop}!cthreadpool.cpp@{cthreadpool.cpp}}
+\doxysubsubsection{\texorpdfstring{ThreadPool\_stop()}{ThreadPool\_stop()}}
+{\footnotesize\ttfamily void Thread\+Pool\+\_\+stop (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$}]{thp }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cthreadpool_8cpp_source_l00009}{9}} of file \mbox{\hyperlink{cthreadpool_8cpp_source}{cthreadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00009 \{ thp-\/>\mbox{\hyperlink{classThreadPool_a657bbb211644433615159cec5cd2acd5}{stop}}(); \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{cthreadpool_8cpp_a69d71a6f02edfe47deb07aedf33c9d90}\label{cthreadpool_8cpp_a69d71a6f02edfe47deb07aedf33c9d90}} 
+\index{cthreadpool.cpp@{cthreadpool.cpp}!ThreadPool\_wait\_empty@{ThreadPool\_wait\_empty}}
+\index{ThreadPool\_wait\_empty@{ThreadPool\_wait\_empty}!cthreadpool.cpp@{cthreadpool.cpp}}
+\doxysubsubsection{\texorpdfstring{ThreadPool\_wait\_empty()}{ThreadPool\_wait\_empty()}}
+{\footnotesize\ttfamily void Thread\+Pool\+\_\+wait\+\_\+empty (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classThreadPool}{Thread\+Pool}} $\ast$}]{thp }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cthreadpool_8cpp_source_l00021}{21}} of file \mbox{\hyperlink{cthreadpool_8cpp_source}{cthreadpool.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00021 \{ thp-\/>\mbox{\hyperlink{classThreadPool_ab6f53c8947ea629b3ef5888735b8e9fc}{wait\_empty}}(); \}}
+
+\end{DoxyCode}
