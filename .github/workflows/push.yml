@@ -173,6 +173,8 @@ jobs:
         name: coverage
     - name: Uncompress documentation and coverage
       run: |
+        rm -rf docs || true
+        rm -rf coverage || true
         mkdir docs || true
         mkdir coverage || true
         tar -xzf documentation.tar.gz -C docs && rm documentation.tar.gz
