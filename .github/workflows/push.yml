@@ -19,7 +19,7 @@ jobs:
         ../configure --enable-doxygen-doc
         make doxygen-doc
         cd ..
-        tar -czf documentation.tar.gz -C build/docs/html html -C build/docs/latex refman.pdf
+        tar -czf documentation.tar.gz -C build/docs html -C latex refman.pdf
       artifact_path: 'documentation.tar.gz'
       artifact_name: 'documentation'
 
