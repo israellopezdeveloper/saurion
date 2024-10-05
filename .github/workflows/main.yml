@@ -7,7 +7,7 @@ on:
 
 jobs:
   create-docs:
-    name: Generating doxygen documentation
+    name: Generate documentation
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-doc:1.0'
@@ -24,7 +24,7 @@ jobs:
       artifact_name: 'documentation'
 
   create-coverage:
-    name: Generating coverage
+    name: Generate coverage report
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
@@ -36,7 +36,7 @@ jobs:
       artifact_name: 'coverage'
 
   test-gcc:
-    name: Testing and generating binaries on GCC
+    name: Check and generate binaries using GCC
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
@@ -48,7 +48,6 @@ jobs:
       artifact_name: 'gcc-libs'
 
   test-clang:
-    name: Testing and generating binaries on CLANG
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
@@ -60,7 +59,6 @@ jobs:
       artifact_name: 'clang-libs'
 
   leak-gcc:
-    name: Testing memory leaks on GCC
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
@@ -70,7 +68,6 @@ jobs:
         ./runme --leak --noclean --nocompile-commands
 
   leak-clang:
-    name: Testing memory leaks on Clang
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
@@ -164,10 +161,9 @@ jobs:
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
-        git checkout --orphan gh-pages
-        git add .
-        git commit -m "Update GitHub Pages documentation for version ${{ env.VERSION }}"
-        git push --force --set-upstream origin gh-pages
+        git reset --hard
+        git checkout gh-pages
+        git clean -fd
     - name: Download documentation
       uses: actions/download-artifact@v3
       with:
@@ -178,10 +174,15 @@ jobs:
         name: coverage
     - name: Uncompress documentation and coverage
       run: |
+        rm -rf docs || true
+        rm -rf coverage || true
+        mkdir docs || true
+        mkdir coverage || true
         tar -xzf documentation.tar.gz -C docs && rm documentation.tar.gz
         tar -xzf coverage.tar.gz -C coverage && rm coverage.tar.gz
     - name: Deploy gh-pages
       run: |
-        git add .
+        git add docs/
+        git add coverage/
         git commit -m "Update GitHub Pages documentation for version ${{ env.VERSION }}"
         git push --force --set-upstream origin gh-pages
