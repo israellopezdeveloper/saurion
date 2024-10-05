@@ -56,6 +56,7 @@ jobs:
       docker_options: '--privileged --user root'
       commands: |
         ./runme --noclean --nocompile-commands
+        tar -czf clang-libs.tar.gz -C build/lib .
       artifact_path: 'clang-libs.tar.gz'
       artifact_name: 'clang-libs'
 
