@@ -3,28 +3,37 @@ name: CI Push
 on:
   push:
     branches:
-      - main
-      #      - '**'  # Todas las ramas
+      - '**'  # Todas las ramas
 
 jobs:
-  test-gcc:
-    name: Testing on GCC
+
+  create-coverage:
+    name: Generate coverage report
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
       docker_options: '--privileged --user root'
-      commands: './runme --noclean --nocompile-commands'
+      commands: |
+        ./runme --coverage --noclean --nocompile-commands
+
+  test-gcc:
+    name: Check and generate binaries using GCC
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
+      docker_options: '--privileged --user root'
+      commands: |
+        ./runme --noclean --nocompile-commands
 
   test-clang:
-    name: Testing on Clang
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
       docker_options: '--privileged --user root'
-      commands: './runme --noclean --nocompile-commands'
+      commands: |
+        ./runme --noclean --nocompile-commands
 
   leak-gcc:
-    name: Checking memory leaks on GCC
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
@@ -34,21 +43,10 @@ jobs:
         ./runme --leak --noclean --nocompile-commands
 
   leak-clang:
-    name: Checking memory leaks on Clang
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
       docker_options: '--privileged --user root'
       commands: |
         ulimit -n 1024
-        ./runme --noclean --nocompile-commands --leak
-
-  create-coverage:
-    name: Checking test coverage
-    uses: ./.github/workflows/reusable-job.yml
-    with:
-      docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
-      docker_options: '--privileged --user root'
-      commands: |
-        ./runme --coverage --noclean --nocompile-commands
-        tar -czf coverage.tar.gz build/coverage
+        ./runme --leak --noclean --nocompile-commands
