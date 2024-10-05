@@ -154,6 +154,33 @@ jobs:
         asset_path: ./coverage.tar.gz
         asset_name: coverage.tar.gz
         asset_content_type: application/gzip
+    - name: Change to GitHub Pages branch
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git checkout --orphan gh-pages
+        git add .
+        git commit -m "Update GitHub Pages documentation for version ${{ env.VERSION }}"
+        git push --force --set-upstream origin gh-pages
+    - name: Download documentation
+      uses: actions/download-artifact@v3
+      with:
+        name: documentation
+    - name: Download Coverage
+      uses: actions/download-artifact@v3
+      with:
+        name: coverage
+    - name: Uncompress documentation and coverage
+      run: |
+        mkdir docs || true
+        mkdir coverage || true
+        tar -xzf documentation.tar.gz -C docs && rm documentation.tar.gz
+        tar -xzf coverage.tar.gz -C coverage && rm coverage.tar.gz
+    - name: Deploy gh-pages
+      run: |
+        git add .
+        git commit -m "Update GitHub Pages documentation for version ${{ env.VERSION }}"
+        git push --force --set-upstream origin gh-pages
 
 
 # jobs:
