@@ -1,0 +1,275 @@
+\hypertarget{threadpool_8cpp_source}{}\doxysection{threadpool.\+cpp}
+\label{threadpool_8cpp_source}\index{/\_\_w/saurion/saurion/src/threadpool.cpp@{/\_\_w/saurion/saurion/src/threadpool.cpp}}
+\mbox{\hyperlink{threadpool_8cpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00001}00001 \textcolor{comment}{// This is a personal academic project. Dear PVS-\/Studio, please check it.}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00002}00002 \textcolor{comment}{// PVS-\/Studio Static Code Analyzer for C, C++, C\#, and Java: https://pvs-\/studio.com}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00003}00003 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{threadpool_8hpp}{threadpool.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00004}00004 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00005}00005 \textcolor{preprocessor}{\#include <pthread.h>}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00006}00006 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00007}00007 \textcolor{preprocessor}{\#include <stdexcept>}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00008}00008 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00009}\mbox{\hyperlink{threadpool_8cpp_abf51eba8d2d780c2174c8c6d76892e87}{00009}} \textcolor{keyword}{using }\mbox{\hyperlink{classThreadPool}{TP}} = \mbox{\hyperlink{cthreadpool_8hpp_a41038e134a98ed33feac12f376a22a9d}{ThreadPool}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00010}00010 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00011}00011 \textcolor{comment}{//********* Task ************}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00012}\mbox{\hyperlink{threadpool_8cpp_a463e4eea3d4878064f2d5c12c8ac823b}{00012}} \textcolor{keyword}{using }\mbox{\hyperlink{structTask}{T}} = \mbox{\hyperlink{structTask}{Task}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00013}\mbox{\hyperlink{structTask_a3dbf292367317f66f00d90d5a6db7feb}{00013}} \mbox{\hyperlink{structTask_a3dbf292367317f66f00d90d5a6db7feb}{T::Task}}(\textcolor{keywordtype}{void} (*nfn)(\textcolor{keywordtype}{void}*), \textcolor{keywordtype}{void}* narg) : function(nfn), argument(narg) \{\}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00014}00014 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00015}00015 \textcolor{comment}{//********* AsyncQueue ************}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00016}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_aa26d62e8948391895058149d5300fec1}{00016}} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_aa26d62e8948391895058149d5300fec1}{TP::AsyncQueue::AsyncQueue}}(uint32\_t cnt) : m\_max(cnt), m\_cnt(0) \{\}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00017}00017 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00018}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a00f850d0a2d43cc77e9031490759a9b6}{00018}} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a00f850d0a2d43cc77e9031490759a9b6}{TP::AsyncQueue::\string~AsyncQueue}}() \{ pthread\_mutex\_destroy(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}}); \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00019}00019 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00020}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae2ef0870e03b76660ddbc7a53d306666}{00020}} \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae2ef0870e03b76660ddbc7a53d306666}{TP::AsyncQueue::push}}(\mbox{\hyperlink{structTask}{Task}}* task) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00021}00021   pthread\_mutex\_lock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00022}00022   \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}{m\_queue}}.push(task);}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00023}00023   pthread\_mutex\_unlock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00024}00024 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00025}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a0cd344b0df862d2901a909cb8d8371e2}{00025}} \mbox{\hyperlink{structTask}{Task}}* \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a0cd344b0df862d2901a909cb8d8371e2}{TP::AsyncQueue::front}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00026}00026   pthread\_mutex\_lock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00027}00027   \textcolor{keywordflow}{if} ((\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a144b01235cf14228722e03b6dbb4e2a0}{m\_cnt}} >= \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a013dbc0b2337c125a3c7180b53282eff}{m\_max}}) \&\& (\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a013dbc0b2337c125a3c7180b53282eff}{m\_max}} != 0)) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00028}00028     pthread\_mutex\_unlock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00029}00029     \textcolor{keywordflow}{throw} std::out\_of\_range(\textcolor{stringliteral}{"{}reached max parallel tasks"{}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00030}00030   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00031}00031   \mbox{\hyperlink{structTask}{Task}}* task = \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}{m\_queue}}.front();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00032}00032   \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}{m\_queue}}.pop();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00033}00033   ++\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a144b01235cf14228722e03b6dbb4e2a0}{m\_cnt}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00034}00034   pthread\_mutex\_unlock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00035}00035   \textcolor{keywordflow}{return} task;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00036}00036 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00037}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a51a58ceac4f25ddabaf1aecebe0f0bed}{00037}} \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a51a58ceac4f25ddabaf1aecebe0f0bed}{TP::AsyncQueue::pop}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00038}00038   pthread\_mutex\_lock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00039}00039   -\/-\/\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a144b01235cf14228722e03b6dbb4e2a0}{m\_cnt}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00040}00040   pthread\_mutex\_unlock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00041}00041 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00042}00042 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00043}\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a5c60e2a1afc2f18224aa5f8af8b6cea8}{00043}} \textcolor{keywordtype}{bool} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a5c60e2a1afc2f18224aa5f8af8b6cea8}{TP::AsyncQueue::empty}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00044}00044   pthread\_mutex\_lock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00045}00045   \textcolor{keywordtype}{bool} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a5c60e2a1afc2f18224aa5f8af8b6cea8}{empty}} = \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a06d7953566752b1cb0a640d2ed7e8daf}{m\_queue}}.empty();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00046}00046   pthread\_mutex\_unlock(\&\mbox{\hyperlink{structThreadPool_1_1AsyncQueue_ae527852e81a2a7d32cc30bb3627a78f4}{m\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00047}00047   \textcolor{keywordflow}{return} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue_a5c60e2a1afc2f18224aa5f8af8b6cea8}{empty}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00048}00048 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00049}00049 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00050}00050 \textcolor{comment}{//********* AsyncMultiQueue ************}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00051}00051 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00052}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_ac074507a64932a17709c5c44a91a4d16}{00052}} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_ac074507a64932a17709c5c44a91a4d16}{TP::AsyncMultiQueue::AsyncMultiQueue}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00053}00053   \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a54cd376b52fb0d3062f32125562fc683}{new\_queue}}(0, 0);}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00054}00054   \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a924b3c4d16043fc4c3883c139cb489b3}{m\_it}} = \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.begin();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00055}00055 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00056}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_ab7186e26efb28754f2dd0834e91e33b1}{00056}} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_ab7186e26efb28754f2dd0834e91e33b1}{TP::AsyncMultiQueue::\string~AsyncMultiQueue}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00057}00057   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto}\& queue : \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00058}00058     \textcolor{keyword}{delete} queue.second;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00059}00059   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00060}00060 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00061}00061 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00062}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a54cd376b52fb0d3062f32125562fc683}{00062}} \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a54cd376b52fb0d3062f32125562fc683}{TP::AsyncMultiQueue::new\_queue}}(uint32\_t qid, uint32\_t cnt) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00063}00063   \textcolor{keywordflow}{if} (\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.find(qid) != \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.end()) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00064}00064     \textcolor{keywordflow}{throw} std::out\_of\_range(\textcolor{stringliteral}{"{}queue already exists"{}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00065}00065   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00066}00066   \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.emplace(qid, \textcolor{keyword}{new} \mbox{\hyperlink{structThreadPool_1_1AsyncQueue}{TP::AsyncQueue}}(cnt));}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00067}00067 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00068}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a6808e9cb9a98710487d995fbf61bb8d8}{00068}} \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a6808e9cb9a98710487d995fbf61bb8d8}{TP::AsyncMultiQueue::remove\_queue}}(uint32\_t qid) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00069}00069   \textcolor{keyword}{auto} queue = \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.find(qid);}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00070}00070   \textcolor{keywordflow}{if} (queue == \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.end()) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00071}00071     \textcolor{keywordflow}{throw} std::out\_of\_range(\textcolor{stringliteral}{"{}queue not found"{}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00072}00072   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00073}00073   \textcolor{keyword}{delete} queue-\/>second;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00074}00074   \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.erase(qid);}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00075}00075 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00076}00076 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00077}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a53856721537e7f73f9423474622f18b6}{00077}} \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a53856721537e7f73f9423474622f18b6}{TP::AsyncMultiQueue::push}}(uint32\_t qid, \textcolor{keywordtype}{void} (*nfn)(\textcolor{keywordtype}{void}*), \textcolor{keywordtype}{void}* arg) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00078}00078   \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.at(qid)-\/>push(\textcolor{keyword}{new} \mbox{\hyperlink{structTask}{Task}}\{nfn, arg\});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00079}00079 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00080}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a3b819715f6e4d8fff273c76200214fb8}{00080}} \mbox{\hyperlink{structTask}{Task}}* \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a3b819715f6e4d8fff273c76200214fb8}{TP::AsyncMultiQueue::front}}(uint32\_t\& qid) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00081}00081   \textcolor{keywordflow}{if} (\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35906460669445f515a231c0a2622128}{empty}}()) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00082}00082     \textcolor{keywordflow}{throw} std::out\_of\_range(\textcolor{stringliteral}{"{}empty queue"{}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00083}00083   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00084}00084   \textcolor{keyword}{auto} newit = \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a924b3c4d16043fc4c3883c139cb489b3}{m\_it}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00085}00085   ++newit;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00086}00086   \textcolor{keywordflow}{while} (newit != \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a924b3c4d16043fc4c3883c139cb489b3}{m\_it}}) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00087}00087     \textcolor{keywordflow}{if} (newit == \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.end()) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00088}00088       newit = \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.begin();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00089}00089     \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00090}00090     \textcolor{keywordflow}{if} (!newit-\/>second-\/>empty()) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00091}00091       \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00092}00092     \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00093}00093     ++newit;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00094}00094   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00095}00095   \mbox{\hyperlink{structTask}{Task}}* task = newit-\/>second-\/>front();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00096}00096   qid = newit-\/>first;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00097}00097   \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a924b3c4d16043fc4c3883c139cb489b3}{m\_it}} = newit;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00098}00098   \textcolor{keywordflow}{return} task;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00099}00099 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00100}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a3c4b30b004b4706c7e7b6251f8a4ae6e}{00100}} \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a3c4b30b004b4706c7e7b6251f8a4ae6e}{TP::AsyncMultiQueue::pop}}(uint32\_t qid) \{ \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.at(qid)-\/>pop(); \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00101}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a1c8cc8a4ac6a00acdbaa911fc8553776}{00101}} \textcolor{keywordtype}{void} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a1c8cc8a4ac6a00acdbaa911fc8553776}{TP::AsyncMultiQueue::clear}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00102}00102   \textcolor{keywordflow}{if} (\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35906460669445f515a231c0a2622128}{empty}}()) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00103}00103     \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00104}00104   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00105}00105   \textcolor{keyword}{auto} newit = \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.begin();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00106}00106   \textcolor{keywordflow}{while} (newit != \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}.end()) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00107}00107     \textcolor{keywordflow}{while} (!newit-\/>second-\/>empty()) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00108}00108       \textcolor{keyword}{delete} newit-\/>second-\/>front();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00109}00109       newit-\/>second-\/>pop();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00110}00110     \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00111}00111     ++newit;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00112}00112   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00113}00113 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00114}00114 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00115}\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35906460669445f515a231c0a2622128}{00115}} \textcolor{keywordtype}{bool} \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35906460669445f515a231c0a2622128}{TP::AsyncMultiQueue::empty}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00116}00116   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto}\& queue : \mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35b039e40bc2f74d1156ba111da47fd6}{m\_queues}}) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00117}00117     \textcolor{keywordflow}{if} (!queue.second-\/>empty()) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00118}00118       \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00119}00119     \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00120}00120   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00121}00121   \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00122}00122 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00123}00123 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00124}00124 \textcolor{comment}{//********* ThreadPool ************}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00125}00125 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00126}00126 pthread\_mutex\_t \mbox{\hyperlink{classThreadPool_a502e221e28781edead3ca735cf7f61df}{TP::s\_mtx}} = PTHREAD\_MUTEX\_INITIALIZER;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00127}00127 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00128}\mbox{\hyperlink{classThreadPool_ad2e8fa3d824829b284bba171e03dcf95}{00128}} \mbox{\hyperlink{classThreadPool_ad2e8fa3d824829b284bba171e03dcf95}{TP::ThreadPool}}() : \mbox{\hyperlink{classThreadPool}{ThreadPool}}(4) \{\}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00129}00129 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00130}\mbox{\hyperlink{classThreadPool_aba5982bfeb6de6d81995e6f3aeabb951}{00130}} \mbox{\hyperlink{classThreadPool_ad2e8fa3d824829b284bba171e03dcf95}{TP::ThreadPool}}(\textcolor{keywordtype}{size\_t} num\_threads)}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00131}00131     : m\_nth(num\_threads < 2 ? 2 : num\_threads),}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00132}00132       m\_started(0),}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00133}00133       m\_ths(new pthread\_t[m\_nth]\{0\}),}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00134}00134       m\_fstop(0),}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00135}00135       m\_faccept(0) \{\}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00136}00136 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00137}\mbox{\hyperlink{classThreadPool_a53b794c6101360ebfe6a8d903ba73298}{00137}} \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a53b794c6101360ebfe6a8d903ba73298}{TP::init}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00138}00138   \textcolor{keywordflow}{if} (\mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\_started}} != 0) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00139}00139     \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00140}00140   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00141}00141   \mbox{\hyperlink{classThreadPool_a7070707fff91f286121661fe6fd31ff5}{m\_faccept}} = 1;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00142}00142   \mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\_fstop}} = 0;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00143}00143   pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_a502e221e28781edead3ca735cf7f61df}{s\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00144}00144   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < \mbox{\hyperlink{classThreadPool_a8f61b969539f08f5ec7ea6b9b530f225}{m\_nth}}; ++i) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00145}00145     pthread\_create(\&\mbox{\hyperlink{classThreadPool_a96dce41bded03949a51ff92e365a127b}{m\_ths}}[i], \textcolor{keyword}{nullptr}, \mbox{\hyperlink{classThreadPool_a2fe186e06ccf4514f47f9b462ae9183f}{thread\_entry}}, \textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00146}00146     ++\mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\_started}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00147}00147   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00148}00148   pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_a502e221e28781edead3ca735cf7f61df}{s\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00149}00149 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00150}\mbox{\hyperlink{classThreadPool_a657bbb211644433615159cec5cd2acd5}{00150}} \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a657bbb211644433615159cec5cd2acd5}{TP::stop}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00151}00151   \textcolor{keywordflow}{if} (\mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\_started}} == 0) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00152}00152     \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00153}00153   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00154}00154   \mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\_fstop}} = 0;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00155}00155   \mbox{\hyperlink{classThreadPool_a7070707fff91f286121661fe6fd31ff5}{m\_faccept}} = 0;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00156}00156   \mbox{\hyperlink{classThreadPool_ab6f53c8947ea629b3ef5888735b8e9fc}{wait\_empty}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00157}00157 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00158}00158   pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00159}00159   \mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\_fstop}} = 1;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00160}00160   pthread\_cond\_broadcast(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00161}00161   pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00162}00162   \textcolor{comment}{// Detener los hilos}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00163}00163   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < \mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\_started}}; ++i) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00164}00164     pthread\_join(\mbox{\hyperlink{classThreadPool_a96dce41bded03949a51ff92e365a127b}{m\_ths}}[i], \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00165}00165   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00166}00166   \mbox{\hyperlink{classThreadPool_ad7811aa3ff1eaf1709194a1ebabc4e24}{m\_started}} = 0;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00167}00167   \mbox{\hyperlink{classThreadPool_a8f61b969539f08f5ec7ea6b9b530f225}{m\_nth}} = 0;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00168}00168 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00169}\mbox{\hyperlink{classThreadPool_a96cabae5dcc0358c6df3e303cf369456}{00169}} \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a96cabae5dcc0358c6df3e303cf369456}{TP::add}}(uint32\_t qid, \textcolor{keywordtype}{void} (*nfn)(\textcolor{keywordtype}{void}*), \textcolor{keywordtype}{void}* arg) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00170}00170   \textcolor{keywordflow}{if} (\mbox{\hyperlink{classThreadPool_a7070707fff91f286121661fe6fd31ff5}{m\_faccept}} == 0) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00171}00171     \textcolor{keywordflow}{throw} std::logic\_error(\textcolor{stringliteral}{"{}threadpool already closed"{}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00172}00172   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00173}00173   \textcolor{keywordflow}{if} (nfn == \textcolor{keyword}{nullptr}) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00174}00174     \textcolor{keywordflow}{throw} std::logic\_error(\textcolor{stringliteral}{"{}function pointer cannot be null"{}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00175}00175   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00176}00176   \textcolor{keywordtype}{bool} failed = \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00177}00177   pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00178}00178   \textcolor{keywordflow}{try} \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00179}00179     \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a53856721537e7f73f9423474622f18b6}{push}}(qid, nfn, arg);}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00180}00180   \} \textcolor{keywordflow}{catch} (\textcolor{keyword}{const} std::out\_of\_range\& e) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00181}00181     failed = \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00182}00182   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00183}00183   pthread\_cond\_signal(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00184}00184   pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00185}00185   \textcolor{keywordflow}{if} (failed) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00186}00186     \textcolor{keywordflow}{throw} std::out\_of\_range(\textcolor{stringliteral}{"{}queue not found"{}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00187}00187   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00188}00188 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00189}\mbox{\hyperlink{classThreadPool_a98fa999bd2f502ff445a3d5b3e96e808}{00189}} \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a96cabae5dcc0358c6df3e303cf369456}{TP::add}}(\textcolor{keywordtype}{void} (*nfn)(\textcolor{keywordtype}{void}*), \textcolor{keywordtype}{void}* arg) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00190}00190   \mbox{\hyperlink{classThreadPool_a96cabae5dcc0358c6df3e303cf369456}{add}}(0, nfn, arg);  \textcolor{comment}{// Agregar a la cola por defecto}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00191}00191 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00192}\mbox{\hyperlink{classThreadPool_a0c4c19237914ccb2bebe50b4415b3225}{00192}} \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a0c4c19237914ccb2bebe50b4415b3225}{TP::new\_queue}}(uint32\_t qid, uint32\_t cnt) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00193}00193   pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00194}00194   \textcolor{keywordflow}{try} \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00195}00195     \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a54cd376b52fb0d3062f32125562fc683}{new\_queue}}(qid, cnt);}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00196}00196   \} \textcolor{keywordflow}{catch} (\textcolor{keyword}{const} std::out\_of\_range\& e) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00197}00197     pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00198}00198     \textcolor{keywordflow}{throw} e;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00199}00199   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00200}00200   pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00201}00201 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00202}\mbox{\hyperlink{classThreadPool_a585a0a22debad10c620f104b32a9bd2a}{00202}} \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a585a0a22debad10c620f104b32a9bd2a}{TP::remove\_queue}}(uint32\_t qid) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00203}00203   \textcolor{keywordflow}{if} (qid != 0) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00204}00204     \textcolor{keywordtype}{bool} failed = \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00205}00205     pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00206}00206     \textcolor{keywordflow}{try} \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00207}00207       \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a6808e9cb9a98710487d995fbf61bb8d8}{remove\_queue}}(qid);}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00208}00208     \} \textcolor{keywordflow}{catch} (\textcolor{keyword}{const} std::out\_of\_range\& e) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00209}00209       failed = \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00210}00210     \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00211}00211     pthread\_cond\_signal(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00212}00212     pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00213}00213     \textcolor{keywordflow}{if} (failed) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00214}00214       \textcolor{keywordflow}{throw} std::out\_of\_range(\textcolor{stringliteral}{"{}queue not found"{}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00215}00215     \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00216}00216   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00217}00217 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00218}\mbox{\hyperlink{classThreadPool_a880109c459faf086a39d4406c43425ec}{00218}} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classThreadPool_a880109c459faf086a39d4406c43425ec}{TP::empty}}() \{ \textcolor{keywordflow}{return} \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35906460669445f515a231c0a2622128}{empty}}(); \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00219}\mbox{\hyperlink{classThreadPool_a4e1ac7df975273059c4bac975f5570f9}{00219}} \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a4e1ac7df975273059c4bac975f5570f9}{TP::wait\_closeable}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00220}00220   pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00221}00221   \textcolor{keywordflow}{while} (\mbox{\hyperlink{classThreadPool_a880109c459faf086a39d4406c43425ec}{empty}}() \&\& \mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\_fstop}} == 0) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00222}00222     pthread\_cond\_wait(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}}, \&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00223}00223   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00224}00224   pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00225}00225 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00226}\mbox{\hyperlink{classThreadPool_ab6f53c8947ea629b3ef5888735b8e9fc}{00226}} \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_ab6f53c8947ea629b3ef5888735b8e9fc}{TP::wait\_empty}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00227}00227   pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00228}00228   \textcolor{keywordflow}{while} (!\mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a35906460669445f515a231c0a2622128}{empty}}()) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00229}00229     pthread\_cond\_wait(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}}, \&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00230}00230   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00231}00231   pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00232}00232 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00233}\mbox{\hyperlink{classThreadPool_abacc418e6eec29811d72ff8321a7adc8}{00233}} \mbox{\hyperlink{classThreadPool_abacc418e6eec29811d72ff8321a7adc8}{TP::\string~ThreadPool}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00234}00234   \mbox{\hyperlink{classThreadPool_a657bbb211644433615159cec5cd2acd5}{stop}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00235}00235   \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a1c8cc8a4ac6a00acdbaa911fc8553776}{clear}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00236}00236   \textcolor{keyword}{delete}[] \mbox{\hyperlink{classThreadPool_a96dce41bded03949a51ff92e365a127b}{m\_ths}};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00237}00237   pthread\_mutex\_destroy(\&\mbox{\hyperlink{classThreadPool_a502e221e28781edead3ca735cf7f61df}{s\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00238}00238 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00239}00239 }
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00240}\mbox{\hyperlink{classThreadPool_a7ca9b8d1f4f0bf4c9bc7315c1aa230e9}{00240}} \textcolor{keywordtype}{void} \mbox{\hyperlink{classThreadPool_a7ca9b8d1f4f0bf4c9bc7315c1aa230e9}{TP::thread\_worker}}() \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00241}00241   \textcolor{comment}{// Lógica del trabajador del hilo}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00242}00242   uint32\_t qid = 0;}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00243}00243   \textcolor{keywordflow}{while} (\mbox{\hyperlink{classThreadPool_a724835a9447646d43b01bd9fe2734890}{m\_fstop}} == 0) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00244}00244     \textcolor{comment}{// Buscar una tarea para ejecutar}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00245}00245     \textcolor{keywordflow}{try} \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00246}00246       pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00247}00247       \mbox{\hyperlink{structTask}{Task}}* task = \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a3b819715f6e4d8fff273c76200214fb8}{front}}(qid);}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00248}00248       pthread\_cond\_signal(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00249}00249       pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00250}00250       \textcolor{keywordflow}{try} \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00251}00251         task-\/>\mbox{\hyperlink{structTask_adc420632142dc624b207d1b6bbec8c6c}{function}}(task-\/>\mbox{\hyperlink{structTask_ae8fb524e61bb27a40a337fd5ac3c623e}{argument}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00252}00252       \} \textcolor{keywordflow}{catch} (...) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00253}00253       \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00254}00254       \textcolor{keyword}{delete} task;  \textcolor{comment}{// TODO delete task}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00255}00255       pthread\_mutex\_lock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00256}00256       \mbox{\hyperlink{classThreadPool_a0ff2150b83ded04e2e683055d99a180d}{m\_queues}}.\mbox{\hyperlink{structThreadPool_1_1AsyncMultiQueue_a3c4b30b004b4706c7e7b6251f8a4ae6e}{pop}}(qid);}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00257}00257       pthread\_cond\_broadcast(\&\mbox{\hyperlink{classThreadPool_ad995757f929b3a04e082e4a7bd3a5453}{m\_q\_cond}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00258}00258       pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00259}00259     \} \textcolor{keywordflow}{catch} (\textcolor{keyword}{const} std::out\_of\_range\& e) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00260}00260       pthread\_mutex\_unlock(\&\mbox{\hyperlink{classThreadPool_aa71a3d4dce583aabc1ab4e1edd91881c}{m\_q\_mtx}});}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00261}00261       \mbox{\hyperlink{classThreadPool_a4e1ac7df975273059c4bac975f5570f9}{wait\_closeable}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00262}00262     \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00263}00263   \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00264}00264 \}}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00265}\mbox{\hyperlink{classThreadPool_a2fe186e06ccf4514f47f9b462ae9183f}{00265}} \textcolor{keywordtype}{void}* \mbox{\hyperlink{classThreadPool_a2fe186e06ccf4514f47f9b462ae9183f}{TP::thread\_entry}}(\textcolor{keywordtype}{void}* arg) \{}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00266}00266   \textcolor{keyword}{auto}* \mbox{\hyperlink{low__saurion_8h_a5ee7fcc0cfde456201a7c8d99dd20042}{pool}} = \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{classThreadPool}{TP}}*\textcolor{keyword}{>}(arg);}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00267}00267   \mbox{\hyperlink{low__saurion_8h_a5ee7fcc0cfde456201a7c8d99dd20042}{pool}}-\/>\mbox{\hyperlink{classThreadPool_a7ca9b8d1f4f0bf4c9bc7315c1aa230e9}{thread\_worker}}();}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00268}00268   \textcolor{keywordflow}{return} \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{threadpool_8cpp_source_l00269}00269 \}}
+
+\end{DoxyCode}

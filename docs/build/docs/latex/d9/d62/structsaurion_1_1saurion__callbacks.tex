@@ -1,0 +1,214 @@
+\hypertarget{structsaurion_1_1saurion__callbacks}{}\doxysection{saurion\+::saurion\+\_\+callbacks Struct Reference}
+\label{structsaurion_1_1saurion__callbacks}\index{saurion::saurion\_callbacks@{saurion::saurion\_callbacks}}
+
+
+Structure containing callback functions to handle socket events.  
+
+
+
+
+{\ttfamily \#include $<$low\+\_\+saurion.\+h$>$}
+
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+void($\ast$ \mbox{\hyperlink{structsaurion_1_1saurion__callbacks_abbcac9a2cf6dccbf698fd56f4b672d80}{on\+\_\+connected}} )(const int fd, void $\ast$arg)
+\begin{DoxyCompactList}\small\item\em Callback for handling new connections. \end{DoxyCompactList}\item 
+void $\ast$ \mbox{\hyperlink{structsaurion_1_1saurion__callbacks_a1680ee7a4bc10737a8ca95c1e003e786}{on\+\_\+connected\+\_\+arg}}
+\item 
+void($\ast$ \mbox{\hyperlink{structsaurion_1_1saurion__callbacks_ae67cde94f799274a710213af64ed5e58}{on\+\_\+readed}} )(const int fd, const void $\ast$const content, const ssize\+\_\+t len, void $\ast$arg)
+\begin{DoxyCompactList}\small\item\em Callback for handling read events. \end{DoxyCompactList}\item 
+void $\ast$ \mbox{\hyperlink{structsaurion_1_1saurion__callbacks_a02270cf60b25c999a180fcb9381b53d0}{on\+\_\+readed\+\_\+arg}}
+\item 
+void($\ast$ \mbox{\hyperlink{structsaurion_1_1saurion__callbacks_a49664c1b74e1c71b4703a232c3ccc2c7}{on\+\_\+wrote}} )(const int fd, void $\ast$arg)
+\begin{DoxyCompactList}\small\item\em Callback for handling write events. \end{DoxyCompactList}\item 
+void $\ast$ \mbox{\hyperlink{structsaurion_1_1saurion__callbacks_a148b0aae663aafb51fbcf17286d66369}{on\+\_\+wrote\+\_\+arg}}
+\item 
+void($\ast$ \mbox{\hyperlink{structsaurion_1_1saurion__callbacks_a330a80c99984cb4412f87522ac040e6a}{on\+\_\+closed}} )(const int fd, void $\ast$arg)
+\begin{DoxyCompactList}\small\item\em Callback for handling socket closures. \end{DoxyCompactList}\item 
+void $\ast$ \mbox{\hyperlink{structsaurion_1_1saurion__callbacks_adbb1d46a589abef434e23191766891fe}{on\+\_\+closed\+\_\+arg}}
+\item 
+void($\ast$ \mbox{\hyperlink{structsaurion_1_1saurion__callbacks_a4bb8e66fb0b5b7d204e4b43828b37d67}{on\+\_\+error}} )(const int fd, const char $\ast$const content, const ssize\+\_\+t len, void $\ast$arg)
+\begin{DoxyCompactList}\small\item\em Callback for handling error events. \end{DoxyCompactList}\item 
+void $\ast$ \mbox{\hyperlink{structsaurion_1_1saurion__callbacks_a72891fef0ba0293233f008aae9ede7aa}{on\+\_\+error\+\_\+arg}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Structure containing callback functions to handle socket events. 
+
+This structure holds pointers to callback functions for handling events such as connection establishment, reading, writing, closing, and errors on sockets. Each callback has an associated argument pointer that can be passed along when the callback is invoked. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00159}{159}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structsaurion_1_1saurion__callbacks_a330a80c99984cb4412f87522ac040e6a}\label{structsaurion_1_1saurion__callbacks_a330a80c99984cb4412f87522ac040e6a}} 
+\index{saurion::saurion\_callbacks@{saurion::saurion\_callbacks}!on\_closed@{on\_closed}}
+\index{on\_closed@{on\_closed}!saurion::saurion\_callbacks@{saurion::saurion\_callbacks}}
+\doxysubsubsection{\texorpdfstring{on\_closed}{on\_closed}}
+{\footnotesize\ttfamily void($\ast$ saurion\+::saurion\+\_\+callbacks\+::on\+\_\+closed) (const int fd, void $\ast$arg)}
+
+
+
+Callback for handling socket closures. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fd} & File descriptor of the closed socket. \\
+\hline
+{\em arg} & Additional user-\/provided argument. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00195}{195}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_1_1saurion__callbacks_adbb1d46a589abef434e23191766891fe}\label{structsaurion_1_1saurion__callbacks_adbb1d46a589abef434e23191766891fe}} 
+\index{saurion::saurion\_callbacks@{saurion::saurion\_callbacks}!on\_closed\_arg@{on\_closed\_arg}}
+\index{on\_closed\_arg@{on\_closed\_arg}!saurion::saurion\_callbacks@{saurion::saurion\_callbacks}}
+\doxysubsubsection{\texorpdfstring{on\_closed\_arg}{on\_closed\_arg}}
+{\footnotesize\ttfamily void$\ast$ saurion\+::saurion\+\_\+callbacks\+::on\+\_\+closed\+\_\+arg}
+
+Additional argument for the close callback. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00196}{196}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_1_1saurion__callbacks_abbcac9a2cf6dccbf698fd56f4b672d80}\label{structsaurion_1_1saurion__callbacks_abbcac9a2cf6dccbf698fd56f4b672d80}} 
+\index{saurion::saurion\_callbacks@{saurion::saurion\_callbacks}!on\_connected@{on\_connected}}
+\index{on\_connected@{on\_connected}!saurion::saurion\_callbacks@{saurion::saurion\_callbacks}}
+\doxysubsubsection{\texorpdfstring{on\_connected}{on\_connected}}
+{\footnotesize\ttfamily void($\ast$ saurion\+::saurion\+\_\+callbacks\+::on\+\_\+connected) (const int fd, void $\ast$arg)}
+
+
+
+Callback for handling new connections. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fd} & File descriptor of the connected socket. \\
+\hline
+{\em arg} & Additional user-\/provided argument. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00166}{166}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_1_1saurion__callbacks_a1680ee7a4bc10737a8ca95c1e003e786}\label{structsaurion_1_1saurion__callbacks_a1680ee7a4bc10737a8ca95c1e003e786}} 
+\index{saurion::saurion\_callbacks@{saurion::saurion\_callbacks}!on\_connected\_arg@{on\_connected\_arg}}
+\index{on\_connected\_arg@{on\_connected\_arg}!saurion::saurion\_callbacks@{saurion::saurion\_callbacks}}
+\doxysubsubsection{\texorpdfstring{on\_connected\_arg}{on\_connected\_arg}}
+{\footnotesize\ttfamily void$\ast$ saurion\+::saurion\+\_\+callbacks\+::on\+\_\+connected\+\_\+arg}
+
+Additional argument for the connection callback. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00167}{167}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_1_1saurion__callbacks_a4bb8e66fb0b5b7d204e4b43828b37d67}\label{structsaurion_1_1saurion__callbacks_a4bb8e66fb0b5b7d204e4b43828b37d67}} 
+\index{saurion::saurion\_callbacks@{saurion::saurion\_callbacks}!on\_error@{on\_error}}
+\index{on\_error@{on\_error}!saurion::saurion\_callbacks@{saurion::saurion\_callbacks}}
+\doxysubsubsection{\texorpdfstring{on\_error}{on\_error}}
+{\footnotesize\ttfamily void($\ast$ saurion\+::saurion\+\_\+callbacks\+::on\+\_\+error) (const int fd, const char $\ast$const content, const ssize\+\_\+t len, void $\ast$arg)}
+
+
+
+Callback for handling error events. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fd} & File descriptor of the socket where the error occurred. \\
+\hline
+{\em content} & Pointer to the error message. \\
+\hline
+{\em len} & Length of the error message. \\
+\hline
+{\em arg} & Additional user-\/provided argument. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00206}{206}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_1_1saurion__callbacks_a72891fef0ba0293233f008aae9ede7aa}\label{structsaurion_1_1saurion__callbacks_a72891fef0ba0293233f008aae9ede7aa}} 
+\index{saurion::saurion\_callbacks@{saurion::saurion\_callbacks}!on\_error\_arg@{on\_error\_arg}}
+\index{on\_error\_arg@{on\_error\_arg}!saurion::saurion\_callbacks@{saurion::saurion\_callbacks}}
+\doxysubsubsection{\texorpdfstring{on\_error\_arg}{on\_error\_arg}}
+{\footnotesize\ttfamily void$\ast$ saurion\+::saurion\+\_\+callbacks\+::on\+\_\+error\+\_\+arg}
+
+Additional argument for the error callback. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00207}{207}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_1_1saurion__callbacks_ae67cde94f799274a710213af64ed5e58}\label{structsaurion_1_1saurion__callbacks_ae67cde94f799274a710213af64ed5e58}} 
+\index{saurion::saurion\_callbacks@{saurion::saurion\_callbacks}!on\_readed@{on\_readed}}
+\index{on\_readed@{on\_readed}!saurion::saurion\_callbacks@{saurion::saurion\_callbacks}}
+\doxysubsubsection{\texorpdfstring{on\_readed}{on\_readed}}
+{\footnotesize\ttfamily void($\ast$ saurion\+::saurion\+\_\+callbacks\+::on\+\_\+readed) (const int fd, const void $\ast$const content, const ssize\+\_\+t len, void $\ast$arg)}
+
+
+
+Callback for handling read events. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fd} & File descriptor of the socket. \\
+\hline
+{\em content} & Pointer to the data that was read. \\
+\hline
+{\em len} & Length of the data that was read. \\
+\hline
+{\em arg} & Additional user-\/provided argument. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00177}{177}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_1_1saurion__callbacks_a02270cf60b25c999a180fcb9381b53d0}\label{structsaurion_1_1saurion__callbacks_a02270cf60b25c999a180fcb9381b53d0}} 
+\index{saurion::saurion\_callbacks@{saurion::saurion\_callbacks}!on\_readed\_arg@{on\_readed\_arg}}
+\index{on\_readed\_arg@{on\_readed\_arg}!saurion::saurion\_callbacks@{saurion::saurion\_callbacks}}
+\doxysubsubsection{\texorpdfstring{on\_readed\_arg}{on\_readed\_arg}}
+{\footnotesize\ttfamily void$\ast$ saurion\+::saurion\+\_\+callbacks\+::on\+\_\+readed\+\_\+arg}
+
+Additional argument for the read callback. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00178}{178}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_1_1saurion__callbacks_a49664c1b74e1c71b4703a232c3ccc2c7}\label{structsaurion_1_1saurion__callbacks_a49664c1b74e1c71b4703a232c3ccc2c7}} 
+\index{saurion::saurion\_callbacks@{saurion::saurion\_callbacks}!on\_wrote@{on\_wrote}}
+\index{on\_wrote@{on\_wrote}!saurion::saurion\_callbacks@{saurion::saurion\_callbacks}}
+\doxysubsubsection{\texorpdfstring{on\_wrote}{on\_wrote}}
+{\footnotesize\ttfamily void($\ast$ saurion\+::saurion\+\_\+callbacks\+::on\+\_\+wrote) (const int fd, void $\ast$arg)}
+
+
+
+Callback for handling write events. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fd} & File descriptor of the socket. \\
+\hline
+{\em arg} & Additional user-\/provided argument. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00186}{186}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+\mbox{\Hypertarget{structsaurion_1_1saurion__callbacks_a148b0aae663aafb51fbcf17286d66369}\label{structsaurion_1_1saurion__callbacks_a148b0aae663aafb51fbcf17286d66369}} 
+\index{saurion::saurion\_callbacks@{saurion::saurion\_callbacks}!on\_wrote\_arg@{on\_wrote\_arg}}
+\index{on\_wrote\_arg@{on\_wrote\_arg}!saurion::saurion\_callbacks@{saurion::saurion\_callbacks}}
+\doxysubsubsection{\texorpdfstring{on\_wrote\_arg}{on\_wrote\_arg}}
+{\footnotesize\ttfamily void$\ast$ saurion\+::saurion\+\_\+callbacks\+::on\+\_\+wrote\+\_\+arg}
+
+Additional argument for the write callback. 
+
+Definition at line \mbox{\hyperlink{low__saurion_8h_source_l00187}{187}} of file \mbox{\hyperlink{low__saurion_8h_source}{low\+\_\+saurion.\+h}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+\_\+\+\_\+w/saurion/saurion/include/\mbox{\hyperlink{low__saurion_8h}{low\+\_\+saurion.\+h}}\end{DoxyCompactItemize}
