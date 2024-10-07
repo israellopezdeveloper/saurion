@@ -48,6 +48,7 @@ jobs:
       artifact_name: 'gcc-libs'
 
   test-clang:
+    name: Check and generate binaries using Clang
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
@@ -59,6 +60,7 @@ jobs:
       artifact_name: 'clang-libs'
 
   leak-gcc:
+    name: Check memory leaks on GCC
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
@@ -68,6 +70,7 @@ jobs:
         ./runme --leak --noclean --nocompile-commands
 
   leak-clang:
+    name: Check memory leaks on Clang
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'

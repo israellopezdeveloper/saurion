@@ -201,8 +201,8 @@ class low_saurion : public ::testing::Test {
   void TearDown() override {
     disconnect_clients();
     saurion_stop(saurion);
-    saurion_destroy(saurion);
     close(saurion->ss);
+    saurion_destroy(saurion);
     deleteLogFiles();
     summary.connected = 0;
     summary.disconnected = 0;

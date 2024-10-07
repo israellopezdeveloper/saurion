@@ -26,6 +26,7 @@ jobs:
         ./runme --noclean --nocompile-commands
 
   test-clang:
+    name: Check and generate binaries using CLANG
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
@@ -34,6 +35,7 @@ jobs:
         ./runme --noclean --nocompile-commands
 
   leak-gcc:
+    name: Check memory leaks on GCC
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-gcc:1.0'
@@ -43,6 +45,7 @@ jobs:
         ./runme --leak --noclean --nocompile-commands
 
   leak-clang:
+    name: Check memory leaks on Clang
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/ubuntu-make-clang:1.0'
