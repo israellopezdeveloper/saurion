@@ -45,7 +45,9 @@ jobs:
         ${{ inputs.commands }}
     - name: Run individual tests
       if: failure()
-      run: ./build/tests/saurion_tests
+      run: |
+        pwd
+        ./build/tests/saurion_test
     - name: Upload artifact
       if: ${{ inputs.artifact_path != '' && inputs.artifact_name != '' }}
       uses: actions/upload-artifact@v3
