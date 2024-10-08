@@ -55,6 +55,6 @@ jobs:
         autoreconf --install
         mkdir build
         cd build
-        ../configure --enable-build-mode=leak
+        ../configure --enable-build-mode=memleak
         make check
         cd ..
