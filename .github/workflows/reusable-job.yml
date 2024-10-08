@@ -43,8 +43,6 @@ jobs:
     - name: Execute
       run: |
         ${{ inputs.commands }}
-      continue-on-error: true
-      id: test-results
     - name: Upload artifacts if tests fail
       if: failure()
       uses: actions/upload-artifact@v3
