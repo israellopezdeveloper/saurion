@@ -330,6 +330,7 @@ void readPipe(const std::string &pipePath) {
   std::string commandBuffer;
   ssize_t bytesRead = 0;
   while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0L) {
+    printf("[CLIENT] Recibidos %ld bytes (%s)\n", bytesRead, buffer);
     commandBuffer.append(buffer, bytesRead);
     if (commandBuffer.find('\n') != std::string::npos) {
       handleCommand(commandBuffer);
@@ -347,6 +348,7 @@ int main(int argc, char *argv[]) {
   }
 
   std::string pipePath;
+  printf("[CLIENT] Iniciando cliente\n");
 
   for (int i = 1; i < argc; ++i) {
     if (std::string(argv[i]) == "-p" && i + 1 < argc) {
@@ -359,6 +361,8 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  printf("[CLIENT] Pipe path: %s\n", pipePath.c_str());
+
   // Crear la memoria compartida para las variables
   globalMessage =
       static_cast<char *>(mmap(NULL, 10 * CHUNK_SZ * sizeof(char), PROT_READ | PROT_WRITE,
@@ -370,11 +374,15 @@ int main(int argc, char *argv[]) {
 
   mkfifo(pipePath.c_str(), 0666);  // Crear el pipe si no existe
 
+  printf("[CLIENT] Esperando comandos desde el pipe\n");
+
   // Leer comandos desde el pipe
   while (true) {
     readPipe(pipePath);
+    printf("[CLIENT] Esperando comandos desde el pipe\n");
     sleep(1);  // Esperar antes de volver a intentar leer
   }
 
+  printf("[CLIENT] Cerrando cliente\n");
   return 0;
 }
