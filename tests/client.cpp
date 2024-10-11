@@ -342,6 +342,7 @@ void readPipe(const std::string &pipePath) {
 }
 
 int main(int argc, char *argv[]) {
+  printf("[CLIENT] Iniciando cliente\n");
   if (argc < 3) {
     std::cerr << "Uso: " << argv[0] << " -p <pipe_path>" << std::endl;
     return 1;

@@ -105,35 +105,45 @@ class low_saurion : public ::testing::Test {
       // free(fifo_name);
       // exit(ERROR_CODE);
     }
-    usleep(100000);
     puts("Esperando a que los clientes se conecten...3");
     sender = new std::thread([=]() {
       pid_t pid = fork();
       if (pid < 0) {
+        puts("Error on fork");
         return ERROR_CODE;
       }
+      puts("PASA 0");
       if (pid == 0) {
+        puts("PASA 1");
         std::vector<const char *> exec_args;
 
         char executable_dir[1024];
+        puts("PASA 2");
 
         // Get the directory of the current executable
         get_executable_directory(executable_dir, sizeof(executable_dir));
+        puts("PASA 3");
         char script_path[1031];
         snprintf(script_path, sizeof(script_path), "%s/client", executable_dir);
+        puts("PASA 4");
 
         for (char *item : {(char *)script_path, (char *)"-p", fifo_name}) {
           exec_args.push_back(item);
         }
+        puts("PASA 5");
         exec_args.push_back(nullptr);
+        puts("PASA 6");
 
+        printf("Ejecutando cliente ...\n");
         // Ejecuta el comando y ignora el retorno
         execvp(script_path, const_cast<char *const *>(exec_args.data()));
       }
+      puts("PASA 7");
       int status;
       waitpid(pid, &status, 0);
       return SUCCESS_CODE;
     });
+    sleep(1);
     fifo_write = fopen(fifo_name, "w");
   }
 
