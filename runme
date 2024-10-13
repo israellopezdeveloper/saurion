@@ -14,8 +14,8 @@ OPTION_FLAGS_loop=false
 OPTION_FLAGS_leak=false
 OPTION_FLAGS_coverage=false
 OPTION_FLAGS_debug=false
-OPTION_FLAGS_noclean=false
-OPTION_FLAGS_nocompile_commands=false
+OPTION_FLAGS_clean=true
+OPTION_FLAGS_compile_commands=false
 
 # Lista de targets de make
 MAKE_TARGETS_docs="doxygen-doc"
@@ -43,7 +43,7 @@ configure() {
   params="$*"
   banner "Configuring ... [${params}]"
 
-  if [ "${OPTION_FLAGS_noclean}" != true ]; then
+  if [ "${OPTION_FLAGS_clean}" = true ]; then
     rm -rf "${SCRIPT_DIR}/build"
   fi
 
@@ -80,12 +80,12 @@ show_help() {
   echo "  -g, --debug                Enable debug mode and run valgrind (mutually exclusive with --leak and --coverage)"
   echo "  -i, --loop                 Enable loop mode"
   echo "  -n, --noclean              Do not clean build directory before building and do not clean after"
-  echo "  -m, --nocompile-commands   Do not execute compile_commands target"
+  echo "  -m, --compile-commands     Execute compile_commands target"
   echo "  -h, --help                 Show this help message"
 }
 
 loop_execution() {
-  if [ "${OPTION_FLAGS_nocompile_commands}" != true ]; then
+  if [ "${OPTION_FLAGS_compile_commands}" = true ]; then
     make_exec compile_commands || exit 1
   fi
   executed=0
@@ -171,12 +171,12 @@ while [ $# -gt 0 ]; do
     OPTION_FLAGS_loop=true
     shift
     ;;
-  -n | --noclean)
-    OPTION_FLAGS_noclean=true
+  -n | --clean)
+    OPTION_FLAGS_clean=false
     shift
     ;;
   -m | --nocompile-commands)
-    OPTION_FLAGS_nocompile_commands=true
+    OPTION_FLAGS_compile_commands=false
     shift
     ;;
   -h | --help)
@@ -233,11 +233,11 @@ configure ${CONFIGURE_OPTIONS}
 # Si el modo loop está habilitado, ejecutamos en bucle
 if [ "${OPTION_FLAGS_loop}" = true ]; then
   loop_execution
-  if [ "${OPTION_FLAGS_noclean}" != true ]; then
+  if [ "${OPTION_FLAGS_clean}" = true ]; then
     make_exec maintainer-clean
   fi
 else
-  if [ "${OPTION_FLAGS_nocompile_commands}" != true ]; then
+  if [ "${OPTION_FLAGS_compile_commands}" = true ]; then
     make_exec compile_commands
   fi
   make_exec
@@ -254,7 +254,7 @@ else
       run_make_target "${make_target_value}"
     fi
   done
-  if [ "${OPTION_FLAGS_noclean}" != true ]; then
+  if [ "${OPTION_FLAGS_clean}" = true ]; then
     make_exec maintainer-clean
   fi
 fi

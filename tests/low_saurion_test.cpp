@@ -1,6 +1,7 @@
 #include "low_saurion.h"  // for saurion, saurion_send, EXTERNAL_set_socket
 
 #include <string.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include <algorithm>
@@ -14,7 +15,6 @@
 #include <regex>
 #include <stdexcept>
 #include <string>
-#include <thread>
 
 #include "gtest/gtest.h"  // for Message, EXPECT_EQ, TestPartResult, Test...
 
@@ -65,9 +65,9 @@ void signalHandler(int signum);
 class low_saurion : public ::testing::Test {
  public:
   struct saurion *saurion;
-  static std::thread *sender;
   static char *fifo_name;
   static FILE *fifo_write;
+  static pid_t pid;
 
  protected:
   static char *generate_random_fifo_name() {
@@ -91,70 +91,49 @@ class low_saurion : public ::testing::Test {
 
   static void SetUpTestSuite() {
     fifo_name = generate_random_fifo_name();
-    puts("Esperando a que los clientes se conecten...");
     std::signal(SIGINT, signalHandler);
     if (!fifo_name) {
       // Handle error generating random name
       exit(ERROR_CODE);
     }
-    puts("Esperando a que los clientes se conecten...2");
-    printf("Creando FIFO %s\n", fifo_name);
     if (mkfifo(fifo_name, 0666) == -1) {
-      printf("--> Error al crear el FIFO %s\n", fifo_name);
       perror("Error al crear el FIFO");
       // free(fifo_name);
       // exit(ERROR_CODE);
     }
-    puts("Esperando a que los clientes se conecten...3");
-    sender = new std::thread([=]() {
-      pid_t pid = fork();
-      if (pid < 0) {
-        puts("Error on fork");
-        return ERROR_CODE;
+    pid = fork();
+    if (pid < 0) {
+      perror("Error on fork");
+      return;
+    }
+    puts("PASA 0");
+    if (pid == 0) {
+      puts("PASA 1");
+      std::vector<const char *> exec_args;
+
+      char executable_dir[1024];
+
+      // Get the directory of the current executable
+      get_executable_directory(executable_dir, sizeof(executable_dir));
+      char script_path[1031];
+      snprintf(script_path, sizeof(script_path), "%s/client", executable_dir);
+
+      for (char *item : {(char *)script_path, (char *)"-p", fifo_name}) {
+        exec_args.push_back(item);
       }
-      puts("PASA 0");
-      if (pid == 0) {
-        puts("PASA 1");
-        std::vector<const char *> exec_args;
+      exec_args.push_back(nullptr);
 
-        char executable_dir[1024];
-        puts("PASA 2");
-
-        // Get the directory of the current executable
-        get_executable_directory(executable_dir, sizeof(executable_dir));
-        puts("PASA 3");
-        char script_path[1031];
-        snprintf(script_path, sizeof(script_path), "%s/client", executable_dir);
-        puts("PASA 4");
-
-        for (char *item : {(char *)script_path, (char *)"-p", fifo_name}) {
-          exec_args.push_back(item);
-        }
-        puts("PASA 5");
-        exec_args.push_back(nullptr);
-        puts("PASA 6");
-
-        printf("Ejecutando cliente ...\n");
-        // Ejecuta el comando y ignora el retorno
-        execvp(script_path, const_cast<char *const *>(exec_args.data()));
-      }
-      puts("PASA 7");
-      int status;
-      waitpid(pid, &status, 0);
-      return SUCCESS_CODE;
-    });
-    sleep(1);
+      printf("Ejecutando cliente ...\n");
+      // Ejecuta el comando y ignora el retorno
+      execvp(script_path, const_cast<char *const *>(exec_args.data()));
+    }
     fifo_write = fopen(fifo_name, "w");
   }
 
   static void TearDownTestSuite() {
     close_clients();
-    if (sender != nullptr) {
-      if (sender->joinable()) {
-        sender->join();
-      }
-      delete sender;
-    }
+    int status;
+    waitpid(pid, &status, 0);
     fclose(fifo_write);
     unlink(fifo_name);
     free(fifo_name);
@@ -337,7 +316,7 @@ class low_saurion : public ::testing::Test {
 };
 
 char *low_saurion::fifo_name = nullptr;
-std::thread *low_saurion::sender = nullptr;
+pid_t low_saurion::pid = 0;
 FILE *low_saurion::fifo_write = nullptr;
 
 void signalHandler(int signum) {
