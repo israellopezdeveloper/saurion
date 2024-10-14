@@ -79,7 +79,7 @@ show_help() {
   echo "  -c, --coverage             Enable coverage tests (mutually exclusive with --leak and --debug)"
   echo "  -g, --debug                Enable debug mode and run valgrind (mutually exclusive with --leak and --coverage)"
   echo "  -i, --loop                 Enable loop mode"
-  echo "  -n, --noclean              Do not clean build directory before building and do not clean after"
+  echo "  -n, --clean                Clean build directory before building and do not clean after"
   echo "  -m, --compile-commands     Execute compile_commands target"
   echo "  -h, --help                 Show this help message"
 }
