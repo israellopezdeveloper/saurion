@@ -424,17 +424,19 @@ TEST(ThreadPoolTest, AddTaskWithValidArgument) {
   pool.init();
 
   // Agregar una tarea con un argumento válido
+  int* argument = new int;
+  *argument = 42;
   ASSERT_NO_THROW({
-    int argument = 42;
     pool.add(
         [](void* arg) {
           int value = *static_cast<int*>(arg);
           ASSERT_EQ(value, 42);
         },
-        &argument);
+        argument);
   });
 
   pool.stop();
+  delete argument;
 }
 
 TEST(ThreadPoolTest, AddTaskToStoppedPool) {

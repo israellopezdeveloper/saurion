@@ -74,13 +74,13 @@ void sendMessagesHandler(int signum) {
         exit(EXIT_FAILURE);
       }
 
-      length = htonll(length);
+      uint64_t send_length = htonll(length);
 
       // 4. Copiar la longitud del mensaje (entero de 64 bits) al buffer
-      memcpy(buffer, &length, sizeof(length));
+      memcpy(buffer, &send_length, sizeof(length));
 
       // 5. Copiar el mensaje de texto al buffer
-      memcpy(buffer + sizeof(length), globalMessage, msg_len);
+      memcpy(buffer + sizeof(length), globalMessage, length);
 
       // 6. Agregar el bit a 0 al final
       buffer[msg_len - 1] = 0;
@@ -90,6 +90,7 @@ void sendMessagesHandler(int signum) {
       if (sent < 0) {
         break;
       }
+      free(buffer);
 
       // Esperar el delay antes de enviar el siguiente mensaje
       usleep(*globalMessageDelay * 1000);  // Delay en milisegundos
