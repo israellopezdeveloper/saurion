@@ -1,0 +1,57 @@
+name: Reusable Job
+
+on:
+  workflow_call:
+    inputs:
+      docker_image:
+        description: 'Docker image to use'
+        required: true
+        type: string
+      docker_options:
+        description: 'Options for docker run command'
+        required: false
+        default: ''
+        type: string
+      commands:
+        description: 'Commands to execute inside Docker container'
+        required: true
+        type: string
+      artifact_path:
+        description: 'Path to the artifact to upload'
+        required: false
+        default: ''
+        type: string
+      artifact_name:
+        description: 'Name of the artifact to upload'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.docker_image }}
+      options: ${{ inputs.docker_options }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+        fetch-depth: 0
+        recursive: true
+    - name: Execute
+      run: |
+        ${{ inputs.commands }}
+    - name: Run individual tests
+      if: failure()
+      run: |
+        pwd
+        ./build/tests/saurion_test
+    - name: Upload artifact
+      if: ${{ inputs.artifact_path != '' && inputs.artifact_name != '' }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ inputs.artifact_name }}
+        path: ${{ inputs.artifact_path }}
+

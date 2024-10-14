@@ -1,0 +1,60 @@
+name: CI Push
+
+on:
+  push:
+    branches:
+      - '**'  # Todas las ramas
+
+jobs:
+
+  create-coverage:
+    name: Generate coverage report
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241015000828'
+      docker_options: '--privileged --user root'
+      commands: |
+        ./runme --coverage
+
+  test-gcc:
+    name: Check and generate binaries using GCC
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241015000828'
+      docker_options: '--privileged --user root'
+      commands: |
+        ./runme
+
+  test-clang:
+    name: Check and generate binaries using CLANG
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/make-clang:debian-bookworm_CLANG-19_20241015000828'
+      docker_options: '--privileged --user root'
+      commands: |
+        ./runme
+
+  leak-gcc:
+    name: Check memory leaks on GCC
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241015000828'
+      docker_options: '--privileged --user root'
+      commands: |
+        ulimit -n 1024
+        ./runme --leak
+
+  leak-clang:
+    name: Check memory leaks on Clang
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/make-clang:debian-bookworm_CLANG-19_20241015000828'
+      docker_options: '--privileged --user root'
+      commands: |
+        ulimit -n 1024
+        autoreconf --install
+        mkdir build
+        cd build
+        ../configure --enable-build-mode=memleak
+        make check
+        cd ..
