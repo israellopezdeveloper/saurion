@@ -124,10 +124,6 @@ void parseMessages(char *buffer, int64_t bytes_read, std::ofstream &logStream) {
 
     // Asegurarse de que tenemos suficientes bytes para el mensaje completo
     if (offset + msg_len + 1 > static_cast<uint64_t>(bytes_read)) {
-      printf(
-          "No hay suficientes datos para completar este mensaje, esperamos más datos: offset = %zu "
-          "msg_len = %zu + 1 > bytes_read = %zu\n",
-          offset, msg_len, bytes_read);
       return;
     }
 
@@ -208,7 +204,6 @@ void createClient(int clientId) {
           accumulatedBuffer.insert(accumulatedBuffer.end(), buffer, buffer + len);
           total_len += len;
         } else if (len == 0) {
-          // printf("El servidor cerró la conexión\n");
           keepRunning = false;
           break;
         } else if (len < 0) {
@@ -330,7 +325,6 @@ void readPipe(const std::string &pipePath) {
   std::string commandBuffer;
   ssize_t bytesRead = 0;
   while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0L) {
-    printf("[CLIENT] Recibidos %ld bytes (%s)\n", bytesRead, buffer);
     commandBuffer.append(buffer, bytesRead);
     if (commandBuffer.find('\n') != std::string::npos) {
       handleCommand(commandBuffer);
@@ -342,14 +336,12 @@ void readPipe(const std::string &pipePath) {
 }
 
 int main(int argc, char *argv[]) {
-  printf("[CLIENT] Iniciando cliente\n");
   if (argc < 3) {
     std::cerr << "Uso: " << argv[0] << " -p <pipe_path>" << std::endl;
     return 1;
   }
 
   std::string pipePath;
-  printf("[CLIENT] Iniciando cliente\n");
 
   for (int i = 1; i < argc; ++i) {
     if (std::string(argv[i]) == "-p" && i + 1 < argc) {
@@ -362,8 +354,6 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  printf("[CLIENT] Pipe path: %s\n", pipePath.c_str());
-
   // Crear la memoria compartida para las variables
   globalMessage =
       static_cast<char *>(mmap(NULL, 10 * CHUNK_SZ * sizeof(char), PROT_READ | PROT_WRITE,
@@ -375,15 +365,11 @@ int main(int argc, char *argv[]) {
 
   mkfifo(pipePath.c_str(), 0666);  // Crear el pipe si no existe
 
-  printf("[CLIENT] Esperando comandos desde el pipe\n");
-
   // Leer comandos desde el pipe
   while (true) {
     readPipe(pipePath);
-    printf("[CLIENT] Esperando comandos desde el pipe\n");
     sleep(1);  // Esperar antes de volver a intentar leer
   }
 
-  printf("[CLIENT] Cerrando cliente\n");
   return 0;
 }
