@@ -1,6 +1,6 @@
 # This is an automatically generated configuration file.
 
-AC_INIT([Saurion],[0.0.1],[israel.lopez.developer@gmail.com])
+AC_INIT([Saurion],[0.0.2],[israel.lopez.developer@gmail.com])
 
 AC_DEFINE([CHUNK_SZ], [8192], [@brief Size of chunk on I/O operations])
 AC_DEFINE([ACCEPT_QUEUE], [10], [@brief Accepting queue of the socket])
