@@ -14,7 +14,7 @@ OPTION_FLAGS_loop=false
 OPTION_FLAGS_leak=false
 OPTION_FLAGS_coverage=false
 OPTION_FLAGS_debug=false
-OPTION_FLAGS_clean=true
+OPTION_FLAGS_clean=false
 OPTION_FLAGS_compile_commands=false
 
 # Lista de targets de make
@@ -172,7 +172,7 @@ while [ $# -gt 0 ]; do
     shift
     ;;
   -n | --clean)
-    OPTION_FLAGS_clean=false
+    OPTION_FLAGS_clean=true
     shift
     ;;
   -m | --nocompile-commands)
