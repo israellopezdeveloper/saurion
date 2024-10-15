@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2024-10-14 23:51:38</td>
+            <td class="headerValue">2024-10-15 09:09:53</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">5</td>
@@ -62,17 +62,17 @@
 <pre class="source">
 <a name="1"><span class="lineNum">       1 </span>            : #include &quot;cthreadpool.hpp&quot;</a>
 <a name="2"><span class="lineNum">       2 </span>            : </a>
-<a name="3"><span class="lineNum">       3 </span><span class="lineCov">         24 : ThreadPool *ThreadPool_create(size_t num_threads) { return new ThreadPool(num_threads); }</span></a>
+<a name="3"><span class="lineNum">       3 </span><span class="lineCov">         16 : ThreadPool *ThreadPool_create(size_t num_threads) { return new ThreadPool(num_threads); }</span></a>
 <a name="4"><span class="lineNum">       4 </span>            : </a>
 <a name="5"><span class="lineNum">       5 </span><span class="lineNoCov">          0 : ThreadPool *ThreadPool_create_default(void) { return new ThreadPool(); }</span></a>
 <a name="6"><span class="lineNum">       6 </span>            : </a>
-<a name="7"><span class="lineNum">       7 </span><span class="lineCov">         24 : void ThreadPool_init(ThreadPool *thp) { thp-&gt;init(); }</span></a>
+<a name="7"><span class="lineNum">       7 </span><span class="lineCov">         16 : void ThreadPool_init(ThreadPool *thp) { thp-&gt;init(); }</span></a>
 <a name="8"><span class="lineNum">       8 </span>            : </a>
 <a name="9"><span class="lineNum">       9 </span><span class="lineNoCov">          0 : void ThreadPool_stop(ThreadPool *thp) { thp-&gt;stop(); }</span></a>
 <a name="10"><span class="lineNum">      10 </span>            : </a>
 <a name="11"><span class="lineNum">      11 </span><span class="lineNoCov">          0 : void ThreadPool_add(ThreadPool *thp, uint32_t qid, void (*nfn)(void *), void *arg) { thp-&gt;add(qid, nfn, arg); }</span></a>
 <a name="12"><span class="lineNum">      12 </span>            : </a>
-<a name="13"><span class="lineNum">      13 </span><span class="lineCov">         96 : void ThreadPool_add_default(ThreadPool *thp, void (*nfn)(void *), void *arg) { thp-&gt;add(nfn, arg); }</span></a>
+<a name="13"><span class="lineNum">      13 </span><span class="lineCov">         64 : void ThreadPool_add_default(ThreadPool *thp, void (*nfn)(void *), void *arg) { thp-&gt;add(nfn, arg); }</span></a>
 <a name="14"><span class="lineNum">      14 </span>            : </a>
 <a name="15"><span class="lineNum">      15 </span><span class="lineNoCov">          0 : void ThreadPool_new_queue(ThreadPool *thp, uint32_t qid, uint32_t cnt) { thp-&gt;new_queue(qid, cnt); }</span></a>
 <a name="16"><span class="lineNum">      16 </span>            : </a>
@@ -80,9 +80,9 @@
 <a name="18"><span class="lineNum">      18 </span>            : </a>
 <a name="19"><span class="lineNum">      19 </span><span class="lineNoCov">          0 : bool ThreadPool_empty(ThreadPool *thp) { return thp-&gt;empty(); }</span></a>
 <a name="20"><span class="lineNum">      20 </span>            : </a>
-<a name="21"><span class="lineNum">      21 </span><span class="lineCov">         24 : void ThreadPool_wait_empty(ThreadPool *thp) { thp-&gt;wait_empty(); }</span></a>
+<a name="21"><span class="lineNum">      21 </span><span class="lineCov">         16 : void ThreadPool_wait_empty(ThreadPool *thp) { thp-&gt;wait_empty(); }</span></a>
 <a name="22"><span class="lineNum">      22 </span>            : </a>
-<a name="23"><span class="lineNum">      23 </span><span class="lineCov">         24 : void ThreadPool_destroy(ThreadPool *thp) { delete thp; }</span></a>
+<a name="23"><span class="lineNum">      23 </span><span class="lineCov">         16 : void ThreadPool_destroy(ThreadPool *thp) { delete thp; }</span></a>
 </pre>
       </td>
     </tr>
