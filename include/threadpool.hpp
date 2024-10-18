@@ -100,7 +100,7 @@ class ThreadPool {
   AsyncMultiQueue m_queues;
   pthread_mutex_t m_q_mtx = PTHREAD_MUTEX_INITIALIZER;
   pthread_cond_t m_q_cond = PTHREAD_COND_INITIALIZER;
-  static pthread_mutex_t s_mtx;
+  pthread_mutex_t s_mtx = PTHREAD_MUTEX_INITIALIZER;
   pthread_t* m_ths;
   volatile sig_atomic_t m_fstop;
   volatile sig_atomic_t m_faccept;

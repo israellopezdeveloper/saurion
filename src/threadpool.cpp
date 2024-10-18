@@ -123,8 +123,6 @@ bool TP::AsyncMultiQueue::empty() {
 
 //********* ThreadPool ************
 
-pthread_mutex_t TP::s_mtx = PTHREAD_MUTEX_INITIALIZER;
-
 TP::ThreadPool() : ThreadPool(4) {}
 
 TP::ThreadPool(size_t num_threads)
@@ -151,7 +149,10 @@ void TP::stop() {
   if (m_started == 0) {
     return;
   }
+  pthread_mutex_lock(&m_q_mtx);
   m_fstop = 0;
+  pthread_cond_broadcast(&m_q_cond);
+  pthread_mutex_unlock(&m_q_mtx);
   m_faccept = 0;
   wait_empty();
 
@@ -235,6 +236,7 @@ TP::~ThreadPool() {
   m_queues.clear();
   delete[] m_ths;
   pthread_mutex_destroy(&s_mtx);
+  pthread_mutex_destroy(&m_q_mtx);
 }
 
 void TP::thread_worker() {

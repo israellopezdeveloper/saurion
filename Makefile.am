@@ -7,8 +7,8 @@ include .mk/my_conf.am
 # Example
 # =======
 # **Binaries** must be placed at bin folder
-# bin_PROGRAMS = bin/my_program
-# bin_my_program_SOURCES = src/main.c
+bin_PROGRAMS = bin/my_program
+bin_my_program_SOURCES = src/main.c
 
 # **Libraries** must be placed at lib folder
 # Additional configuration for library. Meaning of version info:
