@@ -335,6 +335,21 @@ void readPipe(const std::string &pipePath) {
 
   close(fd);
 }
+#if defined(__has_feature)
+#if __has_feature(thread_sanitizer)
+__attribute__((no_sanitize("thread")))
+#endif
+#endif
+void global_map() {
+  // Crear la memoria compartida para las variables
+  globalMessage =
+      static_cast<char *>(mmap(NULL, 10 * CHUNK_SZ * sizeof(char), PROT_READ | PROT_WRITE,
+                               MAP_SHARED | MAP_ANONYMOUS, -1, 0));
+  globalMessageCount = static_cast<int *>(
+      mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0));
+  globalMessageDelay = static_cast<int *>(
+      mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0));
+}
 
 int main(int argc, char *argv[]) {
   if (argc < 3) {
@@ -355,15 +370,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  // Crear la memoria compartida para las variables
-  globalMessage =
-      static_cast<char *>(mmap(NULL, 10 * CHUNK_SZ * sizeof(char), PROT_READ | PROT_WRITE,
-                               MAP_SHARED | MAP_ANONYMOUS, -1, 0));
-  globalMessageCount = static_cast<int *>(
-      mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0));
-  globalMessageDelay = static_cast<int *>(
-      mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0));
-
+  global_map();
   mkfifo(pipePath.c_str(), 0666);  // Crear el pipe si no existe
 
   // Leer comandos desde el pipe

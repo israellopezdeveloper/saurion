@@ -3,9 +3,6 @@
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 
 # Los códigos de color se eliminan ya que el uso de "\e" y "-e" en echo no es compatible con POSIX
-BLUE=""
-GREEN=""
-RESET=""
 TIMEOUT="25s"
 
 # En POSIX no existen arreglos asociativos, utilizaremos variables individuales
@@ -16,15 +13,17 @@ OPTION_FLAGS_coverage=false
 OPTION_FLAGS_debug=false
 OPTION_FLAGS_clean=false
 OPTION_FLAGS_compile_commands=false
+OPTION_FLAGS_thread=false
 
 # Lista de targets de make
 MAKE_TARGETS_docs="doxygen-doc"
 MAKE_TARGETS_leak="leak-check"
 MAKE_TARGETS_coverage="coverage"
 MAKE_TARGETS_debug="valgrind"
+MAKE_TARGETS_thread="thread-check"
 
 # Lista de opciones para iterar
-MAKE_TARGETS_list="docs leak coverage debug"
+MAKE_TARGETS_list="docs leak coverage debug thread"
 
 banner() {
   title="$1"
@@ -75,9 +74,10 @@ show_help() {
   echo "Usage: $0 [options]"
   echo "Options:"
   echo "  -d, --docs                 Enable document generation"
-  echo "  -l, --leak                 Enable memory leak check (mutually exclusive with --coverage and --debug)"
-  echo "  -c, --coverage             Enable coverage tests (mutually exclusive with --leak and --debug)"
-  echo "  -g, --debug                Enable debug mode and run valgrind (mutually exclusive with --leak and --coverage)"
+  echo "  -l, --leak                 Enable memory leak check (mutually exclusive with --coverage, --debug, and --thread)"
+  echo "  -c, --coverage             Enable coverage tests (mutually exclusive with --leak, --debug, and --thread)"
+  echo "  -g, --debug                Enable debug mode and run valgrind (mutually exclusive with --leak, --coverage, and --thread)"
+  echo "  -t, --thread               Enable thread-sanitize mode (mutually exclusive with --leak, --coverage, and --debug)"
   echo "  -i, --loop                 Enable loop mode"
   echo "  -n, --clean                Clean build directory before building and do not clean after"
   echo "  -m, --compile-commands     Execute compile_commands target"
@@ -142,7 +142,7 @@ while [ $# -gt 0 ]; do
     ;;
   -l | --leak)
     if [ -n "$selected_mode" ]; then
-      echo "Error: Options --leak, --coverage, and --debug are mutually exclusive."
+      echo "Error: Options --leak, --coverage, --debug, and --thread are mutually exclusive."
       exit 1
     fi
     OPTION_FLAGS_leak=true
@@ -151,7 +151,7 @@ while [ $# -gt 0 ]; do
     ;;
   -c | --coverage)
     if [ -n "$selected_mode" ]; then
-      echo "Error: Options --leak, --coverage, and --debug are mutually exclusive."
+      echo "Error: Options --leak, --coverage, --debug, and --thread are mutually exclusive."
       exit 1
     fi
     OPTION_FLAGS_coverage=true
@@ -160,11 +160,20 @@ while [ $# -gt 0 ]; do
     ;;
   -g | --debug)
     if [ -n "$selected_mode" ]; then
-      echo "Error: Options --leak, --coverage, and --debug are mutually exclusive."
+      echo "Error: Options --leak, --coverage, --debug, and --thread are mutually exclusive."
       exit 1
     fi
     OPTION_FLAGS_debug=true
     selected_mode="debug"
+    shift
+    ;;
+  -t | --thread)
+    if [ -n "$selected_mode" ]; then
+      echo "Error: Options --leak, --coverage, --debug, and --thread are mutually exclusive."
+      exit 1
+    fi
+    OPTION_FLAGS_thread=true
+    selected_mode="thread"
     shift
     ;;
   -i | --loop)
@@ -175,8 +184,8 @@ while [ $# -gt 0 ]; do
     OPTION_FLAGS_clean=true
     shift
     ;;
-  -m | --nocompile-commands)
-    OPTION_FLAGS_compile_commands=false
+  -m | --compile-commands)
+    OPTION_FLAGS_compile_commands=true
     shift
     ;;
   -h | --help)
@@ -213,6 +222,10 @@ fi
 
 if [ "${OPTION_FLAGS_debug}" = true ]; then
   BUILD_MODES="${BUILD_MODES} debug"
+fi
+
+if [ "${OPTION_FLAGS_thread}" = true ]; then
+  BUILD_MODES="${BUILD_MODES} thread-sanitize"
 fi
 
 if [ -n "${BUILD_MODES}" ]; then

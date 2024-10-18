@@ -1,5 +1,6 @@
 #include "low_saurion.h"  // for saurion, saurion_send, EXTERNAL_set_socket
 
+#include <pthread.h>
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -49,7 +50,7 @@ struct summary {
   std::vector<int> fds;
   pthread_cond_t connected_c = PTHREAD_COND_INITIALIZER;
   pthread_mutex_t connected_m = PTHREAD_MUTEX_INITIALIZER;
-  uint32_t disconnected = 0;
+  volatile uint32_t disconnected = 0;
   pthread_cond_t disconnected_c = PTHREAD_COND_INITIALIZER;
   pthread_mutex_t disconnected_m = PTHREAD_MUTEX_INITIALIZER;
   size_t readed = 0;
@@ -216,6 +217,7 @@ class low_saurion : public ::testing::Test {
   static void wait_disconnected(uint32_t n) {
     pthread_mutex_lock(&summary.disconnected_m);
     while (summary.disconnected != n) {
+      printf("wait disconnected n=%d\n", summary.disconnected);
       pthread_cond_wait(&summary.disconnected_c, &summary.disconnected_m);
     }
     pthread_mutex_unlock(&summary.disconnected_m);
@@ -419,7 +421,9 @@ TEST_F(low_saurion, readWriteWithLargeMessageMultipleOfChunkSize) {
   saurion_2_client(summary.fds.front(), 1, (char *)str);
   wait_wrote(1);
   disconnect_clients();
+  puts("PASA 7");
   wait_disconnected(clients);
+  puts("PASA 8");
   EXPECT_EQ(1UL, read_from_clients(std::string(str)));
   EXPECT_EQ(summary.disconnected, clients);
   delete[] str;
