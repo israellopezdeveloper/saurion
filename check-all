@@ -1,0 +1,49 @@
+#!/bin/env sh
+
+set -e
+
+usage() {
+  printf "Usage:\n  %s -c | --compiler <gcc|clang> --help\n" "$0" >&2
+  printf "  docker repo must be installed\n" >&2
+}
+
+if [ $# -ne 2 ]; then
+  usage
+  exit 1
+fi
+
+if [ "$1" = "--help" ]; then
+  usage
+fi
+
+if [ "$1" != "-c" ] && [ "$1" != "--compiler" ]; then
+  usage
+  exit 1
+fi
+
+if [ "$2" != "gcc" ] && [ "$2" != "clang" ]; then
+  usage
+  exit 1
+fi
+
+COMPILER="${2}"
+SCRIPT_PATH="$(dirname "$(realpath "${0}")")"
+RUNON="$(realpath "${SCRIPT_PATH}/../docker/runOn")"
+
+if [ ! -f "${RUNON}" ] || [ ! -x "${RUNON}" ]; then
+  usage
+  exit 1
+fi
+
+{
+  rm -rf gtest build
+  printf "\033c"
+  printf "== %s production ==\n" "${COMPILER}"
+  ../docker/runOn --compiler "${COMPILER}" --command "./runme --clean" &&
+    {
+      rm -rf gtest build
+      printf "\033c"
+      printf "== %s leak ==\n" "${COMPILER}"
+      ../docker/runOn --compiler "${COMPILER}" --command "./runme --leak --clean"
+    }
+} || exit 1
