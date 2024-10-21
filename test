@@ -1,0 +1,76 @@
+#!/bin/bash
+
+printf "\033c"
+
+(
+  printf "== DEBUG ==\n"
+  mv compile_commands.json compile_commands.bak
+  cd build || exit
+  make maintainer-clean
+  cd ..
+  mv compile_commands.bak compile_commands.json
+  rm -rf build
+  autoreconf --install
+  mkdir build
+  cd build || exit
+  ../configure --enable-build-mode=debug --enable-compile-commands
+  timeout 25s make compile_commands
+  timeout 15s make check
+  ./tests/saurion_test --gtest_filter="$1"
+  cd ..
+)
+
+printf "\nContinue? (Yn) "
+read -r -n1 key
+if [ "$key" = "n" ]; then
+  echo ""
+  exit 1
+fi
+echo ""
+printf "\033c"
+
+(
+  printf "== THREAD SANINITIZER ==\n"
+  mv compile_commands.json compile_commands.bak
+  cd build || exit
+  make maintainer-clean
+  cd ..
+  mv compile_commands.bak compile_commands.json
+  rm -rf build
+  autoreconf --install
+  mkdir build
+  cd build || exit
+  CC=clang CXX=clang++ ../configure --enable-build-mode=thread-sanitize --enable-compile-commands
+  timeout 25s make compile_commands
+  timeout 15s make check
+  ./tests/saurion_test --gtest_filter="$1"
+  cd ..
+)
+
+printf "\nContinue? (Yn) "
+read -r -n1 key
+if [ "$key" = "n" ]; then
+  echo ""
+  exit 1
+fi
+echo ""
+printf "\033c"
+
+(
+  printf "== LEAK SANINITIZER ==\n"
+  mv compile_commands.json compile_commands.bak
+  cd build || exit
+  make maintainer-clean
+  cd ..
+  mv compile_commands.bak compile_commands.json
+  rm -rf build
+  autoreconf --install
+  mkdir build
+  cd build || exit
+  ../configure --enable-build-mode=memleak
+  timeout 40s make check
+  timeout 35s make leak-check
+  valgrind --leak-check=full --show-leak-kinds=all -s ./tests/saurion_test --gtest_filter="$1"
+  cd ..
+)
+echo ""

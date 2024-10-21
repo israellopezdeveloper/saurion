@@ -341,6 +341,7 @@ static void add_write(struct saurion *const s, int fd, const char *const str, co
 
 /*********************************** HANDLERS ***********************************/
 static void handle_accept(const struct saurion *const s, const int fd) {
+  printf("accept -> %d\n", fd);
   if (s->cb.on_connected) {
     s->cb.on_connected(fd, s->cb.on_connected_arg);
   }
@@ -525,12 +526,14 @@ static void handle_read(struct saurion *const s, struct request *const req) {
 }
 
 static void handle_write(const struct saurion *const s, const int fd) {
+  printf("Error -> %d\n", fd);
   if (s->cb.on_wrote) {
     s->cb.on_wrote(fd, s->cb.on_wrote_arg);
   }
 }
 
 static void handle_error(const struct saurion *const s, const struct request *const req) {
+  printf("Error -> %d\n", req->client_socket);
   if (s->cb.on_error) {
     const char *resp = "ERROR";
     s->cb.on_error(req->client_socket, resp, (ssize_t)strlen(resp), s->cb.on_error_arg);
@@ -538,6 +541,7 @@ static void handle_error(const struct saurion *const s, const struct request *co
 }
 
 static void handle_close(const struct saurion *const s, const struct request *const req) {
+  printf("Me piro -> %d\n", req->client_socket);
   if (s->cb.on_closed) {
     s->cb.on_closed(req->client_socket, s->cb.on_closed_arg);
   }
@@ -670,7 +674,7 @@ struct saurion *saurion_create(uint32_t n_threads) {
       return NULL;
     }
   }
-  p->pool = ThreadPool_create(p->n_threads);
+  p->pool = threadpool_create(p->n_threads);
   return p;
 }
 
@@ -807,14 +811,14 @@ void saurion_worker_slave(void *arg) {
 [[nodiscard]]
 int saurion_start(struct saurion *const s) {
   pthread_mutex_init(&print_mutex, NULL);
-  ThreadPool_init(s->pool);
-  ThreadPool_add_default(s->pool, saurion_worker_master, s);
+  threadpool_init(s->pool);
+  threadpool_add(s->pool, saurion_worker_master, s);
   struct saurion_wrapper *ss = NULL;
   for (uint32_t i = 1; i < s->n_threads; ++i) {
     ss = (struct saurion_wrapper *)malloc(sizeof(struct saurion_wrapper));
     ss->s = s;
     ss->sel = i;
-    ThreadPool_add_default(s->pool, saurion_worker_slave, ss);
+    threadpool_add(s->pool, saurion_worker_slave, ss);
   }
   return SUCCESS_CODE;
 }
@@ -826,7 +830,7 @@ void saurion_stop(const struct saurion *const s) {
       usleep(TIMEOUT_RETRY);
     }
   }
-  ThreadPool_wait_empty(s->pool);
+  threadpool_wait_empty(s->pool);
 }
 
 void saurion_destroy(struct saurion *const s) {
@@ -835,7 +839,7 @@ void saurion_destroy(struct saurion *const s) {
     pthread_cond_wait(&s->status_c, &s->status_m);
   }
   pthread_mutex_unlock(&s->status_m);
-  ThreadPool_destroy(s->pool);
+  threadpool_destroy(s->pool);
   for (uint32_t i = 0; i < s->n_threads; ++i) {
     io_uring_queue_exit(&s->rings[i]);
     pthread_mutex_destroy(&s->m_rings[i]);

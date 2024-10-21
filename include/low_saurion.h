@@ -102,8 +102,8 @@
 #include <pthread.h>
 
 #include "config.h"
-#include "cthreadpool.hpp"
 #include "linked_list.h"
+#include "threadpool.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -144,7 +144,7 @@ struct saurion {
   pthread_mutex_t status_m; /**< Mutex to protect the state of the structure. */
   pthread_cond_t status_c;  /**< Condition variable to signal changes in the structure's state. */
   int status;               /**< Current status of the structure (e.g., running, stopped). */
-  ThreadPool *pool;         /**< Thread pool for executing tasks in parallel. */
+  struct threadpool *pool;  /**< Thread pool for executing tasks in parallel. */
   uint32_t n_threads;       /**< Number of threads in the thread pool. */
   uint32_t next;            /**< Index of the next io_uring ring to which an event will be added. */
 

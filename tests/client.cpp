@@ -266,6 +266,7 @@ void disconnectClients() {
     // Esperar que el proceso hijo termine
     int status;
     waitpid(pid, &status, 0);  // Espera bloqueante hasta que el proceso hijo termine
+    puts("[client] disconnected");
     if (!WIFEXITED(status)) {
       std::cout << "Cliente " << pid << " terminó por señal " << WTERMSIG(status) << std::endl;
     }
