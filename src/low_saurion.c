@@ -1,16 +1,16 @@
 #include "low_saurion.h"
+#include "nanologger/logger.h"
 
 #include <netinet/in.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/eventfd.h>
 
-#define EV_ACC 0 //! @brief Tipo de evento para aceptar una nueva conexión.
-#define EV_REA 1 //! @brief Tipo de evento para leer datos.
-#define EV_WRI 2 //! @brief Tipo de evento para escribir datos.
-#define EV_WAI 3 //! @brief Tipo de evento para esperar.
-#define EV_ERR 4 //! @brief Tipo de evento para indicar un error.
+#define EV_ACC 0 //! @brief Event type for accepting a new connection.
+#define EV_REA 1 //! @brief Event type for reading data.
+#define EV_WRI 2 //! @brief Event type for writing data.
+#define EV_WAI 3 //! @brief Event type for waiting.
+#define EV_ERR 4 //! @brief Event type to indicate an error.
 
 struct request
 {
@@ -423,7 +423,6 @@ add_write (struct saurion *const s, int fd, const char *const str,
 static void
 handle_accept (const struct saurion *const s, const int fd)
 {
-  printf ("accept -> %d\n", fd);
   if (s->cb.on_connected)
     {
       s->cb.on_connected (fd, s->cb.on_connected_arg);
@@ -588,8 +587,8 @@ read_chunk (void **dest, size_t *len, struct request *const req)
   // Finish
   if (!ok)
     {
-      // Esto solo es posible si no se encuentra un 0 al final del la lectura
-      // buscar el siguiente 0 y ... probar fortuna
+      // This is only possible if there isn't a 0 at the end of the read
+      // search for the next 0 and... try your luck
       free (dest_ptr);
       dest_ptr = NULL;
       *dest = NULL;
@@ -625,7 +624,7 @@ handle_read (struct saurion *const s, struct request *const req)
         {
           break;
         }
-      // Hay siguiente
+      // There's a next message
       if (req->next_iov || req->next_offset)
         {
           if (s->cb.on_readed && msg)
@@ -637,13 +636,13 @@ handle_read (struct saurion *const s, struct request *const req)
           msg = NULL;
           continue;
         }
-      // Hay previo pero no se ha completado
+      // There's an unfinished previous message
       if (req->prev && req->prev_size && req->prev_remain)
         {
           add_read_continue (s, req, next (s));
           return;
         }
-      // Hay un único mensaje y se ha completado
+      // There's a single message and it's complete
       if (s->cb.on_readed && msg)
         {
           s->cb.on_readed (req->client_socket, msg, len, s->cb.on_readed_arg);
@@ -658,7 +657,6 @@ handle_read (struct saurion *const s, struct request *const req)
 static void
 handle_write (const struct saurion *const s, const int fd)
 {
-  printf ("Error -> %d\n", fd);
   if (s->cb.on_wrote)
     {
       s->cb.on_wrote (fd, s->cb.on_wrote_arg);
@@ -668,7 +666,6 @@ handle_write (const struct saurion *const s, const int fd)
 static void
 handle_error (const struct saurion *const s, const struct request *const req)
 {
-  printf ("Error -> %d\n", req->client_socket);
   if (s->cb.on_error)
     {
       const char *resp = "ERROR";
@@ -680,7 +677,6 @@ handle_error (const struct saurion *const s, const struct request *const req)
 static void
 handle_close (const struct saurion *const s, const struct request *const req)
 {
-  printf ("Me piro -> %d\n", req->client_socket);
   if (s->cb.on_closed)
     {
       s->cb.on_closed (req->client_socket, s->cb.on_closed_arg);
@@ -718,7 +714,7 @@ EXTERNAL_set_socket (const int p)
 
   /* We bind to a port and turn this socket into a listening
    * socket.
-   * */
+   */
   if (bind (sock, (const struct sockaddr *)&srv_addr, sizeof (srv_addr)) < 0)
     {
       return ERROR_CODE;
@@ -736,10 +732,12 @@ EXTERNAL_set_socket (const int p)
 struct saurion *
 saurion_create (uint32_t n_threads)
 {
+  LOG_INIT (" ");
   // Asignar memoria
   struct saurion *p = (struct saurion *)malloc (sizeof (struct saurion));
   if (!p)
     {
+      LOG_END (" ");
       return NULL;
     }
   // Inicializar mutex
@@ -748,12 +746,14 @@ saurion_create (uint32_t n_threads)
   if (ret)
     {
       free (p);
+      LOG_END (" ");
       return NULL;
     }
   ret = pthread_cond_init (&p->status_c, NULL);
   if (ret)
     {
       free (p);
+      LOG_END (" ");
       return NULL;
     }
   p->m_rings
@@ -761,6 +761,7 @@ saurion_create (uint32_t n_threads)
   if (!p->m_rings)
     {
       free (p);
+      LOG_END (" ");
       return NULL;
     }
   for (uint32_t i = 0; i < n_threads; ++i)
@@ -791,6 +792,7 @@ saurion_create (uint32_t n_threads)
     {
       free (p->m_rings);
       free (p);
+      LOG_END (" ");
       return NULL;
     }
   for (uint32_t i = 0; i < p->n_threads; ++i)
@@ -805,6 +807,7 @@ saurion_create (uint32_t n_threads)
           free (p->efds);
           free (p->m_rings);
           free (p);
+          LOG_END (" ");
           return NULL;
         }
     }
@@ -820,6 +823,7 @@ saurion_create (uint32_t n_threads)
       free (p->efds);
       free (p->m_rings);
       free (p);
+      LOG_END (" ");
       return NULL;
     }
   for (uint32_t i = 0; i < p->n_threads; ++i)
@@ -836,16 +840,19 @@ saurion_create (uint32_t n_threads)
           free (p->rings);
           free (p->m_rings);
           free (p);
+          LOG_END (" ");
           return NULL;
         }
     }
   p->pool = threadpool_create (p->n_threads);
+  LOG_END (" ");
   return p;
 }
 
 void
 saurion_worker_master (void *arg)
 {
+  LOG_INIT (" ");
   struct saurion *const s = (struct saurion *)arg;
   struct io_uring ring = s->rings[0];
   struct io_uring_cqe *cqe = NULL;
@@ -865,6 +872,7 @@ saurion_worker_master (void *arg)
       if (ret < 0)
         {
           free (cqe);
+          LOG_END (" ");
           return;
         }
       struct request *req = (struct request *)cqe->user_data;
@@ -876,6 +884,7 @@ saurion_worker_master (void *arg)
       if (cqe->res < 0)
         {
           list_delete_node (&s->list, req);
+          LOG_END (" ");
           return;
         }
       if (req->client_socket == s->efds[0])
@@ -919,18 +928,85 @@ saurion_worker_master (void *arg)
   s->status = 2;
   pthread_cond_signal (&s->status_c);
   pthread_mutex_unlock (&s->status_m);
+  LOG_END (" ");
   return;
+}
+
+[[nodiscard]]
+static int
+saurion_worker_slave_loop_it (struct saurion *const s, const int sel)
+{
+  LOG_INIT (" ");
+  struct io_uring ring = s->rings[sel];
+  struct io_uring_cqe *cqe = NULL;
+  CRITICAL ("Critical error");
+
+  add_efd (s, s->efds[sel], sel);
+  int ret = io_uring_wait_cqe (&ring, &cqe);
+  if (ret < 0)
+    {
+      free (cqe);
+      LOG_END (" ");
+      return CRITICAL_CODE;
+    }
+  struct request *req = (struct request *)cqe->user_data;
+  if (!req)
+    {
+      io_uring_cqe_seen (&ring, cqe);
+      LOG_END (" ");
+      return SUCCESS_CODE;
+    }
+  if (cqe->res < 0)
+    {
+      list_delete_node (&s->list, req);
+      LOG_END (" ");
+      return CRITICAL_CODE;
+    }
+  if (req->client_socket == s->efds[sel])
+    {
+      io_uring_cqe_seen (&ring, cqe);
+      list_delete_node (&s->list, req);
+      LOG_END (" ");
+      return ERROR_CODE;
+    }
+  ERROR ("Error");
+  /* Mark this request as processed */
+  io_uring_cqe_seen (&ring, cqe);
+  switch (req->event_type)
+    {
+    case EV_REA:
+      if (cqe->res < 0)
+        {
+          handle_error (s, req);
+        }
+      if (cqe->res < 1)
+        {
+          handle_close (s, req);
+        }
+      if (cqe->res > 0)
+        {
+          handle_read (s, req);
+        }
+      list_delete_node (&s->list, req);
+      break;
+    case EV_WRI:
+      handle_write (s, req->client_socket);
+      list_delete_node (&s->list, req);
+      break;
+    }
+  WARN ("Warning");
+  LOG_END (" ");
+  return SUCCESS_CODE;
 }
 
 void
 saurion_worker_slave (void *arg)
 {
+  LOG_INIT (" ");
   struct saurion_wrapper *const ss = (struct saurion_wrapper *)arg;
   struct saurion *s = ss->s;
   const int sel = ss->sel;
   free (ss);
-  struct io_uring ring = s->rings[sel];
-  struct io_uring_cqe *cqe = NULL;
 
   add_efd (s, s->efds[sel], sel);
 
@@ -940,58 +1016,22 @@ saurion_worker_slave (void *arg)
   pthread_mutex_unlock (&s->status_m);
   while (1)
     {
-      int ret = io_uring_wait_cqe (&ring, &cqe);
-      if (ret < 0)
+      int res = saurion_worker_slave_loop_it (s, sel);
+      if (res == ERROR_CODE)
         {
-          free (cqe);
+          break;
+        }
+      else if (res == CRITICAL_CODE)
+        {
+          LOG_END (" ");
           return;
-        }
-      struct request *req = (struct request *)cqe->user_data;
-      if (!req)
-        {
-          io_uring_cqe_seen (&ring, cqe);
-          continue;
-        }
-      if (cqe->res < 0)
-        {
-          list_delete_node (&s->list, req);
-          return;
-        }
-      if (req->client_socket == s->efds[sel])
-        {
-          io_uring_cqe_seen (&ring, cqe);
-          list_delete_node (&s->list, req);
-          break;
-        }
-      /* Mark this request as processed */
-      io_uring_cqe_seen (&ring, cqe);
-      switch (req->event_type)
-        {
-        case EV_REA:
-          if (cqe->res < 0)
-            {
-              handle_error (s, req);
-            }
-          if (cqe->res < 1)
-            {
-              handle_close (s, req);
-            }
-          if (cqe->res > 0)
-            {
-              handle_read (s, req);
-            }
-          list_delete_node (&s->list, req);
-          break;
-        case EV_WRI:
-          handle_write (s, req->client_socket);
-          list_delete_node (&s->list, req);
-          break;
         }
     }
   pthread_mutex_lock (&s->status_m);
   s->status = 2;
   pthread_cond_signal (&s->status_c);
   pthread_mutex_unlock (&s->status_m);
+  LOG_END (" ");
   return;
 }
 

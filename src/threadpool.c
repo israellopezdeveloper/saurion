@@ -99,11 +99,9 @@ threadpool_create_default (void)
 void *
 threadpool_worker (void *arg)
 {
-  puts ("[threadpool_worker] 1");
   struct threadpool *pool = (struct threadpool *)arg;
   while (TRUE)
     {
-      puts ("[threadpool_worker] 2");
       pthread_mutex_lock (&pool->queue_lock);
       while (pool->task_queue_head == NULL && !pool->stop)
         {
@@ -139,7 +137,6 @@ threadpool_worker (void *arg)
           free (task);
         }
     }
-  puts ("[threadpool_worker] 3");
   pthread_exit (NULL);
   return NULL;
 }
@@ -170,7 +167,6 @@ void
 threadpool_add (struct threadpool *pool, void (*function) (void *),
                 void *argument)
 {
-  puts ("[threadpool_add] 1");
   if (pool == NULL || function == NULL)
     {
       return;
@@ -203,13 +199,11 @@ threadpool_add (struct threadpool *pool, void (*function) (void *),
     }
 
   pthread_mutex_unlock (&pool->queue_lock);
-  puts ("[threadpool_add] 2");
 }
 
 void
 threadpool_stop (struct threadpool *pool)
 {
-  puts ("[threadpool_stop] 1");
   if (pool == NULL || !pool->started)
     {
       return;
@@ -226,7 +220,6 @@ threadpool_stop (struct threadpool *pool)
       pthread_join (pool->threads[i], NULL);
     }
   pool->started = FALSE;
-  puts ("[threadpool_stop] 2");
 }
 
 int

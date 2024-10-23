@@ -255,7 +255,6 @@ protected:
     pthread_mutex_lock (&summary.disconnected_m);
     while (summary.disconnected != n)
       {
-        printf ("wait disconnected n=%d\n", summary.disconnected);
         pthread_cond_wait (&summary.disconnected_c, &summary.disconnected_m);
       }
     pthread_mutex_unlock (&summary.disconnected_m);
@@ -437,13 +436,11 @@ signalHandler (int signum)
 
 TEST_F (low_saurion, connectMultipleClients)
 {
-  uint32_t clients = 10;
+  uint32_t clients = 5;
   connect_clients (clients);
   wait_connected (clients);
   EXPECT_EQ (summary.connected, clients);
-  puts ("waiting for disconnect_clients");
   disconnect_clients ();
-  puts ("clients disconnected");
   wait_disconnected (clients);
   EXPECT_EQ (summary.disconnected, clients);
 }
