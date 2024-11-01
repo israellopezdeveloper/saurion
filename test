@@ -2,7 +2,7 @@
 
 printf "\033c"
 
-TEMP_FILE=$(mktemp --suffix .saurion)
+TEMP_FILE=$(mktemp --suffix .saurion.log)
 
 while true; do
   (
@@ -26,8 +26,8 @@ while true; do
 
     cd build || exit
     printf "\033c"
-    ./tests/saurion_test --gtest_filter="$1" 2> >(tee "${TEMP_FILE}")
-    log2thrip "${TEMP_FILE}"
+    ./tests/saurion_test --gtest_filter="$1" 2>"${TEMP_FILE}"
+    echo "==>${TEMP_FILE}"
     cd ..
     printf "\nExecute again? (Yn) "
     read -r -n1 key

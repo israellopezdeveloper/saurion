@@ -849,13 +849,81 @@ saurion_create (uint32_t n_threads)
   return p;
 }
 
+[[nodiscard]]
+static int
+saurion_worker_master_loop_it (struct saurion *const s,
+                               struct sockaddr_in *client_addr,
+                               socklen_t *client_addr_len)
+{
+  LOG_INIT (" ");
+  struct io_uring ring = s->rings[0];
+  struct io_uring_cqe *cqe = NULL;
+  int ret = io_uring_wait_cqe (&ring, &cqe);
+  if (ret < 0)
+    {
+      free (cqe);
+      LOG_END (" ");
+      return CRITICAL_CODE;
+    }
+  struct request *req = (struct request *)cqe->user_data;
+  if (!req)
+    {
+      io_uring_cqe_seen (&s->rings[0], cqe);
+      LOG_END (" ");
+      return SUCCESS_CODE;
+    }
+  if (cqe->res < 0)
+    {
+      list_delete_node (&s->list, req);
+      LOG_END (" ");
+      return CRITICAL_CODE;
+    }
+  if (req->client_socket == s->efds[0])
+    {
+      io_uring_cqe_seen (&s->rings[0], cqe);
+      list_delete_node (&s->list, req);
+      LOG_END (" ");
+      return ERROR_CODE;
+    }
+  /* Mark this request as processed */
+  io_uring_cqe_seen (&s->rings[0], cqe);
+  switch (req->event_type)
+    {
+    case EV_ACC:
+      handle_accept (s, cqe->res);
+      add_accept (s, client_addr, client_addr_len);
+      add_read (s, cqe->res);
+      list_delete_node (&s->list, req);
+      break;
+    case EV_REA:
+      if (cqe->res < 0)
+        {
+          handle_error (s, req);
+        }
+      if (cqe->res < 1)
+        {
+          handle_close (s, req);
+        }
+      if (cqe->res > 0)
+        {
+          handle_read (s, req);
+        }
+      list_delete_node (&s->list, req);
+      break;
+    case EV_WRI:
+      handle_write (s, req->client_socket);
+      list_delete_node (&s->list, req);
+      break;
+    }
+  LOG_END (" ");
+  return SUCCESS_CODE;
+}
+
 void
 saurion_worker_master (void *arg)
 {
   LOG_INIT (" ");
   struct saurion *const s = (struct saurion *)arg;
-  struct io_uring ring = s->rings[0];
-  struct io_uring_cqe *cqe = NULL;
   struct sockaddr_in client_addr;
   socklen_t client_addr_len = sizeof (client_addr);
 
@@ -868,60 +936,16 @@ saurion_worker_master (void *arg)
   pthread_mutex_unlock (&s->status_m);
   while (1)
     {
-      int ret = io_uring_wait_cqe (&ring, &cqe);
-      if (ret < 0)
+      int ret
+          = saurion_worker_master_loop_it (s, &client_addr, &client_addr_len);
+      if (ret == ERROR_CODE)
         {
-          free (cqe);
+          break;
+        }
+      else if (ret == CRITICAL_CODE)
+        {
           LOG_END (" ");
           return;
-        }
-      struct request *req = (struct request *)cqe->user_data;
-      if (!req)
-        {
-          io_uring_cqe_seen (&s->rings[0], cqe);
-          continue;
-        }
-      if (cqe->res < 0)
-        {
-          list_delete_node (&s->list, req);
-          LOG_END (" ");
-          return;
-        }
-      if (req->client_socket == s->efds[0])
-        {
-          io_uring_cqe_seen (&s->rings[0], cqe);
-          list_delete_node (&s->list, req);
-          break;
-        }
-      /* Mark this request as processed */
-      io_uring_cqe_seen (&s->rings[0], cqe);
-      switch (req->event_type)
-        {
-        case EV_ACC:
-          handle_accept (s, cqe->res);
-          add_accept (s, &client_addr, &client_addr_len);
-          add_read (s, cqe->res);
-          list_delete_node (&s->list, req);
-          break;
-        case EV_REA:
-          if (cqe->res < 0)
-            {
-              handle_error (s, req);
-            }
-          if (cqe->res < 1)
-            {
-              handle_close (s, req);
-            }
-          if (cqe->res > 0)
-            {
-              handle_read (s, req);
-            }
-          list_delete_node (&s->list, req);
-          break;
-        case EV_WRI:
-          handle_write (s, req->client_socket);
-          list_delete_node (&s->list, req);
-          break;
         }
     }
   pthread_mutex_lock (&s->status_m);
@@ -939,7 +963,6 @@ saurion_worker_slave_loop_it (struct saurion *const s, const int sel)
   LOG_INIT (" ");
   struct io_uring ring = s->rings[sel];
   struct io_uring_cqe *cqe = NULL;
-  CRITICAL ("Critical error");
 
   add_efd (s, s->efds[sel], sel);
   int ret = io_uring_wait_cqe (&ring, &cqe);
@@ -969,7 +992,6 @@ saurion_worker_slave_loop_it (struct saurion *const s, const int sel)
       LOG_END (" ");
       return ERROR_CODE;
     }
-  ERROR ("Error");
   /* Mark this request as processed */
   io_uring_cqe_seen (&ring, cqe);
   switch (req->event_type)
@@ -994,7 +1016,6 @@ saurion_worker_slave_loop_it (struct saurion *const s, const int sel)
       list_delete_node (&s->list, req);
       break;
     }
-  WARN ("Warning");
   LOG_END (" ");
   return SUCCESS_CODE;
 }
