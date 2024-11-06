@@ -1,6 +1,7 @@
 #include "threadpool.h"
+#include "config.h"
+#include "nanologger/logger.h"
 
-#include <config.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,10 +32,12 @@ struct threadpool
 struct threadpool *
 threadpool_create (size_t num_threads)
 {
+  LOG_INIT (" ");
   struct threadpool *pool = malloc (sizeof (struct threadpool));
   if (pool == NULL)
     {
       perror ("Failed to allocate threadpool");
+      LOG_END (" ");
       return NULL;
     }
   if (num_threads < 3)
@@ -52,6 +55,7 @@ threadpool_create (size_t num_threads)
     {
       perror ("Failed to allocate threads array");
       free (pool);
+      LOG_END (" ");
       return NULL;
     }
 
@@ -65,6 +69,7 @@ threadpool_create (size_t num_threads)
       perror ("Failed to initialize mutex");
       free (pool->threads);
       free (pool);
+      LOG_END (" ");
       return NULL;
     }
 
@@ -74,6 +79,7 @@ threadpool_create (size_t num_threads)
       pthread_mutex_destroy (&pool->queue_lock);
       free (pool->threads);
       free (pool);
+      LOG_END (" ");
       return NULL;
     }
 
@@ -84,9 +90,11 @@ threadpool_create (size_t num_threads)
       pthread_cond_destroy (&pool->queue_cond);
       free (pool->threads);
       free (pool);
+      LOG_END (" ");
       return NULL;
     }
 
+  LOG_END (" ");
   return pool;
 }
 
@@ -99,6 +107,7 @@ threadpool_create_default (void)
 void *
 threadpool_worker (void *arg)
 {
+  LOG_INIT (" ");
   struct threadpool *pool = (struct threadpool *)arg;
   while (TRUE)
     {
@@ -137,6 +146,7 @@ threadpool_worker (void *arg)
           free (task);
         }
     }
+  LOG_END (" ");
   pthread_exit (NULL);
   return NULL;
 }
@@ -144,9 +154,11 @@ threadpool_worker (void *arg)
 void
 threadpool_init (struct threadpool *pool)
 {
+  LOG_INIT (" ");
   if (pool == NULL || pool->started)
     {
       // Already started or invalid pool
+      LOG_END (" ");
       return;
     }
   for (size_t i = 0; i < pool->num_threads; i++)
@@ -161,14 +173,17 @@ threadpool_init (struct threadpool *pool)
         }
     }
   pool->started = TRUE;
+  LOG_END (" ");
 }
 
 void
 threadpool_add (struct threadpool *pool, void (*function) (void *),
                 void *argument)
 {
+  LOG_INIT (" ");
   if (pool == NULL || function == NULL)
     {
+      LOG_END (" ");
       return;
     }
 
@@ -176,6 +191,7 @@ threadpool_add (struct threadpool *pool, void (*function) (void *),
   if (new_task == NULL)
     {
       perror ("Failed to allocate task");
+      LOG_END (" ");
       return;
     }
 
@@ -199,13 +215,16 @@ threadpool_add (struct threadpool *pool, void (*function) (void *),
     }
 
   pthread_mutex_unlock (&pool->queue_lock);
+  LOG_END (" ");
 }
 
 void
 threadpool_stop (struct threadpool *pool)
 {
+  LOG_INIT (" ");
   if (pool == NULL || !pool->started)
     {
+      LOG_END (" ");
       return;
     }
   threadpool_wait_empty (pool);
@@ -220,26 +239,32 @@ threadpool_stop (struct threadpool *pool)
       pthread_join (pool->threads[i], NULL);
     }
   pool->started = FALSE;
+  LOG_END (" ");
 }
 
 int
 threadpool_empty (struct threadpool *pool)
 {
+  LOG_INIT (" ");
   if (pool == NULL)
     {
+      LOG_END (" ");
       return TRUE;
     }
   pthread_mutex_lock (&pool->queue_lock);
   int empty = (pool->task_queue_head == NULL);
   pthread_mutex_unlock (&pool->queue_lock);
+  LOG_END (" ");
   return empty;
 }
 
 void
 threadpool_wait_empty (struct threadpool *pool)
 {
+  LOG_INIT (" ");
   if (pool == NULL)
     {
+      LOG_END (" ");
       return;
     }
   pthread_mutex_lock (&pool->queue_lock);
@@ -248,13 +273,16 @@ threadpool_wait_empty (struct threadpool *pool)
       pthread_cond_wait (&pool->empty_cond, &pool->queue_lock);
     }
   pthread_mutex_unlock (&pool->queue_lock);
+  LOG_END (" ");
 }
 
 void
 threadpool_destroy (struct threadpool *pool)
 {
+  LOG_INIT (" ");
   if (pool == NULL)
     {
+      LOG_END (" ");
       return;
     }
   threadpool_stop (pool);
@@ -276,4 +304,5 @@ threadpool_destroy (struct threadpool *pool)
 
   free (pool->threads);
   free (pool);
+  LOG_END (" ");
 }
