@@ -2,7 +2,7 @@
 
 printf "\033c"
 
-TEMP_FILE=$(mktemp --suffix .saurion.log)
+TEMP_FILE="log_saurion.log"
 
 while true; do
   (
@@ -18,24 +18,25 @@ while true; do
     mkdir build
     cd build || exit
     ../configure --enable-build-mode=debug --enable-compile-commands
-    timeout 25s make compile_commands
+    #timeout 25s make compile_commands
+    timeout 15s make tests/client
     timeout 15s make tests/saurion_test
     cd ..
   )
-  printf "\nContinue? (Yn) "
-  read -r -n1 key
-  if [ "$key" = "n" ]; then
-    echo ""
-    exit 1
-  fi
+  # printf "\nContinue? (Yn) "
+  # read -r -n1 key
+  # if [ "$key" = "n" ]; then
+  #   echo ""
+  #   exit 1
+  # fi
   while true; do
 
     cd build || exit
     printf "\033c"
     echo "============================================================="
-    echo "==>${TEMP_FILE}"
+    echo "==> ${TEMP_FILE}"
     echo "============================================================="
-    ./tests/saurion_test --gtest_filter="$1" 2>"${TEMP_FILE}"
+    ./tests/saurion_test --gtest_filter="$1" 2>"../${TEMP_FILE}"
     cd ..
     printf "\nExecute again? (Yn) "
     read -r -n1 key

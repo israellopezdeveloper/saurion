@@ -1,6 +1,6 @@
 #include "threadpool.h"
 #include "config.h"
-#include "nanologger/logger.h"
+
 
 #include <pthread.h>
 #include <stdio.h>

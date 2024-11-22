@@ -1,5 +1,6 @@
 #include "low_saurion.h"
-#include "nanologger/logger.h"
+
+#include "config.h"
 
 #include <netinet/in.h>
 #include <stdlib.h>
