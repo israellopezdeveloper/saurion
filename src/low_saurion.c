@@ -3,6 +3,8 @@
 #include "config.h"
 
 #include <netinet/in.h>
+#include <pthread.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/eventfd.h>
@@ -932,25 +934,20 @@ saurion_worker_master (void *arg)
   add_accept (s, &client_addr, &client_addr_len);
 
   pthread_mutex_lock (&s->status_m);
-  s->status = 1;
-  pthread_cond_signal (&s->status_c);
+  ++s->status;
+  pthread_cond_broadcast (&s->status_c);
   pthread_mutex_unlock (&s->status_m);
   while (1)
     {
       int ret
           = saurion_worker_master_loop_it (s, &client_addr, &client_addr_len);
-      if (ret == ERROR_CODE)
+      if (ret == ERROR_CODE || ret == CRITICAL_CODE)
         {
           break;
         }
-      else if (ret == CRITICAL_CODE)
-        {
-          LOG_END (" ");
-          return;
-        }
     }
   pthread_mutex_lock (&s->status_m);
-  s->status = 2;
+  --s->status;
   pthread_cond_signal (&s->status_c);
   pthread_mutex_unlock (&s->status_m);
   LOG_END (" ");
@@ -1033,24 +1030,19 @@ saurion_worker_slave (void *arg)
   add_efd (s, s->efds[sel], sel);
 
   pthread_mutex_lock (&s->status_m);
-  s->status = 1;
-  pthread_cond_signal (&s->status_c);
+  ++s->status;
+  pthread_cond_broadcast (&s->status_c);
   pthread_mutex_unlock (&s->status_m);
   while (1)
     {
       int res = saurion_worker_slave_loop_it (s, sel);
-      if (res == ERROR_CODE)
+      if (res == ERROR_CODE || res == CRITICAL_CODE)
         {
           break;
         }
-      else if (res == CRITICAL_CODE)
-        {
-          LOG_END (" ");
-          return;
-        }
     }
   pthread_mutex_lock (&s->status_m);
-  s->status = 2;
+  --s->status;
   pthread_cond_signal (&s->status_c);
   pthread_mutex_unlock (&s->status_m);
   LOG_END (" ");
@@ -1068,10 +1060,20 @@ saurion_start (struct saurion *const s)
   for (uint32_t i = 1; i < s->n_threads; ++i)
     {
       ss = (struct saurion_wrapper *)malloc (sizeof (struct saurion_wrapper));
+      if (!ss)
+        {
+          return ERROR_CODE;
+        }
       ss->s = s;
       ss->sel = i;
       threadpool_add (s->pool, saurion_worker_slave, ss);
     }
+  pthread_mutex_lock (&s->status_m);
+  while (s->status < (int)s->n_threads)
+    {
+      pthread_cond_wait (&s->status_c, &s->status_m);
+    }
+  pthread_mutex_unlock (&s->status_m);
   return SUCCESS_CODE;
 }
 
@@ -1093,7 +1095,7 @@ void
 saurion_destroy (struct saurion *const s)
 {
   pthread_mutex_lock (&s->status_m);
-  while (s->status == 1)
+  while (s->status > 0)
     {
       pthread_cond_wait (&s->status_c, &s->status_m);
     }

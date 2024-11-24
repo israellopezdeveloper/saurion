@@ -179,12 +179,13 @@ protected:
   void
   SetUp () override
   {
+    const unsigned int N_THREADS = 6;
     summary.connected = 0;
     summary.disconnected = 0;
     summary.readed = 0;
     summary.wrote = 0;
     summary.fds.clear ();
-    saurion = saurion_create (3);
+    saurion = saurion_create (N_THREADS);
     if (!saurion)
       {
         return;
@@ -231,12 +232,6 @@ protected:
       {
         exit (ERROR_CODE);
       }
-    pthread_mutex_lock (&saurion->status_m);
-    while (saurion->status != 1)
-      {
-        pthread_cond_wait (&saurion->status_c, &saurion->status_m);
-      }
-    pthread_mutex_unlock (&saurion->status_m);
   }
 
   void
@@ -453,7 +448,7 @@ TEST_F (low_saurion, initServerAndCloseCorrectly) { EXPECT_TRUE (true); }
 
 TEST_F (low_saurion, connectMultipleClients)
 {
-  uint32_t clients = 5;
+  uint32_t clients = 20;
   connect_clients (clients);
   wait_connected (clients);
   EXPECT_EQ (summary.connected, clients);

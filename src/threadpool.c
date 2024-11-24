@@ -1,7 +1,6 @@
 #include "threadpool.h"
 #include "config.h"
 
-
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -206,13 +205,13 @@ threadpool_add (struct threadpool *pool, void (*function) (void *),
       pool->task_queue_head = new_task;
       pool->task_queue_tail = new_task;
       // Signal worker threads that a new task is available
-      pthread_cond_signal (&pool->queue_cond);
     }
   else
     {
       pool->task_queue_tail->next = new_task;
       pool->task_queue_tail = new_task;
     }
+  pthread_cond_signal (&pool->queue_cond);
 
   pthread_mutex_unlock (&pool->queue_lock);
   LOG_END (" ");
