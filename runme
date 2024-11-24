@@ -2,10 +2,9 @@
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 
-# Los códigos de color se eliminan ya que el uso de "\e" y "-e" en echo no es compatible con POSIX
-TIMEOUT="25s"
+TEST_TIMEOUT="10s"
 
-# En POSIX no existen arreglos asociativos, utilizaremos variables individuales
+# En POSIX no existen arrays asociativos, utilizaremos variables individuales
 OPTION_FLAGS_docs=false
 OPTION_FLAGS_loop=false
 OPTION_FLAGS_leak=false
@@ -19,7 +18,7 @@ OPTION_FLAGS_thread=false
 MAKE_TARGETS_docs="doxygen-doc"
 MAKE_TARGETS_leak="leak-check"
 MAKE_TARGETS_coverage="coverage"
-MAKE_TARGETS_debug="valgrind"
+MAKE_TARGETS_debug="check"
 MAKE_TARGETS_thread="thread-check"
 
 # Lista de opciones para iterar
@@ -49,7 +48,7 @@ configure() {
   autoreconf --install
 
   mkdir -p "${SCRIPT_DIR}/build"
-  cd "${SCRIPT_DIR}/build"
+  cd "${SCRIPT_DIR}/build" || exit
   "${SCRIPT_DIR}/configure" ${params} &&
     wait_key
 }
@@ -59,6 +58,13 @@ make_exec() {
   banner "MAKE ${params}"
 
   make ${params} &&
+    wait_key
+}
+
+make_tests() {
+  banner "MAKE check"
+
+  timeout "${TEST_TIMEOUT}" make check &&
     wait_key
 }
 
@@ -107,12 +113,12 @@ loop_execution() {
     fi
     executed=1
     make_exec || continue
-    make_exec check || {
+    make_tests || {
       echo "Running tests individually..."
       # Ejecutar los tests individualmente si falla make check
       for test_file in "${SCRIPT_DIR}/build/tests/"*_test; do
         if [ -x "$test_file" ]; then
-          "$test_file"
+          timeout "${TEST_TIMEOUT}" "$test_file"
         fi
       done
     }
@@ -254,7 +260,7 @@ else
     make_exec compile_commands
   fi
   make_exec
-  make_exec check || ./tests/saurion_test
+  make_tests || ./tests/saurion_test
   for option in $MAKE_TARGETS_list; do
     option_flag_var="OPTION_FLAGS_${option}"
     option_flag_value=$(eval echo \$$option_flag_var)
