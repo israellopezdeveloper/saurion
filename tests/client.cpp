@@ -238,6 +238,9 @@ createClient (int clientId)
       std::vector<uint8_t> accumulatedBuffer;
       ssize_t total_len = 0;
 
+      struct timespec ts;
+      ts.tv_sec = 0;
+      ts.tv_nsec = 1000000L;
       while (keepRunning)
         {
           int dataAvailable = 3;
@@ -263,7 +266,7 @@ createClient (int clientId)
                 {
                   if (errno == EAGAIN || errno == EWOULDBLOCK)
                     {
-                      usleep (1000);
+                      nanosleep (&ts, nullptr);
                       --dataAvailable;
                     }
                   else

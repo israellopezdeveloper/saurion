@@ -2,6 +2,7 @@
 #include "low_saurion.h" // for saurion, saurion_send, EXTERNAL_set_socket
 
 #include <pthread.h>
+#include <stdatomic.h>
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -217,7 +218,8 @@ protected:
     };
     saurion->cb.on_closed = [] (int sfd, void *) -> void {
       pthread_mutex_lock (&summary.disconnected_m);
-      summary.disconnected++;
+      atomic_fetch_add_explicit ((atomic_int *)&summary.disconnected, 1,
+                                 memory_order_relaxed);
       pthread_cond_signal (&summary.disconnected_c);
       pthread_mutex_unlock (&summary.disconnected_m);
       pthread_mutex_lock (&summary.connected_m);

@@ -12,6 +12,8 @@ extern "C" {
  * @cond
  * This is hidden from the documentation.
  */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 struct request {
   void *prev;
   size_t prev_size;
@@ -23,6 +25,7 @@ struct request {
   int client_socket;
   struct iovec iov[];
 };
+#pragma GCC diagnostic pop
 /*! @endcond */
 
 /*!

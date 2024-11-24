@@ -2,8 +2,10 @@
 
 #include "config.h"
 
+#include <asm-generic/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,6 +33,9 @@ struct request
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 pthread_mutex_t print_mutex;
+
+struct timespec TIMEOUT_RETRY_SPEC
+    = { 0, TIMEOUT_RETRY * 1000L }; // Inicializamos con 0
 
 struct saurion_wrapper
 {
@@ -242,13 +247,13 @@ add_accept (struct saurion *const s, const struct sockaddr_in *const ca,
       while (!sqe)
         {
           sqe = io_uring_get_sqe (&s->rings[0]);
-          usleep (TIMEOUT_RETRY);
+          nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
         }
       struct request *req = NULL;
       if (!set_request (&req, &s->list, 0, NULL, 0))
         {
           free (sqe);
-          usleep (TIMEOUT_RETRY);
+          nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
           res = ERROR_CODE;
           continue;
         }
@@ -260,7 +265,7 @@ add_accept (struct saurion *const s, const struct sockaddr_in *const ca,
         {
           free (sqe);
           list_delete_node (&s->list, req);
-          usleep (TIMEOUT_RETRY);
+          nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
           res = ERROR_CODE;
           continue;
         }
@@ -281,7 +286,7 @@ add_efd (struct saurion *const s, const int client_socket, int sel)
       while (!sqe)
         {
           sqe = io_uring_get_sqe (ring);
-          usleep (TIMEOUT_RETRY);
+          nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
         }
       struct request *req = NULL;
       if (!set_request (&req, &s->list, CHUNK_SZ, NULL, 0))
@@ -320,7 +325,7 @@ add_read (struct saurion *const s, const int client_socket)
       while (!sqe)
         {
           sqe = io_uring_get_sqe (ring);
-          usleep (TIMEOUT_RETRY);
+          nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
         }
       struct request *req = NULL;
       if (!set_request (&req, &s->list, CHUNK_SZ, NULL, 0))
@@ -359,7 +364,7 @@ add_read_continue (struct saurion *const s, struct request *oreq,
       while (!sqe)
         {
           sqe = io_uring_get_sqe (ring);
-          usleep (TIMEOUT_RETRY);
+          nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
         }
       if (!set_request (&oreq, &s->list, oreq->prev_remain, NULL, 0))
         {
@@ -395,7 +400,7 @@ add_write (struct saurion *const s, int fd, const char *const str,
       while (!sqe)
         {
           sqe = io_uring_get_sqe (ring);
-          usleep (TIMEOUT_RETRY);
+          nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
         }
       struct request *req = NULL;
       if (!set_request (&req, &s->list, strlen (str), (void *)str, 1))
@@ -414,7 +419,7 @@ add_write (struct saurion *const s, int fd, const char *const str,
           free (sqe);
           list_delete_node (&s->list, req);
           res = ERROR_CODE;
-          usleep (TIMEOUT_RETRY);
+          nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
           continue;
         }
       res = SUCCESS_CODE;
@@ -481,7 +486,8 @@ read_chunk (void **dest, size_t *len, struct request *const req)
       // Reading the next message
       curr_iov = req->next_iov;
       curr_iov_off = req->next_offset;
-      cont_sz = *((size_t *)(req->iov[curr_iov].iov_base + curr_iov_off));
+      cont_sz = *(
+          (size_t *)(((uint8_t *)req->iov[curr_iov].iov_base) + curr_iov_off));
       cont_sz = ntohll (cont_sz);
       curr_iov_off += sizeof (uint64_t);
       cont_rem = cont_sz;
@@ -504,7 +510,8 @@ read_chunk (void **dest, size_t *len, struct request *const req)
       // Reading the first message
       curr_iov = 0;
       curr_iov_off = 0;
-      cont_sz = *((size_t *)(req->iov[curr_iov].iov_base + curr_iov_off));
+      cont_sz = *(
+          (size_t *)(((uint8_t *)req->iov[curr_iov].iov_base) + curr_iov_off));
       cont_sz = ntohll (cont_sz);
       curr_iov_off += sizeof (uint64_t);
       cont_rem = cont_sz;
@@ -531,7 +538,8 @@ read_chunk (void **dest, size_t *len, struct request *const req)
     {
       curr_iov_msg_rem
           = MIN (cont_rem, (req->iov[curr_iov].iov_len - curr_iov_off));
-      memcpy (dest_ptr + dest_off, req->iov[curr_iov].iov_base + curr_iov_off,
+      memcpy ((uint8_t *)dest_ptr + dest_off,
+              ((uint8_t *)req->iov[curr_iov].iov_base) + curr_iov_off,
               curr_iov_msg_rem);
       dest_off += curr_iov_msg_rem;
       curr_iov_off += curr_iov_msg_rem;
@@ -539,7 +547,9 @@ read_chunk (void **dest, size_t *len, struct request *const req)
       if (cont_rem <= 0)
         {
           // Finish reading
-          if (*((uint8_t *)(req->iov[curr_iov].iov_base + curr_iov_off)) != 0)
+          if (*((uint8_t *)(((uint8_t *)req->iov[curr_iov].iov_base)
+                            + curr_iov_off))
+              != 0)
             {
               ok = 0UL;
             }
@@ -573,8 +583,8 @@ read_chunk (void **dest, size_t *len, struct request *const req)
     }
   if (curr_iov < req->iovec_count)
     {
-      uint64_t next_sz
-          = *(uint64_t *)(req->iov[curr_iov].iov_base + curr_iov_off);
+      uint64_t next_sz = *(uint64_t *)(((uint8_t *)req->iov[curr_iov].iov_base)
+                                       + curr_iov_off);
       if ((req->iov[curr_iov].iov_len > curr_iov_off) && next_sz)
         {
           req->next_iov = curr_iov;
@@ -602,7 +612,8 @@ read_chunk (void **dest, size_t *len, struct request *const req)
         {
           for (size_t j = curr_iov_off; j < req->iov[i].iov_len; ++j)
             {
-              uint8_t foot = *(uint8_t *)(req->iov[i].iov_base + j);
+              uint8_t foot
+                  = *(uint8_t *)(((uint8_t *)req->iov[i].iov_base) + j);
               if (foot == 0)
                 {
                   req->next_iov = i;
@@ -702,10 +713,6 @@ EXTERNAL_set_socket (const int p)
 
   int enable = 1;
   if (setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof (int)) < 0)
-    {
-      return ERROR_CODE;
-    }
-  if (setsockopt (sock, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof (int)) < 0)
     {
       return ERROR_CODE;
     }
@@ -1085,7 +1092,7 @@ saurion_stop (const struct saurion *const s)
     {
       while (write (s->efds[i], &u, sizeof (u)) < 0)
         {
-          usleep (TIMEOUT_RETRY);
+          nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
         }
     }
   threadpool_wait_empty (s->pool);

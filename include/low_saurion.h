@@ -104,6 +104,9 @@
 #ifndef LOW_SAURION_H
 #define LOW_SAURION_H
 
+#define _POSIX_C_SOURCE 200809L
+#include <signal.h>
+
 #include <liburing.h>
 #include <pthread.h>
 

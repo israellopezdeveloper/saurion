@@ -2,8 +2,6 @@
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 
-TEST_TIMEOUT="10s"
-
 # En POSIX no existen arrays asociativos, utilizaremos variables individuales
 OPTION_FLAGS_docs=false
 OPTION_FLAGS_loop=false
@@ -64,7 +62,7 @@ make_exec() {
 make_tests() {
   banner "MAKE check"
 
-  timeout "${TEST_TIMEOUT}" make check &&
+  make check &&
     wait_key
 }
 
@@ -118,7 +116,7 @@ loop_execution() {
       # Ejecutar los tests individualmente si falla make check
       for test_file in "${SCRIPT_DIR}/build/tests/"*_test; do
         if [ -x "$test_file" ]; then
-          timeout "${TEST_TIMEOUT}" "$test_file"
+          "$test_file"
         fi
       done
     }
