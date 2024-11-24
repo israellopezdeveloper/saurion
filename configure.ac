@@ -7,7 +7,7 @@ AC_DEFINE([ACCEPT_QUEUE], [10], [@brief Accepting queue of the socket])
 AC_DEFINE([SAURION_RING_SIZE], [256], [@brief Size of liburing ring structure])
 AC_DEFINE([TIMEOUT_RETRY], [10], [@brief Timeout for retrying operations])
 AC_DEFINE([MAX_ATTEMPTS], [10], [@brief Number of attempts to make an operation])
-AC_DEFINE([NUM_CORES], [sysconf(_SC_NPROCESSORS_ONLN)], [@brief Number of cores/processors on the computer])
+AC_DEFINE([NUM_CORES], [(unsigned long)sysconf(_SC_NPROCESSORS_ONLN)], [@brief Number of cores/processors on the computer])
 
 # It is recommended not to modify this file from this line
 # Detect the C and C++ compilers
