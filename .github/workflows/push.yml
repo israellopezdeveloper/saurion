@@ -52,9 +52,4 @@ jobs:
       docker_options: '--privileged --user root'
       commands: |
         ulimit -n 1024
-        autoreconf --install
-        mkdir build
-        cd build
-        ../configure --enable-build-mode=memleak
-        make check
-        cd ..
+        ./runme --leak
