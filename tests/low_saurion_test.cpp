@@ -3,6 +3,7 @@
 
 #include <ctime>
 #include <pthread.h>
+#include <random>
 #include <stdatomic.h>
 #include <string.h>
 #include <sys/types.h>
@@ -31,7 +32,7 @@ void
 get_executable_directory (char *buffer, size_t size)
 {
   ssize_t len = readlink ("/proc/self/exe", buffer, size - 1);
-  if (len != -1)
+  if ((len != -1) || (len < (ssize_t)size))
     {
       buffer[len - 1] = '\0';
       if (char *last_slash = strrchr (buffer, '/'); last_slash != nullptr)
@@ -105,13 +106,14 @@ protected:
       }
 
     strcpy (fifo_name, FIFO);
-    // Seed the random number generator
-    srand (time (nullptr));
+    std::random_device rd;
+    std::mt19937 gen (rd ());
+    std::uniform_int_distribution<> dis (0, 10);
 
     // Generate the random "XXX" string
     for (int i = 23; i < 26; i++)
       {
-        char c = (rand () % 10) + '0';
+        char c = dis (gen) + '0';
         fifo_name[i] = c;
       }
 
@@ -150,15 +152,14 @@ protected:
         snprintf (script_path, sizeof (script_path), "%s/client",
                   executable_dir);
 
-        for (char *item :
-             { (char *)script_path, (char *)"-p", (char *)fifo_name })
+        for (char *item : { (char *)script_path, (char *)"-p", fifo_name })
           {
             exec_args.push_back (item);
           }
         exec_args.push_back (nullptr);
 
         // Ejecuta el comando y ignora el retorno
-        execvp (script_path, const_cast<char **> (exec_args.data ()));
+        execvp (script_path, exec_args.data ());
       }
     else
       {

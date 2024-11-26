@@ -84,7 +84,7 @@ sendMessagesHandler (int signum)
       for (int i = 0; i < *globalMessageCount; ++i)
         {
           // Crear el mensaje
-          auto length = (uint64_t)strlen (globalMessage);
+          auto length = strlen (globalMessage);
 
           // 2. Crear un buffer que contendrá el mensaje completo
           uint64_t msg_len = strlen (globalMessage) + sizeof (length) + 1;
@@ -259,29 +259,25 @@ createClient (int clientId)
               accumulatedBuffer.insert (accumulatedBuffer.end (), buffer,
                                         buffer + len);
               total_len += len;
+              continue;
             }
-          else if (len == 0)
+          if (len == 0)
             {
               keepRunning = false;
               break;
             }
-          else if (len < 0)
+          if (errno == EAGAIN || errno == EWOULDBLOCK)
             {
-              if (errno == EAGAIN || errno == EWOULDBLOCK)
-                {
-                  nanosleep (&ts, nullptr);
-                  --dataAvailable;
-                }
-              else
-                {
-                  // Error de lectura, pero no debido a que no haya datos
-                  // disponibles
-                  std::cerr << "Error leyendo del socket: " << strerror (errno)
-                            << std::endl;
-                  keepRunning = false;
-                  break;
-                }
+              nanosleep (&ts, nullptr);
+              --dataAvailable;
+              continue;
             }
+          // Error de lectura, pero no debido a que no haya datos
+          // disponibles
+          std::cerr << "Error leyendo del socket: " << strerror (errno)
+                    << std::endl;
+          keepRunning = false;
+          break;
         }
 
       // Procesar todos los datos acumulados en una sola llamada a

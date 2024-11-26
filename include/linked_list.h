@@ -13,7 +13,7 @@ extern "C"
   int list_insert (struct Node **head, void *ptr, size_t amount,
                    void **children);
 
-  void list_delete_node (struct Node **head, void *const ptr);
+  void list_delete_node (struct Node **head, const void *const ptr);
 
   void list_free (struct Node **head);
 
