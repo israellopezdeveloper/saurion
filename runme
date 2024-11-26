@@ -43,6 +43,7 @@ configure() {
     rm -rf "${SCRIPT_DIR}/build"
   fi
 
+  aclocal
   autoreconf --install
 
   mkdir -p "${SCRIPT_DIR}/build"
