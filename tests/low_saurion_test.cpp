@@ -1,6 +1,7 @@
 #include "config.h"
 #include "low_saurion.h" // for saurion, saurion_send, EXTERNAL_set_socket
 
+#include <ctime>
 #include <pthread.h>
 #include <stdatomic.h>
 #include <string.h>
@@ -33,19 +34,18 @@ get_executable_directory (char *buffer, size_t size)
   if (len != -1)
     {
       buffer[len - 1] = '\0';
-      char *last_slash = strrchr (buffer, '/');
-      if (last_slash != nullptr)
+      if (char *last_slash = strrchr (buffer, '/'); last_slash != nullptr)
         {
           *last_slash = '\0';
         }
-      char *real_path = new char[PATH_MAX];
+      auto *real_path = new char[PATH_MAX];
       if (realpath (buffer, real_path) == nullptr)
         {
           perror ("realpath");
           exit (EXIT_FAILURE);
         }
-      char *libs_pos = strstr (real_path, "/.libs");
-      if (libs_pos)
+
+      if (char *libs_pos = strstr (real_path, "/.libs"); libs_pos)
         {
           // Recortar desde el inicio hasta `.libs` y después de eso.
           *libs_pos = '\0';
@@ -73,7 +73,7 @@ struct summary
   std::vector<int> fds;
   pthread_cond_t connected_c = PTHREAD_COND_INITIALIZER;
   pthread_mutex_t connected_m = PTHREAD_MUTEX_INITIALIZER;
-  volatile uint32_t disconnected = 0;
+  uint32_t disconnected = 0;
   pthread_cond_t disconnected_c = PTHREAD_COND_INITIALIZER;
   pthread_mutex_t disconnected_m = PTHREAD_MUTEX_INITIALIZER;
   size_t readed = 0;
@@ -98,7 +98,7 @@ protected:
   static char *
   generate_random_fifo_name ()
   {
-    fifo_name = (char *)malloc (FIFO_LENGTH);
+    fifo_name = new char[FIFO_LENGTH];
     if (!fifo_name)
       {
         return nullptr; // Handle error
@@ -131,8 +131,6 @@ protected:
     if (mkfifo (fifo_name, 0666) == -1)
       {
         perror ("Error al crear el FIFO");
-        // free(fifo_name);
-        // exit(ERROR_CODE);
       }
     pid = fork ();
     if (pid < 0)
@@ -142,7 +140,7 @@ protected:
       }
     if (pid == 0)
       {
-        std::vector<const char *> exec_args;
+        std::vector<char *> exec_args;
 
         char executable_dir[1024];
 
@@ -152,14 +150,15 @@ protected:
         snprintf (script_path, sizeof (script_path), "%s/client",
                   executable_dir);
 
-        for (char *item : { (char *)script_path, (char *)"-p", fifo_name })
+        for (char *item :
+             { (char *)script_path, (char *)"-p", (char *)fifo_name })
           {
             exec_args.push_back (item);
           }
         exec_args.push_back (nullptr);
 
         // Ejecuta el comando y ignora el retorno
-        execvp (script_path, const_cast<char *const *> (exec_args.data ()));
+        execvp (script_path, const_cast<char **> (exec_args.data ()));
       }
     else
       {
@@ -175,7 +174,7 @@ protected:
     waitpid (pid, &status, 0);
     fclose (fifo_write);
     unlink (fifo_name);
-    free (fifo_name);
+    delete[] fifo_name;
   }
 
   void
@@ -197,7 +196,7 @@ protected:
       {
         throw std::runtime_error (strerror (errno));
       }
-    saurion->cb.on_connected = [] (int sfd, void *) -> void {
+    saurion->cb.on_connected = [] (int sfd, void *) {
       pthread_mutex_lock (&summary.connected_m);
       summary.connected++;
       summary.fds.push_back (sfd);
@@ -205,19 +204,19 @@ protected:
       pthread_mutex_unlock (&summary.connected_m);
     };
     saurion->cb.on_readed
-        = [] (int, const void *const, const ssize_t size, void *) -> void {
-      pthread_mutex_lock (&summary.readed_m);
-      summary.readed += size;
-      pthread_cond_signal (&summary.readed_c);
-      pthread_mutex_unlock (&summary.readed_m);
-    };
-    saurion->cb.on_wrote = [] (int, void *) -> void {
+        = [] (int, const void *const, const ssize_t size, void *) {
+            pthread_mutex_lock (&summary.readed_m);
+            summary.readed += size;
+            pthread_cond_signal (&summary.readed_c);
+            pthread_mutex_unlock (&summary.readed_m);
+          };
+    saurion->cb.on_wrote = [] (int, void *) {
       pthread_mutex_lock (&summary.wrote_m);
       summary.wrote++;
       pthread_cond_signal (&summary.wrote_c);
       pthread_mutex_unlock (&summary.wrote_m);
     };
-    saurion->cb.on_closed = [] (int sfd, void *) -> void {
+    saurion->cb.on_closed = [] (int sfd, void *) {
       pthread_mutex_lock (&summary.disconnected_m);
       atomic_fetch_add_explicit ((atomic_int *)&summary.disconnected, 1,
                                  memory_order_relaxed);
@@ -229,8 +228,9 @@ protected:
       pthread_cond_signal (&summary.connected_c);
       pthread_mutex_unlock (&summary.connected_m);
     };
-    saurion->cb.on_error
-        = [] (int, const char *const, const ssize_t, void *) -> void {};
+    saurion->cb.on_error = [] (int, const char *const, const ssize_t, void *) {
+      // Not tested yet
+    };
     if (!saurion_start (saurion))
       {
         exit (ERROR_CODE);
@@ -250,7 +250,10 @@ protected:
     summary.readed = 0;
     summary.wrote = 0;
     summary.fds.clear ();
-    usleep (10000);
+    struct timespec tim;
+    tim.tv_sec = 0;
+    tim.tv_nsec = 10000000L;
+    nanosleep (&tim, nullptr);
   }
 
   static void
@@ -347,7 +350,7 @@ protected:
   }
 
   static size_t
-  countOccurrences (std::string &content, const std::string &search)
+  countOccurrences (std::string_view content, const std::string &search)
   {
     size_t count = 0;
     size_t pos = content.find (search);
@@ -396,6 +399,7 @@ private:
               }
             catch (...)
               {
+                // Do nothing
               }
           }
       }
@@ -482,7 +486,7 @@ TEST_F (low_saurion, writeMsgsToClients)
   connect_clients (clients);
   wait_connected (clients);
   EXPECT_EQ (summary.connected, clients);
-  for (auto &cfd : summary.fds)
+  for (const auto &cfd : summary.fds)
     {
       saurion_2_client (cfd, msgs, "Hola");
     }
@@ -515,7 +519,7 @@ TEST_F (low_saurion, readWriteWithLargeMessageMultipleOfChunkSize)
 {
   uint32_t clients = 1;
   size_t size = CHUNK_SZ * 2;
-  char *str = new char[size + 1];
+  auto *str = new char[size + 1];
   memset (str, 'A', size);
   str[size - 1] = '1';
   str[size] = 0;
@@ -538,7 +542,7 @@ TEST_F (low_saurion, readWriteWithLargeMessage)
 {
   uint32_t clients = 1;
   size_t size = CHUNK_SZ * 2.5;
-  char *str = new char[size + 1];
+  auto *str = new char[size + 1];
   memset (str, 'A', size);
   str[size - 1] = '1';
   str[size] = 0;

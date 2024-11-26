@@ -16,13 +16,6 @@ public:
 
 protected:
   void
-  SetUp () override
-  {
-    list_free (&list);
-    list = nullptr;
-  }
-
-  void
   TearDown () override
   {
     list_free (&list);
@@ -32,7 +25,7 @@ protected:
   char *
   insert_simple_item (const char *const str)
   {
-    char *ptr = new char[strlen (str) + 1];
+    auto *ptr = new char[strlen (str) + 1];
     strcpy (ptr, str);
     list_insert (&list, ptr, 0, nullptr);
     return ptr;
@@ -41,11 +34,11 @@ protected:
   char *
   insert_complex_item (const char *const str)
   {
-    char *ptr = new char[strlen (str) + 1];
+    auto *ptr = new char[strlen (str) + 1];
     strcpy (ptr, str);
     size_t amount = 4;
-    struct iovec **children = new struct iovec *[amount];
-    void **children_ptr = new void *[amount];
+    auto **children = new struct iovec *[amount];
+    auto **children_ptr = new void *[amount];
     for (size_t i = 0; i < amount; ++i)
       {
         children[i] = new struct iovec;
@@ -189,7 +182,7 @@ public:
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertSimpleItems)
 {
-  std::vector<std::thread> threads;
+  std::vector<std::jthread> threads;
   for (int i = 0; i < N_THREADS; ++i)
     {
       threads.emplace_back (
@@ -206,7 +199,7 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertSimpleItems)
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertComplexItems)
 {
-  std::vector<std::thread> threads;
+  std::vector<std::jthread> threads;
   for (int i = 0; i < N_THREADS; ++i)
     {
       threads.emplace_back (
@@ -223,7 +216,7 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertComplexItems)
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteSimpleItems)
 {
-  std::vector<std::thread> threads;
+  std::vector<std::jthread> threads;
   for (int i = 0; i < N_THREADS; ++i)
     {
       threads.emplace_back (
@@ -241,7 +234,7 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteSimpleItems)
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteComplexItems)
 {
-  std::vector<std::thread> threads;
+  std::vector<std::jthread> threads;
   for (int i = 0; i < N_THREADS; ++i)
     {
       threads.emplace_back (
@@ -259,8 +252,8 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteComplexItems)
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteDifferentItems)
 {
-  std::atomic<int> deletions (0);
-  std::vector<std::thread> threads;
+  std::atomic deletions (0);
+  std::vector<std::jthread> threads;
 
   auto insert_task = [this] () {
     for (int i = 0; i < ITEMS_PER_THREAD; ++i)

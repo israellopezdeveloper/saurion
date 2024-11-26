@@ -548,9 +548,7 @@ read_chunk (void **dest, size_t *len, struct request *const req)
       if (cont_rem <= 0)
         {
           // Finish reading
-          if (*((uint8_t *)(((uint8_t *)req->iov[curr_iov].iov_base)
-                            + curr_iov_off))
-              != 0)
+          if (*(((uint8_t *)req->iov[curr_iov].iov_base) + curr_iov_off) != 0)
             {
               ok = 0UL;
             }
@@ -615,7 +613,7 @@ read_chunk (void **dest, size_t *len, struct request *const req)
     {
       for (size_t j = curr_iov_off; j < req->iov[i].iov_len; ++j)
         {
-          uint8_t foot = *(uint8_t *)(((uint8_t *)req->iov[i].iov_base) + j);
+          uint8_t foot = *((uint8_t *)req->iov[i].iov_base) + j;
           if (foot == 0)
             {
               req->next_iov = i;

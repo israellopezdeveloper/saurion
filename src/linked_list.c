@@ -105,7 +105,7 @@ free_node (struct Node *current)
 }
 
 void
-list_delete_node (struct Node **head, void *ptr)
+list_delete_node (struct Node **head, void *const ptr)
 {
   pthread_mutex_lock (&list_mutex);
   struct Node *current = *head;

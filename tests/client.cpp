@@ -78,16 +78,19 @@ sendMessagesHandler (int signum)
   if (signum == SIGUSR2)
     {
       // Enviar los mensajes
+      struct timespec tim;
+      tim.tv_sec = 0;
+      tim.tv_nsec = *globalMessageDelay * 1000L;
       for (int i = 0; i < *globalMessageCount; ++i)
         {
           // Crear el mensaje
-          uint64_t length = (uint64_t)strlen (globalMessage);
+          auto length = (uint64_t)strlen (globalMessage);
 
           // 2. Crear un buffer que contendrá el mensaje completo
           uint64_t msg_len = strlen (globalMessage) + sizeof (length) + 1;
 
           // 3. Crear un buffer para almacenar todo el mensaje
-          char *buffer = new char[msg_len];
+          auto *buffer = new char[msg_len];
           if (buffer == nullptr)
             {
               perror ("Error en malloc");
@@ -106,8 +109,7 @@ sendMessagesHandler (int signum)
           buffer[msg_len - 1] = 0;
 
           // Enviar mensaje al servidor
-          int64_t sent = send (sockfd, buffer, msg_len, 0);
-          if (sent < 0)
+          if (int64_t sent = send (sockfd, buffer, msg_len, 0); sent < 0)
             {
               delete[] buffer;
               break;
@@ -115,7 +117,7 @@ sendMessagesHandler (int signum)
           delete[] buffer;
 
           // Esperar el delay antes de enviar el siguiente mensaje
-          usleep (*globalMessageDelay * 1000); // Delay en milisegundos
+          nanosleep (&tim, nullptr); // Delay en milisegundos
         }
     }
 }
@@ -161,7 +163,7 @@ parseMessages (char *buffer, int64_t bytes_read, std::ofstream &logStream)
         }
 
       // Leer el mensaje
-      char *msg = new char[msg_len + 1];
+      auto *msg = new char[msg_len + 1];
       memcpy (msg, (char *)(buffer + offset), msg_len);
       msg[msg_len] = '\0'; // Agregar terminador de cadena
       offset += msg_len;
@@ -350,7 +352,7 @@ disconnectClients ()
 }
 
 // Cerrar la aplicación
-void
+__attribute__ ((noreturn)) void
 closeApplication ()
 {
   disconnectClients ();
@@ -419,7 +421,7 @@ readPipe (const std::string &pipePath)
   while ((bytesRead = read (fd, buffer, sizeof (buffer))) > 0L)
     {
       commandBuffer.append (buffer, bytesRead);
-      if (commandBuffer.find ('\n') != std::string::npos)
+      if (commandBuffer.contains ('\n'))
         {
           handleCommand (commandBuffer);
           commandBuffer.clear ();
