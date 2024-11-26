@@ -7,7 +7,7 @@
 
 #include "gtest/gtest.h" // for AssertionResult, Message, TestInfo (ptr only)
 
-#define N_ITEMS 100
+constexpr int N_ITEMS = 100;
 
 class LinkedListTest : public ::testing::Test
 {
@@ -29,7 +29,7 @@ protected:
     list = nullptr;
   }
 
-  void *
+  char *
   insert_simple_item (const char *const str)
   {
     char *ptr = (char *)malloc (strlen (str) + 1);
@@ -44,14 +44,13 @@ protected:
     char *ptr = (char *)malloc (strlen (str) + 1);
     strcpy (ptr, str);
     size_t amount = 4;
-    struct iovec **children
-        = (struct iovec **)malloc (sizeof (struct iovec *) * amount);
-    void **children_ptr = (void **)malloc (sizeof (void *) * amount);
+    struct iovec **children = new struct iovec *[amount];
+    void **children_ptr = new void *[amount];
     for (size_t i = 0; i < amount; ++i)
       {
-        children[i] = (struct iovec *)malloc (sizeof (struct iovec));
+        children[i] = new struct iovec;
         children[i]->iov_len = 7;
-        children[i]->iov_base = (char *)malloc (children[i]->iov_len);
+        children[i]->iov_base = new char[children[i]->iov_len];
         strcpy ((char *)children[i]->iov_base, "Hola h");
         children_ptr[i] = children[i]->iov_base;
       }
@@ -60,10 +59,10 @@ protected:
 
     for (size_t i = 0; i < amount; ++i)
       {
-        free (children[i]);
+        delete children[i];
       }
-    free (children);
-    free (children_ptr);
+    delete[] children;
+    delete[] children_ptr;
     return ptr;
   }
 };

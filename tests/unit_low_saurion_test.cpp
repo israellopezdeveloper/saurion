@@ -1,6 +1,7 @@
 #include <bits/types/struct_iovec.h>
 #include <gtest/gtest.h>
 #include <netinet/in.h>
+#include <random>
 
 #include <cstdint>
 #include <cstdio>
@@ -242,6 +243,10 @@ TEST (unit_saurion, initialize_correct_with_header)
 TEST (unit_saurion, creates_iovecs_correctly)
 {
   EXPECT_EQ (1, 1);
+  std::random_device rd;
+  std::mt19937 gen (rd ());
+  std::uniform_int_distribution<> dis (0, 10);
+  std::uniform_int_distribution<> dis2 (0, CHUNK_SZ);
   check_iovec (CHUNK_SZ / 2, 1);
   check_iovec (CHUNK_SZ + 53, 1);
   check_iovec (CHUNK_SZ, 1);
@@ -251,9 +256,9 @@ TEST (unit_saurion, creates_iovecs_correctly)
   check_iovec (10 * CHUNK_SZ - sizeof (uint64_t), 1);
   for (int i = 0; i < 10; ++i)
     {
-      srand (time (0));
-      int chunks = rand () % 10;
-      int extra = rand () % CHUNK_SZ;
+      ;
+      int chunks = dis (gen);
+      int extra = dis2 (gen);
       check_iovec (chunks * CHUNK_SZ + extra, 1);
     }
 }

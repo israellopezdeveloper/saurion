@@ -26,36 +26,38 @@ create_node (void *ptr, size_t amount, void **children)
   new_node->ptr = ptr;
   new_node->size = amount;
   new_node->children = NULL;
-  if (amount > 0)
+  if (amount <= 0)
     {
-      new_node->children
-          = (struct Node **)malloc (sizeof (struct Node *) * amount);
-      if (!new_node->children)
+      new_node->next = NULL;
+      return new_node;
+    }
+  new_node->children
+      = (struct Node **)malloc (sizeof (struct Node *) * amount);
+  if (!new_node->children)
+    {
+      free (new_node);
+      return NULL;
+    }
+  for (size_t i = 0; i < amount; ++i)
+    {
+      new_node->children[i] = (struct Node *)malloc (sizeof (struct Node));
+
+      if (!new_node->children[i])
         {
+          for (size_t j = 0; j < i; ++j)
+            {
+              free (new_node->children[j]);
+            }
           free (new_node);
           return NULL;
         }
-      for (size_t i = 0; i < amount; ++i)
-        {
-          new_node->children[i] = (struct Node *)malloc (sizeof (struct Node));
-
-          if (!new_node->children[i])
-            {
-              for (size_t j = 0; j < i; ++j)
-                {
-                  free (new_node->children[j]);
-                }
-              free (new_node);
-              return NULL;
-            }
-        }
-      for (size_t i = 0; i < amount; ++i)
-        {
-          new_node->children[i]->size = 0;
-          new_node->children[i]->next = NULL;
-          new_node->children[i]->ptr = children[i];
-          new_node->children[i]->children = NULL;
-        }
+    }
+  for (size_t i = 0; i < amount; ++i)
+    {
+      new_node->children[i]->size = 0;
+      new_node->children[i]->next = NULL;
+      new_node->children[i]->ptr = children[i];
+      new_node->children[i]->children = NULL;
     }
   new_node->next = NULL;
   return new_node;

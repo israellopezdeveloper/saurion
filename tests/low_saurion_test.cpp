@@ -32,7 +32,7 @@ get_executable_directory (char *buffer, size_t size)
   ssize_t len = readlink ("/proc/self/exe", buffer, size - 1);
   if (len != -1)
     {
-      buffer[len] = '\0';
+      buffer[len - 1] = '\0';
       char *last_slash = strrchr (buffer, '/');
       if (last_slash != NULL)
         {

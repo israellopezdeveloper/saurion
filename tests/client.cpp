@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <cstdlib>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/mman.h> // Para memoria compartida
@@ -86,8 +87,8 @@ sendMessagesHandler (int signum)
           uint64_t msg_len = strlen (globalMessage) + sizeof (length) + 1;
 
           // 3. Crear un buffer para almacenar todo el mensaje
-          char *buffer = (char *)malloc (msg_len);
-          if (buffer == NULL)
+          char *buffer = new char[msg_len];
+          if (buffer == nullptr)
             {
               perror ("Error en malloc");
               exit (EXIT_FAILURE);
@@ -108,9 +109,10 @@ sendMessagesHandler (int signum)
           int64_t sent = send (sockfd, buffer, msg_len, 0);
           if (sent < 0)
             {
+              delete[] buffer;
               break;
             }
-          free (buffer);
+          delete[] buffer;
 
           // Esperar el delay antes de enviar el siguiente mensaje
           usleep (*globalMessageDelay * 1000); // Delay en milisegundos
@@ -159,8 +161,7 @@ parseMessages (char *buffer, int64_t bytes_read, std::ofstream &logStream)
         }
 
       // Leer el mensaje
-      char *msg = (char *)malloc (msg_len
-                                  + 1); // +1 para agregar terminador de cadena
+      char *msg = new char[msg_len + 1];
       memcpy (msg, (char *)(buffer + offset), msg_len);
       msg[msg_len] = '\0'; // Agregar terminador de cadena
       offset += msg_len;
@@ -171,13 +172,13 @@ parseMessages (char *buffer, int64_t bytes_read, std::ofstream &logStream)
 
       if (end_byte != 0)
         {
-          free (msg);
+          delete[] msg;
           return;
         }
 
       // Imprimir el mensaje
       logStream.write (msg, msg_len);
-      free (msg);
+      delete[] msg;
     }
 }
 
@@ -186,121 +187,115 @@ void
 createClient (int clientId)
 {
   pid_t pid = fork ();
-  if (pid == 0)
-    { // Proceso hijo
-      signal (
-          SIGUSR1,
+  if (pid != 0)
+    {
+      clients.push_back (pid);
+      return;
+    }
+  signal (SIGUSR1,
           signalHandler); // Asignar el manejador de la señal para finalizar
-      signal (
-          SIGUSR2,
+  signal (SIGUSR2,
           sendMessagesHandler); // Manejador de la señal para enviar mensajes
 
-      std::ostringstream tempFilePath;
-      tempFilePath << "/tmp/saurion_sender." << clientId << ".log";
-      std::ofstream logStream (tempFilePath.str (), std::ios::app);
+  std::ostringstream tempFilePath;
+  tempFilePath << "/tmp/saurion_sender." << clientId << ".log";
+  std::ofstream logStream (tempFilePath.str (), std::ios::app);
 
-      if (!logStream.is_open ())
+  if (!logStream.is_open ())
+    {
+      std::cerr << "Error al abrir el archivo log para el cliente " << clientId
+                << std::endl;
+      exit (1);
+    }
+
+  // Crear socket y conectarse al servidor
+  sockfd = socket (AF_INET, SOCK_STREAM, 0);
+  if (sockfd < 0)
+    {
+      std::cerr << "Error creando socket" << std::endl;
+      exit (1);
+    }
+
+  struct sockaddr_in serv_addr;
+  memset (&serv_addr, 0, sizeof (serv_addr));
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_port = htons (8080);
+  inet_pton (AF_INET, "localhost",
+             &serv_addr.sin_addr); // Asumiendo localhost para la conexión
+
+  if (connect (sockfd, (struct sockaddr *)&serv_addr, sizeof (serv_addr)) < 0)
+    {
+      perror ("Error conectando al servidor");
+      exit (1);
+    }
+
+  // Hacer el socket no bloqueante
+  makeSocketNonBlocking ();
+
+  char buffer[8192];
+  memset (buffer, 0, 8192);
+
+  // Leer datos del servidor en modo no bloqueante
+  std::vector<uint8_t> accumulatedBuffer;
+  ssize_t total_len = 0;
+
+  struct timespec ts;
+  ts.tv_sec = 0;
+  ts.tv_nsec = 1000000L;
+  while (keepRunning)
+    {
+      int dataAvailable = 3;
+
+      total_len = 0;
+      while (dataAvailable > 0)
         {
-          std::cerr << "Error al abrir el archivo log para el cliente "
-                    << clientId << std::endl;
-          exit (1);
-        }
+          ssize_t len = read (sockfd, buffer, sizeof (buffer));
 
-      // Crear socket y conectarse al servidor
-      sockfd = socket (AF_INET, SOCK_STREAM, 0);
-      if (sockfd < 0)
-        {
-          std::cerr << "Error creando socket" << std::endl;
-          exit (1);
-        }
-
-      struct sockaddr_in serv_addr;
-      memset (&serv_addr, 0, sizeof (serv_addr));
-      serv_addr.sin_family = AF_INET;
-      serv_addr.sin_port = htons (8080);
-      inet_pton (AF_INET, "localhost",
-                 &serv_addr.sin_addr); // Asumiendo localhost para la conexión
-
-      if (connect (sockfd, (struct sockaddr *)&serv_addr, sizeof (serv_addr))
-          < 0)
-        {
-          perror ("Error conectando al servidor");
-          exit (1);
-        }
-
-      // Hacer el socket no bloqueante
-      makeSocketNonBlocking ();
-
-      char buffer[8192];
-      memset (buffer, 0, 8192);
-
-      // Leer datos del servidor en modo no bloqueante
-      std::vector<uint8_t> accumulatedBuffer;
-      ssize_t total_len = 0;
-
-      struct timespec ts;
-      ts.tv_sec = 0;
-      ts.tv_nsec = 1000000L;
-      while (keepRunning)
-        {
-          int dataAvailable = 3;
-
-          total_len = 0;
-          while (dataAvailable > 0)
+          if (len > 0)
             {
-              ssize_t len = read (sockfd, buffer, sizeof (buffer));
-
-              if (len > 0)
+              // Acumular los datos leídos en el buffer
+              accumulatedBuffer.insert (accumulatedBuffer.end (), buffer,
+                                        buffer + len);
+              total_len += len;
+            }
+          else if (len == 0)
+            {
+              keepRunning = false;
+              break;
+            }
+          else if (len < 0)
+            {
+              if (errno == EAGAIN || errno == EWOULDBLOCK)
                 {
-                  // Acumular los datos leídos en el buffer
-                  accumulatedBuffer.insert (accumulatedBuffer.end (), buffer,
-                                            buffer + len);
-                  total_len += len;
+                  nanosleep (&ts, nullptr);
+                  --dataAvailable;
                 }
-              else if (len == 0)
+              else
                 {
+                  // Error de lectura, pero no debido a que no haya datos
+                  // disponibles
+                  std::cerr << "Error leyendo del socket: " << strerror (errno)
+                            << std::endl;
                   keepRunning = false;
                   break;
                 }
-              else if (len < 0)
-                {
-                  if (errno == EAGAIN || errno == EWOULDBLOCK)
-                    {
-                      nanosleep (&ts, nullptr);
-                      --dataAvailable;
-                    }
-                  else
-                    {
-                      // Error de lectura, pero no debido a que no haya datos
-                      // disponibles
-                      std::cerr
-                          << "Error leyendo del socket: " << strerror (errno)
-                          << std::endl;
-                      keepRunning = false;
-                      break;
-                    }
-                }
-            }
-
-          // Procesar todos los datos acumulados en una sola llamada a
-          // parseMessages
-          if (!accumulatedBuffer.empty ())
-            {
-              parseMessages ((char *)accumulatedBuffer.data (), total_len,
-                             logStream);
-
-              // Limpiar el buffer acumulado después de procesar los mensajes
-              accumulatedBuffer.clear ();
             }
         }
-      logStream.close ();
-      close (sockfd);
-      exit (0); // El proceso hijo termina aquí
+
+      // Procesar todos los datos acumulados en una sola llamada a
+      // parseMessages
+      if (!accumulatedBuffer.empty ())
+        {
+          parseMessages ((char *)accumulatedBuffer.data (), total_len,
+                         logStream);
+
+          // Limpiar el buffer acumulado después de procesar los mensajes
+          accumulatedBuffer.clear ();
+        }
     }
-  else
-    {
-      clients.push_back (pid);
-    }
+  logStream.close ();
+  close (sockfd);
+  exit (0); // El proceso hijo termina aquí
 }
 
 // Conectar múltiples clientes
@@ -443,14 +438,14 @@ global_map ()
 {
   // Crear la memoria compartida para las variables
   globalMessage = static_cast<char *> (
-      mmap (NULL, 10 * CHUNK_SZ * sizeof (char), PROT_READ | PROT_WRITE,
+      mmap (nullptr, 10 * CHUNK_SZ * sizeof (char), PROT_READ | PROT_WRITE,
             MAP_SHARED | MAP_ANONYMOUS, -1, 0));
-  globalMessageCount
-      = static_cast<int *> (mmap (NULL, sizeof (int), PROT_READ | PROT_WRITE,
-                                  MAP_SHARED | MAP_ANONYMOUS, -1, 0));
-  globalMessageDelay
-      = static_cast<int *> (mmap (NULL, sizeof (int), PROT_READ | PROT_WRITE,
-                                  MAP_SHARED | MAP_ANONYMOUS, -1, 0));
+  globalMessageCount = static_cast<int *> (
+      mmap (nullptr, sizeof (int), PROT_READ | PROT_WRITE,
+            MAP_SHARED | MAP_ANONYMOUS, -1, 0));
+  globalMessageDelay = static_cast<int *> (
+      mmap (nullptr, sizeof (int), PROT_READ | PROT_WRITE,
+            MAP_SHARED | MAP_ANONYMOUS, -1, 0));
 }
 
 int

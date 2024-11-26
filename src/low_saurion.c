@@ -236,7 +236,7 @@ set_request (struct request **r, struct Node **l, size_t s, const void *m,
 
 /******************* ADDERS *******************/
 static void
-add_accept (struct saurion *const s, const struct sockaddr_in *const ca,
+add_accept (struct saurion *const s, struct sockaddr_in *const ca,
             socklen_t *const cal)
 {
   int res = ERROR_CODE;
@@ -259,7 +259,7 @@ add_accept (struct saurion *const s, const struct sockaddr_in *const ca,
         }
       req->client_socket = 0;
       req->event_type = EV_ACC;
-      io_uring_prep_accept (sqe, s->ss, (struct sockaddr *)ca, cal, 0);
+      io_uring_prep_accept (sqe, s->ss, (struct sockaddr *const)ca, cal, 0);
       io_uring_sqe_set_data (sqe, req);
       if (io_uring_submit (&s->rings[0]) < 0)
         {
@@ -403,7 +403,8 @@ add_write (struct saurion *const s, int fd, const char *const str,
           nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
         }
       struct request *req = NULL;
-      if (!set_request (&req, &s->list, strlen (str), (void *)str, 1))
+      if (!set_request (&req, &s->list, strlen (str), (const void *const)str,
+                        1))
         {
           free (sqe);
           res = ERROR_CODE;
@@ -598,33 +599,32 @@ read_chunk (void **dest, size_t *len, struct request *const req)
     }
 
   // Finish
-  if (!ok)
+  if (ok)
     {
-      // This is only possible if there isn't a 0 at the end of the read
-      // search for the next 0 and... try your luck
-      free (dest_ptr);
-      dest_ptr = NULL;
-      *dest = NULL;
-      *len = 0;
-      req->next_iov = 0;
-      req->next_offset = 0;
-      for (size_t i = curr_iov; i < req->iovec_count; ++i)
+      return SUCCESS_CODE;
+    }
+  // This is only possible if there isn't a 0 at the end of the read
+  // search for the next 0 and... try your luck
+  free (dest_ptr);
+  dest_ptr = NULL;
+  *dest = NULL;
+  *len = 0;
+  req->next_iov = 0;
+  req->next_offset = 0;
+  for (size_t i = curr_iov; i < req->iovec_count; ++i)
+    {
+      for (size_t j = curr_iov_off; j < req->iov[i].iov_len; ++j)
         {
-          for (size_t j = curr_iov_off; j < req->iov[i].iov_len; ++j)
+          uint8_t foot = *(uint8_t *)(((uint8_t *)req->iov[i].iov_base) + j);
+          if (foot == 0)
             {
-              uint8_t foot
-                  = *(uint8_t *)(((uint8_t *)req->iov[i].iov_base) + j);
-              if (foot == 0)
-                {
-                  req->next_iov = i;
-                  req->next_offset = (j + 1) % req->iov[i].iov_len;
-                  return ERROR_CODE;
-                }
+              req->next_iov = i;
+              req->next_offset = (j + 1) % req->iov[i].iov_len;
+              return ERROR_CODE;
             }
         }
-      return ERROR_CODE;
     }
-  return SUCCESS_CODE;
+  return ERROR_CODE;
 }
 
 static void
