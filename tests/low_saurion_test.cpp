@@ -21,12 +21,12 @@
 
 #include "gtest/gtest.h" // for Message, EXPECT_EQ, TestPartResult, Test...
 
-#define PORT 8080
+constexpr int PORT = 8080;
 
-#define FIFO "/tmp/saurion_test_fifo.XXX"
-#define FIFO_LENGTH 27
+constexpr char FIFO[] = "/tmp/saurion_test_fifo.XXX";
+constexpr int FIFO_LENGTH = 27;
 
-char *
+void
 get_executable_directory (char *buffer, size_t size)
 {
   ssize_t len = readlink ("/proc/self/exe", buffer, size - 1);
@@ -34,12 +34,12 @@ get_executable_directory (char *buffer, size_t size)
     {
       buffer[len - 1] = '\0';
       char *last_slash = strrchr (buffer, '/');
-      if (last_slash != NULL)
+      if (last_slash != nullptr)
         {
           *last_slash = '\0';
         }
       char *real_path = new char[PATH_MAX];
-      if (realpath (buffer, real_path) == NULL)
+      if (realpath (buffer, real_path) == nullptr)
         {
           perror ("realpath");
           exit (EXIT_FAILURE);
@@ -51,7 +51,8 @@ get_executable_directory (char *buffer, size_t size)
           *libs_pos = '\0';
         }
       strcpy (buffer, real_path);
-      return real_path;
+      delete[] real_path;
+      return;
     }
   else
     {
@@ -100,12 +101,12 @@ protected:
     fifo_name = (char *)malloc (FIFO_LENGTH);
     if (!fifo_name)
       {
-        return NULL; // Handle error
+        return nullptr; // Handle error
       }
 
     strcpy (fifo_name, FIFO);
     // Seed the random number generator
-    srand (time (NULL));
+    srand (time (nullptr));
 
     // Generate the random "XXX" string
     for (int i = 23; i < 26; i++)

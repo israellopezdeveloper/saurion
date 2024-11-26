@@ -32,16 +32,16 @@ protected:
   char *
   insert_simple_item (const char *const str)
   {
-    char *ptr = (char *)malloc (strlen (str) + 1);
+    char *ptr = new char[strlen (str) + 1];
     strcpy (ptr, str);
-    list_insert (&list, ptr, 0, NULL);
+    list_insert (&list, ptr, 0, nullptr);
     return ptr;
   }
 
-  void *
+  char *
   insert_complex_item (const char *const str)
   {
-    char *ptr = (char *)malloc (strlen (str) + 1);
+    char *ptr = new char[strlen (str) + 1];
     strcpy (ptr, str);
     size_t amount = 4;
     struct iovec **children = new struct iovec *[amount];
@@ -142,8 +142,8 @@ TEST_F (LinkedListTest, insertAndDeleteHeadItem)
   EXPECT_TRUE (true);
 }
 
-#define N_THREADS 100
-#define ITEMS_PER_THREAD 100
+constexpr int N_THREADS = 100;
+constexpr int ITEMS_PER_THREAD = 100;
 
 class LinkedListConcurrencyTest : public LinkedListTest
 {
