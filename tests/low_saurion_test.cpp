@@ -2,6 +2,7 @@
 #include "low_saurion.h" // for saurion, saurion_send, EXTERNAL_set_socket
 
 #include <ctime>
+#include <memory>
 #include <pthread.h>
 #include <random>
 #include <stdatomic.h>
@@ -32,27 +33,26 @@ void
 get_executable_directory (char *buffer, size_t size)
 {
   ssize_t len = readlink ("/proc/self/exe", buffer, size - 1);
-  if ((len != -1) || (len < (ssize_t)size))
+  if ((len != -1) && (len < (ssize_t)size))
     {
       buffer[len - 1] = '\0';
       if (char *last_slash = strrchr (buffer, '/'); last_slash != nullptr)
         {
           *last_slash = '\0';
         }
-      auto *real_path = new char[PATH_MAX];
-      if (realpath (buffer, real_path) == nullptr)
+      auto real_path = std::make_unique<char[]> (PATH_MAX);
+      if (realpath (buffer, real_path.get ()) == nullptr)
         {
           perror ("realpath");
           exit (EXIT_FAILURE);
         }
 
-      if (char *libs_pos = strstr (real_path, "/.libs"); libs_pos)
+      if (char *libs_pos = strstr (real_path.get (), "/.libs"); libs_pos)
         {
           // Recortar desde el inicio hasta `.libs` y después de eso.
           *libs_pos = '\0';
         }
-      strcpy (buffer, real_path);
-      delete[] real_path;
+      strcpy (buffer, real_path.get ());
       return;
     }
   else
@@ -91,21 +91,15 @@ class low_saurion : public ::testing::Test
 {
 public:
   struct saurion *saurion;
-  static char *fifo_name;
+  static std::string fifo_name;
   static FILE *fifo_write;
   static pid_t pid;
 
 protected:
-  static char *
+  static std::string
   generate_random_fifo_name ()
   {
-    fifo_name = new char[FIFO_LENGTH];
-    if (!fifo_name)
-      {
-        return nullptr; // Handle error
-      }
-
-    strcpy (fifo_name, FIFO);
+    fifo_name = FIFO;
     std::random_device rd;
     std::mt19937 gen (rd ());
     std::uniform_int_distribution<> dis (0, 10);
@@ -120,17 +114,14 @@ protected:
     return fifo_name;
   }
 
+  static constexpr size_t EXECUTABLE_LENGTH = 1024;
+
   static void
   SetUpTestSuite ()
   {
     fifo_name = generate_random_fifo_name ();
     std::signal (SIGINT, signalHandler);
-    if (!fifo_name)
-      {
-        // Handle error generating random name
-        exit (ERROR_CODE);
-      }
-    if (mkfifo (fifo_name, 0666) == -1)
+    if (mkfifo (fifo_name.c_str (), 0666) == -1)
       {
         perror ("Error al crear el FIFO");
       }
@@ -142,28 +133,29 @@ protected:
       }
     if (pid == 0)
       {
-        std::vector<char *> exec_args;
+        std::vector<const char *> exec_args;
 
-        char executable_dir[1024];
+        char executable_dir[EXECUTABLE_LENGTH];
 
         // Get the directory of the current executable
-        get_executable_directory (executable_dir, sizeof (executable_dir));
+        get_executable_directory (executable_dir, EXECUTABLE_LENGTH);
         char script_path[1031];
         snprintf (script_path, sizeof (script_path), "%s/client",
                   executable_dir);
 
-        for (char *item : { (char *)script_path, (char *)"-p", fifo_name })
+        for (const char *item : { (const char *)script_path,
+                                  (const char *)"-p", fifo_name.c_str () })
           {
             exec_args.push_back (item);
           }
         exec_args.push_back (nullptr);
 
         // Ejecuta el comando y ignora el retorno
-        execvp (script_path, exec_args.data ());
+        execvp (script_path, (char *const *)exec_args.data ());
       }
     else
       {
-        fifo_write = fopen (fifo_name, "w");
+        fifo_write = fopen (fifo_name.c_str (), "w");
       }
   }
 
@@ -174,8 +166,7 @@ protected:
     int status;
     waitpid (pid, &status, 0);
     fclose (fifo_write);
-    unlink (fifo_name);
-    delete[] fifo_name;
+    unlink (fifo_name.c_str ());
   }
 
   void
@@ -407,7 +398,7 @@ private:
   }
 };
 
-char *low_saurion::fifo_name = nullptr;
+std::string low_saurion::fifo_name = "";
 pid_t low_saurion::pid = 0;
 FILE *low_saurion::fifo_write = nullptr;
 
@@ -417,7 +408,7 @@ signalHandler (int signum)
   std::cout << "Interceptada la señal " << signum << std::endl;
 
   // Intenta eliminar el archivo FIFO
-  if (std::remove (low_saurion::fifo_name) != 0)
+  if (std::remove (low_saurion::fifo_name.c_str ()) != 0)
     {
       std::cerr << "Error al eliminar " << low_saurion::fifo_name << std::endl;
     }

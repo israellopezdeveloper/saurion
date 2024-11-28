@@ -1,7 +1,7 @@
 #include "linked_list.h"
+
 #include <atomic> // for std::atomic
-#include <thread> // for std::thread
-#include <vector> // for std::vector
+#include <thread> // for std::jthread
 
 #include <sys/uio.h> // for iovec
 

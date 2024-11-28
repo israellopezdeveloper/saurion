@@ -1,8 +1,9 @@
 #include <arpa/inet.h>
 #include <cstdlib>
 #include <fcntl.h>
+#include <memory>
 #include <string.h>
-#include <sys/mman.h> // Para memoria compartida
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -20,22 +21,19 @@
 
 std::vector<pid_t> clients;
 int numClients = 0;
-std::atomic<bool>
-    keepRunning (true); // Indicador para terminar el bucle de lectura
+std::atomic<bool> keepRunning (true);
 
-// Variables globales compartidas para el envío de mensajes
 char *globalMessage;
 int *globalMessageCount;
 int *globalMessageDelay;
 int sockfd = 0;
 
-// Manejador de la señal para finalizar el bucle de lectura
 void
 signalHandler (int signum)
 {
   if (signum == SIGUSR1)
     {
-      keepRunning = false; // Termina el bucle del cliente
+      keepRunning = false;
     }
 }
 
@@ -44,13 +42,13 @@ htonll (uint64_t value)
 {
   int num = 42;
   if (*(char *)&num == 42)
-    { // Little endian check
+    {
       uint32_t high_part = htonl ((uint32_t)(value >> 32));
       uint32_t low_part = htonl ((uint32_t)(value & 0xFFFFFFFFLL));
       return ((uint64_t)low_part << 32) | high_part;
     }
   else
-    { // Already big endian
+    {
       return value;
     }
 }
@@ -60,69 +58,51 @@ ntohll (uint64_t value)
 {
   int num = 42;
   if (*(char *)&num == 42)
-    { // Little endian check
+    {
       uint32_t high_part = ntohl ((uint32_t)(value >> 32));
       uint32_t low_part = ntohl ((uint32_t)(value & 0xFFFFFFFFLL));
       return ((uint64_t)low_part << 32) | high_part;
     }
   else
-    { // Already big endian
+    {
       return value;
     }
 }
 
-// Manejador de la señal para enviar mensajes
 void
 sendMessagesHandler (int signum)
 {
   if (signum == SIGUSR2)
     {
-      // Enviar los mensajes
       struct timespec tim;
       tim.tv_sec = 0;
       tim.tv_nsec = *globalMessageDelay * 1000L;
       for (int i = 0; i < *globalMessageCount; ++i)
         {
-          // Crear el mensaje
           auto length = strlen (globalMessage);
 
-          // 2. Crear un buffer que contendrá el mensaje completo
           uint64_t msg_len = strlen (globalMessage) + sizeof (length) + 1;
 
-          // 3. Crear un buffer para almacenar todo el mensaje
-          auto *buffer = new char[msg_len];
-          if (buffer == nullptr)
-            {
-              perror ("Error en malloc");
-              exit (EXIT_FAILURE);
-            }
+          auto buffer = std::make_unique<char[]> (msg_len);
 
           uint64_t send_length = htonll (length);
 
-          // 4. Copiar la longitud del mensaje (entero de 64 bits) al buffer
-          memcpy (buffer, &send_length, sizeof (length));
+          std::memcpy (buffer.get (), &send_length, sizeof (length));
+          std::memcpy (buffer.get () + sizeof (length), globalMessage, length);
 
-          // 5. Copiar el mensaje de texto al buffer
-          memcpy (buffer + sizeof (length), globalMessage, length);
-
-          // 6. Agregar el bit a 0 al final
           buffer[msg_len - 1] = 0;
 
-          // Enviar mensaje al servidor
-          if (int64_t sent = send (sockfd, buffer, msg_len, 0); sent < 0)
+          if (int64_t sent = send (sockfd, buffer.get (), msg_len, 0);
+              sent < 0)
             {
-              delete[] buffer;
               break;
             }
-          delete[] buffer;
 
-          // Esperar el delay antes de enviar el siguiente mensaje
-          nanosleep (&tim, nullptr); // Delay en milisegundos
+          nanosleep (&tim, nullptr);
         }
     }
 }
 
-// Función para hacer el socket no bloqueante
 void
 makeSocketNonBlocking ()
 {
@@ -150,54 +130,45 @@ parseMessages (char *buffer, int64_t bytes_read, std::ofstream &logStream)
   while ((bytes_read > 0)
          && (offset + sizeof (uint64_t) <= static_cast<uint64_t> (bytes_read)))
     {
-      // Leer el entero de 64 bits (8 bytes) que indica la longitud del mensaje
+
       uint64_t msg_len;
       memcpy (&msg_len, buffer + offset, sizeof (msg_len));
       offset += sizeof (msg_len);
       msg_len = ntohll (msg_len);
 
-      // Asegurarse de que tenemos suficientes bytes para el mensaje completo
       if (offset + msg_len + 1 > static_cast<uint64_t> (bytes_read))
         {
           return;
         }
 
-      // Leer el mensaje
-      auto *msg = new char[msg_len + 1];
-      memcpy (msg, (char *)(buffer + offset), msg_len);
-      msg[msg_len] = '\0'; // Agregar terminador de cadena
+      auto msg = std::make_unique<char[]> (msg_len + 1);
+      std::memcpy (msg.get (), (char *)(buffer + offset), msg_len);
+      msg[msg_len] = '\0';
       offset += msg_len;
 
-      // Leer el byte final (que debe ser 0)
       char end_byte = buffer[offset];
       offset++;
 
       if (end_byte != 0)
         {
-          delete[] msg;
           return;
         }
 
-      // Imprimir el mensaje
-      logStream.write (msg, msg_len);
-      delete[] msg;
+      logStream.write (msg.get (), msg_len);
     }
 }
 
-// Crear un cliente usando fork()
 void
 createClient (int clientId)
 {
-  pid_t pid = fork ();
-  if (pid != 0)
+
+  if (pid_t pid = fork (); pid != 0)
     {
       clients.push_back (pid);
       return;
     }
-  signal (SIGUSR1,
-          signalHandler); // Asignar el manejador de la señal para finalizar
-  signal (SIGUSR2,
-          sendMessagesHandler); // Manejador de la señal para enviar mensajes
+  signal (SIGUSR1, signalHandler);
+  signal (SIGUSR2, sendMessagesHandler);
 
   std::ostringstream tempFilePath;
   tempFilePath << "/tmp/saurion_sender." << clientId << ".log";
@@ -210,7 +181,6 @@ createClient (int clientId)
       exit (1);
     }
 
-  // Crear socket y conectarse al servidor
   sockfd = socket (AF_INET, SOCK_STREAM, 0);
   if (sockfd < 0)
     {
@@ -222,8 +192,7 @@ createClient (int clientId)
   memset (&serv_addr, 0, sizeof (serv_addr));
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_port = htons (8080);
-  inet_pton (AF_INET, "localhost",
-             &serv_addr.sin_addr); // Asumiendo localhost para la conexión
+  inet_pton (AF_INET, "localhost", &serv_addr.sin_addr);
 
   if (connect (sockfd, (struct sockaddr *)&serv_addr, sizeof (serv_addr)) < 0)
     {
@@ -231,13 +200,11 @@ createClient (int clientId)
       exit (1);
     }
 
-  // Hacer el socket no bloqueante
   makeSocketNonBlocking ();
 
   char buffer[8192];
   memset (buffer, 0, 8192);
 
-  // Leer datos del servidor en modo no bloqueante
   std::vector<uint8_t> accumulatedBuffer;
   ssize_t total_len = 0;
 
@@ -255,7 +222,7 @@ createClient (int clientId)
 
           if (len > 0)
             {
-              // Acumular los datos leídos en el buffer
+
               accumulatedBuffer.insert (accumulatedBuffer.end (), buffer,
                                         buffer + len);
               total_len += len;
@@ -272,31 +239,26 @@ createClient (int clientId)
               --dataAvailable;
               continue;
             }
-          // Error de lectura, pero no debido a que no haya datos
-          // disponibles
+
           std::cerr << "Error leyendo del socket: " << strerror (errno)
                     << std::endl;
           keepRunning = false;
           break;
         }
 
-      // Procesar todos los datos acumulados en una sola llamada a
-      // parseMessages
       if (!accumulatedBuffer.empty ())
         {
           parseMessages ((char *)accumulatedBuffer.data (), total_len,
                          logStream);
 
-          // Limpiar el buffer acumulado después de procesar los mensajes
           accumulatedBuffer.clear ();
         }
     }
   logStream.close ();
   close (sockfd);
-  exit (0); // El proceso hijo termina aquí
+  exit (0);
 }
 
-// Conectar múltiples clientes
 void
 connectClients (int n)
 {
@@ -307,36 +269,30 @@ connectClients (int n)
   numClients += n;
 }
 
-// Función para que todos los clientes envíen n mensajes con retraso
 void
 sendMessages (int n, const std::string &msg, int delay)
 {
-  // Actualizar los valores en la memoria compartida
+
   strcpy (globalMessage, msg.c_str ());
   *globalMessageCount = n;
   *globalMessageDelay = delay;
 
-  // Enviar la señal SIGUSR2 a todos los clientes para que empiecen a enviar
-  // los mensajes
   for (pid_t pid : clients)
     {
       kill (pid, SIGUSR2);
     }
 }
 
-// Desconectar clientes enviándoles la señal SIGUSR1 y esperar que terminen
 void
 disconnectClients ()
 {
   for (pid_t pid : clients)
     {
-      // Enviar la señal SIGUSR1 al cliente para que termine
+
       kill (pid, SIGUSR1);
 
-      // Esperar que el proceso hijo termine
       int status;
-      waitpid (pid, &status,
-               0); // Espera bloqueante hasta que el proceso hijo termine
+      waitpid (pid, &status, 0);
       if (!WIFEXITED (status))
         {
           std::cout << "Cliente " << pid << " terminó por señal "
@@ -347,7 +303,6 @@ disconnectClients ()
   numClients = 0;
 }
 
-// Cerrar la aplicación
 __attribute__ ((noreturn)) void
 closeApplication ()
 {
@@ -355,7 +310,6 @@ closeApplication ()
   exit (0);
 }
 
-// Manejar comandos recibidos
 void
 handleCommand (const std::string &command)
 {
@@ -364,11 +318,9 @@ handleCommand (const std::string &command)
   std::string msg;
   unsigned int delay = 0;
 
-  // Crear un stream a partir del string
   std::istringstream ss (command);
   std::string token;
 
-  // Extraer los valores del string usando getline y ';' como delimitador
   std::getline (ss, cmd, ';');
 
   if (cmd == "connect")
@@ -400,7 +352,6 @@ handleCommand (const std::string &command)
     }
 }
 
-// Leer comandos desde un pipe
 void
 readPipe (const std::string &pipePath)
 {
@@ -434,7 +385,7 @@ __attribute__ ((no_sanitize ("thread")))
 void
 global_map ()
 {
-  // Crear la memoria compartida para las variables
+
   globalMessage = static_cast<char *> (
       mmap (nullptr, 10 * CHUNK_SZ * sizeof (char), PROT_READ | PROT_WRITE,
             MAP_SHARED | MAP_ANONYMOUS, -1, 0));
@@ -472,13 +423,12 @@ main (int argc, char *argv[])
     }
 
   global_map ();
-  mkfifo (pipePath.c_str (), 0666); // Crear el pipe si no existe
+  mkfifo (pipePath.c_str (), 0666);
 
-  // Leer comandos desde el pipe
   while (true)
     {
       readPipe (pipePath);
-      sleep (1); // Esperar antes de volver a intentar leer
+      sleep (1);
     }
 
   return 0;
