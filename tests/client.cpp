@@ -123,7 +123,8 @@ makeSocketNonBlocking ()
 }
 
 void
-parseMessages (char *buffer, int64_t bytes_read, std::ofstream &logStream)
+parseMessages (const char *const buffer, const int64_t bytes_read,
+               std::ofstream &logStream)
 {
   int64_t offset = 0;
 

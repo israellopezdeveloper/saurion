@@ -31,36 +31,37 @@ constexpr char FIFO[] = "/tmp/saurion_test_fifo.XXX";
 std::string
 get_executable_directory ()
 {
-  char buffer[PATH_MAX];
+  std::string buffer (PATH_MAX, '\0');
 
-  ssize_t len = readlink ("/proc/self/exe", buffer, sizeof (buffer) - 1);
-  if (len <= 0 || len >= (ssize_t)sizeof (buffer))
+  ssize_t len = readlink ("/proc/self/exe", &buffer[0], buffer.size () - 1);
+  if (len <= 0 || len >= static_cast<ssize_t> (buffer.size ()))
     {
       throw std::runtime_error ("Failed to read symbolic link /proc/self/exe");
     }
 
-  buffer[len] = '\0'; // Terminar con un carácter nulo
+  buffer.resize (len);
 
-  // Recortar hasta el último slash ('/') para obtener el directorio
-  if (char *last_slash = strrchr (buffer, '/'); last_slash != nullptr)
+  size_t last_slash_pos = buffer.find_last_of ('/');
+  if (last_slash_pos != std::string::npos)
     {
-      *last_slash = '\0';
+      buffer.erase (last_slash_pos); // Eliminar el nombre del ejecutable
     }
 
-  // Resolver la ruta real para manejar links simbólicos
-  auto real_path = std::make_unique<char[]> (PATH_MAX);
-  if (realpath (buffer, real_path.get ()) == nullptr)
+  std::string real_path (PATH_MAX, '\0');
+  if (!realpath (buffer.c_str (), &real_path[0]))
     {
       throw std::runtime_error ("Failed to resolve real path");
     }
 
-  // Eliminar `.libs` si está presente
-  if (char *libs_pos = strstr (real_path.get (), "/.libs"); libs_pos)
+  real_path.resize (std::strlen (real_path.c_str ()));
+
+  size_t libs_pos = real_path.find ("/.libs");
+  if (libs_pos != std::string::npos)
     {
-      *libs_pos = '\0';
+      real_path.erase (libs_pos);
     }
 
-  return std::string (real_path.get ());
+  return real_path;
 }
 
 struct summary
@@ -518,7 +519,7 @@ TEST_F (low_saurion, readWriteWithLargeMessageMultipleOfChunkSize)
   clients_2_saurion (1, str.get (), 0);
   wait_readed (size);
   EXPECT_EQ (summary.readed, size);
-  saurion_2_client (summary.fds.front (), 1, (char *)str.get ());
+  saurion_2_client (summary.fds.front (), 1, str.get ());
   wait_wrote (1);
   disconnect_clients ();
   wait_disconnected (clients);
@@ -540,7 +541,7 @@ TEST_F (low_saurion, readWriteWithLargeMessage)
   clients_2_saurion (1, str.get (), 0);
   wait_readed (size);
   EXPECT_EQ (summary.readed, size);
-  saurion_2_client (summary.fds.front (), 1, (char *)str.get ());
+  saurion_2_client (summary.fds.front (), 1, str.get ());
   wait_wrote (1);
   disconnect_clients ();
   wait_disconnected (clients);
