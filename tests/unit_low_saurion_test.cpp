@@ -1,5 +1,6 @@
 #include <bits/types/struct_iovec.h>
 #include <gtest/gtest.h>
+#include <memory>
 #include <netinet/in.h>
 #include <random>
 
@@ -44,89 +45,83 @@ ntohll (uint64_t value)
     }
 }
 
-void
-fill_with_alphabet (char **s, size_t length, uint8_t h)
+std::unique_ptr<char[]>
+fill_with_alphabet (size_t length, uint8_t h)
 {
   const char *alphabet = "abcdefghijklmnopqrstuvwxyz";
   int alphabet_len = 26;
 
   uint64_t wrapper = sizeof (uint64_t) + sizeof (char);
+  std::unique_ptr<char[]> result;
   if (h)
     {
       uint64_t msg_size = length + wrapper;
-      *s = new char[msg_size];
-      *(uint64_t *)(*s) = htonll (length);
+      result = std::make_unique<char[]> (msg_size);
+      *(uint64_t *)(result.get ()) = htonll (length);
       int pos = sizeof (uint64_t);
       for (uint64_t i = 0; i < length; i++)
         {
-          (*s)[pos] = alphabet[i % alphabet_len];
+          result[pos] = alphabet[i % alphabet_len];
           pos++;
         }
-      (*s)[msg_size - 1] = 0;
+      result[msg_size - 1] = 0;
     }
   else
     {
-      *s = new char[length + 1];
+      result = std::make_unique<char[]> (length + 1);
       int pos = 0;
       for (uint64_t i = 0; i < length; i++)
         {
-          (*s)[pos] = alphabet[i % alphabet_len];
+          result[pos] = alphabet[i % alphabet_len];
           pos++;
         }
-      (*s)[length] = 0;
+      result[length] = 0;
     }
+  return result;
 }
 
 TEST (Tools, alphabet_with_header)
 {
-  char *str = nullptr;
   uint64_t size = 4;
-  fill_with_alphabet (&str, size, 1);
+  auto str = fill_with_alphabet (size, 1);
   EXPECT_NE (str, nullptr);
-  uint64_t content_size = ntohll (*(uint64_t *)str);
-  char *str_content = str + sizeof (uint64_t);
-  uint8_t foot = *(uint8_t *)(str + content_size);
+  uint64_t content_size = ntohll (*(uint64_t *)str.get ());
+  char *str_content = str.get () + sizeof (uint64_t);
+  uint8_t foot = *(uint8_t *)(str.get () + content_size);
   EXPECT_EQ (content_size, size);
   EXPECT_STREQ (str_content, "abcd");
   EXPECT_EQ (foot, 0);
-  delete[] str;
 }
 
 TEST (Tools, alphabet_without_header)
 {
-  char *str = nullptr;
   uint64_t size = 4;
-  fill_with_alphabet (&str, size, 0);
-  EXPECT_NE (str, nullptr);
-  EXPECT_EQ (strlen (str), size);
-  EXPECT_STREQ (str, "abcd");
-  delete[] str;
+  auto str = fill_with_alphabet (size, 0);
+  EXPECT_NE (str.get (), nullptr);
+  EXPECT_EQ (strlen (str.get ()), size);
+  EXPECT_STREQ (str.get (), "abcd");
 }
 
 TEST (Tools, null_length_with_header)
 {
-  char *str = nullptr;
   uint64_t size = 0;
-  fill_with_alphabet (&str, size, 1);
+  auto str = fill_with_alphabet (size, 1);
   EXPECT_NE (str, nullptr);
-  uint64_t content_size = *(uint64_t *)str;
-  char *str_content = str + sizeof (uint64_t);
-  uint8_t foot = *(uint8_t *)(str + content_size);
+  uint64_t content_size = *(uint64_t *)str.get ();
+  char *str_content = str.get () + sizeof (uint64_t);
+  uint8_t foot = *(uint8_t *)(str.get () + content_size);
   EXPECT_EQ (content_size, size);
   EXPECT_STREQ (str_content, "");
   EXPECT_EQ (foot, 0);
-  delete[] str;
 }
 
 TEST (Tools, null_length_without_header)
 {
-  char *str = nullptr;
   uint64_t size = 0;
-  fill_with_alphabet (&str, size, 0);
-  EXPECT_NE (str, nullptr);
-  EXPECT_EQ (strlen (str), size);
-  EXPECT_STREQ (str, "");
-  delete[] str;
+  auto str = fill_with_alphabet (size, 0);
+  EXPECT_NE (str.get (), nullptr);
+  EXPECT_EQ (strlen (str.get ()), size);
+  EXPECT_STREQ (str.get (), "");
 }
 
 /*!
@@ -143,8 +138,7 @@ static void
 check_iovec (uint64_t size, uint8_t h)
 {
   // mensaje de entrada
-  void *msg = nullptr;
-  fill_with_alphabet ((char **)&msg, size, !h);
+  auto msg = fill_with_alphabet (size, !h);
 
   // full_size, content_size y amount
   uint64_t full_size = size + (h ? sizeof (uint64_t) + 1 : 0);
@@ -156,7 +150,7 @@ check_iovec (uint64_t size, uint8_t h)
   auto *iovecs = new struct iovec[amount];
   auto **chd_ptr = new void *[amount];
 
-  auto *msg_ptr = (char *)msg;
+  auto *msg_ptr = (char *)msg.get ();
   char iov_str[CHUNK_SZ + 1];
   memset (iov_str, 0, CHUNK_SZ + 1);
   char orig_str[CHUNK_SZ + 1];
@@ -178,7 +172,8 @@ check_iovec (uint64_t size, uint8_t h)
       EXPECT_EQ (exp_iov_len, iovecs[i].iov_len);
 
       // Inicializamos iovec
-      res = initialize_iovec (&iovecs[i], amount, i, msg, content_size, h);
+      res = initialize_iovec (&iovecs[i], amount, i, msg.get (), content_size,
+                              h);
       EXPECT_EQ (res, SUCCESS_CODE);
 
       // Si es el primero verificar el tamaño del contenido
@@ -211,7 +206,6 @@ check_iovec (uint64_t size, uint8_t h)
       free (chd_ptr[i]);
     }
   delete[] chd_ptr;
-  free (msg);
 }
 
 TEST (unit_saurion, initialize_correct_with_header)
@@ -287,9 +281,8 @@ TEST (unit_saurion, set_request_first_creation_and_reset)
   struct request *req = nullptr;
   struct Node *list = nullptr;
   uint64_t size = 2.5 * CHUNK_SZ;
-  char *msg = nullptr;
-  fill_with_alphabet (&msg, size, 0);
-  int res = set_request (&req, &list, size, msg, 1);
+  auto msg = fill_with_alphabet (size, 0);
+  int res = set_request (&req, &list, size, msg.get (), 1);
   EXPECT_EQ (req->prev, nullptr);
   EXPECT_EQ (req->prev_size, 0UL);
   EXPECT_EQ (req->prev_remain, 0UL);
@@ -299,12 +292,11 @@ TEST (unit_saurion, set_request_first_creation_and_reset)
   EXPECT_EQ (res, SUCCESS_CODE);
   req->client_socket = 123;
   req->event_type = 456;
-  res = set_request (&req, &list, size, msg, 1);
+  res = set_request (&req, &list, size, msg.get (), 1);
   EXPECT_EQ (res, SUCCESS_CODE);
   EXPECT_EQ (req->client_socket, 123);
   EXPECT_EQ (req->event_type, 456);
   list_free (&list);
-  delete[] msg;
 }
 
 TEST (unit_saurion, test_free_request)
@@ -312,9 +304,8 @@ TEST (unit_saurion, test_free_request)
   struct request *req = nullptr;
   struct Node *list = nullptr;
   uint64_t size = 2.5 * CHUNK_SZ;
-  char *msg = nullptr;
-  fill_with_alphabet (&msg, size, 0);
-  int res = set_request (&req, &list, size, msg, 1);
+  auto msg = fill_with_alphabet (size, 0);
+  int res = set_request (&req, &list, size, msg.get (), 1);
   EXPECT_EQ (req->prev, nullptr);
   EXPECT_EQ (req->prev_size, 0UL);
   EXPECT_EQ (req->prev_remain, 0UL);
@@ -323,7 +314,6 @@ TEST (unit_saurion, test_free_request)
   EXPECT_EQ (req->iovec_count, 3UL);
   EXPECT_EQ (res, SUCCESS_CODE);
   list_free (&list);
-  delete[] msg;
 }
 
 TEST (unit_saurion, EmptyRequest)
@@ -370,14 +360,13 @@ TEST (unit_saurion, SingleMessageComplete)
 TEST (unit_saurion, MessageSpanningMultipleIovecs)
 {
   // Caso en el que un mensaje se divide en múltiples iovecs
-  char *message = nullptr;
-  fill_with_alphabet (&message, 1.5 * CHUNK_SZ, 0);
-  uint64_t msg_size = strlen (message);
+  auto message = fill_with_alphabet (1.5 * CHUNK_SZ, 0);
+  uint64_t msg_size = strlen (message.get ());
 
   // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
   struct request *req = nullptr;
   struct Node *list = nullptr;
-  int res = set_request (&req, &list, msg_size, message, 1);
+  int res = set_request (&req, &list, msg_size, message.get (), 1);
   EXPECT_EQ (res, SUCCESS_CODE);
   EXPECT_EQ (req->prev_size, 0UL);
   EXPECT_EQ (req->prev_remain, 0UL);
@@ -400,20 +389,18 @@ TEST (unit_saurion, MessageSpanningMultipleIovecs)
   // Limpieza
   list_free (&list);
   free (dest);
-  delete[] message;
 }
 
 TEST (unit_saurion, PreviousUnfinishedMessage)
 {
   // Caso en el que un mensaje se divide en múltiples iovecs
-  char *message = nullptr;
-  fill_with_alphabet (&message, 2.5 * CHUNK_SZ, 0);
-  uint64_t msg_size = strlen (message);
+  auto message = fill_with_alphabet (2.5 * CHUNK_SZ, 0);
+  uint64_t msg_size = strlen (message.get ());
 
   // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
   struct request *req = nullptr;
   struct Node *list = nullptr;
-  int res = set_request (&req, &list, msg_size, message, 1);
+  int res = set_request (&req, &list, msg_size, message.get (), 1);
   EXPECT_EQ (res, SUCCESS_CODE);
   EXPECT_EQ (req->prev_size, 0UL);
   EXPECT_EQ (req->prev_remain, 0UL);
@@ -439,7 +426,8 @@ TEST (unit_saurion, PreviousUnfinishedMessage)
   uint64_t readed = CHUNK_SZ - sizeof (size_t);
   EXPECT_EQ (req->prev_remain, msg_size - readed);
 
-  res = set_request (&req, &list, req->prev_remain, message + readed, 0);
+  res = set_request (&req, &list, req->prev_remain, message.get () + readed,
+                     0);
   EXPECT_EQ (res, SUCCESS_CODE);
 
   req->iovec_count = 1;
@@ -453,7 +441,8 @@ TEST (unit_saurion, PreviousUnfinishedMessage)
   readed = 2 * CHUNK_SZ - sizeof (uint64_t);
   EXPECT_EQ (req->prev_remain, msg_size - readed);
 
-  res = set_request (&req, &list, req->prev_remain, message + readed, 0);
+  res = set_request (&req, &list, req->prev_remain, message.get () + readed,
+                     0);
   EXPECT_EQ (res, SUCCESS_CODE);
 
   res = read_chunk (&dest, &len, req);
@@ -464,35 +453,31 @@ TEST (unit_saurion, PreviousUnfinishedMessage)
   // Limpieza
   list_free (&list);
   free (dest);
-  delete[] message;
 }
 
 TEST (unit_saurion, MultipleMessagesInOneIovec)
 {
-  char *msg1 = nullptr;
   uint64_t size1 = 3;
-  char *msg2 = nullptr;
   uint64_t size2 = 4;
-  char *msg3 = nullptr;
   uint64_t size3 = 5;
   uint64_t offset = 0;
-  fill_with_alphabet (&msg1, size1, 1);
-  fill_with_alphabet (&msg2, size2, 1);
-  fill_with_alphabet (&msg3, size3, 1);
+  auto msg1 = fill_with_alphabet (size1, 1);
+  auto msg2 = fill_with_alphabet (size2, 1);
+  auto msg3 = fill_with_alphabet (size3, 1);
 
   const uint64_t wrapper = sizeof (uint64_t) + 1;
   uint64_t total_size = size1 + size2 + size3 + 3 * wrapper;
-  auto *msgs = new char[total_size];
-  memcpy (msgs, msg1, size1 + wrapper);
+  auto msgs = std::make_unique<char[]> (total_size);
+  std::memcpy (msgs.get (), msg1.get (), size1 + wrapper);
   offset += size1 + wrapper;
-  memcpy (msgs + offset, msg2, size2 + wrapper);
+  std::memcpy (msgs.get () + offset, msg2.get (), size2 + wrapper);
   offset += size2 + wrapper;
-  memcpy (msgs + offset, msg3, size3 + wrapper);
+  std::memcpy (msgs.get () + offset, msg3.get (), size3 + wrapper);
 
   struct request *req = nullptr;
   struct Node *list = nullptr;
 
-  int res = set_request (&req, &list, total_size, msgs, 0);
+  int res = set_request (&req, &list, total_size, msgs.get (), 0);
   EXPECT_EQ (res, SUCCESS_CODE);
   EXPECT_EQ (req->prev_size, 0UL);
   EXPECT_EQ (req->prev_remain, 0UL);
@@ -532,7 +517,8 @@ TEST (unit_saurion, MultipleMessagesInOneIovec)
   EXPECT_EQ (res, SUCCESS_CODE);
   ASSERT_NE (dest, nullptr);
   EXPECT_EQ (len, size1);
-  EXPECT_EQ (strncmp ((char *)dest, msg1 + sizeof (uint64_t), size1), 0);
+  EXPECT_EQ (strncmp ((char *)dest, msg1.get () + sizeof (uint64_t), size1),
+             0);
   EXPECT_EQ (req->next_iov, 0UL);
   EXPECT_EQ (req->next_offset, size1 + wrapper);
   free (dest);
@@ -542,7 +528,8 @@ TEST (unit_saurion, MultipleMessagesInOneIovec)
   EXPECT_EQ (res, SUCCESS_CODE);
   ASSERT_NE (dest, nullptr);
   EXPECT_EQ (len, size2);
-  EXPECT_EQ (strncmp ((char *)dest, msg2 + sizeof (uint64_t), size2), 0);
+  EXPECT_EQ (strncmp ((char *)dest, msg2.get () + sizeof (uint64_t), size2),
+             0);
   EXPECT_EQ (req->next_iov, 0UL);
   EXPECT_EQ (req->next_offset, size1 + size2 + 2 * wrapper);
   free (dest);
@@ -552,43 +539,37 @@ TEST (unit_saurion, MultipleMessagesInOneIovec)
   EXPECT_EQ (res, SUCCESS_CODE);
   ASSERT_NE (dest, nullptr);
   EXPECT_EQ (len, size3);
-  EXPECT_EQ (strncmp ((char *)dest, msg3 + sizeof (uint64_t), size3), 0);
+  EXPECT_EQ (strncmp ((char *)dest, msg3.get () + sizeof (uint64_t), size3),
+             0);
   EXPECT_EQ (req->next_iov, 0UL);
   EXPECT_EQ (req->next_offset, 0UL);
   free (dest);
   list_free (&list);
-  delete[] msgs;
-  delete[] msg1;
-  delete[] msg2;
-  delete[] msg3;
 }
 
 TEST (unit_saurion, MultipleMessagesInOneIovecLastIncomplete)
 {
-  char *msg1 = nullptr;
   uint64_t size1 = 3;
-  char *msg2 = nullptr;
   uint64_t size2 = 4;
-  char *msg3 = nullptr;
   uint64_t size3 = 5;
   uint64_t offset = 0;
-  fill_with_alphabet (&msg1, size1, 1);
-  fill_with_alphabet (&msg2, size2, 1);
-  fill_with_alphabet (&msg3, size3, 1);
+  auto msg1 = fill_with_alphabet (size1, 1);
+  auto msg2 = fill_with_alphabet (size2, 1);
+  auto msg3 = fill_with_alphabet (size3, 1);
 
   const uint64_t wrapper = sizeof (uint64_t) + 1;
   uint64_t total_size = size1 + size2 + size3 + 3 * wrapper;
-  auto *msgs = new char[total_size];
-  memcpy (msgs, msg1, size1 + wrapper);
+  auto msgs = std::make_unique<char[]> (total_size);
+  std::memcpy (msgs.get (), msg1.get (), size1 + wrapper);
   offset += size1 + wrapper;
-  memcpy (msgs + offset, msg2, size2 + wrapper);
+  std::memcpy (msgs.get () + offset, msg2.get (), size2 + wrapper);
   offset += size2 + wrapper;
-  memcpy (msgs + offset, msg3, size3 + wrapper);
+  std::memcpy (msgs.get () + offset, msg3.get (), size3 + wrapper);
 
   struct request *req = nullptr;
   struct Node *list = nullptr;
 
-  int res = set_request (&req, &list, total_size, msgs, 0);
+  int res = set_request (&req, &list, total_size, msgs.get (), 0);
   EXPECT_EQ (res, SUCCESS_CODE);
   EXPECT_EQ (req->prev_size, 0UL);
   EXPECT_EQ (req->prev_remain, 0UL);
@@ -629,7 +610,8 @@ TEST (unit_saurion, MultipleMessagesInOneIovecLastIncomplete)
   EXPECT_EQ (res, SUCCESS_CODE);
   ASSERT_NE (dest, nullptr);
   EXPECT_EQ (len, size1);
-  EXPECT_EQ (strncmp ((char *)dest, msg1 + sizeof (uint64_t), size1), 0);
+  EXPECT_EQ (strncmp ((char *)dest, msg1.get () + sizeof (uint64_t), size1),
+             0);
   EXPECT_EQ (req->next_iov, 0UL);
   EXPECT_EQ (req->next_offset, size1 + wrapper);
   free (dest);
@@ -639,7 +621,8 @@ TEST (unit_saurion, MultipleMessagesInOneIovecLastIncomplete)
   EXPECT_EQ (res, SUCCESS_CODE);
   ASSERT_NE (dest, nullptr);
   EXPECT_EQ (len, size2);
-  EXPECT_EQ (strncmp ((char *)dest, msg2 + sizeof (uint64_t), size2), 0);
+  EXPECT_EQ (strncmp ((char *)dest, msg2.get () + sizeof (uint64_t), size2),
+             0);
   EXPECT_EQ (req->next_iov, 0UL);
   EXPECT_EQ (req->next_offset, size1 + size2 + 2 * wrapper);
   free (dest);
@@ -655,41 +638,34 @@ TEST (unit_saurion, MultipleMessagesInOneIovecLastIncomplete)
   EXPECT_EQ (req->prev_remain, size3 - readed);
   free (req->prev);
   list_free (&list);
-  delete[] msgs;
-  delete[] msg1;
-  delete[] msg2;
-  delete[] msg3;
 }
 
 TEST (unit_saurion, MultipleMessagesInOneIovecSecondMalformed)
 {
-  char *msg1 = nullptr;
   uint64_t size1 = 10;
-  char *msg2 = nullptr;
   uint64_t size2 = 40;
-  char *msg3 = nullptr;
   uint64_t size3 = 50;
   uint64_t offset = 0;
-  fill_with_alphabet (&msg1, size1, 1);
-  fill_with_alphabet (&msg2, size2, 1);
-  fill_with_alphabet (&msg3, size3, 1);
+  auto msg1 = fill_with_alphabet (size1, 1);
+  auto msg2 = fill_with_alphabet (size2, 1);
+  auto msg3 = fill_with_alphabet (size3, 1);
 
   const uint64_t wrapper = sizeof (uint64_t) + 1;
   uint64_t total_size = size1 + size2 + size3 + 3 * wrapper - 10;
-  auto *msgs = new char[total_size];
-  memcpy (msgs, msg1, size1 + wrapper);
+  auto msgs = std::make_unique<char[]> (total_size);
+  std::memcpy (msgs.get (), msg1.get (), size1 + wrapper);
   offset += size1 + wrapper;
-  memcpy (msgs + offset, msg2, size2 + wrapper);
+  std::memcpy (msgs.get () + offset, msg2.get (), size2 + wrapper);
   offset += size2 + wrapper - 10;
-  memcpy (msgs + offset, msg3, size3 + wrapper);
-  uint64_t exp_size = *(uint64_t *)(msgs + offset);
+  std::memcpy (msgs.get () + offset, msg3.get (), size3 + wrapper);
+  uint64_t exp_size = *(uint64_t *)(msgs.get () + offset);
   exp_size = ntohll (exp_size);
   EXPECT_EQ (exp_size, size3);
 
   struct request *req = nullptr;
   struct Node *list = nullptr;
 
-  int res = set_request (&req, &list, total_size, msgs, 0);
+  int res = set_request (&req, &list, total_size, msgs.get (), 0);
   EXPECT_EQ (res, SUCCESS_CODE);
   EXPECT_EQ (req->prev_size, 0UL);
   EXPECT_EQ (req->prev_remain, 0UL);
@@ -729,7 +705,8 @@ TEST (unit_saurion, MultipleMessagesInOneIovecSecondMalformed)
   EXPECT_EQ (res, SUCCESS_CODE);
   ASSERT_NE (dest, nullptr);
   EXPECT_EQ (len, size1);
-  EXPECT_EQ (strncmp ((char *)dest, msg1 + sizeof (uint64_t), size1), 0);
+  EXPECT_EQ (strncmp ((char *)dest, msg1.get () + sizeof (uint64_t), size1),
+             0);
   EXPECT_EQ (req->next_iov, 0UL);
   EXPECT_EQ (req->next_offset, size1 + wrapper);
   free (dest);
@@ -744,41 +721,34 @@ TEST (unit_saurion, MultipleMessagesInOneIovecSecondMalformed)
   EXPECT_EQ (req->prev_size, 0UL);
   EXPECT_EQ (req->next_offset, 0UL);
   list_free (&list);
-  delete[] msgs;
-  delete[] msg1;
-  delete[] msg2;
-  delete[] msg3;
 }
 
 TEST (unit_saurion, MultipleMessagesInOneIovecSecondAndThirdMalformed)
 {
-  char *msg1 = nullptr;
   uint64_t size1 = 10;
-  char *msg2 = nullptr;
   uint64_t size2 = 40;
-  char *msg3 = nullptr;
   uint64_t size3 = 50;
   uint64_t offset = 0;
-  fill_with_alphabet (&msg1, size1, 1);
-  fill_with_alphabet (&msg2, size2, 1);
-  fill_with_alphabet (&msg3, size3, 1);
+  auto msg1 = fill_with_alphabet (size1, 1);
+  auto msg2 = fill_with_alphabet (size2, 1);
+  auto msg3 = fill_with_alphabet (size3, 1);
 
   const uint64_t wrapper = sizeof (uint64_t) + 1;
   uint64_t total_size = size1 + size2 + size3 + 3 * wrapper - 10 - 5;
-  auto *msgs = new char[total_size];
-  memcpy (msgs, msg1, size1 + wrapper);
+  auto msgs = std::make_unique<char[]> (total_size);
+  std::memcpy (msgs.get (), msg1.get (), size1 + wrapper);
   offset += size1 + wrapper;
-  memcpy (msgs + offset, msg2, size2 + wrapper);
+  std::memcpy (msgs.get () + offset, msg2.get (), size2 + wrapper);
   offset += size2 + wrapper - 10;
-  memcpy (msgs + offset, msg3, size3 + wrapper - 5);
-  uint64_t exp_size = *(uint64_t *)(msgs + offset);
+  std::memcpy (msgs.get () + offset, msg3.get (), size3 + wrapper - 5);
+  uint64_t exp_size = *(uint64_t *)(msgs.get () + offset);
   exp_size = ntohll (exp_size);
   EXPECT_EQ (exp_size, size3);
 
   struct request *req = nullptr;
   struct Node *list = nullptr;
 
-  int res = set_request (&req, &list, total_size, msgs, 0);
+  int res = set_request (&req, &list, total_size, msgs.get (), 0);
   EXPECT_EQ (res, SUCCESS_CODE);
   EXPECT_EQ (req->prev_size, 0UL);
   EXPECT_EQ (req->prev_remain, 0UL);
@@ -818,7 +788,8 @@ TEST (unit_saurion, MultipleMessagesInOneIovecSecondAndThirdMalformed)
   EXPECT_EQ (res, SUCCESS_CODE);
   ASSERT_NE (dest, nullptr);
   EXPECT_EQ (len, size1);
-  EXPECT_EQ (strncmp ((char *)dest, msg1 + sizeof (uint64_t), size1), 0);
+  EXPECT_EQ (strncmp ((char *)dest, msg1.get () + sizeof (uint64_t), size1),
+             0);
   EXPECT_EQ (req->next_iov, 0UL);
   EXPECT_EQ (req->next_offset, size1 + wrapper);
   free (dest);
@@ -833,8 +804,4 @@ TEST (unit_saurion, MultipleMessagesInOneIovecSecondAndThirdMalformed)
   EXPECT_EQ (req->prev_size, 0UL);
   EXPECT_EQ (req->next_offset, 0UL);
   list_free (&list);
-  delete[] msgs;
-  delete[] msg1;
-  delete[] msg2;
-  delete[] msg3;
 }
