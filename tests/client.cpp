@@ -21,7 +21,7 @@
 
 std::vector<pid_t> clients;
 int numClients = 0;
-std::atomic<bool> keepRunning (true);
+std::atomic keepRunning (true);
 
 char *globalMessage;
 int *globalMessageCount;
@@ -142,7 +142,7 @@ parseMessages (char *buffer, int64_t bytes_read, std::ofstream &logStream)
         }
 
       auto msg = std::make_unique<char[]> (msg_len + 1);
-      std::memcpy (msg.get (), (char *)(buffer + offset), msg_len);
+      std::memcpy (msg.get (), buffer + offset, msg_len);
       msg[msg_len] = '\0';
       offset += msg_len;
 

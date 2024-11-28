@@ -86,7 +86,7 @@ TEST (Tools, alphabet_with_header)
   auto str = fill_with_alphabet (size, 1);
   EXPECT_NE (str, nullptr);
   uint64_t content_size = ntohll (*(uint64_t *)str.get ());
-  char *str_content = str.get () + sizeof (uint64_t);
+  const char *const str_content = str.get () + sizeof (uint64_t);
   uint8_t foot = *(uint8_t *)(str.get () + content_size);
   EXPECT_EQ (content_size, size);
   EXPECT_STREQ (str_content, "abcd");
@@ -108,7 +108,7 @@ TEST (Tools, null_length_with_header)
   auto str = fill_with_alphabet (size, 1);
   EXPECT_NE (str, nullptr);
   uint64_t content_size = *(uint64_t *)str.get ();
-  char *str_content = str.get () + sizeof (uint64_t);
+  const char *const str_content = str.get () + sizeof (uint64_t);
   uint8_t foot = *(uint8_t *)(str.get () + content_size);
   EXPECT_EQ (content_size, size);
   EXPECT_STREQ (str_content, "");
@@ -150,7 +150,7 @@ check_iovec (uint64_t size, uint8_t h)
   auto *iovecs = new struct iovec[amount];
   auto **chd_ptr = new void *[amount];
 
-  auto *msg_ptr = (char *)msg.get ();
+  auto *msg_ptr = msg.get ();
   char iov_str[CHUNK_SZ + 1];
   memset (iov_str, 0, CHUNK_SZ + 1);
   char orig_str[CHUNK_SZ + 1];
@@ -238,8 +238,8 @@ TEST (unit_saurion, creates_iovecs_correctly)
   EXPECT_EQ (1, 1);
   std::random_device rd;
   std::mt19937 gen (rd ());
-  std::uniform_int_distribution<> dis (0, 10);
-  std::uniform_int_distribution<> dis2 (0, CHUNK_SZ);
+  std::uniform_int_distribution dis (0, 10);
+  std::uniform_int_distribution dis2 (0, CHUNK_SZ);
   check_iovec (CHUNK_SZ / 2, 1);
   check_iovec (CHUNK_SZ + 53, 1);
   check_iovec (CHUNK_SZ, 1);

@@ -27,39 +27,40 @@
 constexpr int PORT = 8080;
 
 constexpr char FIFO[] = "/tmp/saurion_test_fifo.XXX";
-constexpr int FIFO_LENGTH = 27;
 
-void
-get_executable_directory (char *buffer, size_t size)
+std::string
+get_executable_directory ()
 {
-  ssize_t len = readlink ("/proc/self/exe", buffer, size - 1);
-  if ((len != -1) && (len < (ssize_t)size))
-    {
-      buffer[len - 1] = '\0';
-      if (char *last_slash = strrchr (buffer, '/'); last_slash != nullptr)
-        {
-          *last_slash = '\0';
-        }
-      auto real_path = std::make_unique<char[]> (PATH_MAX);
-      if (realpath (buffer, real_path.get ()) == nullptr)
-        {
-          perror ("realpath");
-          exit (EXIT_FAILURE);
-        }
+  char buffer[PATH_MAX];
 
-      if (char *libs_pos = strstr (real_path.get (), "/.libs"); libs_pos)
-        {
-          // Recortar desde el inicio hasta `.libs` y después de eso.
-          *libs_pos = '\0';
-        }
-      strcpy (buffer, real_path.get ());
-      return;
-    }
-  else
+  ssize_t len = readlink ("/proc/self/exe", buffer, sizeof (buffer) - 1);
+  if (len <= 0 || len >= (ssize_t)sizeof (buffer))
     {
-      perror ("readlink");
-      exit (EXIT_FAILURE);
+      throw std::runtime_error ("Failed to read symbolic link /proc/self/exe");
     }
+
+  buffer[len] = '\0'; // Terminar con un carácter nulo
+
+  // Recortar hasta el último slash ('/') para obtener el directorio
+  if (char *last_slash = strrchr (buffer, '/'); last_slash != nullptr)
+    {
+      *last_slash = '\0';
+    }
+
+  // Resolver la ruta real para manejar links simbólicos
+  auto real_path = std::make_unique<char[]> (PATH_MAX);
+  if (realpath (buffer, real_path.get ()) == nullptr)
+    {
+      throw std::runtime_error ("Failed to resolve real path");
+    }
+
+  // Eliminar `.libs` si está presente
+  if (char *libs_pos = strstr (real_path.get (), "/.libs"); libs_pos)
+    {
+      *libs_pos = '\0';
+    }
+
+  return std::string (real_path.get ());
 }
 
 struct summary
@@ -102,7 +103,7 @@ protected:
     fifo_name = FIFO;
     std::random_device rd;
     std::mt19937 gen (rd ());
-    std::uniform_int_distribution<> dis (0, 10);
+    std::uniform_int_distribution dis (0, 10);
 
     // Generate the random "XXX" string
     for (int i = 23; i < 26; i++)
@@ -135,23 +136,19 @@ protected:
       {
         std::vector<const char *> exec_args;
 
-        char executable_dir[EXECUTABLE_LENGTH];
-
         // Get the directory of the current executable
-        get_executable_directory (executable_dir, EXECUTABLE_LENGTH);
-        char script_path[1031];
-        snprintf (script_path, sizeof (script_path), "%s/client",
-                  executable_dir);
+        std::string executable_dir
+            = get_executable_directory ().append ("/client");
 
-        for (const char *item : { (const char *)script_path,
-                                  (const char *)"-p", fifo_name.c_str () })
+        for (const char *item : { executable_dir.c_str (), (const char *)"-p",
+                                  fifo_name.c_str () })
           {
             exec_args.push_back (item);
           }
         exec_args.push_back (nullptr);
 
         // Ejecuta el comando y ignora el retorno
-        execvp (script_path, (char *const *)exec_args.data ());
+        execvp (executable_dir.c_str (), (char *const *)exec_args.data ());
       }
     else
       {
@@ -511,46 +508,44 @@ TEST_F (low_saurion, readWriteWithLargeMessageMultipleOfChunkSize)
 {
   uint32_t clients = 1;
   size_t size = CHUNK_SZ * 2;
-  auto *str = new char[size + 1];
-  memset (str, 'A', size);
+  auto str = std::make_unique<char[]> (size + 1);
+  std::memset (str.get (), 'A', size);
   str[size - 1] = '1';
   str[size] = 0;
   connect_clients (clients);
   wait_connected (clients);
   EXPECT_EQ (summary.connected, clients);
-  clients_2_saurion (1, str, 0);
+  clients_2_saurion (1, str.get (), 0);
   wait_readed (size);
   EXPECT_EQ (summary.readed, size);
-  saurion_2_client (summary.fds.front (), 1, (char *)str);
+  saurion_2_client (summary.fds.front (), 1, (char *)str.get ());
   wait_wrote (1);
   disconnect_clients ();
   wait_disconnected (clients);
-  EXPECT_EQ (1UL, read_from_clients (std::string (str)));
+  EXPECT_EQ (1UL, read_from_clients (std::string (str.get ())));
   EXPECT_EQ (summary.disconnected, clients);
-  delete[] str;
 }
 
 TEST_F (low_saurion, readWriteWithLargeMessage)
 {
   uint32_t clients = 1;
   size_t size = CHUNK_SZ * 2.5;
-  auto *str = new char[size + 1];
-  memset (str, 'A', size);
+  auto str = std::make_unique<char[]> (size + 1);
+  std::memset (str.get (), 'A', size);
   str[size - 1] = '1';
   str[size] = 0;
   connect_clients (clients);
   wait_connected (clients);
   EXPECT_EQ (summary.connected, clients);
-  clients_2_saurion (1, str, 0);
+  clients_2_saurion (1, str.get (), 0);
   wait_readed (size);
   EXPECT_EQ (summary.readed, size);
-  saurion_2_client (summary.fds.front (), 1, (char *)str);
+  saurion_2_client (summary.fds.front (), 1, (char *)str.get ());
   wait_wrote (1);
   disconnect_clients ();
   wait_disconnected (clients);
-  EXPECT_EQ (1UL, read_from_clients (std::string (str)));
+  EXPECT_EQ (1UL, read_from_clients (std::string (str.get ())));
   EXPECT_EQ (summary.disconnected, clients);
-  delete[] str;
 }
 
 TEST_F (low_saurion, handleConcurrentReadsAndWrites)
