@@ -154,6 +154,7 @@ parseMessages (const char *buffer, int64_t bytes_read,
   while (offset < bytes_read
          && extractMessage (buffer, offset, bytes_read, logStream))
     {
+      // parseMessages
     }
 }
 
