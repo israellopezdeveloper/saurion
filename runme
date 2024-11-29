@@ -259,7 +259,7 @@ else
     make_exec compile_commands
   fi
   make_exec
-  make_tests || ./tests/saurion_test
+  make_tests || ./tests/saurion_test || exit 1
   for option in $MAKE_TARGETS_list; do
     option_flag_var="OPTION_FLAGS_${option}"
     option_flag_value=$(eval echo \$$option_flag_var)
