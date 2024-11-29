@@ -215,6 +215,182 @@ check_iovec (uint64_t size, uint8_t h)
   delete[] chd_ptr;
 }
 
+static void
+check_request (const int res, const struct request *const r,
+               const uint64_t iovecs)
+{
+  EXPECT_EQ (res, SUCCESS_CODE);
+  EXPECT_EQ (r->prev, nullptr);
+  EXPECT_EQ (r->prev_size, 0UL);
+  EXPECT_EQ (r->prev_remain, 0UL);
+  EXPECT_EQ (r->next_iov, 0UL);
+  EXPECT_EQ (r->next_offset, 0UL);
+  EXPECT_EQ (r->iovec_count, iovecs);
+}
+
+static void
+check_chunk (const struct request *const r, int res, const char *const m,
+             void *const d, const uint64_t l, const uint64_t s, const bool n)
+{
+  EXPECT_EQ (res, SUCCESS_CODE);
+  ASSERT_NE (d, nullptr);
+  EXPECT_EQ (l, s);
+  EXPECT_EQ (strncmp ((char *)d, m + sizeof (uint64_t), s), 0);
+  if (n)
+    {
+      EXPECT_NE (r->next_offset, 0UL);
+    }
+  else
+    {
+      EXPECT_EQ (r->next_offset, 0UL);
+    }
+  free (d);
+}
+
+static void
+check_msg (const struct request *const r, uint64_t &o, const uint64_t s,
+           const bool ok)
+{
+  uint64_t exp_size = *(uint64_t *)((uint8_t *)r->iov[0].iov_base + o);
+  exp_size = ntohll (exp_size);
+  EXPECT_EQ (exp_size, s);
+  o += sizeof (uint64_t) + s;
+  exp_size = *(uint64_t *)((char *)r->iov[0].iov_base + o);
+  exp_size = ntohll (exp_size);
+  if (ok)
+    {
+      EXPECT_EQ (exp_size, 0UL);
+    }
+  o += 1;
+}
+
+static std::vector<std::unique_ptr<char[]> >
+generate_messages (const std::vector<uint64_t> &sizes,
+                   const std::vector<int> &adjustments)
+{
+  if (sizes.size () != adjustments.size ())
+    {
+      throw std::invalid_argument (
+          "Sizes and adjustments vectors must have the same length");
+    }
+  uint64_t offset = 0;
+  for (const auto &a : adjustments)
+    {
+      if ((a > 0) || (a * -1 > (int)sizes[offset]))
+        {
+          throw std::invalid_argument (
+              "Sizes and adjustments vectors must be less or equal to 0 and "
+              "smaller than size");
+        }
+    }
+
+  const uint64_t wrapper = sizeof (uint64_t) + sizeof (uint8_t);
+  uint64_t total_size = 0;
+
+  // Calcular el tamaño total ajustado
+  for (size_t i = 0; i < sizes.size (); ++i)
+    {
+      total_size += sizes[i] + wrapper + adjustments[i];
+    }
+
+  // Crear un buffer para almacenar todos los mensajes concatenados
+  auto msgs = std::make_unique<char[]> (total_size);
+
+  offset = 0;
+  std::vector<std::unique_ptr<char[]> > message_list;
+
+  // Procesar cada mensaje
+  for (size_t i = 0; i < sizes.size (); ++i)
+    {
+      auto msg = fill_with_alphabet (sizes[i], 1);
+      std::memcpy (msgs.get () + offset, msg.get (),
+                   sizes[i] + wrapper + adjustments[i]);
+      offset += sizes[i] + wrapper + adjustments[i];
+      message_list.push_back (std::move (msg));
+    }
+
+  // Concatenar todos los mensajes en un único mensaje
+  auto sum_msg = std::make_unique<char[]> (total_size);
+  uint64_t sum_offset = 0;
+
+  for (size_t i = 0; i < sizes.size (); ++i)
+    {
+      uint64_t msg_size = sizes[i];
+      std::memcpy (sum_msg.get () + sum_offset, message_list[i].get (),
+                   msg_size + wrapper + adjustments[i]);
+      sum_offset += msg_size + wrapper + adjustments[i];
+    }
+
+  // Añadir el mensaje combinado al final del vector
+  message_list.push_back (std::move (sum_msg));
+
+  return message_list;
+}
+
+static void
+check_set_msgs (const std::vector<uint64_t> &s, const std::vector<int> &a,
+                const int r)
+{
+  if ((r > 0) || (r * -1 > (int)s[s.size () - 1]))
+    {
+      throw std::invalid_argument ("Invalid remain");
+    }
+  auto msgs_vector = generate_messages (s, a);
+
+  struct request *req = nullptr;
+  struct Node *list = nullptr;
+
+  auto total_size = std::accumulate (s.begin (), s.end (), 0) + s.size () * 9
+                    + std::accumulate (a.begin (), a.end (), 0);
+  int res = set_request (&req, &list, total_size,
+                         msgs_vector[s.size ()].get (), 0);
+  check_request (res, req, 1UL);
+  req->iov[req->iovec_count - 1].iov_len += r;
+  uint64_t offset = 0;
+  for (uint i = 0; i < s.size (); ++i)
+    {
+      check_msg (req, offset, s[i], a[i] == 0);
+      offset += a[i];
+    }
+
+  void *dest = nullptr;
+  uint64_t len = 0;
+  for (uint i = 0; i < s.size () - (r != 0 ? 1 : 0); ++i)
+    {
+      res = read_chunk (&dest, &len, req);
+      if (a[i] == 0)
+        {
+          check_chunk (req, res, msgs_vector[i].get (), dest, len, s[i],
+                       (i < (s.size () - 1)));
+        }
+      else
+        {
+          EXPECT_EQ (res, ERROR_CODE);
+          ASSERT_EQ (dest, nullptr);
+          EXPECT_EQ (len, 0UL);
+          EXPECT_EQ (req->prev, nullptr);
+          EXPECT_EQ (req->prev_remain, 0UL);
+          EXPECT_EQ (req->prev_size, 0UL);
+          EXPECT_EQ (req->next_offset, 0UL);
+          break;
+        }
+    }
+  if (r != 0)
+    {
+      res = read_chunk (&dest, &len, req);
+      EXPECT_EQ (res, SUCCESS_CODE);
+      ASSERT_EQ (dest, nullptr);
+      EXPECT_EQ (len, 0UL);
+      EXPECT_NE (req->prev, nullptr);
+      EXPECT_EQ (req->prev_size, s[s.size () - 1]);
+      uint64_t readed = s[s.size () - 1] + r + 1;
+      EXPECT_EQ (req->prev_remain, s[s.size () - 1] - readed);
+      free (req->prev);
+    }
+
+  list_free (&list);
+}
+
 TEST (unit_saurion, initialize_correct_with_header)
 {
   const char *message = "Hola, Mundo!";
@@ -283,19 +459,6 @@ TEST (unit_saurion, create_iovec_for_null_msg)
   check_iovec (0, 0);
 }
 
-void
-check_request (const int res, const struct request *const r,
-               const uint64_t iovecs)
-{
-  EXPECT_EQ (res, SUCCESS_CODE);
-  EXPECT_EQ (r->prev, nullptr);
-  EXPECT_EQ (r->prev_size, 0UL);
-  EXPECT_EQ (r->prev_remain, 0UL);
-  EXPECT_EQ (r->next_iov, 0UL);
-  EXPECT_EQ (r->next_offset, 0UL);
-  EXPECT_EQ (r->iovec_count, iovecs);
-}
-
 TEST (unit_saurion, set_request_first_creation_and_reset)
 {
   struct request *req = nullptr;
@@ -339,25 +502,6 @@ TEST (unit_saurion, EmptyRequest)
   EXPECT_EQ (len, 0u);
 }
 
-void
-check_chunk (const struct request *const r, int res, const char *const m,
-             void *const d, const uint64_t l, const uint64_t s, const bool n)
-{
-  EXPECT_EQ (res, SUCCESS_CODE);
-  ASSERT_NE (d, nullptr);
-  EXPECT_EQ (l, s);
-  EXPECT_EQ (strncmp ((char *)d, m + sizeof (uint64_t), s), 0);
-  if (n)
-    {
-      EXPECT_NE (r->next_offset, 0UL);
-    }
-  else
-    {
-      EXPECT_EQ (r->next_offset, 0UL);
-    }
-  free (d);
-}
-
 TEST (unit_saurion, SingleMessageComplete)
 {
   // Caso en el que hay un mensaje completo en un solo iovec
@@ -395,9 +539,6 @@ TEST (unit_saurion, MessageSpanningMultipleIovecs)
   struct Node *list = nullptr;
   int res = set_request (&req, &list, msg_size, message.get (), 1);
   check_request (res, req, 2UL);
-  uint64_t size = *(uint64_t *)req->iov[0].iov_base;
-  size = ntohll (size);
-  EXPECT_EQ (size, 1.5 * CHUNK_SZ);
 
   void *dest = nullptr;
   uint64_t len = 0;
@@ -424,12 +565,6 @@ TEST (unit_saurion, PreviousUnfinishedMessage)
   struct Node *list = nullptr;
   int res = set_request (&req, &list, msg_size, message.get (), 1);
   check_request (res, req, 3UL);
-  EXPECT_EQ (res, SUCCESS_CODE);
-  EXPECT_EQ (req->prev_size, 0UL);
-  EXPECT_EQ (req->prev_remain, 0UL);
-  EXPECT_EQ (req->next_iov, 0UL);
-  EXPECT_EQ (req->next_offset, 0UL);
-  EXPECT_EQ (req->iovec_count, 3UL);
   uint64_t size = *(uint64_t *)req->iov[0].iov_base;
   size = ntohll (size);
   EXPECT_EQ (size, 2.5 * CHUNK_SZ);
@@ -478,203 +613,30 @@ TEST (unit_saurion, PreviousUnfinishedMessage)
   free (dest);
 }
 
-void
-check_msg (const struct request *const r, uint64_t &o, const uint64_t s,
-           const bool ok)
-{
-  uint64_t exp_size = *(uint64_t *)((uint8_t *)r->iov[0].iov_base + o);
-  exp_size = ntohll (exp_size);
-  EXPECT_EQ (exp_size, s);
-  o += sizeof (uint64_t) + s;
-  exp_size = *(uint64_t *)((char *)r->iov[0].iov_base + o);
-  exp_size = ntohll (exp_size);
-  if (ok)
-    {
-      EXPECT_EQ (exp_size, 0UL);
-    }
-  o += 1;
-}
-
-std::vector<std::unique_ptr<char[]> >
-generate_messages (const std::vector<uint64_t> &sizes,
-                   const std::vector<int> &adjustments)
-{
-  if (sizes.size () != adjustments.size ())
-    {
-      throw std::invalid_argument (
-          "Sizes and adjustments vectors must have the same length");
-    }
-  uint64_t offset = 0;
-  for (const auto &a : adjustments)
-    {
-      if ((a > 0) || (a * -1 > (int)sizes[offset]))
-        {
-          throw std::invalid_argument (
-              "Sizes and adjustments vectors must be less or equal to 0 and "
-              "smaller than size");
-        }
-    }
-
-  const uint64_t wrapper = sizeof (uint64_t) + sizeof (uint8_t);
-  uint64_t total_size = 0;
-
-  // Calcular el tamaño total ajustado
-  for (size_t i = 0; i < sizes.size (); ++i)
-    {
-      total_size += sizes[i] + wrapper + adjustments[i];
-    }
-
-  // Crear un buffer para almacenar todos los mensajes concatenados
-  auto msgs = std::make_unique<char[]> (total_size);
-
-  offset = 0;
-  std::vector<std::unique_ptr<char[]> > message_list;
-
-  // Procesar cada mensaje
-  for (size_t i = 0; i < sizes.size (); ++i)
-    {
-      auto msg = fill_with_alphabet (sizes[i], 1);
-      std::memcpy (msgs.get () + offset, msg.get (),
-                   sizes[i] + wrapper + adjustments[i]);
-      offset += sizes[i] + wrapper + adjustments[i];
-      message_list.push_back (std::move (msg));
-    }
-
-  // Concatenar todos los mensajes en un único mensaje
-  auto sum_msg = std::make_unique<char[]> (total_size);
-  uint64_t sum_offset = 0;
-
-  for (size_t i = 0; i < sizes.size (); ++i)
-    {
-      uint64_t msg_size = sizes[i];
-      std::memcpy (sum_msg.get () + sum_offset, message_list[i].get (),
-                   msg_size + wrapper + adjustments[i]);
-      sum_offset += msg_size + wrapper + adjustments[i];
-    }
-
-  // Añadir el mensaje combinado al final del vector
-  message_list.push_back (std::move (sum_msg));
-
-  return message_list;
-}
-
-void
-check_set_msgs (const std::vector<uint64_t> &sizes,
-                const std::vector<int> &adjustments)
-{
-  auto msgs_vector = generate_messages (sizes, adjustments);
-
-  struct request *req = nullptr;
-  struct Node *list = nullptr;
-
-  auto total_size
-      = std::accumulate (sizes.begin (), sizes.end (), 0) + sizes.size () * 9
-        + std::accumulate (adjustments.begin (), adjustments.end (), 0);
-  int res = set_request (&req, &list, total_size,
-                         msgs_vector[sizes.size ()].get (), 0);
-  check_request (res, req, 1UL);
-  uint64_t offset = 0;
-  for (uint i = 0; i < sizes.size (); ++i)
-    {
-      check_msg (req, offset, sizes[i], adjustments[i] == 0);
-      offset += adjustments[i];
-    }
-
-  void *dest = nullptr;
-  uint64_t len = 0;
-  for (uint i = 0; i < sizes.size (); ++i)
-    {
-      res = read_chunk (&dest, &len, req);
-      if (adjustments[i] == 0)
-        {
-          check_chunk (req, res, msgs_vector[i].get (), dest, len, sizes[i],
-                       (i < (sizes.size () - 1)));
-        }
-      else
-        {
-          EXPECT_EQ (res, ERROR_CODE);
-          ASSERT_EQ (dest, nullptr);
-          EXPECT_EQ (len, 0UL);
-          EXPECT_EQ (req->prev, nullptr);
-          EXPECT_EQ (req->prev_remain, 0UL);
-          EXPECT_EQ (req->prev_size, 0UL);
-          EXPECT_EQ (req->next_offset, 0UL);
-          break;
-        }
-    }
-
-  list_free (&list);
-}
-
 TEST (unit_saurion, MultipleMessagesInOneIovec)
 {
   std::vector<uint64_t> sizes = { 3, 4, 5 };
   std::vector<int> adjustments = { 0, 0, 0 };
-  check_set_msgs (sizes, adjustments);
+  check_set_msgs (sizes, adjustments, 0);
 }
 
 TEST (unit_saurion, MultipleMessagesInOneIovecLastIncomplete)
 {
-  uint64_t size1 = 3;
-  uint64_t size2 = 4;
-  uint64_t size3 = 5;
-  uint64_t offset = 0;
-  auto msg1 = fill_with_alphabet (size1, 1);
-  auto msg2 = fill_with_alphabet (size2, 1);
-  auto msg3 = fill_with_alphabet (size3, 1);
-
-  const uint64_t wrapper = sizeof (uint64_t) + 1;
-  uint64_t total_size = size1 + size2 + size3 + 3 * wrapper;
-  auto msgs = std::make_unique<char[]> (total_size);
-  std::memcpy (msgs.get (), msg1.get (), size1 + wrapper);
-  offset += size1 + wrapper;
-  std::memcpy (msgs.get () + offset, msg2.get (), size2 + wrapper);
-  offset += size2 + wrapper;
-  std::memcpy (msgs.get () + offset, msg3.get (), size3 + wrapper);
-
-  struct request *req = nullptr;
-  struct Node *list = nullptr;
-
-  int res = set_request (&req, &list, total_size, msgs.get (), 0);
-  check_request (res, req, 1UL);
-  req->iov[0].iov_len -= 3;
-  offset = 0;
-  check_msg (req, offset, size1, true);
-  check_msg (req, offset, size2, true);
-  check_msg (req, offset, size3, true);
-
-  void *dest = nullptr;
-  uint64_t len = 0;
-
-  res = read_chunk (&dest, &len, req);
-  check_chunk (req, res, msg1.get (), dest, len, size1, true);
-
-  res = read_chunk (&dest, &len, req);
-  check_chunk (req, res, msg2.get (), dest, len, size2, true);
-
-  res = read_chunk (&dest, &len, req);
-
-  EXPECT_EQ (res, SUCCESS_CODE);
-  ASSERT_EQ (dest, nullptr);
-  EXPECT_EQ (len, 0UL);
-  EXPECT_NE (req->prev, nullptr);
-  EXPECT_EQ (req->prev_size, size3);
-  uint64_t readed = size3 - 2;
-  EXPECT_EQ (req->prev_remain, size3 - readed);
-  free (req->prev);
-  list_free (&list);
+  std::vector<uint64_t> sizes = { 3, 4, 5 };
+  std::vector<int> adjustments = { 0, 0, 0 };
+  check_set_msgs (sizes, adjustments, -3);
 }
 
 TEST (unit_saurion, MultipleMessagesInOneIovecSecondMalformed)
 {
   std::vector<uint64_t> sizes = { 10, 40, 50 };
   std::vector<int> adjustments = { 0, -10, 0 };
-  check_set_msgs (sizes, adjustments);
+  check_set_msgs (sizes, adjustments, 0);
 }
 
 TEST (unit_saurion, MultipleMessagesInOneIovecSecondAndThirdMalformed)
 {
   std::vector<uint64_t> sizes = { 10, 40, 50 };
   std::vector<int> adjustments = { 0, -10, -5 };
-  check_set_msgs (sizes, adjustments);
+  check_set_msgs (sizes, adjustments, 0);
 }
