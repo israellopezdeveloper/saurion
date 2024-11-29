@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <memory>
 #include <string.h>
+#include <string>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -368,7 +369,7 @@ readPipe (const std::string &pipePath)
   while ((bytesRead = read (fd, buffer, sizeof (buffer))) > 0L)
     {
       commandBuffer.append (buffer, bytesRead);
-      if (commandBuffer.contains ('\n'))
+      if (commandBuffer.find ('\n') != std::string::npos)
         {
           handleCommand (commandBuffer);
           commandBuffer.clear ();
