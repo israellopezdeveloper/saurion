@@ -217,8 +217,8 @@ check_iovec (uint64_t size, uint8_t h)
 }
 
 static void
-check_new_request (const int res, const struct request *const r,
-                   const uint64_t iovecs)
+check_request (const int res, const struct request *const r,
+               const uint64_t iovecs)
 {
   EXPECT_EQ (res, SUCCESS_CODE);
   EXPECT_EQ (r->prev, nullptr);
@@ -227,19 +227,6 @@ check_new_request (const int res, const struct request *const r,
   EXPECT_EQ (r->next_iov, 0UL);
   EXPECT_EQ (r->next_offset, 0UL);
   EXPECT_EQ (r->iovec_count, iovecs);
-}
-
-static void
-check_request_prev (const int res, const struct request *const r,
-                    const void *d, const uint64_t l, const uint64_t p,
-                    const uint64_t rem)
-{
-  EXPECT_EQ (res, SUCCESS_CODE);
-  ASSERT_EQ (d, nullptr);
-  EXPECT_EQ (l, 0UL);
-  EXPECT_NE (r->prev, nullptr);
-  EXPECT_EQ (r->prev_size, p);
-  EXPECT_EQ (r->prev_remain, rem);
 }
 
 static void
@@ -359,7 +346,7 @@ check_set_msgs (const std::vector<uint64_t> &s, const std::vector<int> &a,
   int res = set_request (&req, &list, total_size,
                          msgs_vector[s.size ()].get (), 0);
   uint64_t iovs = std::ceil ((float)total_size / CHUNK_SZ);
-  check_new_request (res, req, iovs);
+  check_request (res, req, iovs);
   req->iov[req->iovec_count - 1].iov_len += r;
   uint64_t offset = 0;
   for (uint i = 0; i < s.size (); ++i)
@@ -481,11 +468,11 @@ TEST (unit_saurion, set_request_first_creation_and_reset)
   uint64_t size = 2.5 * CHUNK_SZ;
   auto msg = fill_with_alphabet (size, 0);
   int res = set_request (&req, &list, size, msg.get (), 1);
-  check_new_request (res, req, 3UL);
+  check_request (res, req, 3UL);
   req->client_socket = 123;
   req->event_type = 456;
   res = set_request (&req, &list, size, msg.get (), 1);
-  check_new_request (res, req, 3UL);
+  check_request (res, req, 3UL);
   EXPECT_EQ (req->client_socket, 123);
   EXPECT_EQ (req->event_type, 456);
   list_free (&list);
@@ -498,7 +485,7 @@ TEST (unit_saurion, test_free_request)
   uint64_t size = 2.5 * CHUNK_SZ;
   auto msg = fill_with_alphabet (size, 0);
   int res = set_request (&req, &list, size, msg.get (), 1);
-  check_new_request (res, req, 3UL);
+  check_request (res, req, 3UL);
   list_free (&list);
 }
 
@@ -550,6 +537,18 @@ TEST (unit_saurion, MessageSpanningMultipleIovecs)
   check_set_msgs (sizes, adjustments, 0);
 }
 
+void
+check_read (const uint64_t len, const uint64_t msg_size, const uint64_t readed,
+            const int res, const struct request *req, const void *const dest)
+{
+  EXPECT_EQ (res, SUCCESS_CODE);
+  ASSERT_EQ (dest, nullptr);
+  EXPECT_EQ (len, 0UL);
+  EXPECT_NE (req->prev, nullptr);
+  EXPECT_EQ (req->prev_size, msg_size);
+  EXPECT_EQ (req->prev_remain, msg_size - readed);
+}
+
 TEST (unit_saurion, PreviousUnfinishedMessage)
 {
   // Caso en el que un mensaje se divide en múltiples iovecs
@@ -560,7 +559,7 @@ TEST (unit_saurion, PreviousUnfinishedMessage)
   struct request *req = nullptr;
   struct Node *list = nullptr;
   int res = set_request (&req, &list, msg_size, message.get (), 1);
-  check_new_request (res, req, 3UL);
+  check_request (res, req, 3UL);
   uint64_t size = *(uint64_t *)req->iov[0].iov_base;
   size = ntohll (size);
   EXPECT_EQ (size, 2.5 * CHUNK_SZ);
@@ -572,7 +571,8 @@ TEST (unit_saurion, PreviousUnfinishedMessage)
 
   res = read_chunk (&dest, &len, req);
   uint64_t readed = CHUNK_SZ - sizeof (size_t);
-  check_request_prev (res, req, dest, len, msg_size, msg_size - readed);
+
+  check_read (len, msg_size, readed, res, req, dest);
 
   res = set_request (&req, &list, req->prev_remain, message.get () + readed,
                      0);
@@ -582,7 +582,7 @@ TEST (unit_saurion, PreviousUnfinishedMessage)
 
   res = read_chunk (&dest, &len, req);
   readed = 2 * CHUNK_SZ - sizeof (uint64_t);
-  check_request_prev (res, req, dest, len, msg_size, msg_size - readed);
+  check_read (len, msg_size, readed, res, req, dest);
 
   res = set_request (&req, &list, req->prev_remain, message.get () + readed,
                      0);
