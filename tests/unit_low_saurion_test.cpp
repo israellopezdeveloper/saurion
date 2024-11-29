@@ -88,9 +88,9 @@ check_alpha_msg (const uint64_t s, const char *const str, const char *exp,
   if (h)
     {
       EXPECT_NE (str, nullptr);
-      uint64_t content_size = ntohll (*(uint64_t *)str);
+      const uint64_t content_size = ntohll (*(const uint64_t *)str);
       const char *const str_content = str + sizeof (uint64_t);
-      uint8_t foot = *(uint8_t *)(str + content_size);
+      const uint8_t foot = *(const uint8_t *)(str + content_size);
       EXPECT_EQ (content_size, s);
       EXPECT_STREQ (str_content, exp);
       EXPECT_EQ (foot, 0);
