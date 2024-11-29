@@ -36,15 +36,16 @@ signalHandler (int signum)
       keepRunning = false;
     }
 }
-
 uint64_t
-htonll (uint64_t value)
+endianess (uint64_t value, bool toNet)
 {
   int num = 42;
   if (*(char *)&num == 42)
     {
-      uint32_t high_part = htonl ((uint32_t)(value >> 32));
-      uint32_t low_part = htonl ((uint32_t)(value & 0xFFFFFFFFLL));
+      uint32_t high_part = toNet ? htonl ((uint32_t)(value >> 32))
+                                 : ntohl ((uint32_t)(value >> 32));
+      uint32_t low_part = toNet ? htonl ((uint32_t)(value & 0xFFFFFFFFLL))
+                                : ntohl ((uint32_t)(value & 0xFFFFFFFFLL));
       return ((uint64_t)low_part << 32) | high_part;
     }
   else
@@ -54,19 +55,15 @@ htonll (uint64_t value)
 }
 
 uint64_t
+htonll (uint64_t value)
+{
+  return endianess (value, true);
+}
+
+uint64_t
 ntohll (uint64_t value)
 {
-  int num = 42;
-  if (*(char *)&num == 42)
-    {
-      uint32_t high_part = ntohl ((uint32_t)(value >> 32));
-      uint32_t low_part = ntohl ((uint32_t)(value & 0xFFFFFFFFLL));
-      return ((uint64_t)low_part << 32) | high_part;
-    }
-  else
-    {
-      return value;
-    }
+  return endianess (value, false);
 }
 
 void
@@ -122,40 +119,41 @@ makeSocketNonBlocking ()
     }
 }
 
+bool
+extractMessage (const char *buffer, int64_t &offset, uint64_t bytes_read,
+                std::ostream &logStream)
+{
+  if (offset + sizeof (uint64_t) > bytes_read)
+    return false;
+
+  uint64_t msg_len;
+  memcpy (&msg_len, buffer + offset, sizeof (msg_len));
+  offset += sizeof (msg_len);
+  msg_len = ntohll (msg_len);
+
+  if (offset + msg_len + 1 > bytes_read)
+    return false;
+
+  auto msg = std::make_unique<char[]> (msg_len + 1);
+  memcpy (msg.get (), buffer + offset, msg_len);
+  msg[msg_len] = '\0';
+  offset += msg_len;
+
+  if (buffer[offset++] != 0)
+    return false; // Invalid end byte
+
+  logStream.write (msg.get (), msg_len);
+  return true;
+}
+
 void
-parseMessages (const char *const buffer, const int64_t bytes_read,
+parseMessages (const char *buffer, int64_t bytes_read,
                std::ofstream &logStream)
 {
   int64_t offset = 0;
-
-  while ((bytes_read > 0)
-         && (offset + sizeof (uint64_t) <= static_cast<uint64_t> (bytes_read)))
+  while (offset < bytes_read
+         && extractMessage (buffer, offset, bytes_read, logStream))
     {
-
-      uint64_t msg_len;
-      memcpy (&msg_len, buffer + offset, sizeof (msg_len));
-      offset += sizeof (msg_len);
-      msg_len = ntohll (msg_len);
-
-      if (offset + msg_len + 1 > static_cast<uint64_t> (bytes_read))
-        {
-          return;
-        }
-
-      auto msg = std::make_unique<char[]> (msg_len + 1);
-      std::memcpy (msg.get (), buffer + offset, msg_len);
-      msg[msg_len] = '\0';
-      offset += msg_len;
-
-      char end_byte = buffer[offset];
-      offset++;
-
-      if (end_byte != 0)
-        {
-          return;
-        }
-
-      logStream.write (msg.get (), msg_len);
     }
 }
 
@@ -383,19 +381,27 @@ readPipe (const std::string &pipePath)
 __attribute__ ((no_sanitize ("thread")))
 #endif
 #endif
+
+template <typename T>
+T *
+mapSharedMemory (size_t size)
+{
+  void *addr = mmap (nullptr, size, PROT_READ | PROT_WRITE,
+                     MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+  if (addr == MAP_FAILED)
+    {
+      perror ("Error mapeando memoria");
+      exit (1);
+    }
+  return static_cast<T *> (addr);
+}
+
 void
 global_map ()
 {
-
-  globalMessage = static_cast<char *> (
-      mmap (nullptr, 10 * CHUNK_SZ * sizeof (char), PROT_READ | PROT_WRITE,
-            MAP_SHARED | MAP_ANONYMOUS, -1, 0));
-  globalMessageCount = static_cast<int *> (
-      mmap (nullptr, sizeof (int), PROT_READ | PROT_WRITE,
-            MAP_SHARED | MAP_ANONYMOUS, -1, 0));
-  globalMessageDelay = static_cast<int *> (
-      mmap (nullptr, sizeof (int), PROT_READ | PROT_WRITE,
-            MAP_SHARED | MAP_ANONYMOUS, -1, 0));
+  globalMessage = mapSharedMemory<char> (10 * CHUNK_SZ * sizeof (char));
+  globalMessageCount = mapSharedMemory<int> (sizeof (int));
+  globalMessageDelay = mapSharedMemory<int> (sizeof (int));
 }
 
 int
