@@ -39,7 +39,6 @@ jobs:
       with:
         submodules: true
         fetch-depth: 0
-        recursive: true
     - name: Execute
       run: |
         ${{ inputs.commands }}
