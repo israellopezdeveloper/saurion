@@ -233,11 +233,6 @@ protected:
     close (saurion->ss);
     saurion_destroy (saurion);
     deleteLogFiles ();
-    summary.connected = 0;
-    summary.disconnected = 0;
-    summary.readed = 0;
-    summary.wrote = 0;
-    summary.fds.clear ();
     struct timespec tim;
     tim.tv_sec = 0;
     tim.tv_nsec = 10000000L;
@@ -452,22 +447,7 @@ TEST_F (low_saurion, connectMultipleClients)
   EXPECT_EQ (summary.disconnected, clients);
 }
 
-TEST_F (low_saurion, readMultipleMsgsFromClients)
-{
-  uint32_t clients = 20;
-  uint32_t msgs = 100;
-  connect_clients (clients);
-  wait_connected (clients);
-  EXPECT_EQ (summary.connected, clients);
-  clients_2_saurion (msgs, "Hola", 0);
-  wait_readed (msgs * clients * 4);
-  EXPECT_EQ (summary.readed, msgs * clients * 4);
-  disconnect_clients ();
-  wait_disconnected (clients);
-  EXPECT_EQ (summary.disconnected, clients);
-}
-
-TEST_F (low_saurion, writeMsgsToClients)
+TEST_F (low_saurion, reaadWriteMsgsToClients)
 {
   uint32_t clients = 20;
   uint32_t msgs = 100;

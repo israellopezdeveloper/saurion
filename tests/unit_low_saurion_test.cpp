@@ -1,4 +1,5 @@
 #include <bits/types/struct_iovec.h>
+#include <cmath>
 #include <gtest/gtest.h>
 #include <memory>
 #include <netinet/in.h>
@@ -344,7 +345,8 @@ check_set_msgs (const std::vector<uint64_t> &s, const std::vector<int> &a,
                     + std::accumulate (a.begin (), a.end (), 0);
   int res = set_request (&req, &list, total_size,
                          msgs_vector[s.size ()].get (), 0);
-  check_request (res, req, 1UL);
+  uint64_t iovs = std::ceil ((float)total_size / CHUNK_SZ);
+  check_request (res, req, iovs);
   req->iov[req->iovec_count - 1].iov_len += r;
   uint64_t offset = 0;
   for (uint i = 0; i < s.size (); ++i)
@@ -530,28 +532,9 @@ TEST (unit_saurion, SingleMessageComplete)
 
 TEST (unit_saurion, MessageSpanningMultipleIovecs)
 {
-  // Caso en el que un mensaje se divide en múltiples iovecs
-  auto message = fill_with_alphabet (1.5 * CHUNK_SZ, 0);
-  uint64_t msg_size = strlen (message.get ());
-
-  // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
-  struct request *req = nullptr;
-  struct Node *list = nullptr;
-  int res = set_request (&req, &list, msg_size, message.get (), 1);
-  check_request (res, req, 2UL);
-
-  void *dest = nullptr;
-  uint64_t len = 0;
-
-  res = read_chunk (&dest, &len, req);
-
-  EXPECT_EQ (res, SUCCESS_CODE);
-  ASSERT_NE (dest, nullptr);
-  EXPECT_EQ (len, msg_size);
-
-  // Limpieza
-  list_free (&list);
-  free (dest);
+  std::vector<uint64_t> sizes = { (uint64_t)(1.5 * CHUNK_SZ) };
+  std::vector<int> adjustments = { 0 };
+  check_set_msgs (sizes, adjustments, 0);
 }
 
 TEST (unit_saurion, PreviousUnfinishedMessage)
