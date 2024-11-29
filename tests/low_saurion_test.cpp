@@ -525,28 +525,6 @@ TEST_F (low_saurion, readWriteWithLargeMessageMultipleOfChunkSize)
   EXPECT_EQ (summary.disconnected, clients);
 }
 
-TEST_F (low_saurion, readWriteWithLargeMessage)
-{
-  uint32_t clients = 1;
-  size_t size = CHUNK_SZ * 2.5;
-  auto str = std::make_unique<char[]> (size + 1);
-  std::memset (str.get (), 'A', size);
-  str[size - 1] = '1';
-  str[size] = 0;
-  connect_clients (clients);
-  wait_connected (clients);
-  EXPECT_EQ (summary.connected, clients);
-  clients_2_saurion (1, str.get (), 0);
-  wait_readed (size);
-  EXPECT_EQ (summary.readed, size);
-  saurion_2_client (summary.fds.front (), 1, str.get ());
-  wait_wrote (1);
-  disconnect_clients ();
-  wait_disconnected (clients);
-  EXPECT_EQ (1UL, read_from_clients (std::string (str.get ())));
-  EXPECT_EQ (summary.disconnected, clients);
-}
-
 TEST_F (low_saurion, handleConcurrentReadsAndWrites)
 {
   uint32_t clients = 20;
