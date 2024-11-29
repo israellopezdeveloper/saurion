@@ -41,8 +41,8 @@ get_executable_directory ()
 
   buffer.resize (len);
 
-  size_t last_slash_pos = buffer.find_last_of ('/');
-  if (last_slash_pos != std::string::npos)
+  if (size_t last_slash_pos = buffer.find_last_of ('/');
+      last_slash_pos != std::string::npos)
     {
       buffer.erase (last_slash_pos); // Eliminar el nombre del ejecutable
     }
@@ -53,10 +53,8 @@ get_executable_directory ()
       throw std::runtime_error ("Failed to resolve real path");
     }
 
-  real_path.resize (std::strlen (real_path.c_str ()));
-
-  size_t libs_pos = real_path.find ("/.libs");
-  if (libs_pos != std::string::npos)
+  if (size_t libs_pos = real_path.find ("/.libs");
+      libs_pos != std::string::npos)
     {
       real_path.erase (libs_pos);
     }
