@@ -240,6 +240,12 @@ else
   fi
   make_exec
   make_tests || ./tests/saurion_test || exit 1
+  if [ "${OPTION_FLAGS_docs}" = true ]; then
+    make_exec doxygen-doc
+  fi
+  if [ "${OPTION_FLAGS_coverage}" = true ]; then
+    make_exec coverage || exit 1
+  fi
   if [ "${OPTION_FLAGS_clean}" = true ]; then
     make_exec maintainer-clean
   fi

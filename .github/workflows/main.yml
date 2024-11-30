@@ -13,12 +13,7 @@ jobs:
       docker_image: 'lopoeisr/make-doc:debian-bookworm_GCC-14_20241126134054'
       docker_options: '--privileged --user root'
       commands: |
-        autoreconf --install
-        mkdir build
-        cd build
-        ../configure --enable-doxygen-doc
-        make doxygen-doc
-        cd ..
+        ./runme --docs
         tar -czf documentation.tar.gz -C build/docs html -C latex refman.pdf
       artifact_path: 'documentation.tar.gz'
       artifact_name: 'documentation'
