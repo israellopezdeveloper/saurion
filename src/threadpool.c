@@ -1,9 +1,9 @@
 #include "threadpool.h"
-#include "config.h"
-
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "config.h"     // for NUM_CORES
+#include <nanologger.h> // for LOG_END, LOG_INIT
+#include <pthread.h>    // for pthread_mutex_unlock, pthread_mutex_lock
+#include <stdio.h>      // for perror
+#include <stdlib.h>     // for free, malloc
 
 #define TRUE 1
 #define FALSE 0

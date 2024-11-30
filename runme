@@ -10,6 +10,7 @@ OPTION_FLAGS_coverage=false
 OPTION_FLAGS_debug=false
 OPTION_FLAGS_clean=false
 OPTION_FLAGS_compile_commands=false
+OPTION_FLAGS_iwyu=false
 OPTION_FLAGS_thread=false
 
 banner() {
@@ -50,6 +51,14 @@ make_exec() {
     wait_key
 }
 
+make_iwyu() {
+  banner "MAKE IWYU"
+
+  make clean && make compile_commands &&
+    iwyu-tool -p .. | bat &&
+    wait_key
+}
+
 make_tests() {
   banner "MAKE check"
 
@@ -76,6 +85,7 @@ show_help() {
   echo "  -i, --loop                 Enable loop mode"
   echo "  -n, --clean                Clean build directory before building and do not clean after"
   echo "  -m, --compile-commands     Execute compile_commands target"
+  echo "  -w, --iwyu                 Execute iwyu"
   echo "  -h, --help                 Show this help message"
 }
 
@@ -111,7 +121,15 @@ loop_execution() {
         fi
       done
     }
-
+    if [ "${OPTION_FLAGS_docs}" = true ]; then
+      make_exec doxygen-doc || continue
+    fi
+    if [ "${OPTION_FLAGS_coverage}" = true ]; then
+      make_exec coverage || continue
+    fi
+    if [ "${OPTION_FLAGS_iwyu}" = true ]; then
+      make_iwyu || continue
+    fi
   done
 }
 
@@ -171,6 +189,10 @@ while [ $# -gt 0 ]; do
     ;;
   -m | --compile-commands)
     OPTION_FLAGS_compile_commands=true
+    shift
+    ;;
+  -w | --iwyu)
+    OPTION_FLAGS_iwyu=true
     shift
     ;;
   -h | --help)
@@ -245,6 +267,9 @@ else
   fi
   if [ "${OPTION_FLAGS_coverage}" = true ]; then
     make_exec coverage || exit 1
+  fi
+  if [ "${OPTION_FLAGS_iwyu}" = true ]; then
+    make_iwyu || exit 1
   fi
   if [ "${OPTION_FLAGS_clean}" = true ]; then
     make_exec maintainer-clean

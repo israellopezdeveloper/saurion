@@ -1,15 +1,27 @@
 #include "low_saurion.h"
+#include "config.h"      // for ERROR_CODE, SUCCESS_CODE, CHUNK_SZ
+#include "linked_list.h" // for list_delete_node, list_free, list_insert
+#include "threadpool.h"  // for threadpool_add, threadpool_create
 
-#include "config.h"
+#include <arpa/inet.h>             // for htonl, ntohl, htons
+#include <bits/socket-constants.h> // for SOL_SOCKET, SO_REUSEADDR
+#include <liburing.h>          // for io_uring_get_sqe, io_uring, io_uring_...
+#include <liburing/io_uring.h> // for io_uring_cqe
+#include <nanologger.h>        // for LOG_END, LOG_INIT
+#include <netinet/in.h>        // for sockaddr_in, INADDR_ANY, in_addr
+#include <pthread.h>           // for pthread_mutex_lock, pthread_mutex_unlock
+#include <stdint.h>            // for uint32_t, uint64_t, uint8_t
+#include <stdio.h>             // for NULL
+#include <stdlib.h>            // for free, malloc
+#include <string.h>            // for memset, memcpy, strlen
+#include <sys/eventfd.h>       // for eventfd, EFD_NONBLOCK
+#include <sys/socket.h>        // for socklen_t, bind, listen, setsockopt
+#include <sys/uio.h>           // for iovec
+#include <time.h>              // for nanosleep
+#include <unistd.h>            // for close, write
 
-#include <asm-generic/socket.h>
-#include <netinet/in.h>
-#include <pthread.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/eventfd.h>
+struct Node;
+struct iovec;
 
 #define EV_ACC 0 //! @brief Event type for accepting a new connection.
 #define EV_REA 1 //! @brief Event type for reading data.

@@ -105,14 +105,10 @@
 #define LOW_SAURION_H
 
 #define _POSIX_C_SOURCE 200809L
-#include <signal.h>
 
-#include <liburing.h>
-#include <pthread.h>
-
-#include "config.h"
-#include "linked_list.h"
-#include "threadpool.h"
+#include <pthread.h>   // for pthread_mutex_t, pthread_cond_t
+#include <stdint.h>    // for uint32_t
+#include <sys/types.h> // for ssize_t
 
 #ifdef __cplusplus
 extern "C"

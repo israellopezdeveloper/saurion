@@ -1,24 +1,27 @@
-#include <arpa/inet.h>
-#include <cstdlib>
-#include <fcntl.h>
-#include <memory>
-#include <string.h>
-#include <string>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <unistd.h>
-
-#include <atomic>
-#include <cstdint>
-#include <cstdio>
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <vector>
-
-#include "low_saurion.h"
+#include "config.h"     // for CHUNK_SZ
+#include <arpa/inet.h>  // for htonl, inet_pton, ntohl, htons
+#include <atomic>       // for atomic
+#include <cstdint>      // for uint64_t, uint32_t, int64_t, uint8_t
+#include <cstdio>       // for perror, size_t
+#include <cstdlib>      // for exit, WIFEXITED, WTERMSIG
+#include <cstring>      // for memcpy, strerror, memset, strlen, strcpy
+#include <errno.h>      // for errno, EAGAIN, EWOULDBLOCK
+#include <fcntl.h>      // for fcntl, open, F_GETFL, F_SETFL, O_NONBLOCK
+#include <fstream>      // for basic_ostream, operator<<, endl, basic...
+#include <iostream>     // for cerr, cout
+#include <memory>       // for allocator, make_unique, unique_ptr
+#include <netinet/in.h> // for sockaddr_in
+#include <signal.h>     // for SIGUSR1, SIGUSR2, timespec, kill, signal
+#include <sstream>      // for basic_istringstream, basic_ostringstream
+#include <string>       // for char_traits, basic_string, getline
+#include <sys/mman.h>   // for mmap, MAP_ANONYMOUS, MAP_FAILED, MAP_S...
+#include <sys/socket.h> // for AF_INET, connect, send, socket, SOCK_S...
+#include <sys/stat.h>   // for mkfifo
+#include <sys/types.h>  // for pid_t, ssize_t
+#include <sys/wait.h>   // for waitpid
+#include <time.h>       // for nanosleep
+#include <unistd.h>     // for close, read, fork, sleep
+#include <vector>       // for vector
 
 std::vector<pid_t> clients;
 int numClients = 0;

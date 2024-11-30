@@ -1,11 +1,7 @@
 #include "threadpool.h"
-
-#include <pthread.h>
-#include <sys/stat.h>
-
-#include <ctime>
-
-#include "gtest/gtest.h"
+#include "gtest/gtest.h" // for Message, TestInfo (ptr only), AssertionResult
+#include <ctime>         // for timespec, nanosleep
+#include <pthread.h>     // for pthread_mutex_lock, pthread_mutex_unlock
 
 class struct_threadpool : public ::testing::Test
 {

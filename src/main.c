@@ -1,6 +1,5 @@
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <pthread.h> // for pthread_create, pthread_join, pthread_t
+#include <stdio.h>   // for printf, fprintf, NULL, stderr
 
 int counter = 0;
 

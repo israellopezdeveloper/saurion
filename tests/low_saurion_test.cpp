@@ -3,6 +3,7 @@
 
 #include <ctime>
 #include <memory>
+#include <ostream>
 #include <pthread.h>
 #include <random>
 #include <stdatomic.h>
@@ -13,11 +14,11 @@
 #include <algorithm>
 #include <cerrno>
 #include <csignal>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <print>
 #include <regex>
 #include <stdexcept>
 #include <string>
@@ -287,28 +288,28 @@ protected:
   static void
   connect_clients (uint32_t n)
   {
-    fprintf (fifo_write, "connect;%d;%d\n", n, PORT);
+    std::print (fifo_write, "connect;{};{}\n", n, PORT);
     fflush (fifo_write);
   }
 
   static void
   disconnect_clients ()
   {
-    fprintf (fifo_write, "disconnect;\n");
+    std::print (fifo_write, "disconnect;\n");
     fflush (fifo_write);
   }
 
   static void
   clients_2_saurion (uint32_t n, const char *const msg, uint32_t delay)
   {
-    fprintf (fifo_write, "send;%d;%s;%d\n", n, msg, delay);
+    std::print (fifo_write, "send;{};{};{}\n", n, msg, delay);
     fflush (fifo_write);
   }
 
   static void
   close_clients ()
   {
-    fprintf (fifo_write, "close;\n");
+    std::print (fifo_write, "close;\n");
     fflush (fifo_write);
   }
 
