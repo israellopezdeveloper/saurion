@@ -160,7 +160,7 @@ parseMessages (const char *buffer, int64_t bytes_read,
 }
 
 void
-createClient (int clientId)
+createClient (int clientId, int port)
 {
 
   if (pid_t pid = fork (); pid != 0)
@@ -192,7 +192,7 @@ createClient (int clientId)
   struct sockaddr_in serv_addr;
   memset (&serv_addr, 0, sizeof (serv_addr));
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons (8080);
+  serv_addr.sin_port = htons (port);
   inet_pton (AF_INET, "localhost", &serv_addr.sin_addr);
 
   if (connect (sockfd, (struct sockaddr *)&serv_addr, sizeof (serv_addr)) < 0)
@@ -261,11 +261,11 @@ createClient (int clientId)
 }
 
 void
-connectClients (int n)
+connectClients (int n, int port)
 {
   for (int i = 0; i < n; ++i)
     {
-      createClient (numClients + i + 1);
+      createClient (numClients + i + 1, port);
     }
   numClients += n;
 }
@@ -328,7 +328,9 @@ handleCommand (const std::string &command)
     {
       std::getline (ss, token, ';');
       n = std::stoi (token);
-      connectClients (n);
+      std::getline (ss, token, ';');
+      delay = std::stoi (token);
+      connectClients (n, delay);
     }
   else if (cmd == "send")
     {

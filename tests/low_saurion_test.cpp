@@ -24,7 +24,7 @@
 
 #include "gtest/gtest.h"
 
-constexpr int PORT = 8080;
+static int PORT = 8080;
 
 constexpr char FIFO[] = "/tmp/saurion_test_fifo.XXX";
 
@@ -118,6 +118,10 @@ protected:
   static void
   SetUpTestSuite ()
   {
+    std::random_device rd;
+    std::mt19937 gen (rd ());
+    std::uniform_int_distribution dis (1024, 65535);
+    PORT = dis (gen);
     fifo_name = generate_random_fifo_name ();
     std::signal (SIGINT, signalHandler);
     if (mkfifo (fifo_name.c_str (), 0666) == -1)
@@ -283,7 +287,7 @@ protected:
   static void
   connect_clients (uint32_t n)
   {
-    fprintf (fifo_write, "connect;%d\n", n);
+    fprintf (fifo_write, "connect;%d;%d\n", n, PORT);
     fflush (fifo_write);
   }
 
