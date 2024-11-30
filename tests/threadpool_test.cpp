@@ -1,11 +1,11 @@
-#include "threadpool.h" // for struct threadpool
+#include "threadpool.h"
 
 #include <pthread.h>
 #include <sys/stat.h>
 
 #include <ctime>
 
-#include "gtest/gtest.h" // for Test, Message, TestInfo (ptr only), TEST
+#include "gtest/gtest.h"
 
 class struct_threadpool : public ::testing::Test
 {

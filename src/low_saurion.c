@@ -34,8 +34,7 @@ struct request
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 pthread_mutex_t print_mutex;
 
-struct timespec TIMEOUT_RETRY_SPEC
-    = { 0, TIMEOUT_RETRY * 1000L }; // Inicializamos con 0
+struct timespec TIMEOUT_RETRY_SPEC = { 0, TIMEOUT_RETRY * 1000L };
 
 struct saurion_wrapper
 {
@@ -55,7 +54,7 @@ htonll (uint64_t value)
 {
   int num = 42;
   if (*(char *)&num == 42)
-    { // Little endian check
+    {
       uint32_t high_part = htonl ((uint32_t)(value >> 32));
       uint32_t low_part = htonl ((uint32_t)(value & 0xFFFFFFFFLL));
       return ((uint64_t)low_part << 32) | high_part;
@@ -68,7 +67,7 @@ ntohll (uint64_t value)
 {
   int num = 42;
   if (*(char *)&num == 42)
-    { // Little endian check
+    {
       uint32_t high_part = ntohl ((uint32_t)(value >> 32));
       uint32_t low_part = ntohl ((uint32_t)(value & 0xFFFFFFFFLL));
       return ((uint64_t)low_part << 32) | high_part;
@@ -442,27 +441,24 @@ handle_accept (const struct saurion *const s, const int fd)
 int
 read_chunk (void **dest, size_t *len, struct request *const req)
 {
-  // Initial checks
   if (req->iovec_count == 0)
     {
       return ERROR_CODE;
     }
 
-  // Initizalization
   size_t max_iov_cont = 0; //< Total size of request
   for (size_t i = 0; i < req->iovec_count; ++i)
     {
       max_iov_cont += req->iov[i].iov_len;
     }
-  size_t cont_sz = 0;      //< Message content size
-  size_t cont_rem = 0;     //< Remaining bytes of message content
-  size_t curr_iov = 0;     //< IOVEC num currently reading
-  size_t curr_iov_off = 0; //< Offset in bytes of the current IOVEC
-  size_t dest_off = 0;     //< Write offset on the destiny array
-  void *dest_ptr = NULL;   //< Destiny pointer, could be dest or prev
+  size_t cont_sz = 0;
+  size_t cont_rem = 0;
+  size_t curr_iov = 0;
+  size_t curr_iov_off = 0;
+  size_t dest_off = 0;
+  void *dest_ptr = NULL;
   if (req->prev && req->prev_size && req->prev_remain)
     {
-      // There's a previous unfinished message
       cont_sz = req->prev_size;
       cont_rem = req->prev_remain;
       curr_iov = 0;
@@ -484,7 +480,6 @@ read_chunk (void **dest, size_t *len, struct request *const req)
     }
   else if (req->next_iov || req->next_offset)
     {
-      // Reading the next message
       curr_iov = req->next_iov;
       curr_iov_off = req->next_offset;
       cont_sz = *(
@@ -508,7 +503,6 @@ read_chunk (void **dest, size_t *len, struct request *const req)
     }
   else
     {
-      // Reading the first message
       curr_iov = 0;
       curr_iov_off = 0;
       cont_sz = *(
@@ -529,11 +523,8 @@ read_chunk (void **dest, size_t *len, struct request *const req)
           *dest = NULL;
         }
     }
-  /*! Remaining bytes of the message (content + header + foot) stored in the
-   * current IOVEC */
   size_t curr_iov_msg_rem = 0;
 
-  // Copy loop
   uint8_t ok = 1UL;
   while (1)
     {
@@ -547,7 +538,6 @@ read_chunk (void **dest, size_t *len, struct request *const req)
       cont_rem -= curr_iov_msg_rem;
       if (cont_rem <= 0)
         {
-          // Finish reading
           if (*(((uint8_t *)req->iov[curr_iov].iov_base) + curr_iov_off) != 0)
             {
               ok = 0UL;
@@ -567,7 +557,6 @@ read_chunk (void **dest, size_t *len, struct request *const req)
         }
     }
 
-  // Update status
   if (req->prev)
     {
       req->prev_size = cont_sz;
@@ -596,13 +585,10 @@ read_chunk (void **dest, size_t *len, struct request *const req)
         }
     }
 
-  // Finish
   if (ok)
     {
       return SUCCESS_CODE;
     }
-  // This is only possible if there isn't a 0 at the end of the read
-  // search for the next 0 and... try your luck
   free (dest_ptr);
   dest_ptr = NULL;
   *dest = NULL;
@@ -636,7 +622,6 @@ handle_read (struct saurion *const s, struct request *const req)
         {
           break;
         }
-      // There's a next message
       if (req->next_iov || req->next_offset)
         {
           if (s->cb.on_readed && msg)
@@ -648,13 +633,11 @@ handle_read (struct saurion *const s, struct request *const req)
           msg = NULL;
           continue;
         }
-      // There's an unfinished previous message
       if (req->prev && req->prev_size && req->prev_remain)
         {
           add_read_continue (s, req, next (s));
           return;
         }
-      // There's a single message and it's complete
       if (s->cb.on_readed && msg)
         {
           s->cb.on_readed (req->client_socket, msg, len, s->cb.on_readed_arg);
@@ -720,9 +703,6 @@ EXTERNAL_set_socket (const int p)
   srv_addr.sin_port = htons (p);
   srv_addr.sin_addr.s_addr = htonl (INADDR_ANY);
 
-  /* We bind to a port and turn this socket into a listening
-   * socket.
-   */
   if (bind (sock, (const struct sockaddr *)&srv_addr, sizeof (srv_addr)) < 0)
     {
       return ERROR_CODE;
@@ -741,14 +721,12 @@ struct saurion *
 saurion_create (uint32_t n_threads)
 {
   LOG_INIT (" ");
-  // Asignar memoria
   struct saurion *p = (struct saurion *)malloc (sizeof (struct saurion));
   if (!p)
     {
       LOG_END (" ");
       return NULL;
     }
-  // Inicializar mutex
   int ret = 0;
   ret = pthread_mutex_init (&p->status_m, NULL);
   if (ret)
@@ -776,7 +754,6 @@ saurion_create (uint32_t n_threads)
     {
       pthread_mutex_init (&(p->m_rings[i]), NULL);
     }
-  // Inicializar miembros
   p->ss = 0;
   n_threads = (n_threads < 2 ? 2 : n_threads);
   n_threads = (n_threads > NUM_CORES ? NUM_CORES : n_threads);
@@ -794,7 +771,6 @@ saurion_create (uint32_t n_threads)
   p->cb.on_error = NULL;
   p->cb.on_error_arg = NULL;
   p->next = 0;
-  // Inicializar efds
   p->efds = (int *)malloc (sizeof (int) * p->n_threads);
   if (!p->efds)
     {
@@ -819,7 +795,6 @@ saurion_create (uint32_t n_threads)
           return NULL;
         }
     }
-  // Inicializar rings
   p->rings
       = (struct io_uring *)malloc (sizeof (struct io_uring) * p->n_threads);
   if (!p->rings)
@@ -893,7 +868,6 @@ saurion_worker_master_loop_it (struct saurion *const s,
       LOG_END (" ");
       return ERROR_CODE;
     }
-  /* Mark this request as processed */
   io_uring_cqe_seen (&s->rings[0], cqe);
   switch (req->event_type)
     {
@@ -995,7 +969,6 @@ saurion_worker_slave_loop_it (struct saurion *const s, const int sel)
       LOG_END (" ");
       return ERROR_CODE;
     }
-  /* Mark this request as processed */
   io_uring_cqe_seen (&ring, cqe);
   switch (req->event_type)
     {

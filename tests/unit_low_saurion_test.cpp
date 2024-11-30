@@ -20,13 +20,13 @@ htonll (uint64_t value)
 {
   int num = 42;
   if (*(char *)&num == 42)
-    { // Little endian check
+    {
       uint32_t high_part = htonl ((uint32_t)(value >> 32));
       uint32_t low_part = htonl ((uint32_t)(value & 0xFFFFFFFFLL));
       return ((uint64_t)low_part << 32) | high_part;
     }
   else
-    { // Already big endian
+    {
       return value;
     }
 }
@@ -36,13 +36,13 @@ ntohll (uint64_t value)
 {
   int num = 42;
   if (*(char *)&num == 42)
-    { // Little endian check
+    {
       uint32_t high_part = ntohl ((uint32_t)(value >> 32));
       uint32_t low_part = ntohl ((uint32_t)(value & 0xFFFFFFFFLL));
       return ((uint64_t)low_part << 32) | high_part;
     }
   else
-    { // Already big endian
+    {
       return value;
     }
 }
@@ -145,16 +145,13 @@ TEST (Tools, null_length_without_header)
 static void
 check_iovec (uint64_t size, uint8_t h)
 {
-  // mensaje de entrada
   auto msg = fill_with_alphabet (size, !h);
 
-  // full_size, content_size y amount
   uint64_t full_size = size + (h ? sizeof (uint64_t) + 1 : 0);
   uint64_t content_size = size;
   uint64_t amount = full_size / CHUNK_SZ;
   amount = amount + (full_size % CHUNK_SZ ? 1 : 0);
 
-  // iovec y chd_ptr
   auto *iovecs = new struct iovec[amount];
   auto **chd_ptr = new void *[amount];
 
@@ -167,24 +164,18 @@ check_iovec (uint64_t size, uint8_t h)
   int res = 0;
   for (uint64_t i = 0; i < amount; ++i)
     {
-      // alojamos los iovecs reservando el tamaño del mensaje completo
       res = allocate_iovec (&iovecs[i], amount, i, full_size, chd_ptr);
       EXPECT_EQ (res, SUCCESS_CODE);
 
-      // IOV_LEN esperado
-      //   - n -> CHUNK_SZ
-      //   - ultimo -> full_size % CHUNK_SZ (+1 si es 0)
       uint64_t exp_iov_len
           = ((i + 1) == amount ? full_size % CHUNK_SZ : CHUNK_SZ);
       exp_iov_len = (exp_iov_len == 0 ? CHUNK_SZ : exp_iov_len);
       EXPECT_EQ (exp_iov_len, iovecs[i].iov_len);
 
-      // Inicializamos iovec
       res = initialize_iovec (&iovecs[i], amount, i, msg.get (), content_size,
                               h);
       EXPECT_EQ (res, SUCCESS_CODE);
 
-      // Si es el primero verificar el tamaño del contenido
       if (i == 0)
         {
           uint64_t exp_size = *((uint64_t *)iovecs[i].iov_base);
@@ -192,11 +183,6 @@ check_iovec (uint64_t size, uint8_t h)
           EXPECT_EQ (exp_size, content_size);
         }
 
-      // Descargar el contenido el iovec, tanto con header como sin el la
-      // salida es la misma
-      //   i = 0 -> se desplaza 8 bytes -> `len` - 8 | `offset` = 8
-      //   n -> `len` | `offset` = 0
-      //   i = amount -> se quita el foot -> `len` - 1
       uint64_t str_len = iovecs[i].iov_len - (i == 0 ? sizeof (uint64_t) : 0)
                          - ((i + 1) == amount ? 1 : 0);
       strncpy (iov_str,
@@ -296,19 +282,16 @@ generate_messages (const std::vector<uint64_t> &sizes,
   const uint64_t wrapper = sizeof (uint64_t) + sizeof (uint8_t);
   uint64_t total_size = 0;
 
-  // Calcular el tamaño total ajustado
   for (size_t i = 0; i < sizes.size (); ++i)
     {
       total_size += sizes[i] + wrapper + adjustments[i];
     }
 
-  // Crear un buffer para almacenar todos los mensajes concatenados
   auto msgs = std::make_unique<char[]> (total_size);
 
   offset = 0;
   std::vector<std::unique_ptr<char[]> > message_list;
 
-  // Procesar cada mensaje
   for (size_t i = 0; i < sizes.size (); ++i)
     {
       auto msg = fill_with_alphabet (sizes[i], 1);
@@ -318,7 +301,6 @@ generate_messages (const std::vector<uint64_t> &sizes,
       message_list.push_back (std::move (msg));
     }
 
-  // Concatenar todos los mensajes en un único mensaje
   auto sum_msg = std::make_unique<char[]> (total_size);
   uint64_t sum_offset = 0;
 
@@ -330,7 +312,6 @@ generate_messages (const std::vector<uint64_t> &sizes,
       sum_offset += msg_size + wrapper + adjustments[i];
     }
 
-  // Añadir el mensaje combinado al final del vector
   message_list.push_back (std::move (sum_msg));
 
   return message_list;
@@ -500,7 +481,6 @@ TEST (unit_saurion, test_free_request)
 
 TEST (unit_saurion, EmptyRequest)
 {
-  // Caso en el que req->iovec_count == 0
   struct request req;
   req.iovec_count = 0;
   void *dest = nullptr;
@@ -515,11 +495,9 @@ TEST (unit_saurion, EmptyRequest)
 
 TEST (unit_saurion, SingleMessageComplete)
 {
-  // Caso en el que hay un mensaje completo en un solo iovec
   const char *message = "Hola, Mundo!";
   uint64_t msg_size = strlen (message);
 
-  // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
   struct request *req = nullptr;
   struct Node *list = nullptr;
   int res = set_request (&req, &list, msg_size, message, 1);
@@ -534,7 +512,6 @@ TEST (unit_saurion, SingleMessageComplete)
   EXPECT_EQ (len, msg_size);
   EXPECT_EQ (strncmp ((char *)dest, message, len), 0);
 
-  // Limpieza
   list_free (&list);
   free (dest);
 }
@@ -560,11 +537,9 @@ check_read (const uint64_t len, const uint64_t msg_size, const uint64_t readed,
 
 TEST (unit_saurion, PreviousUnfinishedMessage)
 {
-  // Caso en el que un mensaje se divide en múltiples iovecs
   auto message = fill_with_alphabet (2.5 * CHUNK_SZ, 0);
   uint64_t msg_size = strlen (message.get ());
 
-  // Crear el buffer que incluye el tamaño del mensaje seguido del mensaje
   struct request *req = nullptr;
   struct Node *list = nullptr;
   int res = set_request (&req, &list, msg_size, message.get (), 1);
@@ -602,7 +577,6 @@ TEST (unit_saurion, PreviousUnfinishedMessage)
   ASSERT_NE (dest, nullptr);
   EXPECT_EQ (len, msg_size);
 
-  // Limpieza
   list_free (&list);
   free (dest);
 }

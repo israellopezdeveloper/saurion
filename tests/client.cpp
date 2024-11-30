@@ -141,7 +141,7 @@ extractMessage (const char *buffer, int64_t &offset, uint64_t bytes_read,
   offset += msg_len;
 
   if (buffer[offset++] != 0)
-    return false; // Invalid end byte
+    return false;
 
   logStream.write (msg.get (), msg_len);
   return true;

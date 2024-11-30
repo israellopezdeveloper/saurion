@@ -1,5 +1,5 @@
 #include "config.h"
-#include "low_saurion.h" // for saurion, saurion_send, EXTERNAL_set_socket
+#include "low_saurion.h"
 
 #include <ctime>
 #include <memory>
@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "gtest/gtest.h" // for Message, EXPECT_EQ, TestPartResult, Test...
+#include "gtest/gtest.h"
 
 constexpr int PORT = 8080;
 
@@ -44,7 +44,7 @@ get_executable_directory ()
   if (size_t last_slash_pos = buffer.find_last_of ('/');
       last_slash_pos != std::string::npos)
     {
-      buffer.erase (last_slash_pos); // Eliminar el nombre del ejecutable
+      buffer.erase (last_slash_pos);
     }
 
   std::string real_path (PATH_MAX, '\0');
@@ -104,7 +104,6 @@ protected:
     std::mt19937 gen (rd ());
     std::uniform_int_distribution dis (0, 10);
 
-    // Generate the random "XXX" string
     for (int i = 23; i < 26; i++)
       {
         char c = dis (gen) + '0';
@@ -135,7 +134,6 @@ protected:
       {
         std::vector<const char *> exec_args;
 
-        // Get the directory of the current executable
         std::string executable_dir
             = get_executable_directory ().append ("/client");
 
@@ -146,7 +144,6 @@ protected:
           }
         exec_args.push_back (nullptr);
 
-        // Ejecuta el comando y ignora el retorno
         execvp (executable_dir.c_str (), (char *const *)exec_args.data ());
       }
     else
@@ -398,7 +395,6 @@ signalHandler (int signum)
 {
   std::cout << "Interceptada la señal " << signum << std::endl;
 
-  // Intenta eliminar el archivo FIFO
   if (std::remove (low_saurion::fifo_name.c_str ()) != 0)
     {
       std::cerr << "Error al eliminar " << low_saurion::fifo_name << std::endl;
@@ -430,7 +426,6 @@ signalHandler (int signum)
             }
         }
     }
-  // Termina el programa
   exit (ERROR_CODE);
 }
 
@@ -447,7 +442,7 @@ TEST_F (low_saurion, connectMultipleClients)
   EXPECT_EQ (summary.disconnected, clients);
 }
 
-TEST_F (low_saurion, reaadWriteMsgsToClients)
+TEST_F (low_saurion, readWriteMsgsToClients)
 {
   uint32_t clients = 20;
   uint32_t msgs = 100;

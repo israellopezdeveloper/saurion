@@ -11,10 +11,8 @@ struct Node
   struct Node *next;
 };
 
-// Global mutex for thread safety
 pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-// Función para crear un nuevo nodo
 struct Node *
 create_node (void *ptr, size_t amount, void **children)
 {
@@ -111,7 +109,6 @@ list_delete_node (struct Node **head, const void *const ptr)
   struct Node *current = *head;
   struct Node *prev = NULL;
 
-  // Si el nodo a eliminar es el nodo cabeza
   if (current && current->ptr == ptr)
     {
       *head = current->next;
@@ -120,21 +117,18 @@ list_delete_node (struct Node **head, const void *const ptr)
       return;
     }
 
-  // Buscar el nodo a eliminar
   while (current && current->ptr != ptr)
     {
       prev = current;
       current = current->next;
     }
 
-  // Si el dato no se encuentra en la lista
   if (!current)
     {
       pthread_mutex_unlock (&list_mutex);
       return;
     }
 
-  // Desenlazar el nodo y liberarlo
   prev->next = current->next;
   free_node (current);
   pthread_mutex_unlock (&list_mutex);

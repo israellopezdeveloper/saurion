@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int counter = 0; // Variable compartida
+int counter = 0;
 
 void *
 increment (void *arg)
@@ -10,7 +10,7 @@ increment (void *arg)
   int id = *((int *)arg);
   for (int i = 0; i < 100000; ++i)
     {
-      counter++; // Condición de carrera aquí
+      counter++;
       if (i % 10000 == 0)
         {
           printf ("Thread %d at iteration %d\n", id, i);
@@ -30,7 +30,6 @@ main ()
 
   printf ("Starting threads...\n");
 
-  // Crear los hilos
   if (pthread_create (&t1, NULL, increment, &id1))
     {
       fprintf (stderr, "Error creating thread 1\n");
@@ -42,7 +41,6 @@ main ()
       return 1;
     }
 
-  // Unir los hilos (esperar que terminen)
   printf ("Waiting for thread 1 to join...\n");
   if (pthread_join (t1, NULL))
     {

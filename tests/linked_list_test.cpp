@@ -1,11 +1,11 @@
 #include "linked_list.h"
 
-#include <atomic> // for std::atomic
-#include <thread> // for std::jthread
+#include <atomic>
+#include <thread>
 
-#include <sys/uio.h> // for iovec
+#include <sys/uio.h>
 
-#include "gtest/gtest.h" // for AssertionResult, Message, TestInfo (ptr only)
+#include "gtest/gtest.h"
 
 constexpr int N_ITEMS = 100;
 
@@ -194,7 +194,7 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertSimpleItems)
       thread.join ();
     }
 
-  EXPECT_TRUE (true); // If no crashes, the test passes
+  EXPECT_TRUE (true);
 }
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertComplexItems)
@@ -211,7 +211,7 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertComplexItems)
       thread.join ();
     }
 
-  EXPECT_TRUE (true); // If no crashes, the test passes
+  EXPECT_TRUE (true);
 }
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteSimpleItems)
@@ -229,7 +229,7 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteSimpleItems)
       thread.join ();
     }
 
-  EXPECT_TRUE (true); // If no crashes, the test passes
+  EXPECT_TRUE (true);
 }
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteComplexItems)
@@ -247,7 +247,7 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteComplexItems)
       thread.join ();
     }
 
-  EXPECT_TRUE (true); // If no crashes, the test passes
+  EXPECT_TRUE (true);
 }
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteDifferentItems)
@@ -286,7 +286,5 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteDifferentItems)
       thread.join ();
     }
 
-  EXPECT_EQ (deletions,
-             (N_THREADS / 2)
-                 * ITEMS_PER_THREAD); // Ensure all deletions occurred
+  EXPECT_EQ (deletions, (N_THREADS / 2) * ITEMS_PER_THREAD);
 }
