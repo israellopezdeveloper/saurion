@@ -255,12 +255,20 @@ check_msg (const struct request *const r, uint64_t &o, const uint64_t s,
   uint64_t exp_size = *(uint64_t *)((uint8_t *)r->iov[0].iov_base + o);
   exp_size = ntohll (exp_size);
   EXPECT_EQ (exp_size, s);
-  o += sizeof (uint64_t) + s;
-  exp_size = *(uint64_t *)((char *)r->iov[0].iov_base + o);
-  exp_size = ntohll (exp_size);
+  uint64_t numiovs = (s + sizeof (uint64_t)) / CHUNK_SZ;
+  uint64_t offset = (s + sizeof (uint64_t)) % CHUNK_SZ;
+  if (numiovs)
+    {
+      o = offset;
+    }
+  else
+    {
+      o += sizeof (uint64_t) + s;
+    }
+  uint8_t foot = *(uint8_t *)((char *)r->iov[numiovs].iov_base + o);
   if (ok)
     {
-      EXPECT_EQ (exp_size, 0UL);
+      EXPECT_EQ (foot, 0);
     }
   o += 1;
 }
@@ -345,6 +353,7 @@ check_set_msgs (const std::vector<uint64_t> &s, const std::vector<int> &a,
                     + std::accumulate (a.begin (), a.end (), 0);
   int res = set_request (&req, &list, total_size,
                          msgs_vector[s.size ()].get (), 0);
+  EXPECT_EQ (res, SUCCESS_CODE);
   uint64_t iovs = std::ceil ((float)total_size / CHUNK_SZ);
   check_request (res, req, iovs);
   req->iov[req->iovec_count - 1].iov_len += r;

@@ -174,7 +174,7 @@ set_request (struct request **r, struct Node **l, size_t s, const void *m,
   uint64_t full_size = s;
   if (h)
     {
-      full_size += (sizeof (uint64_t) + 1);
+      full_size += (sizeof (uint64_t) + sizeof (uint8_t));
     }
   size_t amount = full_size / CHUNK_SZ;
   amount = amount + (full_size % CHUNK_SZ == 0 ? 0 : 1);

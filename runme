@@ -12,16 +12,6 @@ OPTION_FLAGS_clean=false
 OPTION_FLAGS_compile_commands=false
 OPTION_FLAGS_thread=false
 
-# Lista de targets de make
-MAKE_TARGETS_docs="doxygen-doc"
-MAKE_TARGETS_leak="leak-check"
-MAKE_TARGETS_coverage="coverage"
-MAKE_TARGETS_debug="check"
-MAKE_TARGETS_thread="thread-check"
-
-# Lista de opciones para iterar
-MAKE_TARGETS_list="docs leak coverage debug thread"
-
 banner() {
   title="$1"
   echo ""
@@ -31,7 +21,7 @@ banner() {
 wait_key() {
   if [ "${STOPPABLE:-false}" = true ]; then
     echo "Press Enter to continue"
-    read dummy_variable
+    read -r _
   fi
 }
 
@@ -56,7 +46,7 @@ make_exec() {
   params="$*"
   banner "MAKE ${params}"
 
-  make ${params} &&
+  make "${params}" &&
     wait_key
 }
 
@@ -98,7 +88,7 @@ loop_execution() {
     if [ "$executed" -eq 1 ]; then
       echo ""
       echo "Execute again [y/n]"
-      read REPLAY
+      read -r REPLAY
       if [ "${REPLAY}" = "n" ]; then
         echo ""
         break
@@ -121,16 +111,6 @@ loop_execution() {
         fi
       done
     }
-
-    for option in $MAKE_TARGETS_list; do
-      option_flag_var="OPTION_FLAGS_${option}"
-      option_flag_value=$(eval echo \$$option_flag_var)
-      if [ "${option_flag_value}" = true ]; then
-        make_target_var="MAKE_TARGETS_${option}"
-        make_target_value=$(eval echo \$$make_target_var)
-        run_make_target "${make_target_value}" || exit 1
-      fi
-    done
 
   done
 }
@@ -246,7 +226,7 @@ if [ "${OPTION_FLAGS_docs}" = true ]; then
 fi
 
 # Ejecutar configuración y construcción
-configure ${CONFIGURE_OPTIONS}
+configure "${CONFIGURE_OPTIONS}"
 
 # Si el modo loop está habilitado, ejecutamos en bucle
 if [ "${OPTION_FLAGS_loop}" = true ]; then
@@ -260,15 +240,6 @@ else
   fi
   make_exec
   make_tests || ./tests/saurion_test || exit 1
-  for option in $MAKE_TARGETS_list; do
-    option_flag_var="OPTION_FLAGS_${option}"
-    option_flag_value=$(eval echo \$$option_flag_var)
-    if [ "${option_flag_value}" = true ]; then
-      make_target_var="MAKE_TARGETS_${option}"
-      make_target_value=$(eval echo \$$make_target_var)
-      run_make_target "${make_target_value}"
-    fi
-  done
   if [ "${OPTION_FLAGS_clean}" = true ]; then
     make_exec maintainer-clean
   fi
