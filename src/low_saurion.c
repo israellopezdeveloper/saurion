@@ -286,7 +286,7 @@ add_accept (struct saurion *const s, struct sockaddr_in *const ca,
 }
 
 static void
-add_fd (int client_socket, int sel)
+add_fd (struct saurion *const s, int client_socket, int sel)
 {
   int res = ERROR_CODE;
   pthread_mutex_lock (&s->m_rings[sel]);
@@ -326,14 +326,14 @@ add_fd (int client_socket, int sel)
 static void
 add_efd (struct saurion *const s, const int client_socket, int sel)
 {
-  add_fd (client_socket, sel);
+  add_fd (s, client_socket, sel);
 }
 
 static void
 add_read (struct saurion *const s, const int client_socket)
 {
   int sel = next (s);
-  add_fd (client_socket, sel);
+  add_fd (s, client_socket, sel);
 }
 
 static void

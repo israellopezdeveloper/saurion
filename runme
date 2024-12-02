@@ -128,7 +128,7 @@ loop_execution() {
       fi
     fi
     executed=1
-    make_exec || continue
+    make_exec || exit 1
     make_tests || {
       echo "Running tests individually..."
       # Ejecutar los tests individualmente si falla make check
