@@ -115,28 +115,28 @@ extern "C"
 {
 #endif
 
-  /*!
-   * @brief Defines the memory alignment size for structures in the `saurion`
-   * class.
-   *
-   * `PACKING_SZ` is used to ensure that certain structures, such as
-   * `saurion_callbacks`, are aligned to a specific memory boundary. This can
-   * improve memory access performance and ensure compatibility with certain
-   * hardware architectures that require specific alignment.
-   *
-   * In this case, the value is set to 128 bytes, meaning that structures
-   * marked with
-   * `__attribute__((aligned(PACKING_SZ)))` will be aligned to 128-byte
-   * boundaries.
-   *
-   * Proper alignment can be particularly important in multithreaded
-   * environments or when working with low-level system APIs like `io_uring`,
-   * where unaligned memory accesses may introduce performance penalties.
-   *
-   * Adjusting `PACKING_SZ` may be necessary depending on the hardware platform
-   * or specific performance requirements.
-   */
-  constexpr int PACKING_SZ = 32;
+/*!
+ * @brief Defines the memory alignment size for structures in the `saurion`
+ * class.
+ *
+ * `PACKING_SZ` is used to ensure that certain structures, such as
+ * `saurion_callbacks`, are aligned to a specific memory boundary. This can
+ * improve memory access performance and ensure compatibility with certain
+ * hardware architectures that require specific alignment.
+ *
+ * In this case, the value is set to 128 bytes, meaning that structures marked
+ * with
+ * `__attribute__((aligned(PACKING_SZ)))` will be aligned to 128-byte
+ * boundaries.
+ *
+ * Proper alignment can be particularly important in multithreaded environments
+ * or when working with low-level system APIs like `io_uring`, where unaligned
+ * memory accesses may introduce performance penalties.
+ *
+ * Adjusting `PACKING_SZ` may be necessary depending on the hardware platform
+ * or specific performance requirements.
+ */
+#define PACKING_SZ 32
 
   /*!
    * @brief Main structure for managing io_uring and socket events.
