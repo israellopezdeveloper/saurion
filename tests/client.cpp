@@ -1,6 +1,7 @@
-#include "config.h"     // for CHUNK_SZ
-#include <arpa/inet.h>  // for htonl, inet_pton, ntohl, htons
-#include <atomic>       // for atomic
+#include "config.h"    // for CHUNK_SZ
+#include <arpa/inet.h> // for htonl, inet_pton, ntohl, htons
+#include <atomic>      // for atomic
+#include <cerrno>
 #include <cstdint>      // for uint64_t, uint32_t, int64_t, uint8_t
 #include <cstdio>       // for perror, size_t
 #include <cstdlib>      // for exit, WIFEXITED, WTERMSIG
@@ -232,22 +233,15 @@ createClient (int clientId, int port)
               total_len += len;
               continue;
             }
-          if (len == 0)
+          if ((len == 0)
+              || (len < 0 && errno != EAGAIN && errno != EWOULDBLOCK))
             {
               keepRunning = false;
               break;
             }
-          if (errno == EAGAIN || errno == EWOULDBLOCK)
-            {
-              nanosleep (&ts, nullptr);
-              --dataAvailable;
-              continue;
-            }
-
-          std::cerr << "Error leyendo del socket: " << strerror (errno)
-                    << std::endl;
-          keepRunning = false;
-          break;
+          nanosleep (&ts, nullptr);
+          --dataAvailable;
+          continue;
         }
 
       if (!accumulatedBuffer.empty ())

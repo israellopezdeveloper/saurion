@@ -74,7 +74,6 @@ jobs:
       with:
         submodules: true
         fetch-depth: 0
-        recursive: true
     - name: Get version number
       run: |
         autoreconf --install
@@ -94,19 +93,19 @@ jobs:
           - Documentation
           - Coverage
     - name: Download documentation
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: documentation
     - name: Download Coverage
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: coverage
     - name: Download Clang libs
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: clang-libs
     - name: Download GCC libs
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: gcc-libs
     - name: Upload GCC libraries to Release
@@ -153,11 +152,11 @@ jobs:
         git checkout gh-pages
         git clean -fd
     - name: Download documentation
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: documentation
     - name: Download Coverage
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: coverage
     - name: Uncompress documentation and coverage
