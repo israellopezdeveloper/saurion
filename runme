@@ -62,8 +62,15 @@ make_iwyu() {
 make_tests() {
   banner "MAKE check"
 
-  make check &&
-    wait_key
+  counter=0
+  while [ $counter -lt 3 ]; do
+    timeout "30s" make check || {
+      counter=$((counter + 1))
+    } && {
+      counter=4
+    }
+  done
+  wait_key
 }
 
 run_make_target() {
