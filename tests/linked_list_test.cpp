@@ -1,13 +1,13 @@
 #include "linked_list.h"
-#include <atomic> // for std::atomic
-#include <thread> // for std::thread
-#include <vector> // for std::vector
 
-#include <sys/uio.h> // for iovec
+#include <atomic>
+#include <thread>
 
-#include "gtest/gtest.h" // for AssertionResult, Message, TestInfo (ptr only)
+#include <sys/uio.h>
 
-#define N_ITEMS 100
+#include "gtest/gtest.h"
+
+constexpr int N_ITEMS = 100;
 
 class LinkedListTest : public ::testing::Test
 {
@@ -16,42 +16,34 @@ public:
 
 protected:
   void
-  SetUp () override
-  {
-    list_free (&list);
-    list = nullptr;
-  }
-
-  void
   TearDown () override
   {
     list_free (&list);
     list = nullptr;
   }
 
-  void *
+  char *
   insert_simple_item (const char *const str)
   {
-    char *ptr = (char *)malloc (strlen (str) + 1);
+    auto *ptr = new char[strlen (str) + 1];
     strcpy (ptr, str);
-    list_insert (&list, ptr, 0, NULL);
+    list_insert (&list, ptr, 0, nullptr);
     return ptr;
   }
 
-  void *
+  char *
   insert_complex_item (const char *const str)
   {
-    char *ptr = (char *)malloc (strlen (str) + 1);
+    auto *ptr = new char[strlen (str) + 1];
     strcpy (ptr, str);
     size_t amount = 4;
-    struct iovec **children
-        = (struct iovec **)malloc (sizeof (struct iovec *) * amount);
-    void **children_ptr = (void **)malloc (sizeof (void *) * amount);
+    auto **children = new struct iovec *[amount];
+    auto **children_ptr = new void *[amount];
     for (size_t i = 0; i < amount; ++i)
       {
-        children[i] = (struct iovec *)malloc (sizeof (struct iovec));
+        children[i] = new struct iovec;
         children[i]->iov_len = 7;
-        children[i]->iov_base = (char *)malloc (children[i]->iov_len);
+        children[i]->iov_base = new char[children[i]->iov_len];
         strcpy ((char *)children[i]->iov_base, "Hola h");
         children_ptr[i] = children[i]->iov_base;
       }
@@ -60,10 +52,10 @@ protected:
 
     for (size_t i = 0; i < amount; ++i)
       {
-        free (children[i]);
+        delete children[i];
       }
-    free (children);
-    free (children_ptr);
+    delete[] children;
+    delete[] children_ptr;
     return ptr;
   }
 };
@@ -143,8 +135,8 @@ TEST_F (LinkedListTest, insertAndDeleteHeadItem)
   EXPECT_TRUE (true);
 }
 
-#define N_THREADS 100
-#define ITEMS_PER_THREAD 100
+constexpr int N_THREADS = 100;
+constexpr int ITEMS_PER_THREAD = 100;
 
 class LinkedListConcurrencyTest : public LinkedListTest
 {
@@ -190,7 +182,7 @@ public:
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertSimpleItems)
 {
-  std::vector<std::thread> threads;
+  std::vector<std::jthread> threads;
   for (int i = 0; i < N_THREADS; ++i)
     {
       threads.emplace_back (
@@ -202,12 +194,12 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertSimpleItems)
       thread.join ();
     }
 
-  EXPECT_TRUE (true); // If no crashes, the test passes
+  EXPECT_TRUE (true);
 }
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertComplexItems)
 {
-  std::vector<std::thread> threads;
+  std::vector<std::jthread> threads;
   for (int i = 0; i < N_THREADS; ++i)
     {
       threads.emplace_back (
@@ -219,12 +211,12 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertComplexItems)
       thread.join ();
     }
 
-  EXPECT_TRUE (true); // If no crashes, the test passes
+  EXPECT_TRUE (true);
 }
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteSimpleItems)
 {
-  std::vector<std::thread> threads;
+  std::vector<std::jthread> threads;
   for (int i = 0; i < N_THREADS; ++i)
     {
       threads.emplace_back (
@@ -237,12 +229,12 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteSimpleItems)
       thread.join ();
     }
 
-  EXPECT_TRUE (true); // If no crashes, the test passes
+  EXPECT_TRUE (true);
 }
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteComplexItems)
 {
-  std::vector<std::thread> threads;
+  std::vector<std::jthread> threads;
   for (int i = 0; i < N_THREADS; ++i)
     {
       threads.emplace_back (
@@ -255,13 +247,13 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteComplexItems)
       thread.join ();
     }
 
-  EXPECT_TRUE (true); // If no crashes, the test passes
+  EXPECT_TRUE (true);
 }
 
 TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteDifferentItems)
 {
-  std::atomic<int> deletions (0);
-  std::vector<std::thread> threads;
+  std::atomic deletions (0);
+  std::vector<std::jthread> threads;
 
   auto insert_task = [this] () {
     for (int i = 0; i < ITEMS_PER_THREAD; ++i)
@@ -294,7 +286,5 @@ TEST_F (LinkedListConcurrencyTest, ConcurrentInsertAndDeleteDifferentItems)
       thread.join ();
     }
 
-  EXPECT_EQ (deletions,
-             (N_THREADS / 2)
-                 * ITEMS_PER_THREAD); // Ensure all deletions occurred
+  EXPECT_EQ (deletions, (N_THREADS / 2) * ITEMS_PER_THREAD);
 }

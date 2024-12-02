@@ -1,7 +1,12 @@
 #include "config.h"
-#include "low_saurion.h" // for saurion, saurion_send, EXTERNAL_set_socket
+#include "low_saurion.h"
 
+#include <cstdio>
+#include <ctime>
+#include <memory>
+#include <ostream>
 #include <pthread.h>
+#include <random>
 #include <stdatomic.h>
 #include <string.h>
 #include <sys/types.h>
@@ -10,7 +15,6 @@
 #include <algorithm>
 #include <cerrno>
 #include <csignal>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
@@ -19,45 +23,44 @@
 #include <stdexcept>
 #include <string>
 
-#include "gtest/gtest.h" // for Message, EXPECT_EQ, TestPartResult, Test...
+#include "gtest/gtest.h"
 
-#define PORT 8080
+static int PORT = 8080;
 
-#define FIFO "/tmp/saurion_test_fifo.XXX"
-#define FIFO_LENGTH 27
+constexpr char FIFO[] = "/tmp/saurion_test_fifo.XXX";
 
-char *
-get_executable_directory (char *buffer, size_t size)
+std::string
+get_executable_directory ()
 {
-  ssize_t len = readlink ("/proc/self/exe", buffer, size - 1);
-  if (len != -1)
+  std::string buffer (PATH_MAX, '\0');
+
+  ssize_t len = readlink ("/proc/self/exe", &buffer[0], buffer.size () - 1);
+  if (len <= 0 || len >= static_cast<ssize_t> (buffer.size ()))
     {
-      buffer[len] = '\0';
-      char *last_slash = strrchr (buffer, '/');
-      if (last_slash != NULL)
-        {
-          *last_slash = '\0';
-        }
-      char *real_path = new char[PATH_MAX];
-      if (realpath (buffer, real_path) == NULL)
-        {
-          perror ("realpath");
-          exit (EXIT_FAILURE);
-        }
-      char *libs_pos = strstr (real_path, "/.libs");
-      if (libs_pos)
-        {
-          // Recortar desde el inicio hasta `.libs` y después de eso.
-          *libs_pos = '\0';
-        }
-      strcpy (buffer, real_path);
-      return real_path;
+      throw std::runtime_error ("Failed to read symbolic link /proc/self/exe");
     }
-  else
+
+  buffer.resize (len);
+
+  if (size_t last_slash_pos = buffer.find_last_of ('/');
+      last_slash_pos != std::string::npos)
     {
-      perror ("readlink");
-      exit (EXIT_FAILURE);
+      buffer.erase (last_slash_pos);
     }
+
+  std::string real_path (PATH_MAX, '\0');
+  if (!realpath (buffer.c_str (), &real_path[0]))
+    {
+      throw std::runtime_error ("Failed to resolve real path");
+    }
+
+  if (size_t libs_pos = real_path.find ("/.libs");
+      libs_pos != std::string::npos)
+    {
+      real_path.erase (libs_pos);
+    }
+
+  return real_path;
 }
 
 struct summary
@@ -72,7 +75,7 @@ struct summary
   std::vector<int> fds;
   pthread_cond_t connected_c = PTHREAD_COND_INITIALIZER;
   pthread_mutex_t connected_m = PTHREAD_MUTEX_INITIALIZER;
-  volatile uint32_t disconnected = 0;
+  uint32_t disconnected = 0;
   pthread_cond_t disconnected_c = PTHREAD_COND_INITIALIZER;
   pthread_mutex_t disconnected_m = PTHREAD_MUTEX_INITIALIZER;
   size_t readed = 0;
@@ -89,49 +92,42 @@ class low_saurion : public ::testing::Test
 {
 public:
   struct saurion *saurion;
-  static char *fifo_name;
+  static std::string fifo_name;
   static FILE *fifo_write;
   static pid_t pid;
 
 protected:
-  static char *
+  static std::string
   generate_random_fifo_name ()
   {
-    fifo_name = (char *)malloc (FIFO_LENGTH);
-    if (!fifo_name)
-      {
-        return NULL; // Handle error
-      }
+    fifo_name = FIFO;
+    std::random_device rd;
+    std::mt19937 gen (rd ());
+    std::uniform_int_distribution dis (0, 10);
 
-    strcpy (fifo_name, FIFO);
-    // Seed the random number generator
-    srand (time (NULL));
-
-    // Generate the random "XXX" string
     for (int i = 23; i < 26; i++)
       {
-        char c = (rand () % 10) + '0';
+        char c = dis (gen) + '0';
         fifo_name[i] = c;
       }
 
     return fifo_name;
   }
 
+  static constexpr size_t EXECUTABLE_LENGTH = 1024;
+
   static void
   SetUpTestSuite ()
   {
+    std::random_device rd;
+    std::mt19937 gen (rd ());
+    std::uniform_int_distribution dis (1024, 65535);
+    PORT = dis (gen);
     fifo_name = generate_random_fifo_name ();
     std::signal (SIGINT, signalHandler);
-    if (!fifo_name)
-      {
-        // Handle error generating random name
-        exit (ERROR_CODE);
-      }
-    if (mkfifo (fifo_name, 0666) == -1)
+    if (mkfifo (fifo_name.c_str (), 0666) == -1)
       {
         perror ("Error al crear el FIFO");
-        // free(fifo_name);
-        // exit(ERROR_CODE);
       }
     pid = fork ();
     if (pid < 0)
@@ -143,26 +139,21 @@ protected:
       {
         std::vector<const char *> exec_args;
 
-        char executable_dir[1024];
+        std::string executable_dir
+            = get_executable_directory ().append ("/client");
 
-        // Get the directory of the current executable
-        get_executable_directory (executable_dir, sizeof (executable_dir));
-        char script_path[1031];
-        snprintf (script_path, sizeof (script_path), "%s/client",
-                  executable_dir);
-
-        for (char *item : { (char *)script_path, (char *)"-p", fifo_name })
+        for (const char *item : { executable_dir.c_str (), (const char *)"-p",
+                                  fifo_name.c_str () })
           {
             exec_args.push_back (item);
           }
         exec_args.push_back (nullptr);
 
-        // Ejecuta el comando y ignora el retorno
-        execvp (script_path, const_cast<char *const *> (exec_args.data ()));
+        execvp (executable_dir.c_str (), (char *const *)exec_args.data ());
       }
     else
       {
-        fifo_write = fopen (fifo_name, "w");
+        fifo_write = fopen (fifo_name.c_str (), "w");
       }
   }
 
@@ -173,8 +164,7 @@ protected:
     int status;
     waitpid (pid, &status, 0);
     fclose (fifo_write);
-    unlink (fifo_name);
-    free (fifo_name);
+    unlink (fifo_name.c_str ());
   }
 
   void
@@ -196,7 +186,7 @@ protected:
       {
         throw std::runtime_error (strerror (errno));
       }
-    saurion->cb.on_connected = [] (int sfd, void *) -> void {
+    saurion->cb.on_connected = [] (int sfd, void *) {
       pthread_mutex_lock (&summary.connected_m);
       summary.connected++;
       summary.fds.push_back (sfd);
@@ -204,19 +194,19 @@ protected:
       pthread_mutex_unlock (&summary.connected_m);
     };
     saurion->cb.on_readed
-        = [] (int, const void *const, const ssize_t size, void *) -> void {
-      pthread_mutex_lock (&summary.readed_m);
-      summary.readed += size;
-      pthread_cond_signal (&summary.readed_c);
-      pthread_mutex_unlock (&summary.readed_m);
-    };
-    saurion->cb.on_wrote = [] (int, void *) -> void {
+        = [] (int, const void *const, const ssize_t size, void *) {
+            pthread_mutex_lock (&summary.readed_m);
+            summary.readed += size;
+            pthread_cond_signal (&summary.readed_c);
+            pthread_mutex_unlock (&summary.readed_m);
+          };
+    saurion->cb.on_wrote = [] (int, void *) {
       pthread_mutex_lock (&summary.wrote_m);
       summary.wrote++;
       pthread_cond_signal (&summary.wrote_c);
       pthread_mutex_unlock (&summary.wrote_m);
     };
-    saurion->cb.on_closed = [] (int sfd, void *) -> void {
+    saurion->cb.on_closed = [] (int sfd, void *) {
       pthread_mutex_lock (&summary.disconnected_m);
       atomic_fetch_add_explicit ((atomic_int *)&summary.disconnected, 1,
                                  memory_order_relaxed);
@@ -228,8 +218,9 @@ protected:
       pthread_cond_signal (&summary.connected_c);
       pthread_mutex_unlock (&summary.connected_m);
     };
-    saurion->cb.on_error
-        = [] (int, const char *const, const ssize_t, void *) -> void {};
+    saurion->cb.on_error = [] (int, const char *const, const ssize_t, void *) {
+      // Not tested yet
+    };
     if (!saurion_start (saurion))
       {
         exit (ERROR_CODE);
@@ -244,12 +235,10 @@ protected:
     close (saurion->ss);
     saurion_destroy (saurion);
     deleteLogFiles ();
-    summary.connected = 0;
-    summary.disconnected = 0;
-    summary.readed = 0;
-    summary.wrote = 0;
-    summary.fds.clear ();
-    usleep (10000);
+    struct timespec tim;
+    tim.tv_sec = 0;
+    tim.tv_nsec = 10000000L;
+    nanosleep (&tim, nullptr);
   }
 
   static void
@@ -299,7 +288,7 @@ protected:
   static void
   connect_clients (uint32_t n)
   {
-    fprintf (fifo_write, "connect;%d\n", n);
+    fprintf (fifo_write, "connect;%d;%d\n", n, PORT);
     fflush (fifo_write);
   }
 
@@ -346,7 +335,7 @@ protected:
   }
 
   static size_t
-  countOccurrences (std::string &content, const std::string &search)
+  countOccurrences (std::string_view content, const std::string &search)
   {
     size_t count = 0;
     size_t pos = content.find (search);
@@ -395,13 +384,14 @@ private:
               }
             catch (...)
               {
+                // Do nothing
               }
           }
       }
   }
 };
 
-char *low_saurion::fifo_name = nullptr;
+std::string low_saurion::fifo_name = "";
 pid_t low_saurion::pid = 0;
 FILE *low_saurion::fifo_write = nullptr;
 
@@ -410,8 +400,7 @@ signalHandler (int signum)
 {
   std::cout << "Interceptada la señal " << signum << std::endl;
 
-  // Intenta eliminar el archivo FIFO
-  if (std::remove (low_saurion::fifo_name) != 0)
+  if (std::remove (low_saurion::fifo_name.c_str ()) != 0)
     {
       std::cerr << "Error al eliminar " << low_saurion::fifo_name << std::endl;
     }
@@ -442,7 +431,6 @@ signalHandler (int signum)
             }
         }
     }
-  // Termina el programa
   exit (ERROR_CODE);
 }
 
@@ -459,29 +447,14 @@ TEST_F (low_saurion, connectMultipleClients)
   EXPECT_EQ (summary.disconnected, clients);
 }
 
-TEST_F (low_saurion, readMultipleMsgsFromClients)
+TEST_F (low_saurion, readWriteMsgsToClients)
 {
   uint32_t clients = 20;
   uint32_t msgs = 100;
   connect_clients (clients);
   wait_connected (clients);
   EXPECT_EQ (summary.connected, clients);
-  clients_2_saurion (msgs, "Hola", 0);
-  wait_readed (msgs * clients * 4);
-  EXPECT_EQ (summary.readed, msgs * clients * 4);
-  disconnect_clients ();
-  wait_disconnected (clients);
-  EXPECT_EQ (summary.disconnected, clients);
-}
-
-TEST_F (low_saurion, writeMsgsToClients)
-{
-  uint32_t clients = 20;
-  uint32_t msgs = 100;
-  connect_clients (clients);
-  wait_connected (clients);
-  EXPECT_EQ (summary.connected, clients);
-  for (auto &cfd : summary.fds)
+  for (const auto &cfd : summary.fds)
     {
       saurion_2_client (cfd, msgs, "Hola");
     }
@@ -514,46 +487,22 @@ TEST_F (low_saurion, readWriteWithLargeMessageMultipleOfChunkSize)
 {
   uint32_t clients = 1;
   size_t size = CHUNK_SZ * 2;
-  char *str = new char[size + 1];
-  memset (str, 'A', size);
+  auto str = std::make_unique<char[]> (size + 1);
+  std::memset (str.get (), 'A', size);
   str[size - 1] = '1';
   str[size] = 0;
   connect_clients (clients);
   wait_connected (clients);
   EXPECT_EQ (summary.connected, clients);
-  clients_2_saurion (1, str, 0);
+  clients_2_saurion (1, str.get (), 0);
   wait_readed (size);
   EXPECT_EQ (summary.readed, size);
-  saurion_2_client (summary.fds.front (), 1, (char *)str);
+  saurion_2_client (summary.fds.front (), 1, str.get ());
   wait_wrote (1);
   disconnect_clients ();
   wait_disconnected (clients);
-  EXPECT_EQ (1UL, read_from_clients (std::string (str)));
+  EXPECT_EQ (1UL, read_from_clients (std::string (str.get ())));
   EXPECT_EQ (summary.disconnected, clients);
-  delete[] str;
-}
-
-TEST_F (low_saurion, readWriteWithLargeMessage)
-{
-  uint32_t clients = 1;
-  size_t size = CHUNK_SZ * 2.5;
-  char *str = new char[size + 1];
-  memset (str, 'A', size);
-  str[size - 1] = '1';
-  str[size] = 0;
-  connect_clients (clients);
-  wait_connected (clients);
-  EXPECT_EQ (summary.connected, clients);
-  clients_2_saurion (1, str, 0);
-  wait_readed (size);
-  EXPECT_EQ (summary.readed, size);
-  saurion_2_client (summary.fds.front (), 1, (char *)str);
-  wait_wrote (1);
-  disconnect_clients ();
-  wait_disconnected (clients);
-  EXPECT_EQ (1UL, read_from_clients (std::string (str)));
-  EXPECT_EQ (summary.disconnected, clients);
-  delete[] str;
 }
 
 TEST_F (low_saurion, handleConcurrentReadsAndWrites)

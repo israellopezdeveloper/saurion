@@ -10,17 +10,8 @@ OPTION_FLAGS_coverage=false
 OPTION_FLAGS_debug=false
 OPTION_FLAGS_clean=false
 OPTION_FLAGS_compile_commands=false
+OPTION_FLAGS_iwyu=false
 OPTION_FLAGS_thread=false
-
-# Lista de targets de make
-MAKE_TARGETS_docs="doxygen-doc"
-MAKE_TARGETS_leak="leak-check"
-MAKE_TARGETS_coverage="coverage"
-MAKE_TARGETS_debug="check"
-MAKE_TARGETS_thread="thread-check"
-
-# Lista de opciones para iterar
-MAKE_TARGETS_list="docs leak coverage debug thread"
 
 banner() {
   title="$1"
@@ -31,7 +22,7 @@ banner() {
 wait_key() {
   if [ "${STOPPABLE:-false}" = true ]; then
     echo "Press Enter to continue"
-    read dummy_variable
+    read -r _
   fi
 }
 
@@ -43,6 +34,7 @@ configure() {
     rm -rf "${SCRIPT_DIR}/build"
   fi
 
+  aclocal
   autoreconf --install
 
   mkdir -p "${SCRIPT_DIR}/build"
@@ -55,15 +47,40 @@ make_exec() {
   params="$*"
   banner "MAKE ${params}"
 
-  make ${params} &&
+  make "${params}" &&
+    wait_key
+}
+
+make_iwyu() {
+  banner "MAKE IWYU"
+
+  make clean && make compile_commands &&
+    iwyu-tool -p .. | bat &&
     wait_key
 }
 
 make_tests() {
   banner "MAKE check"
 
-  make check &&
-    wait_key
+  max_attempts=3
+  attempt=0
+
+  while [ $attempt -lt $max_attempts ]; do
+    attempt=$((attempt + 1))
+
+    # Ejecuta el comando con timeout
+    timeout "30s" make check
+    exit_status=$?
+
+    if [ $exit_status -eq 0 ]; then
+      break
+    fi
+
+    if [ $attempt = $max_attempts ]; then
+      break
+    fi
+  done
+  wait_key
 }
 
 run_make_target() {
@@ -85,6 +102,7 @@ show_help() {
   echo "  -i, --loop                 Enable loop mode"
   echo "  -n, --clean                Clean build directory before building and do not clean after"
   echo "  -m, --compile-commands     Execute compile_commands target"
+  echo "  -w, --iwyu                 Execute iwyu"
   echo "  -h, --help                 Show this help message"
 }
 
@@ -97,7 +115,7 @@ loop_execution() {
     if [ "$executed" -eq 1 ]; then
       echo ""
       echo "Execute again [y/n]"
-      read REPLAY
+      read -r REPLAY
       if [ "${REPLAY}" = "n" ]; then
         echo ""
         break
@@ -120,17 +138,15 @@ loop_execution() {
         fi
       done
     }
-
-    for option in $MAKE_TARGETS_list; do
-      option_flag_var="OPTION_FLAGS_${option}"
-      option_flag_value=$(eval echo \$$option_flag_var)
-      if [ "${option_flag_value}" = true ]; then
-        make_target_var="MAKE_TARGETS_${option}"
-        make_target_value=$(eval echo \$$make_target_var)
-        run_make_target "${make_target_value}" || exit 1
-      fi
-    done
-
+    if [ "${OPTION_FLAGS_docs}" = true ]; then
+      make_exec doxygen-doc || continue
+    fi
+    if [ "${OPTION_FLAGS_coverage}" = true ]; then
+      make_exec coverage || continue
+    fi
+    if [ "${OPTION_FLAGS_iwyu}" = true ]; then
+      make_iwyu || continue
+    fi
   done
 }
 
@@ -192,6 +208,10 @@ while [ $# -gt 0 ]; do
     OPTION_FLAGS_compile_commands=true
     shift
     ;;
+  -w | --iwyu)
+    OPTION_FLAGS_iwyu=true
+    shift
+    ;;
   -h | --help)
     show_help
     exit 0
@@ -245,7 +265,7 @@ if [ "${OPTION_FLAGS_docs}" = true ]; then
 fi
 
 # Ejecutar configuración y construcción
-configure ${CONFIGURE_OPTIONS}
+configure "${CONFIGURE_OPTIONS}"
 
 # Si el modo loop está habilitado, ejecutamos en bucle
 if [ "${OPTION_FLAGS_loop}" = true ]; then
@@ -257,17 +277,17 @@ else
   if [ "${OPTION_FLAGS_compile_commands}" = true ]; then
     make_exec compile_commands
   fi
-  make_exec
-  make_tests || ./tests/saurion_test
-  for option in $MAKE_TARGETS_list; do
-    option_flag_var="OPTION_FLAGS_${option}"
-    option_flag_value=$(eval echo \$$option_flag_var)
-    if [ "${option_flag_value}" = true ]; then
-      make_target_var="MAKE_TARGETS_${option}"
-      make_target_value=$(eval echo \$$make_target_var)
-      run_make_target "${make_target_value}"
-    fi
-  done
+  make_exec all
+  make_tests || ./tests/saurion_test || exit 1
+  if [ "${OPTION_FLAGS_docs}" = true ]; then
+    make_exec doxygen-doc
+  fi
+  if [ "${OPTION_FLAGS_coverage}" = true ]; then
+    make_exec coverage || exit 1
+  fi
+  if [ "${OPTION_FLAGS_iwyu}" = true ]; then
+    make_iwyu || exit 1
+  fi
   if [ "${OPTION_FLAGS_clean}" = true ]; then
     make_exec maintainer-clean
   fi

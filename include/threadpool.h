@@ -6,14 +6,12 @@
 #ifndef THREADPOOL_H
 #define THREADPOOL_H
 
-#include <stddef.h>
+#include <stddef.h> // for size_t
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
-  struct task;
 
   struct threadpool;
 

@@ -105,14 +105,10 @@
 #define LOW_SAURION_H
 
 #define _POSIX_C_SOURCE 200809L
-#include <signal.h>
 
-#include <liburing.h>
-#include <pthread.h>
-
-#include "config.h"
-#include "linked_list.h"
-#include "threadpool.h"
+#include <pthread.h>   // for pthread_mutex_t, pthread_cond_t
+#include <stdint.h>    // for uint32_t
+#include <sys/types.h> // for ssize_t
 
 #ifdef __cplusplus
 extern "C"
@@ -128,9 +124,9 @@ extern "C"
  * improve memory access performance and ensure compatibility with certain
  * hardware architectures that require specific alignment.
  *
- * In this case, the value is set to 128 bytes, meaning that structures marked
+ * In this case, the value is set to 32 bytes, meaning that structures marked
  * with
- * `__attribute__((aligned(PACKING_SZ)))` will be aligned to 128-byte
+ * `__attribute__((aligned(PACKING_SZ)))` will be aligned to 32-byte
  * boundaries.
  *
  * Proper alignment can be particularly important in multithreaded environments
@@ -140,7 +136,7 @@ extern "C"
  * Adjusting `PACKING_SZ` may be necessary depending on the hardware platform
  * or specific performance requirements.
  */
-#define PACKING_SZ 128
+#define PACKING_SZ 32
 
   /*!
    * @brief Main structure for managing io_uring and socket events.

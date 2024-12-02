@@ -1,9 +1,9 @@
 #include "threadpool.h"
-#include "config.h"
-
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "config.h"     // for NUM_CORES
+#include <nanologger.h> // for LOG_END, LOG_INIT
+#include <pthread.h>    // for pthread_mutex_unlock, pthread_mutex_lock
+#include <stdio.h>      // for perror
+#include <stdlib.h>     // for free, malloc
 
 #define TRUE 1
 #define FALSE 0
@@ -17,15 +17,15 @@ struct task
 
 struct threadpool
 {
-  pthread_t *threads;           // array of threads
-  size_t num_threads;           // number of threads
-  struct task *task_queue_head; // head of task queue
-  struct task *task_queue_tail; // tail of task queue
-  pthread_mutex_t queue_lock;   // mutex for the task queue
-  pthread_cond_t queue_cond;    // condition variable for tasks
-  pthread_cond_t empty_cond;    // condition variable for empty queue
-  int stop;                     // flag to indicate if threadpool is stopping
-  int started;                  // flag to indicate if threadpool has started
+  pthread_t *threads;
+  size_t num_threads;
+  struct task *task_queue_head;
+  struct task *task_queue_tail;
+  pthread_mutex_t queue_lock;
+  pthread_cond_t queue_cond;
+  pthread_cond_t empty_cond;
+  int stop;
+  int started;
 };
 
 struct threadpool *
@@ -125,12 +125,10 @@ threadpool_worker (void *arg)
       struct task *task = pool->task_queue_head;
       if (task != NULL)
         {
-          // Remove task from queue
           pool->task_queue_head = task->next;
           if (pool->task_queue_head == NULL)
             pool->task_queue_tail = NULL;
 
-          // If queue is empty, signal empty_cond
           if (pool->task_queue_head == NULL)
             {
               pthread_cond_signal (&pool->empty_cond);
@@ -140,7 +138,6 @@ threadpool_worker (void *arg)
 
       if (task != NULL)
         {
-          // Execute task
           task->function (task->argument);
           free (task);
         }
@@ -156,7 +153,6 @@ threadpool_init (struct threadpool *pool)
   LOG_INIT (" ");
   if (pool == NULL || pool->started)
     {
-      // Already started or invalid pool
       LOG_END (" ");
       return;
     }
@@ -204,7 +200,6 @@ threadpool_add (struct threadpool *pool, void (*function) (void *),
     {
       pool->task_queue_head = new_task;
       pool->task_queue_tail = new_task;
-      // Signal worker threads that a new task is available
     }
   else
     {
@@ -286,7 +281,6 @@ threadpool_destroy (struct threadpool *pool)
     }
   threadpool_stop (pool);
 
-  // Clean up remaining tasks
   pthread_mutex_lock (&pool->queue_lock);
   struct task *task = pool->task_queue_head;
   while (task != NULL)

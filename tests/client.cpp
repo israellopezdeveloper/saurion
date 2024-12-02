@@ -1,124 +1,109 @@
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <string.h>
-#include <sys/mman.h> // Para memoria compartida
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <unistd.h>
-
-#include <atomic>
-#include <cstdint>
-#include <cstdio>
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <vector>
-
-#include "low_saurion.h"
+#include "config.h"     // for CHUNK_SZ
+#include <arpa/inet.h>  // for htonl, inet_pton, ntohl, htons
+#include <atomic>       // for atomic
+#include <cstdint>      // for uint64_t, uint32_t, int64_t, uint8_t
+#include <cstdio>       // for perror, size_t
+#include <cstdlib>      // for exit, WIFEXITED, WTERMSIG
+#include <cstring>      // for memcpy, strerror, memset, strlen, strcpy
+#include <errno.h>      // for errno, EAGAIN, EWOULDBLOCK
+#include <fcntl.h>      // for fcntl, open, F_GETFL, F_SETFL, O_NONBLOCK
+#include <fstream>      // for basic_ostream, operator<<, endl, basic...
+#include <iostream>     // for cerr, cout
+#include <memory>       // for allocator, make_unique, unique_ptr
+#include <netinet/in.h> // for sockaddr_in
+#include <signal.h>     // for SIGUSR1, SIGUSR2, timespec, kill, signal
+#include <sstream>      // for basic_istringstream, basic_ostringstream
+#include <string>       // for char_traits, basic_string, getline
+#include <sys/mman.h>   // for mmap, MAP_ANONYMOUS, MAP_FAILED, MAP_S...
+#include <sys/socket.h> // for AF_INET, connect, send, socket, SOCK_S...
+#include <sys/stat.h>   // for mkfifo
+#include <sys/types.h>  // for pid_t, ssize_t
+#include <sys/wait.h>   // for waitpid
+#include <time.h>       // for nanosleep
+#include <unistd.h>     // for close, read, fork, sleep
+#include <vector>       // for vector
 
 std::vector<pid_t> clients;
 int numClients = 0;
-std::atomic<bool>
-    keepRunning (true); // Indicador para terminar el bucle de lectura
+std::atomic keepRunning (true);
 
-// Variables globales compartidas para el envío de mensajes
 char *globalMessage;
 int *globalMessageCount;
 int *globalMessageDelay;
 int sockfd = 0;
 
-// Manejador de la señal para finalizar el bucle de lectura
 void
 signalHandler (int signum)
 {
   if (signum == SIGUSR1)
     {
-      keepRunning = false; // Termina el bucle del cliente
+      keepRunning = false;
+    }
+}
+uint64_t
+endianess (uint64_t value, bool toNet)
+{
+  int num = 42;
+  if (*(char *)&num == 42)
+    {
+      uint32_t high_part = toNet ? htonl ((uint32_t)(value >> 32))
+                                 : ntohl ((uint32_t)(value >> 32));
+      uint32_t low_part = toNet ? htonl ((uint32_t)(value & 0xFFFFFFFFLL))
+                                : ntohl ((uint32_t)(value & 0xFFFFFFFFLL));
+      return ((uint64_t)low_part << 32) | high_part;
+    }
+  else
+    {
+      return value;
     }
 }
 
 uint64_t
 htonll (uint64_t value)
 {
-  int num = 42;
-  if (*(char *)&num == 42)
-    { // Little endian check
-      uint32_t high_part = htonl ((uint32_t)(value >> 32));
-      uint32_t low_part = htonl ((uint32_t)(value & 0xFFFFFFFFLL));
-      return ((uint64_t)low_part << 32) | high_part;
-    }
-  else
-    { // Already big endian
-      return value;
-    }
+  return endianess (value, true);
 }
 
 uint64_t
 ntohll (uint64_t value)
 {
-  int num = 42;
-  if (*(char *)&num == 42)
-    { // Little endian check
-      uint32_t high_part = ntohl ((uint32_t)(value >> 32));
-      uint32_t low_part = ntohl ((uint32_t)(value & 0xFFFFFFFFLL));
-      return ((uint64_t)low_part << 32) | high_part;
-    }
-  else
-    { // Already big endian
-      return value;
-    }
+  return endianess (value, false);
 }
 
-// Manejador de la señal para enviar mensajes
 void
 sendMessagesHandler (int signum)
 {
   if (signum == SIGUSR2)
     {
-      // Enviar los mensajes
+      struct timespec tim;
+      tim.tv_sec = 0;
+      tim.tv_nsec = *globalMessageDelay * 1000L;
       for (int i = 0; i < *globalMessageCount; ++i)
         {
-          // Crear el mensaje
-          uint64_t length = (uint64_t)strlen (globalMessage);
+          auto length = strlen (globalMessage);
 
-          // 2. Crear un buffer que contendrá el mensaje completo
           uint64_t msg_len = strlen (globalMessage) + sizeof (length) + 1;
 
-          // 3. Crear un buffer para almacenar todo el mensaje
-          char *buffer = (char *)malloc (msg_len);
-          if (buffer == NULL)
-            {
-              perror ("Error en malloc");
-              exit (EXIT_FAILURE);
-            }
+          auto buffer = std::make_unique<char[]> (msg_len);
 
           uint64_t send_length = htonll (length);
 
-          // 4. Copiar la longitud del mensaje (entero de 64 bits) al buffer
-          memcpy (buffer, &send_length, sizeof (length));
+          std::memcpy (buffer.get (), &send_length, sizeof (length));
+          std::memcpy (buffer.get () + sizeof (length), globalMessage, length);
 
-          // 5. Copiar el mensaje de texto al buffer
-          memcpy (buffer + sizeof (length), globalMessage, length);
-
-          // 6. Agregar el bit a 0 al final
           buffer[msg_len - 1] = 0;
 
-          // Enviar mensaje al servidor
-          int64_t sent = send (sockfd, buffer, msg_len, 0);
-          if (sent < 0)
+          if (int64_t sent = send (sockfd, buffer.get (), msg_len, 0);
+              sent < 0)
             {
               break;
             }
-          free (buffer);
 
-          // Esperar el delay antes de enviar el siguiente mensaje
-          usleep (*globalMessageDelay * 1000); // Delay en milisegundos
+          nanosleep (&tim, nullptr);
         }
     }
 }
 
-// Función para hacer el socket no bloqueante
 void
 makeSocketNonBlocking ()
 {
@@ -138,212 +123,180 @@ makeSocketNonBlocking ()
     }
 }
 
+bool
+extractMessage (const char *buffer, int64_t &offset, uint64_t bytes_read,
+                std::ostream &logStream)
+{
+  if (offset + sizeof (uint64_t) > bytes_read)
+    return false;
+
+  uint64_t msg_len;
+  memcpy (&msg_len, buffer + offset, sizeof (msg_len));
+  offset += sizeof (msg_len);
+  msg_len = ntohll (msg_len);
+
+  if (offset + msg_len + 1 > bytes_read)
+    return false;
+
+  auto msg = std::make_unique<char[]> (msg_len + 1);
+  memcpy (msg.get (), buffer + offset, msg_len);
+  msg[msg_len] = '\0';
+  offset += msg_len;
+
+  if (buffer[offset++] != 0)
+    return false;
+
+  logStream.write (msg.get (), msg_len);
+  return true;
+}
+
 void
-parseMessages (char *buffer, int64_t bytes_read, std::ofstream &logStream)
+parseMessages (const char *buffer, int64_t bytes_read,
+               std::ofstream &logStream)
 {
   int64_t offset = 0;
-
-  while ((bytes_read > 0)
-         && (offset + sizeof (uint64_t) <= static_cast<uint64_t> (bytes_read)))
+  while (offset < bytes_read
+         && extractMessage (buffer, offset, bytes_read, logStream))
     {
-      // Leer el entero de 64 bits (8 bytes) que indica la longitud del mensaje
-      uint64_t msg_len;
-      memcpy (&msg_len, buffer + offset, sizeof (msg_len));
-      offset += sizeof (msg_len);
-      msg_len = ntohll (msg_len);
-
-      // Asegurarse de que tenemos suficientes bytes para el mensaje completo
-      if (offset + msg_len + 1 > static_cast<uint64_t> (bytes_read))
-        {
-          return;
-        }
-
-      // Leer el mensaje
-      char *msg = (char *)malloc (msg_len
-                                  + 1); // +1 para agregar terminador de cadena
-      memcpy (msg, (char *)(buffer + offset), msg_len);
-      msg[msg_len] = '\0'; // Agregar terminador de cadena
-      offset += msg_len;
-
-      // Leer el byte final (que debe ser 0)
-      char end_byte = buffer[offset];
-      offset++;
-
-      if (end_byte != 0)
-        {
-          free (msg);
-          return;
-        }
-
-      // Imprimir el mensaje
-      logStream.write (msg, msg_len);
-      free (msg);
+      // parseMessages
     }
 }
 
-// Crear un cliente usando fork()
 void
-createClient (int clientId)
+createClient (int clientId, int port)
 {
-  pid_t pid = fork ();
-  if (pid == 0)
-    { // Proceso hijo
-      signal (
-          SIGUSR1,
-          signalHandler); // Asignar el manejador de la señal para finalizar
-      signal (
-          SIGUSR2,
-          sendMessagesHandler); // Manejador de la señal para enviar mensajes
 
-      std::ostringstream tempFilePath;
-      tempFilePath << "/tmp/saurion_sender." << clientId << ".log";
-      std::ofstream logStream (tempFilePath.str (), std::ios::app);
-
-      if (!logStream.is_open ())
-        {
-          std::cerr << "Error al abrir el archivo log para el cliente "
-                    << clientId << std::endl;
-          exit (1);
-        }
-
-      // Crear socket y conectarse al servidor
-      sockfd = socket (AF_INET, SOCK_STREAM, 0);
-      if (sockfd < 0)
-        {
-          std::cerr << "Error creando socket" << std::endl;
-          exit (1);
-        }
-
-      struct sockaddr_in serv_addr;
-      memset (&serv_addr, 0, sizeof (serv_addr));
-      serv_addr.sin_family = AF_INET;
-      serv_addr.sin_port = htons (8080);
-      inet_pton (AF_INET, "localhost",
-                 &serv_addr.sin_addr); // Asumiendo localhost para la conexión
-
-      if (connect (sockfd, (struct sockaddr *)&serv_addr, sizeof (serv_addr))
-          < 0)
-        {
-          perror ("Error conectando al servidor");
-          exit (1);
-        }
-
-      // Hacer el socket no bloqueante
-      makeSocketNonBlocking ();
-
-      char buffer[8192];
-      memset (buffer, 0, 8192);
-
-      // Leer datos del servidor en modo no bloqueante
-      std::vector<uint8_t> accumulatedBuffer;
-      ssize_t total_len = 0;
-
-      struct timespec ts;
-      ts.tv_sec = 0;
-      ts.tv_nsec = 1000000L;
-      while (keepRunning)
-        {
-          int dataAvailable = 3;
-
-          total_len = 0;
-          while (dataAvailable > 0)
-            {
-              ssize_t len = read (sockfd, buffer, sizeof (buffer));
-
-              if (len > 0)
-                {
-                  // Acumular los datos leídos en el buffer
-                  accumulatedBuffer.insert (accumulatedBuffer.end (), buffer,
-                                            buffer + len);
-                  total_len += len;
-                }
-              else if (len == 0)
-                {
-                  keepRunning = false;
-                  break;
-                }
-              else if (len < 0)
-                {
-                  if (errno == EAGAIN || errno == EWOULDBLOCK)
-                    {
-                      nanosleep (&ts, nullptr);
-                      --dataAvailable;
-                    }
-                  else
-                    {
-                      // Error de lectura, pero no debido a que no haya datos
-                      // disponibles
-                      std::cerr
-                          << "Error leyendo del socket: " << strerror (errno)
-                          << std::endl;
-                      keepRunning = false;
-                      break;
-                    }
-                }
-            }
-
-          // Procesar todos los datos acumulados en una sola llamada a
-          // parseMessages
-          if (!accumulatedBuffer.empty ())
-            {
-              parseMessages ((char *)accumulatedBuffer.data (), total_len,
-                             logStream);
-
-              // Limpiar el buffer acumulado después de procesar los mensajes
-              accumulatedBuffer.clear ();
-            }
-        }
-      logStream.close ();
-      close (sockfd);
-      exit (0); // El proceso hijo termina aquí
-    }
-  else
+  if (pid_t pid = fork (); pid != 0)
     {
       clients.push_back (pid);
+      return;
     }
+  signal (SIGUSR1, signalHandler);
+  signal (SIGUSR2, sendMessagesHandler);
+
+  std::ostringstream tempFilePath;
+  tempFilePath << "/tmp/saurion_sender." << clientId << ".log";
+  std::ofstream logStream (tempFilePath.str (), std::ios::app);
+
+  if (!logStream.is_open ())
+    {
+      std::cerr << "Error al abrir el archivo log para el cliente " << clientId
+                << std::endl;
+      exit (1);
+    }
+
+  sockfd = socket (AF_INET, SOCK_STREAM, 0);
+  if (sockfd < 0)
+    {
+      std::cerr << "Error creando socket" << std::endl;
+      exit (1);
+    }
+
+  struct sockaddr_in serv_addr;
+  memset (&serv_addr, 0, sizeof (serv_addr));
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_port = htons (port);
+  inet_pton (AF_INET, "localhost", &serv_addr.sin_addr);
+
+  if (connect (sockfd, (struct sockaddr *)&serv_addr, sizeof (serv_addr)) < 0)
+    {
+      perror ("Error conectando al servidor");
+      exit (1);
+    }
+
+  makeSocketNonBlocking ();
+
+  char buffer[8192];
+  memset (buffer, 0, 8192);
+
+  std::vector<uint8_t> accumulatedBuffer;
+  ssize_t total_len = 0;
+
+  struct timespec ts;
+  ts.tv_sec = 0;
+  ts.tv_nsec = 1000000L;
+  while (keepRunning)
+    {
+      int dataAvailable = 3;
+
+      total_len = 0;
+      while (dataAvailable > 0)
+        {
+          ssize_t len = read (sockfd, buffer, sizeof (buffer));
+
+          if (len > 0)
+            {
+
+              accumulatedBuffer.insert (accumulatedBuffer.end (), buffer,
+                                        buffer + len);
+              total_len += len;
+              continue;
+            }
+          if (len == 0)
+            {
+              keepRunning = false;
+              break;
+            }
+          if (errno == EAGAIN || errno == EWOULDBLOCK)
+            {
+              nanosleep (&ts, nullptr);
+              --dataAvailable;
+              continue;
+            }
+
+          std::cerr << "Error leyendo del socket: " << strerror (errno)
+                    << std::endl;
+          keepRunning = false;
+          break;
+        }
+
+      if (!accumulatedBuffer.empty ())
+        {
+          parseMessages ((char *)accumulatedBuffer.data (), total_len,
+                         logStream);
+
+          accumulatedBuffer.clear ();
+        }
+    }
+  logStream.close ();
+  close (sockfd);
+  exit (0);
 }
 
-// Conectar múltiples clientes
 void
-connectClients (int n)
+connectClients (int n, int port)
 {
   for (int i = 0; i < n; ++i)
     {
-      createClient (numClients + i + 1);
+      createClient (numClients + i + 1, port);
     }
   numClients += n;
 }
 
-// Función para que todos los clientes envíen n mensajes con retraso
 void
 sendMessages (int n, const std::string &msg, int delay)
 {
-  // Actualizar los valores en la memoria compartida
+
   strcpy (globalMessage, msg.c_str ());
   *globalMessageCount = n;
   *globalMessageDelay = delay;
 
-  // Enviar la señal SIGUSR2 a todos los clientes para que empiecen a enviar
-  // los mensajes
   for (pid_t pid : clients)
     {
       kill (pid, SIGUSR2);
     }
 }
 
-// Desconectar clientes enviándoles la señal SIGUSR1 y esperar que terminen
 void
 disconnectClients ()
 {
   for (pid_t pid : clients)
     {
-      // Enviar la señal SIGUSR1 al cliente para que termine
+
       kill (pid, SIGUSR1);
 
-      // Esperar que el proceso hijo termine
       int status;
-      waitpid (pid, &status,
-               0); // Espera bloqueante hasta que el proceso hijo termine
+      waitpid (pid, &status, 0);
       if (!WIFEXITED (status))
         {
           std::cout << "Cliente " << pid << " terminó por señal "
@@ -354,15 +307,13 @@ disconnectClients ()
   numClients = 0;
 }
 
-// Cerrar la aplicación
-void
+__attribute__ ((noreturn)) void
 closeApplication ()
 {
   disconnectClients ();
   exit (0);
 }
 
-// Manejar comandos recibidos
 void
 handleCommand (const std::string &command)
 {
@@ -371,18 +322,18 @@ handleCommand (const std::string &command)
   std::string msg;
   unsigned int delay = 0;
 
-  // Crear un stream a partir del string
   std::istringstream ss (command);
   std::string token;
 
-  // Extraer los valores del string usando getline y ';' como delimitador
   std::getline (ss, cmd, ';');
 
   if (cmd == "connect")
     {
       std::getline (ss, token, ';');
       n = std::stoi (token);
-      connectClients (n);
+      std::getline (ss, token, ';');
+      delay = std::stoi (token);
+      connectClients (n, delay);
     }
   else if (cmd == "send")
     {
@@ -407,7 +358,6 @@ handleCommand (const std::string &command)
     }
 }
 
-// Leer comandos desde un pipe
 void
 readPipe (const std::string &pipePath)
 {
@@ -438,19 +388,27 @@ readPipe (const std::string &pipePath)
 __attribute__ ((no_sanitize ("thread")))
 #endif
 #endif
+
+template <typename T>
+T *
+mapSharedMemory (size_t size)
+{
+  void *addr = mmap (nullptr, size, PROT_READ | PROT_WRITE,
+                     MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+  if (addr == MAP_FAILED)
+    {
+      perror ("Error mapeando memoria");
+      exit (1);
+    }
+  return static_cast<T *> (addr);
+}
+
 void
 global_map ()
 {
-  // Crear la memoria compartida para las variables
-  globalMessage = static_cast<char *> (
-      mmap (NULL, 10 * CHUNK_SZ * sizeof (char), PROT_READ | PROT_WRITE,
-            MAP_SHARED | MAP_ANONYMOUS, -1, 0));
-  globalMessageCount
-      = static_cast<int *> (mmap (NULL, sizeof (int), PROT_READ | PROT_WRITE,
-                                  MAP_SHARED | MAP_ANONYMOUS, -1, 0));
-  globalMessageDelay
-      = static_cast<int *> (mmap (NULL, sizeof (int), PROT_READ | PROT_WRITE,
-                                  MAP_SHARED | MAP_ANONYMOUS, -1, 0));
+  globalMessage = mapSharedMemory<char> (10 * CHUNK_SZ * sizeof (char));
+  globalMessageCount = mapSharedMemory<int> (sizeof (int));
+  globalMessageDelay = mapSharedMemory<int> (sizeof (int));
 }
 
 int
@@ -479,13 +437,12 @@ main (int argc, char *argv[])
     }
 
   global_map ();
-  mkfifo (pipePath.c_str (), 0666); // Crear el pipe si no existe
+  mkfifo (pipePath.c_str (), 0666);
 
-  // Leer comandos desde el pipe
   while (true)
     {
       readPipe (pipePath);
-      sleep (1); // Esperar antes de volver a intentar leer
+      sleep (1);
     }
 
   return 0;
