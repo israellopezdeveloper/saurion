@@ -109,8 +109,9 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga4a0bc8233ca030e29b9b94aed0177392"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da3/group__LowSaurion.html#ga4a0bc8233ca030e29b9b94aed0177392">EXTERNAL_set_socket</a> (int p)</td></tr>
-<tr class="separator:ga4a0bc8233ca030e29b9b94aed0177392"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3944d39e091afbe401a9dcbfe526e97f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da3/group__LowSaurion.html#ga3944d39e091afbe401a9dcbfe526e97f">saurion_set_socket</a> (int p)</td></tr>
+<tr class="memdesc:ga3944d39e091afbe401a9dcbfe526e97f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a socket.  <a href="../../d9/da3/group__LowSaurion.html#ga3944d39e091afbe401a9dcbfe526e97f">More...</a><br /></td></tr>
+<tr class="separator:ga3944d39e091afbe401a9dcbfe526e97f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae589ab08ed623ad2ab6d13beec33b131"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../df/d32/structsaurion.html">saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131">saurion_create</a> (uint32_t <a class="el" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a>)</td></tr>
 <tr class="memdesc:gae589ab08ed623ad2ab6d13beec33b131"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an instance of the <code>saurion</code> structure.  <a href="../../d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131">More...</a><br /></td></tr>
 <tr class="separator:gae589ab08ed623ad2ab6d13beec33b131"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -205,11 +206,11 @@ Functions</h2></td></tr>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Destroy the structure and free resources</span></div>
 <div class="line"><a class="code hl_function" href="../../d9/da3/group__LowSaurion.html#ga7893ccf90a98845d5d95ffda0260d0b8">saurion_destroy</a>(s);</div>
-<div class="ttc" id="agroup__LowSaurion_html_ga7893ccf90a98845d5d95ffda0260d0b8"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#ga7893ccf90a98845d5d95ffda0260d0b8">saurion_destroy</a></div><div class="ttdeci">void saurion_destroy(struct saurion *const s)</div><div class="ttdoc">Destroys the saurion structure and frees all associated resources.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01085">low_saurion.c:1085</a></div></div>
-<div class="ttc" id="agroup__LowSaurion_html_ga9f32b41ec23178c2a693fec057b96532"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#ga9f32b41ec23178c2a693fec057b96532">saurion_stop</a></div><div class="ttdeci">void saurion_stop(const struct saurion *const s)</div><div class="ttdoc">Stops event processing in the saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01071">low_saurion.c:1071</a></div></div>
-<div class="ttc" id="agroup__LowSaurion_html_gadd63cf225e55bcf4cd22ddcbd9d1c9b7"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#gadd63cf225e55bcf4cd22ddcbd9d1c9b7">saurion_send</a></div><div class="ttdeci">void saurion_send(struct saurion *const s, const int fd, const char *const msg)</div><div class="ttdoc">Sends a message through a socket using io_uring.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01117">low_saurion.c:1117</a></div></div>
-<div class="ttc" id="agroup__LowSaurion_html_gae589ab08ed623ad2ab6d13beec33b131"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131">saurion_create</a></div><div class="ttdeci">struct saurion * saurion_create(uint32_t n_threads)</div><div class="ttdoc">Creates an instance of the saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00733">low_saurion.c:733</a></div></div>
-<div class="ttc" id="agroup__LowSaurion_html_gaeeab8302b41112175566881a1b7bf905"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#gaeeab8302b41112175566881a1b7bf905">saurion_start</a></div><div class="ttdeci">int saurion_start(struct saurion *const s)</div><div class="ttdoc">Starts event processing in the saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01044">low_saurion.c:1044</a></div></div>
+<div class="ttc" id="agroup__LowSaurion_html_ga7893ccf90a98845d5d95ffda0260d0b8"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#ga7893ccf90a98845d5d95ffda0260d0b8">saurion_destroy</a></div><div class="ttdeci">void saurion_destroy(struct saurion *const s)</div><div class="ttdoc">Destroys the saurion structure and frees all associated resources.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01059">low_saurion.c:1059</a></div></div>
+<div class="ttc" id="agroup__LowSaurion_html_ga9f32b41ec23178c2a693fec057b96532"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#ga9f32b41ec23178c2a693fec057b96532">saurion_stop</a></div><div class="ttdeci">void saurion_stop(const struct saurion *const s)</div><div class="ttdoc">Stops event processing in the saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01045">low_saurion.c:1045</a></div></div>
+<div class="ttc" id="agroup__LowSaurion_html_gadd63cf225e55bcf4cd22ddcbd9d1c9b7"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#gadd63cf225e55bcf4cd22ddcbd9d1c9b7">saurion_send</a></div><div class="ttdeci">void saurion_send(struct saurion *const s, const int fd, const char *const msg)</div><div class="ttdoc">Sends a message through a socket using io_uring.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01091">low_saurion.c:1091</a></div></div>
+<div class="ttc" id="agroup__LowSaurion_html_gae589ab08ed623ad2ab6d13beec33b131"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131">saurion_create</a></div><div class="ttdeci">struct saurion * saurion_create(uint32_t n_threads)</div><div class="ttdoc">Creates an instance of the saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00707">low_saurion.c:707</a></div></div>
+<div class="ttc" id="agroup__LowSaurion_html_gaeeab8302b41112175566881a1b7bf905"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#gaeeab8302b41112175566881a1b7bf905">saurion_start</a></div><div class="ttdeci">int saurion_start(struct saurion *const s)</div><div class="ttdoc">Starts event processing in the saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01018">low_saurion.c:1018</a></div></div>
 <div class="ttc" id="astructsaurion_html"><div class="ttname"><a href="../../df/d32/structsaurion.html">saurion</a></div><div class="ttdoc">Main structure for managing io_uring and socket events.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00148">low_saurion.h:149</a></div></div>
 </div><!-- fragment --><p >In this example, the <code>saurion</code> structure is created with 4 threads to handle the workload. Event processing is started, allowing it to accept connections and manage I/O operations on sockets. After sending a message through a socket, the system can be stopped, and the resources are freed.</p>
 <dl class="section author"><dt>Author</dt><dd>Israel </dd></dl>
@@ -339,60 +340,6 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  176</span>  chd_ptr[pos] = iov-&gt;iov_base;</div>
 <div class="line"><span class="lineno">  177</span>  <span class="keywordflow">return</span> SUCCESS_CODE;</div>
 <div class="line"><span class="lineno">  178</span>}</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="ga4a0bc8233ca030e29b9b94aed0177392" name="ga4a0bc8233ca030e29b9b94aed0177392"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga4a0bc8233ca030e29b9b94aed0177392">&#9670;&nbsp;</a></span>EXTERNAL_set_socket()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int EXTERNAL_set_socket </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>p</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000001">Todo:</a></b></dt><dd>Eliminar </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l00696">696</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  697</span>{</div>
-<div class="line"><span class="lineno">  698</span>  <span class="keywordtype">int</span> sock = 0;</div>
-<div class="line"><span class="lineno">  699</span>  <span class="keyword">struct </span>sockaddr_in srv_addr;</div>
-<div class="line"><span class="lineno">  700</span> </div>
-<div class="line"><span class="lineno">  701</span>  sock = socket (PF_INET, SOCK_STREAM, 0);</div>
-<div class="line"><span class="lineno">  702</span>  <span class="keywordflow">if</span> (sock &lt; 1)</div>
-<div class="line"><span class="lineno">  703</span>    {</div>
-<div class="line"><span class="lineno">  704</span>      <span class="keywordflow">return</span> ERROR_CODE;</div>
-<div class="line"><span class="lineno">  705</span>    }</div>
-<div class="line"><span class="lineno">  706</span> </div>
-<div class="line"><span class="lineno">  707</span>  <span class="keywordtype">int</span> enable = 1;</div>
-<div class="line"><span class="lineno">  708</span>  <span class="keywordflow">if</span> (setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, &amp;enable, <span class="keyword">sizeof</span> (<span class="keywordtype">int</span>)) &lt; 0)</div>
-<div class="line"><span class="lineno">  709</span>    {</div>
-<div class="line"><span class="lineno">  710</span>      <span class="keywordflow">return</span> ERROR_CODE;</div>
-<div class="line"><span class="lineno">  711</span>    }</div>
-<div class="line"><span class="lineno">  712</span> </div>
-<div class="line"><span class="lineno">  713</span>  memset (&amp;srv_addr, 0, <span class="keyword">sizeof</span> (srv_addr));</div>
-<div class="line"><span class="lineno">  714</span>  srv_addr.sin_family = AF_INET;</div>
-<div class="line"><span class="lineno">  715</span>  srv_addr.sin_port = htons (p);</div>
-<div class="line"><span class="lineno">  716</span>  srv_addr.sin_addr.s_addr = htonl (INADDR_ANY);</div>
-<div class="line"><span class="lineno">  717</span> </div>
-<div class="line"><span class="lineno">  718</span>  <span class="keywordflow">if</span> (bind (sock, (<span class="keyword">const</span> <span class="keyword">struct</span> sockaddr *)&amp;srv_addr, <span class="keyword">sizeof</span> (srv_addr)) &lt; 0)</div>
-<div class="line"><span class="lineno">  719</span>    {</div>
-<div class="line"><span class="lineno">  720</span>      <span class="keywordflow">return</span> ERROR_CODE;</div>
-<div class="line"><span class="lineno">  721</span>    }</div>
-<div class="line"><span class="lineno">  722</span> </div>
-<div class="line"><span class="lineno">  723</span>  <span class="keywordflow">if</span> (listen (sock, ACCEPT_QUEUE) &lt; 0)</div>
-<div class="line"><span class="lineno">  724</span>    {</div>
-<div class="line"><span class="lineno">  725</span>      <span class="keywordflow">return</span> ERROR_CODE;</div>
-<div class="line"><span class="lineno">  726</span>    }</div>
-<div class="line"><span class="lineno">  727</span> </div>
-<div class="line"><span class="lineno">  728</span>  <span class="keywordflow">return</span> sock;</div>
-<div class="line"><span class="lineno">  729</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -639,182 +586,182 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000002">Todo:</a></b></dt><dd><p class="startdd">add message contraint </p>
+<dl class="todo"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000001">Todo:</a></b></dt><dd><p class="startdd">add message contraint </p>
 <p class="interdd">validar <code>msg_size</code>, crear maximos </p>
 <p class="enddd">validar <code>offsets</code> </p>
 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l00454">454</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  455</span>{</div>
-<div class="line"><span class="lineno">  456</span>  <span class="keywordflow">if</span> (req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a1291bf32fbcafa3bb4b348578db09a9f">iovec_count</a> == 0)</div>
-<div class="line"><span class="lineno">  457</span>    {</div>
-<div class="line"><span class="lineno">  458</span>      <span class="keywordflow">return</span> ERROR_CODE;</div>
-<div class="line"><span class="lineno">  459</span>    }</div>
-<div class="line"><span class="lineno">  460</span> </div>
-<div class="line"><span class="lineno">  461</span>  <span class="keywordtype">size_t</span> max_iov_cont = 0; <span class="comment">//&lt; Total size of request</span></div>
-<div class="line"><span class="lineno">  462</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a1291bf32fbcafa3bb4b348578db09a9f">iovec_count</a>; ++i)</div>
-<div class="line"><span class="lineno">  463</span>    {</div>
-<div class="line"><span class="lineno">  464</span>      max_iov_cont += req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[i].iov_len;</div>
-<div class="line"><span class="lineno">  465</span>    }</div>
-<div class="line"><span class="lineno">  466</span>  <span class="keywordtype">size_t</span> cont_sz = 0;</div>
-<div class="line"><span class="lineno">  467</span>  <span class="keywordtype">size_t</span> cont_rem = 0;</div>
-<div class="line"><span class="lineno">  468</span>  <span class="keywordtype">size_t</span> curr_iov = 0;</div>
-<div class="line"><span class="lineno">  469</span>  <span class="keywordtype">size_t</span> curr_iov_off = 0;</div>
-<div class="line"><span class="lineno">  470</span>  <span class="keywordtype">size_t</span> dest_off = 0;</div>
-<div class="line"><span class="lineno">  471</span>  <span class="keywordtype">void</span> *dest_ptr = NULL;</div>
-<div class="line"><span class="lineno">  472</span>  <span class="keywordflow">if</span> (req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a> &amp;&amp; req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a02dc8e759c5216e1b7f7c908a0e0481f">prev_size</a> &amp;&amp; req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#acb69c014fb67502b59cd112d3758569f">prev_remain</a>)</div>
-<div class="line"><span class="lineno">  473</span>    {</div>
-<div class="line"><span class="lineno">  474</span>      cont_sz = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a02dc8e759c5216e1b7f7c908a0e0481f">prev_size</a>;</div>
-<div class="line"><span class="lineno">  475</span>      cont_rem = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#acb69c014fb67502b59cd112d3758569f">prev_remain</a>;</div>
-<div class="line"><span class="lineno">  476</span>      curr_iov = 0;</div>
-<div class="line"><span class="lineno">  477</span>      curr_iov_off = 0;</div>
-<div class="line"><span class="lineno">  478</span>      dest_off = cont_sz - cont_rem;</div>
-<div class="line"><span class="lineno">  479</span>      <span class="keywordflow">if</span> (cont_rem &lt;= max_iov_cont)</div>
-<div class="line"><span class="lineno">  480</span>        {</div>
-<div class="line"><span class="lineno">  481</span>          *dest = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a>;</div>
-<div class="line"><span class="lineno">  482</span>          dest_ptr = *dest;</div>
-<div class="line"><span class="lineno">  483</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a> = NULL;</div>
-<div class="line"><span class="lineno">  484</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a02dc8e759c5216e1b7f7c908a0e0481f">prev_size</a> = 0;</div>
-<div class="line"><span class="lineno">  485</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#acb69c014fb67502b59cd112d3758569f">prev_remain</a> = 0;</div>
-<div class="line"><span class="lineno">  486</span>        }</div>
-<div class="line"><span class="lineno">  487</span>      <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  488</span>        {</div>
-<div class="line"><span class="lineno">  489</span>          dest_ptr = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a>;</div>
-<div class="line"><span class="lineno">  490</span>          *dest = NULL;</div>
-<div class="line"><span class="lineno">  491</span>        }</div>
-<div class="line"><span class="lineno">  492</span>    }</div>
-<div class="line"><span class="lineno">  493</span>  <span class="keywordflow">else</span> <span class="keywordflow">if</span> (req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a4aba582d3fcf1110aa8f272d5b038a3d">next_iov</a> || req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a03abde14b48986b40d827b22e4ddfb2d">next_offset</a>)</div>
-<div class="line"><span class="lineno">  494</span>    {</div>
-<div class="line"><span class="lineno">  495</span>      curr_iov = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a4aba582d3fcf1110aa8f272d5b038a3d">next_iov</a>;</div>
-<div class="line"><span class="lineno">  496</span>      curr_iov_off = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a03abde14b48986b40d827b22e4ddfb2d">next_offset</a>;</div>
-<div class="line"><span class="lineno">  497</span>      cont_sz = *(</div>
-<div class="line"><span class="lineno">  498</span>          (<span class="keywordtype">size_t</span> *)(((uint8_t *)req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_base) + curr_iov_off));</div>
-<div class="line"><span class="lineno">  499</span>      cont_sz = <a class="code hl_function" href="../../de/d27/low__saurion_8c.html#a5fae4cad12b0ca469184e097624aea08">ntohll</a> (cont_sz);</div>
-<div class="line"><span class="lineno">  500</span>      curr_iov_off += <span class="keyword">sizeof</span> (uint64_t);</div>
-<div class="line"><span class="lineno">  501</span>      cont_rem = cont_sz;</div>
-<div class="line"><span class="lineno">  502</span>      dest_off = cont_sz - cont_rem;</div>
-<div class="line"><span class="lineno">  503</span>      <span class="keywordflow">if</span> ((curr_iov_off + cont_rem + 1) &lt;= max_iov_cont)</div>
-<div class="line"><span class="lineno">  504</span>        {</div>
-<div class="line"><span class="lineno">  505</span>          *dest = malloc (cont_sz);</div>
-<div class="line"><span class="lineno">  506</span>          dest_ptr = *dest;</div>
-<div class="line"><span class="lineno">  507</span>        }</div>
-<div class="line"><span class="lineno">  508</span>      <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  509</span>        {</div>
-<div class="line"><span class="lineno">  510</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a> = malloc (cont_sz);</div>
-<div class="line"><span class="lineno">  511</span>          dest_ptr = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a>;</div>
-<div class="line"><span class="lineno">  512</span>          *dest = NULL;</div>
-<div class="line"><span class="lineno">  513</span>          *len = 0;</div>
-<div class="line"><span class="lineno">  514</span>        }</div>
-<div class="line"><span class="lineno">  515</span>    }</div>
-<div class="line"><span class="lineno">  516</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  517</span>    {</div>
-<div class="line"><span class="lineno">  518</span>      curr_iov = 0;</div>
-<div class="line"><span class="lineno">  519</span>      curr_iov_off = 0;</div>
-<div class="line"><span class="lineno">  520</span>      cont_sz = *(</div>
-<div class="line"><span class="lineno">  521</span>          (<span class="keywordtype">size_t</span> *)(((uint8_t *)req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_base) + curr_iov_off));</div>
-<div class="line"><span class="lineno">  522</span>      cont_sz = <a class="code hl_function" href="../../de/d27/low__saurion_8c.html#a5fae4cad12b0ca469184e097624aea08">ntohll</a> (cont_sz);</div>
-<div class="line"><span class="lineno">  523</span>      curr_iov_off += <span class="keyword">sizeof</span> (uint64_t);</div>
-<div class="line"><span class="lineno">  524</span>      cont_rem = cont_sz;</div>
-<div class="line"><span class="lineno">  525</span>      dest_off = cont_sz - cont_rem;</div>
-<div class="line"><span class="lineno">  526</span>      <span class="keywordflow">if</span> (cont_rem &lt;= max_iov_cont)</div>
-<div class="line"><span class="lineno">  527</span>        {</div>
-<div class="line"><span class="lineno">  528</span>          *dest = malloc (cont_sz);</div>
-<div class="line"><span class="lineno">  529</span>          dest_ptr = *dest;</div>
-<div class="line"><span class="lineno">  530</span>        }</div>
-<div class="line"><span class="lineno">  531</span>      <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  532</span>        {</div>
-<div class="line"><span class="lineno">  533</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a> = malloc (cont_sz);</div>
-<div class="line"><span class="lineno">  534</span>          dest_ptr = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a>;</div>
-<div class="line"><span class="lineno">  535</span>          *dest = NULL;</div>
-<div class="line"><span class="lineno">  536</span>        }</div>
-<div class="line"><span class="lineno">  537</span>    }</div>
-<div class="line"><span class="lineno">  538</span>  <span class="keywordtype">size_t</span> curr_iov_msg_rem = 0;</div>
-<div class="line"><span class="lineno">  539</span> </div>
-<div class="line"><span class="lineno">  540</span>  uint8_t ok = 1UL;</div>
-<div class="line"><span class="lineno">  541</span>  <span class="keywordflow">while</span> (1)</div>
-<div class="line"><span class="lineno">  542</span>    {</div>
-<div class="line"><span class="lineno">  543</span>      curr_iov_msg_rem</div>
-<div class="line"><span class="lineno">  544</span>          = <a class="code hl_define" href="../../de/d27/low__saurion_8c.html#a3acffbd305ee72dcd4593c0d8af64a4f">MIN</a> (cont_rem, (req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_len - curr_iov_off));</div>
-<div class="line"><span class="lineno">  545</span>      memcpy ((uint8_t *)dest_ptr + dest_off,</div>
-<div class="line"><span class="lineno">  546</span>              ((uint8_t *)req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_base) + curr_iov_off,</div>
-<div class="line"><span class="lineno">  547</span>              curr_iov_msg_rem);</div>
-<div class="line"><span class="lineno">  548</span>      dest_off += curr_iov_msg_rem;</div>
-<div class="line"><span class="lineno">  549</span>      curr_iov_off += curr_iov_msg_rem;</div>
-<div class="line"><span class="lineno">  550</span>      cont_rem -= curr_iov_msg_rem;</div>
-<div class="line"><span class="lineno">  551</span>      <span class="keywordflow">if</span> (cont_rem &lt;= 0)</div>
-<div class="line"><span class="lineno">  552</span>        {</div>
-<div class="line"><span class="lineno">  553</span>          <span class="keywordflow">if</span> (*(((uint8_t *)req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_base) + curr_iov_off) != 0)</div>
-<div class="line"><span class="lineno">  554</span>            {</div>
-<div class="line"><span class="lineno">  555</span>              ok = 0UL;</div>
-<div class="line"><span class="lineno">  556</span>            }</div>
-<div class="line"><span class="lineno">  557</span>          *len = cont_sz;</div>
-<div class="line"><span class="lineno">  558</span>          ++curr_iov_off;</div>
-<div class="line"><span class="lineno">  559</span>          <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  560</span>        }</div>
-<div class="line"><span class="lineno">  561</span>      <span class="keywordflow">if</span> (curr_iov_off &gt;= (req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_len))</div>
-<div class="line"><span class="lineno">  562</span>        {</div>
-<div class="line"><span class="lineno">  563</span>          ++curr_iov;</div>
-<div class="line"><span class="lineno">  564</span>          <span class="keywordflow">if</span> (curr_iov == req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a1291bf32fbcafa3bb4b348578db09a9f">iovec_count</a>)</div>
-<div class="line"><span class="lineno">  565</span>            {</div>
-<div class="line"><span class="lineno">  566</span>              <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  567</span>            }</div>
-<div class="line"><span class="lineno">  568</span>          curr_iov_off = 0;</div>
-<div class="line"><span class="lineno">  569</span>        }</div>
-<div class="line"><span class="lineno">  570</span>    }</div>
-<div class="line"><span class="lineno">  571</span> </div>
-<div class="line"><span class="lineno">  572</span>  <span class="keywordflow">if</span> (req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a>)</div>
-<div class="line"><span class="lineno">  573</span>    {</div>
-<div class="line"><span class="lineno">  574</span>      req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a02dc8e759c5216e1b7f7c908a0e0481f">prev_size</a> = cont_sz;</div>
-<div class="line"><span class="lineno">  575</span>      req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#acb69c014fb67502b59cd112d3758569f">prev_remain</a> = cont_rem;</div>
-<div class="line"><span class="lineno">  576</span>      *dest = NULL;</div>
-<div class="line"><span class="lineno">  577</span>      len = 0;</div>
-<div class="line"><span class="lineno">  578</span>    }</div>
-<div class="line"><span class="lineno">  579</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  580</span>    {</div>
-<div class="line"><span class="lineno">  581</span>      req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a02dc8e759c5216e1b7f7c908a0e0481f">prev_size</a> = 0;</div>
-<div class="line"><span class="lineno">  582</span>      req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#acb69c014fb67502b59cd112d3758569f">prev_remain</a> = 0;</div>
-<div class="line"><span class="lineno">  583</span>    }</div>
-<div class="line"><span class="lineno">  584</span>  <span class="keywordflow">if</span> (curr_iov &lt; req-&gt;iovec_count)</div>
+<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l00428">428</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  429</span>{</div>
+<div class="line"><span class="lineno">  430</span>  <span class="keywordflow">if</span> (req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a1291bf32fbcafa3bb4b348578db09a9f">iovec_count</a> == 0)</div>
+<div class="line"><span class="lineno">  431</span>    {</div>
+<div class="line"><span class="lineno">  432</span>      <span class="keywordflow">return</span> ERROR_CODE;</div>
+<div class="line"><span class="lineno">  433</span>    }</div>
+<div class="line"><span class="lineno">  434</span> </div>
+<div class="line"><span class="lineno">  435</span>  <span class="keywordtype">size_t</span> max_iov_cont = 0; <span class="comment">//&lt; Total size of request</span></div>
+<div class="line"><span class="lineno">  436</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a1291bf32fbcafa3bb4b348578db09a9f">iovec_count</a>; ++i)</div>
+<div class="line"><span class="lineno">  437</span>    {</div>
+<div class="line"><span class="lineno">  438</span>      max_iov_cont += req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[i].iov_len;</div>
+<div class="line"><span class="lineno">  439</span>    }</div>
+<div class="line"><span class="lineno">  440</span>  <span class="keywordtype">size_t</span> cont_sz = 0;</div>
+<div class="line"><span class="lineno">  441</span>  <span class="keywordtype">size_t</span> cont_rem = 0;</div>
+<div class="line"><span class="lineno">  442</span>  <span class="keywordtype">size_t</span> curr_iov = 0;</div>
+<div class="line"><span class="lineno">  443</span>  <span class="keywordtype">size_t</span> curr_iov_off = 0;</div>
+<div class="line"><span class="lineno">  444</span>  <span class="keywordtype">size_t</span> dest_off = 0;</div>
+<div class="line"><span class="lineno">  445</span>  <span class="keywordtype">void</span> *dest_ptr = NULL;</div>
+<div class="line"><span class="lineno">  446</span>  <span class="keywordflow">if</span> (req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a> &amp;&amp; req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a02dc8e759c5216e1b7f7c908a0e0481f">prev_size</a> &amp;&amp; req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#acb69c014fb67502b59cd112d3758569f">prev_remain</a>)</div>
+<div class="line"><span class="lineno">  447</span>    {</div>
+<div class="line"><span class="lineno">  448</span>      cont_sz = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a02dc8e759c5216e1b7f7c908a0e0481f">prev_size</a>;</div>
+<div class="line"><span class="lineno">  449</span>      cont_rem = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#acb69c014fb67502b59cd112d3758569f">prev_remain</a>;</div>
+<div class="line"><span class="lineno">  450</span>      curr_iov = 0;</div>
+<div class="line"><span class="lineno">  451</span>      curr_iov_off = 0;</div>
+<div class="line"><span class="lineno">  452</span>      dest_off = cont_sz - cont_rem;</div>
+<div class="line"><span class="lineno">  453</span>      <span class="keywordflow">if</span> (cont_rem &lt;= max_iov_cont)</div>
+<div class="line"><span class="lineno">  454</span>        {</div>
+<div class="line"><span class="lineno">  455</span>          *dest = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a>;</div>
+<div class="line"><span class="lineno">  456</span>          dest_ptr = *dest;</div>
+<div class="line"><span class="lineno">  457</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a> = NULL;</div>
+<div class="line"><span class="lineno">  458</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a02dc8e759c5216e1b7f7c908a0e0481f">prev_size</a> = 0;</div>
+<div class="line"><span class="lineno">  459</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#acb69c014fb67502b59cd112d3758569f">prev_remain</a> = 0;</div>
+<div class="line"><span class="lineno">  460</span>        }</div>
+<div class="line"><span class="lineno">  461</span>      <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  462</span>        {</div>
+<div class="line"><span class="lineno">  463</span>          dest_ptr = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a>;</div>
+<div class="line"><span class="lineno">  464</span>          *dest = NULL;</div>
+<div class="line"><span class="lineno">  465</span>        }</div>
+<div class="line"><span class="lineno">  466</span>    }</div>
+<div class="line"><span class="lineno">  467</span>  <span class="keywordflow">else</span> <span class="keywordflow">if</span> (req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a4aba582d3fcf1110aa8f272d5b038a3d">next_iov</a> || req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a03abde14b48986b40d827b22e4ddfb2d">next_offset</a>)</div>
+<div class="line"><span class="lineno">  468</span>    {</div>
+<div class="line"><span class="lineno">  469</span>      curr_iov = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a4aba582d3fcf1110aa8f272d5b038a3d">next_iov</a>;</div>
+<div class="line"><span class="lineno">  470</span>      curr_iov_off = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a03abde14b48986b40d827b22e4ddfb2d">next_offset</a>;</div>
+<div class="line"><span class="lineno">  471</span>      cont_sz = *(</div>
+<div class="line"><span class="lineno">  472</span>          (<span class="keywordtype">size_t</span> *)(((uint8_t *)req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_base) + curr_iov_off));</div>
+<div class="line"><span class="lineno">  473</span>      cont_sz = <a class="code hl_function" href="../../de/d27/low__saurion_8c.html#a5fae4cad12b0ca469184e097624aea08">ntohll</a> (cont_sz);</div>
+<div class="line"><span class="lineno">  474</span>      curr_iov_off += <span class="keyword">sizeof</span> (uint64_t);</div>
+<div class="line"><span class="lineno">  475</span>      cont_rem = cont_sz;</div>
+<div class="line"><span class="lineno">  476</span>      dest_off = cont_sz - cont_rem;</div>
+<div class="line"><span class="lineno">  477</span>      <span class="keywordflow">if</span> ((curr_iov_off + cont_rem + 1) &lt;= max_iov_cont)</div>
+<div class="line"><span class="lineno">  478</span>        {</div>
+<div class="line"><span class="lineno">  479</span>          *dest = malloc (cont_sz);</div>
+<div class="line"><span class="lineno">  480</span>          dest_ptr = *dest;</div>
+<div class="line"><span class="lineno">  481</span>        }</div>
+<div class="line"><span class="lineno">  482</span>      <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  483</span>        {</div>
+<div class="line"><span class="lineno">  484</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a> = malloc (cont_sz);</div>
+<div class="line"><span class="lineno">  485</span>          dest_ptr = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a>;</div>
+<div class="line"><span class="lineno">  486</span>          *dest = NULL;</div>
+<div class="line"><span class="lineno">  487</span>          *len = 0;</div>
+<div class="line"><span class="lineno">  488</span>        }</div>
+<div class="line"><span class="lineno">  489</span>    }</div>
+<div class="line"><span class="lineno">  490</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  491</span>    {</div>
+<div class="line"><span class="lineno">  492</span>      curr_iov = 0;</div>
+<div class="line"><span class="lineno">  493</span>      curr_iov_off = 0;</div>
+<div class="line"><span class="lineno">  494</span>      cont_sz = *(</div>
+<div class="line"><span class="lineno">  495</span>          (<span class="keywordtype">size_t</span> *)(((uint8_t *)req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_base) + curr_iov_off));</div>
+<div class="line"><span class="lineno">  496</span>      cont_sz = <a class="code hl_function" href="../../de/d27/low__saurion_8c.html#a5fae4cad12b0ca469184e097624aea08">ntohll</a> (cont_sz);</div>
+<div class="line"><span class="lineno">  497</span>      curr_iov_off += <span class="keyword">sizeof</span> (uint64_t);</div>
+<div class="line"><span class="lineno">  498</span>      cont_rem = cont_sz;</div>
+<div class="line"><span class="lineno">  499</span>      dest_off = cont_sz - cont_rem;</div>
+<div class="line"><span class="lineno">  500</span>      <span class="keywordflow">if</span> (cont_rem &lt;= max_iov_cont)</div>
+<div class="line"><span class="lineno">  501</span>        {</div>
+<div class="line"><span class="lineno">  502</span>          *dest = malloc (cont_sz);</div>
+<div class="line"><span class="lineno">  503</span>          dest_ptr = *dest;</div>
+<div class="line"><span class="lineno">  504</span>        }</div>
+<div class="line"><span class="lineno">  505</span>      <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  506</span>        {</div>
+<div class="line"><span class="lineno">  507</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a> = malloc (cont_sz);</div>
+<div class="line"><span class="lineno">  508</span>          dest_ptr = req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a>;</div>
+<div class="line"><span class="lineno">  509</span>          *dest = NULL;</div>
+<div class="line"><span class="lineno">  510</span>        }</div>
+<div class="line"><span class="lineno">  511</span>    }</div>
+<div class="line"><span class="lineno">  512</span>  <span class="keywordtype">size_t</span> curr_iov_msg_rem = 0;</div>
+<div class="line"><span class="lineno">  513</span> </div>
+<div class="line"><span class="lineno">  514</span>  uint8_t ok = 1UL;</div>
+<div class="line"><span class="lineno">  515</span>  <span class="keywordflow">while</span> (1)</div>
+<div class="line"><span class="lineno">  516</span>    {</div>
+<div class="line"><span class="lineno">  517</span>      curr_iov_msg_rem</div>
+<div class="line"><span class="lineno">  518</span>          = <a class="code hl_define" href="../../de/d27/low__saurion_8c.html#a3acffbd305ee72dcd4593c0d8af64a4f">MIN</a> (cont_rem, (req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_len - curr_iov_off));</div>
+<div class="line"><span class="lineno">  519</span>      memcpy ((uint8_t *)dest_ptr + dest_off,</div>
+<div class="line"><span class="lineno">  520</span>              ((uint8_t *)req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_base) + curr_iov_off,</div>
+<div class="line"><span class="lineno">  521</span>              curr_iov_msg_rem);</div>
+<div class="line"><span class="lineno">  522</span>      dest_off += curr_iov_msg_rem;</div>
+<div class="line"><span class="lineno">  523</span>      curr_iov_off += curr_iov_msg_rem;</div>
+<div class="line"><span class="lineno">  524</span>      cont_rem -= curr_iov_msg_rem;</div>
+<div class="line"><span class="lineno">  525</span>      <span class="keywordflow">if</span> (cont_rem &lt;= 0)</div>
+<div class="line"><span class="lineno">  526</span>        {</div>
+<div class="line"><span class="lineno">  527</span>          <span class="keywordflow">if</span> (*(((uint8_t *)req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_base) + curr_iov_off) != 0)</div>
+<div class="line"><span class="lineno">  528</span>            {</div>
+<div class="line"><span class="lineno">  529</span>              ok = 0UL;</div>
+<div class="line"><span class="lineno">  530</span>            }</div>
+<div class="line"><span class="lineno">  531</span>          *len = cont_sz;</div>
+<div class="line"><span class="lineno">  532</span>          ++curr_iov_off;</div>
+<div class="line"><span class="lineno">  533</span>          <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  534</span>        }</div>
+<div class="line"><span class="lineno">  535</span>      <span class="keywordflow">if</span> (curr_iov_off &gt;= (req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_len))</div>
+<div class="line"><span class="lineno">  536</span>        {</div>
+<div class="line"><span class="lineno">  537</span>          ++curr_iov;</div>
+<div class="line"><span class="lineno">  538</span>          <span class="keywordflow">if</span> (curr_iov == req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a1291bf32fbcafa3bb4b348578db09a9f">iovec_count</a>)</div>
+<div class="line"><span class="lineno">  539</span>            {</div>
+<div class="line"><span class="lineno">  540</span>              <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  541</span>            }</div>
+<div class="line"><span class="lineno">  542</span>          curr_iov_off = 0;</div>
+<div class="line"><span class="lineno">  543</span>        }</div>
+<div class="line"><span class="lineno">  544</span>    }</div>
+<div class="line"><span class="lineno">  545</span> </div>
+<div class="line"><span class="lineno">  546</span>  <span class="keywordflow">if</span> (req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700">prev</a>)</div>
+<div class="line"><span class="lineno">  547</span>    {</div>
+<div class="line"><span class="lineno">  548</span>      req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a02dc8e759c5216e1b7f7c908a0e0481f">prev_size</a> = cont_sz;</div>
+<div class="line"><span class="lineno">  549</span>      req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#acb69c014fb67502b59cd112d3758569f">prev_remain</a> = cont_rem;</div>
+<div class="line"><span class="lineno">  550</span>      *dest = NULL;</div>
+<div class="line"><span class="lineno">  551</span>      len = 0;</div>
+<div class="line"><span class="lineno">  552</span>    }</div>
+<div class="line"><span class="lineno">  553</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  554</span>    {</div>
+<div class="line"><span class="lineno">  555</span>      req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a02dc8e759c5216e1b7f7c908a0e0481f">prev_size</a> = 0;</div>
+<div class="line"><span class="lineno">  556</span>      req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#acb69c014fb67502b59cd112d3758569f">prev_remain</a> = 0;</div>
+<div class="line"><span class="lineno">  557</span>    }</div>
+<div class="line"><span class="lineno">  558</span>  <span class="keywordflow">if</span> (curr_iov &lt; req-&gt;iovec_count)</div>
+<div class="line"><span class="lineno">  559</span>    {</div>
+<div class="line"><span class="lineno">  560</span>      uint64_t next_sz = *(uint64_t *)(((uint8_t *)req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_base)</div>
+<div class="line"><span class="lineno">  561</span>                                       + curr_iov_off);</div>
+<div class="line"><span class="lineno">  562</span>      <span class="keywordflow">if</span> ((req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_len &gt; curr_iov_off) &amp;&amp; next_sz)</div>
+<div class="line"><span class="lineno">  563</span>        {</div>
+<div class="line"><span class="lineno">  564</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a4aba582d3fcf1110aa8f272d5b038a3d">next_iov</a> = curr_iov;</div>
+<div class="line"><span class="lineno">  565</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a03abde14b48986b40d827b22e4ddfb2d">next_offset</a> = curr_iov_off;</div>
+<div class="line"><span class="lineno">  566</span>        }</div>
+<div class="line"><span class="lineno">  567</span>      <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  568</span>        {</div>
+<div class="line"><span class="lineno">  569</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a4aba582d3fcf1110aa8f272d5b038a3d">next_iov</a> = 0;</div>
+<div class="line"><span class="lineno">  570</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a03abde14b48986b40d827b22e4ddfb2d">next_offset</a> = 0;</div>
+<div class="line"><span class="lineno">  571</span>        }</div>
+<div class="line"><span class="lineno">  572</span>    }</div>
+<div class="line"><span class="lineno">  573</span> </div>
+<div class="line"><span class="lineno">  574</span>  <span class="keywordflow">if</span> (ok)</div>
+<div class="line"><span class="lineno">  575</span>    {</div>
+<div class="line"><span class="lineno">  576</span>      <span class="keywordflow">return</span> SUCCESS_CODE;</div>
+<div class="line"><span class="lineno">  577</span>    }</div>
+<div class="line"><span class="lineno">  578</span>  free (dest_ptr);</div>
+<div class="line"><span class="lineno">  579</span>  dest_ptr = NULL;</div>
+<div class="line"><span class="lineno">  580</span>  *dest = NULL;</div>
+<div class="line"><span class="lineno">  581</span>  *len = 0;</div>
+<div class="line"><span class="lineno">  582</span>  req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a4aba582d3fcf1110aa8f272d5b038a3d">next_iov</a> = 0;</div>
+<div class="line"><span class="lineno">  583</span>  req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a03abde14b48986b40d827b22e4ddfb2d">next_offset</a> = 0;</div>
+<div class="line"><span class="lineno">  584</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = curr_iov; i &lt; req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a1291bf32fbcafa3bb4b348578db09a9f">iovec_count</a>; ++i)</div>
 <div class="line"><span class="lineno">  585</span>    {</div>
-<div class="line"><span class="lineno">  586</span>      uint64_t next_sz = *(uint64_t *)(((uint8_t *)req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_base)</div>
-<div class="line"><span class="lineno">  587</span>                                       + curr_iov_off);</div>
-<div class="line"><span class="lineno">  588</span>      <span class="keywordflow">if</span> ((req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[curr_iov].iov_len &gt; curr_iov_off) &amp;&amp; next_sz)</div>
-<div class="line"><span class="lineno">  589</span>        {</div>
-<div class="line"><span class="lineno">  590</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a4aba582d3fcf1110aa8f272d5b038a3d">next_iov</a> = curr_iov;</div>
-<div class="line"><span class="lineno">  591</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a03abde14b48986b40d827b22e4ddfb2d">next_offset</a> = curr_iov_off;</div>
-<div class="line"><span class="lineno">  592</span>        }</div>
-<div class="line"><span class="lineno">  593</span>      <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  594</span>        {</div>
-<div class="line"><span class="lineno">  595</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a4aba582d3fcf1110aa8f272d5b038a3d">next_iov</a> = 0;</div>
-<div class="line"><span class="lineno">  596</span>          req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a03abde14b48986b40d827b22e4ddfb2d">next_offset</a> = 0;</div>
-<div class="line"><span class="lineno">  597</span>        }</div>
-<div class="line"><span class="lineno">  598</span>    }</div>
-<div class="line"><span class="lineno">  599</span> </div>
-<div class="line"><span class="lineno">  600</span>  <span class="keywordflow">if</span> (ok)</div>
-<div class="line"><span class="lineno">  601</span>    {</div>
-<div class="line"><span class="lineno">  602</span>      <span class="keywordflow">return</span> SUCCESS_CODE;</div>
-<div class="line"><span class="lineno">  603</span>    }</div>
-<div class="line"><span class="lineno">  604</span>  free (dest_ptr);</div>
-<div class="line"><span class="lineno">  605</span>  dest_ptr = NULL;</div>
-<div class="line"><span class="lineno">  606</span>  *dest = NULL;</div>
-<div class="line"><span class="lineno">  607</span>  *len = 0;</div>
-<div class="line"><span class="lineno">  608</span>  req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a4aba582d3fcf1110aa8f272d5b038a3d">next_iov</a> = 0;</div>
-<div class="line"><span class="lineno">  609</span>  req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a03abde14b48986b40d827b22e4ddfb2d">next_offset</a> = 0;</div>
-<div class="line"><span class="lineno">  610</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = curr_iov; i &lt; req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a1291bf32fbcafa3bb4b348578db09a9f">iovec_count</a>; ++i)</div>
-<div class="line"><span class="lineno">  611</span>    {</div>
-<div class="line"><span class="lineno">  612</span>      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = curr_iov_off; j &lt; req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[i].iov_len; ++j)</div>
-<div class="line"><span class="lineno">  613</span>        {</div>
-<div class="line"><span class="lineno">  614</span>          uint8_t foot = *((uint8_t *)req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[i].iov_base) + j;</div>
-<div class="line"><span class="lineno">  615</span>          <span class="keywordflow">if</span> (foot == 0)</div>
-<div class="line"><span class="lineno">  616</span>            {</div>
-<div class="line"><span class="lineno">  617</span>              req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a4aba582d3fcf1110aa8f272d5b038a3d">next_iov</a> = i;</div>
-<div class="line"><span class="lineno">  618</span>              req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a03abde14b48986b40d827b22e4ddfb2d">next_offset</a> = (j + 1) % req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[i].iov_len;</div>
-<div class="line"><span class="lineno">  619</span>              <span class="keywordflow">return</span> ERROR_CODE;</div>
-<div class="line"><span class="lineno">  620</span>            }</div>
-<div class="line"><span class="lineno">  621</span>        }</div>
-<div class="line"><span class="lineno">  622</span>    }</div>
-<div class="line"><span class="lineno">  623</span>  <span class="keywordflow">return</span> ERROR_CODE;</div>
-<div class="line"><span class="lineno">  624</span>}</div>
+<div class="line"><span class="lineno">  586</span>      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = curr_iov_off; j &lt; req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[i].iov_len; ++j)</div>
+<div class="line"><span class="lineno">  587</span>        {</div>
+<div class="line"><span class="lineno">  588</span>          uint8_t foot = *((uint8_t *)req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[i].iov_base) + j;</div>
+<div class="line"><span class="lineno">  589</span>          <span class="keywordflow">if</span> (foot == 0)</div>
+<div class="line"><span class="lineno">  590</span>            {</div>
+<div class="line"><span class="lineno">  591</span>              req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a4aba582d3fcf1110aa8f272d5b038a3d">next_iov</a> = i;</div>
+<div class="line"><span class="lineno">  592</span>              req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#a03abde14b48986b40d827b22e4ddfb2d">next_offset</a> = (j + 1) % req-&gt;<a class="code hl_variable" href="../../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd">iov</a>[i].iov_len;</div>
+<div class="line"><span class="lineno">  593</span>              <span class="keywordflow">return</span> ERROR_CODE;</div>
+<div class="line"><span class="lineno">  594</span>            }</div>
+<div class="line"><span class="lineno">  595</span>        }</div>
+<div class="line"><span class="lineno">  596</span>    }</div>
+<div class="line"><span class="lineno">  597</span>  <span class="keywordflow">return</span> ERROR_CODE;</div>
+<div class="line"><span class="lineno">  598</span>}</div>
 <div class="ttc" id="alow__saurion_8c_html_a3acffbd305ee72dcd4593c0d8af64a4f"><div class="ttname"><a href="../../de/d27/low__saurion_8c.html#a3acffbd305ee72dcd4593c0d8af64a4f">MIN</a></div><div class="ttdeci">#define MIN(a, b)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00045">low_saurion.c:45</a></div></div>
 <div class="ttc" id="alow__saurion_8c_html_a5fae4cad12b0ca469184e097624aea08"><div class="ttname"><a href="../../de/d27/low__saurion_8c.html#a5fae4cad12b0ca469184e097624aea08">ntohll</a></div><div class="ttdeci">static uint64_t ntohll(uint64_t value)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00078">low_saurion.c:78</a></div></div>
 <div class="ttc" id="astructrequest_html_a02dc8e759c5216e1b7f7c908a0e0481f"><div class="ttname"><a href="../../dc/d20/structrequest.html#a02dc8e759c5216e1b7f7c908a0e0481f">request::prev_size</a></div><div class="ttdeci">size_t prev_size</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00035">low_saurion.c:35</a></div></div>
@@ -852,119 +799,119 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>struct saurion* A pointer to the newly created <code>saurion</code> structure, or NULL if an error occurs. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l00733">733</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  734</span>{</div>
-<div class="line"><span class="lineno">  735</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  736</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../df/d32/structsaurion.html">saurion</a> *p = (<span class="keyword">struct </span><a class="code hl_struct" href="../../df/d32/structsaurion.html">saurion</a> *)malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../df/d32/structsaurion.html">saurion</a>));</div>
-<div class="line"><span class="lineno">  737</span>  <span class="keywordflow">if</span> (!p)</div>
-<div class="line"><span class="lineno">  738</span>    {</div>
-<div class="line"><span class="lineno">  739</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  740</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">  741</span>    }</div>
-<div class="line"><span class="lineno">  742</span>  <span class="keywordtype">int</span> ret = 0;</div>
-<div class="line"><span class="lineno">  743</span>  ret = pthread_mutex_init (&amp;p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>, NULL);</div>
-<div class="line"><span class="lineno">  744</span>  <span class="keywordflow">if</span> (ret)</div>
-<div class="line"><span class="lineno">  745</span>    {</div>
-<div class="line"><span class="lineno">  746</span>      free (p);</div>
-<div class="line"><span class="lineno">  747</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  748</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">  749</span>    }</div>
-<div class="line"><span class="lineno">  750</span>  ret = pthread_cond_init (&amp;p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#add5f25d5f709bda89fa5461eecdc2b2e">status_c</a>, NULL);</div>
-<div class="line"><span class="lineno">  751</span>  <span class="keywordflow">if</span> (ret)</div>
-<div class="line"><span class="lineno">  752</span>    {</div>
-<div class="line"><span class="lineno">  753</span>      free (p);</div>
-<div class="line"><span class="lineno">  754</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  755</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">  756</span>    }</div>
-<div class="line"><span class="lineno">  757</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a></div>
-<div class="line"><span class="lineno">  758</span>      = (pthread_mutex_t *)malloc (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a> * <span class="keyword">sizeof</span> (pthread_mutex_t));</div>
-<div class="line"><span class="lineno">  759</span>  <span class="keywordflow">if</span> (!p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>)</div>
-<div class="line"><span class="lineno">  760</span>    {</div>
-<div class="line"><span class="lineno">  761</span>      free (p);</div>
-<div class="line"><span class="lineno">  762</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  763</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">  764</span>    }</div>
-<div class="line"><span class="lineno">  765</span>  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a>; ++i)</div>
-<div class="line"><span class="lineno">  766</span>    {</div>
-<div class="line"><span class="lineno">  767</span>      pthread_mutex_init (&amp;(p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>[i]), NULL);</div>
-<div class="line"><span class="lineno">  768</span>    }</div>
-<div class="line"><span class="lineno">  769</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ae85c8eed456efd00dcc93d005b0ad99c">ss</a> = 0;</div>
-<div class="line"><span class="lineno">  770</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a> = (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a> &lt; 2 ? 2 : <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a>);</div>
-<div class="line"><span class="lineno">  771</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a> = (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a> &gt; NUM_CORES ? NUM_CORES : <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a>);</div>
-<div class="line"><span class="lineno">  772</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a> = <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a>;</div>
-<div class="line"><span class="lineno">  773</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a342abf92b861ebc82e50349fe31246e2">status</a> = 0;</div>
-<div class="line"><span class="lineno">  774</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a63c38a9dc703180b628935d72236318f">list</a> = NULL;</div>
-<div class="line"><span class="lineno">  775</span>  p-&gt;cb.on_connected = NULL;</div>
-<div class="line"><span class="lineno">  776</span>  p-&gt;cb.on_connected_arg = NULL;</div>
-<div class="line"><span class="lineno">  777</span>  p-&gt;cb.on_readed = NULL;</div>
-<div class="line"><span class="lineno">  778</span>  p-&gt;cb.on_readed_arg = NULL;</div>
-<div class="line"><span class="lineno">  779</span>  p-&gt;cb.on_wrote = NULL;</div>
-<div class="line"><span class="lineno">  780</span>  p-&gt;cb.on_wrote_arg = NULL;</div>
-<div class="line"><span class="lineno">  781</span>  p-&gt;cb.on_closed = NULL;</div>
-<div class="line"><span class="lineno">  782</span>  p-&gt;cb.on_closed_arg = NULL;</div>
-<div class="line"><span class="lineno">  783</span>  p-&gt;cb.on_error = NULL;</div>
-<div class="line"><span class="lineno">  784</span>  p-&gt;cb.on_error_arg = NULL;</div>
-<div class="line"><span class="lineno">  785</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a2742eddc30d4e4409b9f1a98cf7eb054">next</a> = 0;</div>
-<div class="line"><span class="lineno">  786</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a> = (<span class="keywordtype">int</span> *)malloc (<span class="keyword">sizeof</span> (<span class="keywordtype">int</span>) * p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>);</div>
-<div class="line"><span class="lineno">  787</span>  <span class="keywordflow">if</span> (!p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>)</div>
-<div class="line"><span class="lineno">  788</span>    {</div>
-<div class="line"><span class="lineno">  789</span>      free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>);</div>
-<div class="line"><span class="lineno">  790</span>      free (p);</div>
-<div class="line"><span class="lineno">  791</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  792</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">  793</span>    }</div>
-<div class="line"><span class="lineno">  794</span>  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++i)</div>
-<div class="line"><span class="lineno">  795</span>    {</div>
-<div class="line"><span class="lineno">  796</span>      p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[i] = eventfd (0, EFD_NONBLOCK);</div>
-<div class="line"><span class="lineno">  797</span>      <span class="keywordflow">if</span> (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[i] == ERROR_CODE)</div>
-<div class="line"><span class="lineno">  798</span>        {</div>
-<div class="line"><span class="lineno">  799</span>          <span class="keywordflow">for</span> (uint32_t j = 0; j &lt; i; ++j)</div>
-<div class="line"><span class="lineno">  800</span>            {</div>
-<div class="line"><span class="lineno">  801</span>              close (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[j]);</div>
-<div class="line"><span class="lineno">  802</span>            }</div>
-<div class="line"><span class="lineno">  803</span>          free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>);</div>
-<div class="line"><span class="lineno">  804</span>          free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>);</div>
-<div class="line"><span class="lineno">  805</span>          free (p);</div>
-<div class="line"><span class="lineno">  806</span>          LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  807</span>          <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">  808</span>        }</div>
-<div class="line"><span class="lineno">  809</span>    }</div>
-<div class="line"><span class="lineno">  810</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a></div>
-<div class="line"><span class="lineno">  811</span>      = (<span class="keyword">struct </span>io_uring *)malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> io_uring) * p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>);</div>
-<div class="line"><span class="lineno">  812</span>  <span class="keywordflow">if</span> (!p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a>)</div>
-<div class="line"><span class="lineno">  813</span>    {</div>
-<div class="line"><span class="lineno">  814</span>      <span class="keywordflow">for</span> (uint32_t j = 0; j &lt; p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++j)</div>
-<div class="line"><span class="lineno">  815</span>        {</div>
-<div class="line"><span class="lineno">  816</span>          close (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[j]);</div>
-<div class="line"><span class="lineno">  817</span>        }</div>
-<div class="line"><span class="lineno">  818</span>      free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>);</div>
-<div class="line"><span class="lineno">  819</span>      free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>);</div>
-<div class="line"><span class="lineno">  820</span>      free (p);</div>
-<div class="line"><span class="lineno">  821</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  822</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">  823</span>    }</div>
-<div class="line"><span class="lineno">  824</span>  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++i)</div>
-<div class="line"><span class="lineno">  825</span>    {</div>
-<div class="line"><span class="lineno">  826</span>      memset (&amp;p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a>[i], 0, sizeof (<span class="keyword">struct</span> io_uring));</div>
-<div class="line"><span class="lineno">  827</span>      ret = io_uring_queue_init (SAURION_RING_SIZE, &amp;p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a>[i], 0);</div>
-<div class="line"><span class="lineno">  828</span>      <span class="keywordflow">if</span> (ret)</div>
-<div class="line"><span class="lineno">  829</span>        {</div>
-<div class="line"><span class="lineno">  830</span>          <span class="keywordflow">for</span> (uint32_t j = 0; j &lt; p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++j)</div>
-<div class="line"><span class="lineno">  831</span>            {</div>
-<div class="line"><span class="lineno">  832</span>              close (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[j]);</div>
-<div class="line"><span class="lineno">  833</span>            }</div>
-<div class="line"><span class="lineno">  834</span>          free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>);</div>
-<div class="line"><span class="lineno">  835</span>          free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a>);</div>
-<div class="line"><span class="lineno">  836</span>          free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>);</div>
-<div class="line"><span class="lineno">  837</span>          free (p);</div>
-<div class="line"><span class="lineno">  838</span>          LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  839</span>          <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">  840</span>        }</div>
-<div class="line"><span class="lineno">  841</span>    }</div>
-<div class="line"><span class="lineno">  842</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aafa9e10932a29c4118c0eef0f7bc1ae1">pool</a> = <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#gabca97950848f08a7f9111e5844225ac0">threadpool_create</a> (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>);</div>
-<div class="line"><span class="lineno">  843</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  844</span>  <span class="keywordflow">return</span> p;</div>
-<div class="line"><span class="lineno">  845</span>}</div>
+<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l00707">707</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  708</span>{</div>
+<div class="line"><span class="lineno">  709</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  710</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../df/d32/structsaurion.html">saurion</a> *p = (<span class="keyword">struct </span><a class="code hl_struct" href="../../df/d32/structsaurion.html">saurion</a> *)malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../df/d32/structsaurion.html">saurion</a>));</div>
+<div class="line"><span class="lineno">  711</span>  <span class="keywordflow">if</span> (!p)</div>
+<div class="line"><span class="lineno">  712</span>    {</div>
+<div class="line"><span class="lineno">  713</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  714</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">  715</span>    }</div>
+<div class="line"><span class="lineno">  716</span>  <span class="keywordtype">int</span> ret = 0;</div>
+<div class="line"><span class="lineno">  717</span>  ret = pthread_mutex_init (&amp;p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>, NULL);</div>
+<div class="line"><span class="lineno">  718</span>  <span class="keywordflow">if</span> (ret)</div>
+<div class="line"><span class="lineno">  719</span>    {</div>
+<div class="line"><span class="lineno">  720</span>      free (p);</div>
+<div class="line"><span class="lineno">  721</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  722</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">  723</span>    }</div>
+<div class="line"><span class="lineno">  724</span>  ret = pthread_cond_init (&amp;p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#add5f25d5f709bda89fa5461eecdc2b2e">status_c</a>, NULL);</div>
+<div class="line"><span class="lineno">  725</span>  <span class="keywordflow">if</span> (ret)</div>
+<div class="line"><span class="lineno">  726</span>    {</div>
+<div class="line"><span class="lineno">  727</span>      free (p);</div>
+<div class="line"><span class="lineno">  728</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  729</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">  730</span>    }</div>
+<div class="line"><span class="lineno">  731</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a></div>
+<div class="line"><span class="lineno">  732</span>      = (pthread_mutex_t *)malloc (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a> * <span class="keyword">sizeof</span> (pthread_mutex_t));</div>
+<div class="line"><span class="lineno">  733</span>  <span class="keywordflow">if</span> (!p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>)</div>
+<div class="line"><span class="lineno">  734</span>    {</div>
+<div class="line"><span class="lineno">  735</span>      free (p);</div>
+<div class="line"><span class="lineno">  736</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  737</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">  738</span>    }</div>
+<div class="line"><span class="lineno">  739</span>  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a>; ++i)</div>
+<div class="line"><span class="lineno">  740</span>    {</div>
+<div class="line"><span class="lineno">  741</span>      pthread_mutex_init (&amp;(p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>[i]), NULL);</div>
+<div class="line"><span class="lineno">  742</span>    }</div>
+<div class="line"><span class="lineno">  743</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ae85c8eed456efd00dcc93d005b0ad99c">ss</a> = 0;</div>
+<div class="line"><span class="lineno">  744</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a> = (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a> &lt; 2 ? 2 : <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a>);</div>
+<div class="line"><span class="lineno">  745</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a> = (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a> &gt; NUM_CORES ? NUM_CORES : <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a>);</div>
+<div class="line"><span class="lineno">  746</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a> = <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a>;</div>
+<div class="line"><span class="lineno">  747</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a342abf92b861ebc82e50349fe31246e2">status</a> = 0;</div>
+<div class="line"><span class="lineno">  748</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a63c38a9dc703180b628935d72236318f">list</a> = NULL;</div>
+<div class="line"><span class="lineno">  749</span>  p-&gt;cb.on_connected = NULL;</div>
+<div class="line"><span class="lineno">  750</span>  p-&gt;cb.on_connected_arg = NULL;</div>
+<div class="line"><span class="lineno">  751</span>  p-&gt;cb.on_readed = NULL;</div>
+<div class="line"><span class="lineno">  752</span>  p-&gt;cb.on_readed_arg = NULL;</div>
+<div class="line"><span class="lineno">  753</span>  p-&gt;cb.on_wrote = NULL;</div>
+<div class="line"><span class="lineno">  754</span>  p-&gt;cb.on_wrote_arg = NULL;</div>
+<div class="line"><span class="lineno">  755</span>  p-&gt;cb.on_closed = NULL;</div>
+<div class="line"><span class="lineno">  756</span>  p-&gt;cb.on_closed_arg = NULL;</div>
+<div class="line"><span class="lineno">  757</span>  p-&gt;cb.on_error = NULL;</div>
+<div class="line"><span class="lineno">  758</span>  p-&gt;cb.on_error_arg = NULL;</div>
+<div class="line"><span class="lineno">  759</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a2742eddc30d4e4409b9f1a98cf7eb054">next</a> = 0;</div>
+<div class="line"><span class="lineno">  760</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a> = (<span class="keywordtype">int</span> *)malloc (<span class="keyword">sizeof</span> (<span class="keywordtype">int</span>) * p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>);</div>
+<div class="line"><span class="lineno">  761</span>  <span class="keywordflow">if</span> (!p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>)</div>
+<div class="line"><span class="lineno">  762</span>    {</div>
+<div class="line"><span class="lineno">  763</span>      free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>);</div>
+<div class="line"><span class="lineno">  764</span>      free (p);</div>
+<div class="line"><span class="lineno">  765</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  766</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">  767</span>    }</div>
+<div class="line"><span class="lineno">  768</span>  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++i)</div>
+<div class="line"><span class="lineno">  769</span>    {</div>
+<div class="line"><span class="lineno">  770</span>      p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[i] = eventfd (0, EFD_NONBLOCK);</div>
+<div class="line"><span class="lineno">  771</span>      <span class="keywordflow">if</span> (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[i] == ERROR_CODE)</div>
+<div class="line"><span class="lineno">  772</span>        {</div>
+<div class="line"><span class="lineno">  773</span>          <span class="keywordflow">for</span> (uint32_t j = 0; j &lt; i; ++j)</div>
+<div class="line"><span class="lineno">  774</span>            {</div>
+<div class="line"><span class="lineno">  775</span>              close (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[j]);</div>
+<div class="line"><span class="lineno">  776</span>            }</div>
+<div class="line"><span class="lineno">  777</span>          free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>);</div>
+<div class="line"><span class="lineno">  778</span>          free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>);</div>
+<div class="line"><span class="lineno">  779</span>          free (p);</div>
+<div class="line"><span class="lineno">  780</span>          LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  781</span>          <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">  782</span>        }</div>
+<div class="line"><span class="lineno">  783</span>    }</div>
+<div class="line"><span class="lineno">  784</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a></div>
+<div class="line"><span class="lineno">  785</span>      = (<span class="keyword">struct </span>io_uring *)malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> io_uring) * p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>);</div>
+<div class="line"><span class="lineno">  786</span>  <span class="keywordflow">if</span> (!p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a>)</div>
+<div class="line"><span class="lineno">  787</span>    {</div>
+<div class="line"><span class="lineno">  788</span>      <span class="keywordflow">for</span> (uint32_t j = 0; j &lt; p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++j)</div>
+<div class="line"><span class="lineno">  789</span>        {</div>
+<div class="line"><span class="lineno">  790</span>          close (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[j]);</div>
+<div class="line"><span class="lineno">  791</span>        }</div>
+<div class="line"><span class="lineno">  792</span>      free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>);</div>
+<div class="line"><span class="lineno">  793</span>      free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>);</div>
+<div class="line"><span class="lineno">  794</span>      free (p);</div>
+<div class="line"><span class="lineno">  795</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  796</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">  797</span>    }</div>
+<div class="line"><span class="lineno">  798</span>  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++i)</div>
+<div class="line"><span class="lineno">  799</span>    {</div>
+<div class="line"><span class="lineno">  800</span>      memset (&amp;p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a>[i], 0, sizeof (<span class="keyword">struct</span> io_uring));</div>
+<div class="line"><span class="lineno">  801</span>      ret = io_uring_queue_init (SAURION_RING_SIZE, &amp;p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a>[i], 0);</div>
+<div class="line"><span class="lineno">  802</span>      <span class="keywordflow">if</span> (ret)</div>
+<div class="line"><span class="lineno">  803</span>        {</div>
+<div class="line"><span class="lineno">  804</span>          <span class="keywordflow">for</span> (uint32_t j = 0; j &lt; p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++j)</div>
+<div class="line"><span class="lineno">  805</span>            {</div>
+<div class="line"><span class="lineno">  806</span>              close (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[j]);</div>
+<div class="line"><span class="lineno">  807</span>            }</div>
+<div class="line"><span class="lineno">  808</span>          free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>);</div>
+<div class="line"><span class="lineno">  809</span>          free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a>);</div>
+<div class="line"><span class="lineno">  810</span>          free (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>);</div>
+<div class="line"><span class="lineno">  811</span>          free (p);</div>
+<div class="line"><span class="lineno">  812</span>          LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  813</span>          <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">  814</span>        }</div>
+<div class="line"><span class="lineno">  815</span>    }</div>
+<div class="line"><span class="lineno">  816</span>  p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aafa9e10932a29c4118c0eef0f7bc1ae1">pool</a> = <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#gabca97950848f08a7f9111e5844225ac0">threadpool_create</a> (p-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>);</div>
+<div class="line"><span class="lineno">  817</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  818</span>  <span class="keywordflow">return</span> p;</div>
+<div class="line"><span class="lineno">  819</span>}</div>
 <div class="ttc" id="agroup__ThreadPool_html_gabca97950848f08a7f9111e5844225ac0"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#gabca97950848f08a7f9111e5844225ac0">threadpool_create</a></div><div class="ttdeci">struct threadpool * threadpool_create(size_t num_threads)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00032">threadpool.c:32</a></div></div>
 <div class="ttc" id="alow__saurion_8h_html_a7001c0d6b3bf1fa114a0d230c6190e3d"><div class="ttname"><a href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a></div><div class="ttdeci">uint32_t n_threads</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00019">low_saurion.h:19</a></div></div>
 <div class="ttc" id="astructsaurion_html_a08e1b7aa083a0d311658ff7072ae7a46"><div class="ttname"><a href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">saurion::efds</a></div><div class="ttdeci">int * efds</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00157">low_saurion.h:157</a></div></div>
@@ -1006,36 +953,36 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l01085">1085</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno"> 1086</span>{</div>
-<div class="line"><span class="lineno"> 1087</span>  pthread_mutex_lock (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
-<div class="line"><span class="lineno"> 1088</span>  <span class="keywordflow">while</span> (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a342abf92b861ebc82e50349fe31246e2">status</a> &gt; 0)</div>
-<div class="line"><span class="lineno"> 1089</span>    {</div>
-<div class="line"><span class="lineno"> 1090</span>      pthread_cond_wait (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#add5f25d5f709bda89fa5461eecdc2b2e">status_c</a>, &amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
-<div class="line"><span class="lineno"> 1091</span>    }</div>
-<div class="line"><span class="lineno"> 1092</span>  pthread_mutex_unlock (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
-<div class="line"><span class="lineno"> 1093</span>  <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga62a3d2a1dee82e1c7705bc7fc1c2021d">threadpool_destroy</a> (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aafa9e10932a29c4118c0eef0f7bc1ae1">pool</a>);</div>
-<div class="line"><span class="lineno"> 1094</span>  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++i)</div>
-<div class="line"><span class="lineno"> 1095</span>    {</div>
-<div class="line"><span class="lineno"> 1096</span>      io_uring_queue_exit (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a>[i]);</div>
-<div class="line"><span class="lineno"> 1097</span>      pthread_mutex_destroy (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>[i]);</div>
-<div class="line"><span class="lineno"> 1098</span>    }</div>
-<div class="line"><span class="lineno"> 1099</span>  free (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>);</div>
-<div class="line"><span class="lineno"> 1100</span>  <a class="code hl_function" href="../../d3/d32/linked__list_8c.html#ac33c30e895caddc11181b50eca0ab735">list_free</a> (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a63c38a9dc703180b628935d72236318f">list</a>);</div>
-<div class="line"><span class="lineno"> 1101</span>  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++i)</div>
-<div class="line"><span class="lineno"> 1102</span>    {</div>
-<div class="line"><span class="lineno"> 1103</span>      close (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[i]);</div>
-<div class="line"><span class="lineno"> 1104</span>    }</div>
-<div class="line"><span class="lineno"> 1105</span>  free (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>);</div>
-<div class="line"><span class="lineno"> 1106</span>  <span class="keywordflow">if</span> (!s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ae85c8eed456efd00dcc93d005b0ad99c">ss</a>)</div>
-<div class="line"><span class="lineno"> 1107</span>    {</div>
-<div class="line"><span class="lineno"> 1108</span>      close (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ae85c8eed456efd00dcc93d005b0ad99c">ss</a>);</div>
-<div class="line"><span class="lineno"> 1109</span>    }</div>
-<div class="line"><span class="lineno"> 1110</span>  free (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a>);</div>
-<div class="line"><span class="lineno"> 1111</span>  pthread_mutex_destroy (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
-<div class="line"><span class="lineno"> 1112</span>  pthread_cond_destroy (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#add5f25d5f709bda89fa5461eecdc2b2e">status_c</a>);</div>
-<div class="line"><span class="lineno"> 1113</span>  free (s);</div>
-<div class="line"><span class="lineno"> 1114</span>}</div>
+<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l01059">1059</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1060</span>{</div>
+<div class="line"><span class="lineno"> 1061</span>  pthread_mutex_lock (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
+<div class="line"><span class="lineno"> 1062</span>  <span class="keywordflow">while</span> (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a342abf92b861ebc82e50349fe31246e2">status</a> &gt; 0)</div>
+<div class="line"><span class="lineno"> 1063</span>    {</div>
+<div class="line"><span class="lineno"> 1064</span>      pthread_cond_wait (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#add5f25d5f709bda89fa5461eecdc2b2e">status_c</a>, &amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
+<div class="line"><span class="lineno"> 1065</span>    }</div>
+<div class="line"><span class="lineno"> 1066</span>  pthread_mutex_unlock (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
+<div class="line"><span class="lineno"> 1067</span>  <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga62a3d2a1dee82e1c7705bc7fc1c2021d">threadpool_destroy</a> (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aafa9e10932a29c4118c0eef0f7bc1ae1">pool</a>);</div>
+<div class="line"><span class="lineno"> 1068</span>  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++i)</div>
+<div class="line"><span class="lineno"> 1069</span>    {</div>
+<div class="line"><span class="lineno"> 1070</span>      io_uring_queue_exit (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a>[i]);</div>
+<div class="line"><span class="lineno"> 1071</span>      pthread_mutex_destroy (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>[i]);</div>
+<div class="line"><span class="lineno"> 1072</span>    }</div>
+<div class="line"><span class="lineno"> 1073</span>  free (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030">m_rings</a>);</div>
+<div class="line"><span class="lineno"> 1074</span>  <a class="code hl_function" href="../../d3/d32/linked__list_8c.html#ac33c30e895caddc11181b50eca0ab735">list_free</a> (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a63c38a9dc703180b628935d72236318f">list</a>);</div>
+<div class="line"><span class="lineno"> 1075</span>  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++i)</div>
+<div class="line"><span class="lineno"> 1076</span>    {</div>
+<div class="line"><span class="lineno"> 1077</span>      close (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[i]);</div>
+<div class="line"><span class="lineno"> 1078</span>    }</div>
+<div class="line"><span class="lineno"> 1079</span>  free (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>);</div>
+<div class="line"><span class="lineno"> 1080</span>  <span class="keywordflow">if</span> (!s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ae85c8eed456efd00dcc93d005b0ad99c">ss</a>)</div>
+<div class="line"><span class="lineno"> 1081</span>    {</div>
+<div class="line"><span class="lineno"> 1082</span>      close (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ae85c8eed456efd00dcc93d005b0ad99c">ss</a>);</div>
+<div class="line"><span class="lineno"> 1083</span>    }</div>
+<div class="line"><span class="lineno"> 1084</span>  free (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a>);</div>
+<div class="line"><span class="lineno"> 1085</span>  pthread_mutex_destroy (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
+<div class="line"><span class="lineno"> 1086</span>  pthread_cond_destroy (&amp;s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#add5f25d5f709bda89fa5461eecdc2b2e">status_c</a>);</div>
+<div class="line"><span class="lineno"> 1087</span>  free (s);</div>
+<div class="line"><span class="lineno"> 1088</span>}</div>
 <div class="ttc" id="agroup__ThreadPool_html_ga62a3d2a1dee82e1c7705bc7fc1c2021d"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#ga62a3d2a1dee82e1c7705bc7fc1c2021d">threadpool_destroy</a></div><div class="ttdeci">void threadpool_destroy(struct threadpool *pool)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00274">threadpool.c:274</a></div></div>
 <div class="ttc" id="alinked__list_8c_html_ac33c30e895caddc11181b50eca0ab735"><div class="ttname"><a href="../../d3/d32/linked__list_8c.html#ac33c30e895caddc11181b50eca0ab735">list_free</a></div><div class="ttdeci">void list_free(struct Node **head)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d32/linked__list_8c_source.html#l00138">linked_list.c:138</a></div></div>
 </div><!-- fragment -->
@@ -1084,12 +1031,75 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l01117">1117</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno"> 1118</span>{</div>
-<div class="line"><span class="lineno"> 1119</span>  <a class="code hl_function" href="../../de/d27/low__saurion_8c.html#a39042ff39576b4db8db514acd6e9a224">add_write</a> (s, fd, msg, <a class="code hl_function" href="../../de/d27/low__saurion_8c.html#a7919e576d3fdccbefb75bee92abd5cc3">next</a> (s));</div>
-<div class="line"><span class="lineno"> 1120</span>}</div>
-<div class="ttc" id="alow__saurion_8c_html_a39042ff39576b4db8db514acd6e9a224"><div class="ttname"><a href="../../de/d27/low__saurion_8c.html#a39042ff39576b4db8db514acd6e9a224">add_write</a></div><div class="ttdeci">static void add_write(struct saurion *const s, int fd, const char *const str, const int sel)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00402">low_saurion.c:402</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l01091">1091</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1092</span>{</div>
+<div class="line"><span class="lineno"> 1093</span>  <a class="code hl_function" href="../../de/d27/low__saurion_8c.html#a39042ff39576b4db8db514acd6e9a224">add_write</a> (s, fd, msg, <a class="code hl_function" href="../../de/d27/low__saurion_8c.html#a7919e576d3fdccbefb75bee92abd5cc3">next</a> (s));</div>
+<div class="line"><span class="lineno"> 1094</span>}</div>
+<div class="ttc" id="alow__saurion_8c_html_a39042ff39576b4db8db514acd6e9a224"><div class="ttname"><a href="../../de/d27/low__saurion_8c.html#a39042ff39576b4db8db514acd6e9a224">add_write</a></div><div class="ttdeci">static void add_write(struct saurion *const s, int fd, const char *const str, const int sel)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00376">low_saurion.c:376</a></div></div>
 <div class="ttc" id="alow__saurion_8c_html_a7919e576d3fdccbefb75bee92abd5cc3"><div class="ttname"><a href="../../de/d27/low__saurion_8c.html#a7919e576d3fdccbefb75bee92abd5cc3">next</a></div><div class="ttdeci">static uint32_t next(struct saurion *s)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00058">low_saurion.c:58</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ga3944d39e091afbe401a9dcbfe526e97f" name="ga3944d39e091afbe401a9dcbfe526e97f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3944d39e091afbe401a9dcbfe526e97f">&#9670;&nbsp;</a></span>saurion_set_socket()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int saurion_set_socket </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a socket. </p>
+<p >Creates and sets a socket, ready for saurion configuration.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>port </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>result of socket creation. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l00670">670</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  671</span>{</div>
+<div class="line"><span class="lineno">  672</span>  <span class="keywordtype">int</span> sock = 0;</div>
+<div class="line"><span class="lineno">  673</span>  <span class="keyword">struct </span>sockaddr_in srv_addr;</div>
+<div class="line"><span class="lineno">  674</span> </div>
+<div class="line"><span class="lineno">  675</span>  sock = socket (PF_INET, SOCK_STREAM, 0);</div>
+<div class="line"><span class="lineno">  676</span>  <span class="keywordflow">if</span> (sock &lt; 1)</div>
+<div class="line"><span class="lineno">  677</span>    {</div>
+<div class="line"><span class="lineno">  678</span>      <span class="keywordflow">return</span> ERROR_CODE;</div>
+<div class="line"><span class="lineno">  679</span>    }</div>
+<div class="line"><span class="lineno">  680</span> </div>
+<div class="line"><span class="lineno">  681</span>  <span class="keywordtype">int</span> enable = 1;</div>
+<div class="line"><span class="lineno">  682</span>  <span class="keywordflow">if</span> (setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, &amp;enable, <span class="keyword">sizeof</span> (<span class="keywordtype">int</span>)) &lt; 0)</div>
+<div class="line"><span class="lineno">  683</span>    {</div>
+<div class="line"><span class="lineno">  684</span>      <span class="keywordflow">return</span> ERROR_CODE;</div>
+<div class="line"><span class="lineno">  685</span>    }</div>
+<div class="line"><span class="lineno">  686</span> </div>
+<div class="line"><span class="lineno">  687</span>  memset (&amp;srv_addr, 0, <span class="keyword">sizeof</span> (srv_addr));</div>
+<div class="line"><span class="lineno">  688</span>  srv_addr.sin_family = AF_INET;</div>
+<div class="line"><span class="lineno">  689</span>  srv_addr.sin_port = htons (p);</div>
+<div class="line"><span class="lineno">  690</span>  srv_addr.sin_addr.s_addr = htonl (INADDR_ANY);</div>
+<div class="line"><span class="lineno">  691</span> </div>
+<div class="line"><span class="lineno">  692</span>  <span class="keywordflow">if</span> (bind (sock, (<span class="keyword">const</span> <span class="keyword">struct</span> sockaddr *)&amp;srv_addr, <span class="keyword">sizeof</span> (srv_addr)) &lt; 0)</div>
+<div class="line"><span class="lineno">  693</span>    {</div>
+<div class="line"><span class="lineno">  694</span>      <span class="keywordflow">return</span> ERROR_CODE;</div>
+<div class="line"><span class="lineno">  695</span>    }</div>
+<div class="line"><span class="lineno">  696</span> </div>
+<div class="line"><span class="lineno">  697</span>  <span class="keywordflow">if</span> (listen (sock, ACCEPT_QUEUE) &lt; 0)</div>
+<div class="line"><span class="lineno">  698</span>    {</div>
+<div class="line"><span class="lineno">  699</span>      <span class="keywordflow">return</span> ERROR_CODE;</div>
+<div class="line"><span class="lineno">  700</span>    }</div>
+<div class="line"><span class="lineno">  701</span> </div>
+<div class="line"><span class="lineno">  702</span>  <span class="keywordflow">return</span> sock;</div>
+<div class="line"><span class="lineno">  703</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1119,35 +1129,35 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>int Returns 0 on success, or 1 if an error occurs. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l01044">1044</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno"> 1045</span>{</div>
-<div class="line"><span class="lineno"> 1046</span>  pthread_mutex_init (&amp;<a class="code hl_variable" href="../../de/d27/low__saurion_8c.html#adcba6f6935d1807493e731cc5e79a661">print_mutex</a>, NULL);</div>
-<div class="line"><span class="lineno"> 1047</span>  <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga70990f8c3c2931d44bb1fbdd07eed7d3">threadpool_init</a> (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aafa9e10932a29c4118c0eef0f7bc1ae1">pool</a>);</div>
-<div class="line"><span class="lineno"> 1048</span>  <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga69a5aa61497402d6ddb6425e0ace7f60">threadpool_add</a> (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aafa9e10932a29c4118c0eef0f7bc1ae1">pool</a>, <a class="code hl_function" href="../../de/d27/low__saurion_8c.html#a30bb7d15272a20fb689bf9fada1737fa">saurion_worker_master</a>, s);</div>
-<div class="line"><span class="lineno"> 1049</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../df/df5/structsaurion__wrapper.html">saurion_wrapper</a> *<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a> = NULL;</div>
-<div class="line"><span class="lineno"> 1050</span>  <span class="keywordflow">for</span> (uint32_t i = 1; i &lt; <a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++i)</div>
-<div class="line"><span class="lineno"> 1051</span>    {</div>
-<div class="line"><span class="lineno"> 1052</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a> = (<span class="keyword">struct </span><a class="code hl_struct" href="../../df/df5/structsaurion__wrapper.html">saurion_wrapper</a> *)malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../df/df5/structsaurion__wrapper.html">saurion_wrapper</a>));</div>
-<div class="line"><span class="lineno"> 1053</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a>)</div>
-<div class="line"><span class="lineno"> 1054</span>        {</div>
-<div class="line"><span class="lineno"> 1055</span>          <span class="keywordflow">return</span> ERROR_CODE;</div>
-<div class="line"><span class="lineno"> 1056</span>        }</div>
-<div class="line"><span class="lineno"> 1057</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a>-&gt;s = <a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>;</div>
-<div class="line"><span class="lineno"> 1058</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a>-&gt;sel = i;</div>
-<div class="line"><span class="lineno"> 1059</span>      <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga69a5aa61497402d6ddb6425e0ace7f60">threadpool_add</a> (<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aafa9e10932a29c4118c0eef0f7bc1ae1">pool</a>, <a class="code hl_function" href="../../de/d27/low__saurion_8c.html#a70abc87ee43c0e1b7059ec16e975afca">saurion_worker_slave</a>, <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a>);</div>
-<div class="line"><span class="lineno"> 1060</span>    }</div>
-<div class="line"><span class="lineno"> 1061</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
-<div class="line"><span class="lineno"> 1062</span>  <span class="keywordflow">while</span> (<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a342abf92b861ebc82e50349fe31246e2">status</a> &lt; (<span class="keywordtype">int</span>)<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>)</div>
-<div class="line"><span class="lineno"> 1063</span>    {</div>
-<div class="line"><span class="lineno"> 1064</span>      pthread_cond_wait (&amp;<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#add5f25d5f709bda89fa5461eecdc2b2e">status_c</a>, &amp;<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
-<div class="line"><span class="lineno"> 1065</span>    }</div>
-<div class="line"><span class="lineno"> 1066</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
-<div class="line"><span class="lineno"> 1067</span>  <span class="keywordflow">return</span> SUCCESS_CODE;</div>
-<div class="line"><span class="lineno"> 1068</span>}</div>
+<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l01018">1018</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1019</span>{</div>
+<div class="line"><span class="lineno"> 1020</span>  pthread_mutex_init (&amp;<a class="code hl_variable" href="../../de/d27/low__saurion_8c.html#adcba6f6935d1807493e731cc5e79a661">print_mutex</a>, NULL);</div>
+<div class="line"><span class="lineno"> 1021</span>  <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga70990f8c3c2931d44bb1fbdd07eed7d3">threadpool_init</a> (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aafa9e10932a29c4118c0eef0f7bc1ae1">pool</a>);</div>
+<div class="line"><span class="lineno"> 1022</span>  <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga69a5aa61497402d6ddb6425e0ace7f60">threadpool_add</a> (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aafa9e10932a29c4118c0eef0f7bc1ae1">pool</a>, <a class="code hl_function" href="../../de/d27/low__saurion_8c.html#a30bb7d15272a20fb689bf9fada1737fa">saurion_worker_master</a>, s);</div>
+<div class="line"><span class="lineno"> 1023</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../df/df5/structsaurion__wrapper.html">saurion_wrapper</a> *<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a> = NULL;</div>
+<div class="line"><span class="lineno"> 1024</span>  <span class="keywordflow">for</span> (uint32_t i = 1; i &lt; <a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++i)</div>
+<div class="line"><span class="lineno"> 1025</span>    {</div>
+<div class="line"><span class="lineno"> 1026</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a> = (<span class="keyword">struct </span><a class="code hl_struct" href="../../df/df5/structsaurion__wrapper.html">saurion_wrapper</a> *)malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../df/df5/structsaurion__wrapper.html">saurion_wrapper</a>));</div>
+<div class="line"><span class="lineno"> 1027</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a>)</div>
+<div class="line"><span class="lineno"> 1028</span>        {</div>
+<div class="line"><span class="lineno"> 1029</span>          <span class="keywordflow">return</span> ERROR_CODE;</div>
+<div class="line"><span class="lineno"> 1030</span>        }</div>
+<div class="line"><span class="lineno"> 1031</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a>-&gt;s = <a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>;</div>
+<div class="line"><span class="lineno"> 1032</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a>-&gt;sel = i;</div>
+<div class="line"><span class="lineno"> 1033</span>      <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga69a5aa61497402d6ddb6425e0ace7f60">threadpool_add</a> (<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aafa9e10932a29c4118c0eef0f7bc1ae1">pool</a>, <a class="code hl_function" href="../../de/d27/low__saurion_8c.html#a70abc87ee43c0e1b7059ec16e975afca">saurion_worker_slave</a>, <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a>);</div>
+<div class="line"><span class="lineno"> 1034</span>    }</div>
+<div class="line"><span class="lineno"> 1035</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
+<div class="line"><span class="lineno"> 1036</span>  <span class="keywordflow">while</span> (<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a342abf92b861ebc82e50349fe31246e2">status</a> &lt; (<span class="keywordtype">int</span>)<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>)</div>
+<div class="line"><span class="lineno"> 1037</span>    {</div>
+<div class="line"><span class="lineno"> 1038</span>      pthread_cond_wait (&amp;<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#add5f25d5f709bda89fa5461eecdc2b2e">status_c</a>, &amp;<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
+<div class="line"><span class="lineno"> 1039</span>    }</div>
+<div class="line"><span class="lineno"> 1040</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../df/df5/structsaurion__wrapper.html#a56c88c88fc583f95d6f144ee3414458d">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ad05334ffef73d89577b3bc60ecc11283">status_m</a>);</div>
+<div class="line"><span class="lineno"> 1041</span>  <span class="keywordflow">return</span> SUCCESS_CODE;</div>
+<div class="line"><span class="lineno"> 1042</span>}</div>
 <div class="ttc" id="agroup__ThreadPool_html_ga69a5aa61497402d6ddb6425e0ace7f60"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#ga69a5aa61497402d6ddb6425e0ace7f60">threadpool_add</a></div><div class="ttdeci">void threadpool_add(struct threadpool *pool, void(*function)(void *), void *argument)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00175">threadpool.c:175</a></div></div>
 <div class="ttc" id="agroup__ThreadPool_html_ga70990f8c3c2931d44bb1fbdd07eed7d3"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#ga70990f8c3c2931d44bb1fbdd07eed7d3">threadpool_init</a></div><div class="ttdeci">void threadpool_init(struct threadpool *pool)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00151">threadpool.c:151</a></div></div>
-<div class="ttc" id="alow__saurion_8c_html_a30bb7d15272a20fb689bf9fada1737fa"><div class="ttname"><a href="../../de/d27/low__saurion_8c.html#a30bb7d15272a20fb689bf9fada1737fa">saurion_worker_master</a></div><div class="ttdeci">void saurion_worker_master(void *arg)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00917">low_saurion.c:917</a></div></div>
-<div class="ttc" id="alow__saurion_8c_html_a70abc87ee43c0e1b7059ec16e975afca"><div class="ttname"><a href="../../de/d27/low__saurion_8c.html#a70abc87ee43c0e1b7059ec16e975afca">saurion_worker_slave</a></div><div class="ttdeci">void saurion_worker_slave(void *arg)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01012">low_saurion.c:1012</a></div></div>
+<div class="ttc" id="alow__saurion_8c_html_a30bb7d15272a20fb689bf9fada1737fa"><div class="ttname"><a href="../../de/d27/low__saurion_8c.html#a30bb7d15272a20fb689bf9fada1737fa">saurion_worker_master</a></div><div class="ttdeci">void saurion_worker_master(void *arg)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00891">low_saurion.c:891</a></div></div>
+<div class="ttc" id="alow__saurion_8c_html_a70abc87ee43c0e1b7059ec16e975afca"><div class="ttname"><a href="../../de/d27/low__saurion_8c.html#a70abc87ee43c0e1b7059ec16e975afca">saurion_worker_slave</a></div><div class="ttdeci">void saurion_worker_slave(void *arg)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00986">low_saurion.c:986</a></div></div>
 <div class="ttc" id="alow__saurion_8c_html_adcba6f6935d1807493e731cc5e79a661"><div class="ttname"><a href="../../de/d27/low__saurion_8c.html#adcba6f6935d1807493e731cc5e79a661">print_mutex</a></div><div class="ttdeci">pthread_mutex_t print_mutex</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00047">low_saurion.c:47</a></div></div>
 <div class="ttc" id="alow__saurion_8h_html_a9a57016e056d7d2ce6d2417340c4429e"><div class="ttname"><a href="../../d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e">ss</a></div><div class="ttdeci">int ss</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00005">low_saurion.h:5</a></div></div>
 <div class="ttc" id="astructsaurion__wrapper_html"><div class="ttname"><a href="../../df/df5/structsaurion__wrapper.html">saurion_wrapper</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00051">low_saurion.c:52</a></div></div>
@@ -1180,18 +1190,18 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l01071">1071</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno"> 1072</span>{</div>
-<div class="line"><span class="lineno"> 1073</span>  uint64_t u = 1;</div>
-<div class="line"><span class="lineno"> 1074</span>  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++i)</div>
-<div class="line"><span class="lineno"> 1075</span>    {</div>
-<div class="line"><span class="lineno"> 1076</span>      <span class="keywordflow">while</span> (write (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[i], &amp;u, sizeof (u)) &lt; 0)</div>
-<div class="line"><span class="lineno"> 1077</span>        {</div>
-<div class="line"><span class="lineno"> 1078</span>          nanosleep (&amp;<a class="code hl_variable" href="../../de/d27/low__saurion_8c.html#a484cb327684f65c9592211732d0d13a2">TIMEOUT_RETRY_SPEC</a>, NULL);</div>
-<div class="line"><span class="lineno"> 1079</span>        }</div>
-<div class="line"><span class="lineno"> 1080</span>    }</div>
-<div class="line"><span class="lineno"> 1081</span>  <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#gaad95c955c36ef40b29142e8187cddb1e">threadpool_wait_empty</a> (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aafa9e10932a29c4118c0eef0f7bc1ae1">pool</a>);</div>
-<div class="line"><span class="lineno"> 1082</span>}</div>
+<p class="definition">Definition at line <a class="el" href="../../de/d27/low__saurion_8c_source.html#l01045">1045</a> of file <a class="el" href="../../de/d27/low__saurion_8c_source.html">low_saurion.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno"> 1046</span>{</div>
+<div class="line"><span class="lineno"> 1047</span>  uint64_t u = 1;</div>
+<div class="line"><span class="lineno"> 1048</span>  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aee308efd9e70f3b38da24483a3f74413">n_threads</a>; ++i)</div>
+<div class="line"><span class="lineno"> 1049</span>    {</div>
+<div class="line"><span class="lineno"> 1050</span>      <span class="keywordflow">while</span> (write (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46">efds</a>[i], &amp;u, sizeof (u)) &lt; 0)</div>
+<div class="line"><span class="lineno"> 1051</span>        {</div>
+<div class="line"><span class="lineno"> 1052</span>          nanosleep (&amp;<a class="code hl_variable" href="../../de/d27/low__saurion_8c.html#a484cb327684f65c9592211732d0d13a2">TIMEOUT_RETRY_SPEC</a>, NULL);</div>
+<div class="line"><span class="lineno"> 1053</span>        }</div>
+<div class="line"><span class="lineno"> 1054</span>    }</div>
+<div class="line"><span class="lineno"> 1055</span>  <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#gaad95c955c36ef40b29142e8187cddb1e">threadpool_wait_empty</a> (s-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aafa9e10932a29c4118c0eef0f7bc1ae1">pool</a>);</div>
+<div class="line"><span class="lineno"> 1056</span>}</div>
 <div class="ttc" id="agroup__ThreadPool_html_gaad95c955c36ef40b29142e8187cddb1e"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#gaad95c955c36ef40b29142e8187cddb1e">threadpool_wait_empty</a></div><div class="ttdeci">void threadpool_wait_empty(struct threadpool *pool)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00256">threadpool.c:256</a></div></div>
 <div class="ttc" id="alow__saurion_8c_html_a484cb327684f65c9592211732d0d13a2"><div class="ttname"><a href="../../de/d27/low__saurion_8c.html#a484cb327684f65c9592211732d0d13a2">TIMEOUT_RETRY_SPEC</a></div><div class="ttdeci">struct timespec TIMEOUT_RETRY_SPEC</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00049">low_saurion.c:49</a></div></div>
 </div><!-- fragment -->

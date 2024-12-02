@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['increment_0',['increment',['../d0/d29/main_8c.html#a6470321f89f4740650922e18d6f1915f',1,'main.c']]],
-  ['init_1',['init',['../d5/da0/classSaurion.html#ad5408d5b521e109da8c5c32b134c1fb4',1,'Saurion']]],
-  ['initialize_5fiovec_2',['initialize_iovec',['../d9/da3/group__LowSaurion.html#gae64e81c0ce5f52d51684d8f1129e6076',1,'initialize_iovec(struct iovec *iov, size_t amount, size_t pos, const void *msg, size_t size, uint8_t h):&#160;low_saurion.c'],['../d9/da3/group__LowSaurion.html#gae64e81c0ce5f52d51684d8f1129e6076',1,'initialize_iovec(struct iovec *iov, size_t amount, size_t pos, const void *msg, size_t size, uint8_t h):&#160;low_saurion.c']]]
+  ['list_5fdelete_5fnode_0',['list_delete_node',['../d3/d32/linked__list_8c.html#a5c613e9f175d5433244f84467555dc8d',1,'list_delete_node(struct Node **head, const void *const ptr):&#160;linked_list.c'],['../d1/d4a/linked__list_8h.html#a5c613e9f175d5433244f84467555dc8d',1,'list_delete_node(struct Node **head, const void *const ptr):&#160;linked_list.c']]],
+  ['list_5ffree_1',['list_free',['../d3/d32/linked__list_8c.html#ac33c30e895caddc11181b50eca0ab735',1,'list_free(struct Node **head):&#160;linked_list.c'],['../d1/d4a/linked__list_8h.html#ac33c30e895caddc11181b50eca0ab735',1,'list_free(struct Node **head):&#160;linked_list.c']]],
+  ['list_5finsert_2',['list_insert',['../d3/d32/linked__list_8c.html#aee07283e23385804a1d3f880cd99731e',1,'list_insert(struct Node **head, void *ptr, size_t amount, void **children):&#160;linked_list.c'],['../d1/d4a/linked__list_8h.html#aee07283e23385804a1d3f880cd99731e',1,'list_insert(struct Node **head, void *ptr, size_t amount, void **children):&#160;linked_list.c']]]
 ];

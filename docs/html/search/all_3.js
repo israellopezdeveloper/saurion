@@ -8,6 +8,5 @@ var searchData=
   ['ev_5frea_5',['EV_REA',['../de/d27/low__saurion_8c.html#a77ab66dd047cee976375425d1ee3987e',1,'low_saurion.c']]],
   ['ev_5fwai_6',['EV_WAI',['../de/d27/low__saurion_8c.html#a63cd9bef0f3d1e247b467a962f4334b1',1,'low_saurion.c']]],
   ['ev_5fwri_7',['EV_WRI',['../de/d27/low__saurion_8c.html#a007c93bf045c4c59fecfa50f88472c8e',1,'low_saurion.c']]],
-  ['event_5ftype_8',['event_type',['../dc/d20/structrequest.html#a9cba15f1748716ffe6869a271c1ccc4d',1,'request']]],
-  ['external_5fset_5fsocket_9',['EXTERNAL_set_socket',['../d9/da3/group__LowSaurion.html#ga4a0bc8233ca030e29b9b94aed0177392',1,'EXTERNAL_set_socket(const int p):&#160;low_saurion.c'],['../d9/da3/group__LowSaurion.html#ga4a0bc8233ca030e29b9b94aed0177392',1,'EXTERNAL_set_socket(int p):&#160;low_saurion.c']]]
+  ['event_5ftype_8',['event_type',['../dc/d20/structrequest.html#a9cba15f1748716ffe6869a271c1ccc4d',1,'request']]]
 ];
