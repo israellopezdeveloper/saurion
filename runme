@@ -47,8 +47,25 @@ make_exec() {
   params="$*"
   banner "MAKE ${params}"
 
-  make "${params}" &&
-    wait_key
+  max_attempts=3
+  attempt=0
+
+  while [ $attempt -lt $max_attempts ]; do
+    attempt=$((attempt + 1))
+
+    # Ejecuta el comando con timeout
+    timeout "90s" make "${params}"
+    exit_status=$?
+
+    if [ $exit_status -eq 0 ]; then
+      break
+    fi
+
+    if [ $attempt = $max_attempts ]; then
+      break
+    fi
+  done
+  wait_key
 }
 
 make_iwyu() {
@@ -128,7 +145,7 @@ loop_execution() {
       fi
     fi
     executed=1
-    make_exec || continue
+    make_exec || exit 1
     make_tests || {
       echo "Running tests individually..."
       # Ejecutar los tests individualmente si falla make check

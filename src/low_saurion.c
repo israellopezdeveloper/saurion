@@ -286,10 +286,10 @@ add_accept (struct saurion *const s, struct sockaddr_in *const ca,
 }
 
 static void
-add_efd (struct saurion *const s, const int client_socket, int sel)
+add_fd (struct saurion *const s, int client_socket, int sel)
 {
-  pthread_mutex_lock (&s->m_rings[sel]);
   int res = ERROR_CODE;
+  pthread_mutex_lock (&s->m_rings[sel]);
   while (res != SUCCESS_CODE)
     {
       struct io_uring *ring = &s->rings[sel];
@@ -324,42 +324,16 @@ add_efd (struct saurion *const s, const int client_socket, int sel)
 }
 
 static void
+add_efd (struct saurion *const s, const int client_socket, int sel)
+{
+  add_fd (s, client_socket, sel);
+}
+
+static void
 add_read (struct saurion *const s, const int client_socket)
 {
   int sel = next (s);
-  int res = ERROR_CODE;
-  pthread_mutex_lock (&s->m_rings[sel]);
-  while (res != SUCCESS_CODE)
-    {
-      struct io_uring *ring = &s->rings[sel];
-      struct io_uring_sqe *sqe = io_uring_get_sqe (ring);
-      while (!sqe)
-        {
-          sqe = io_uring_get_sqe (ring);
-          nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
-        }
-      struct request *req = NULL;
-      if (!set_request (&req, &s->list, CHUNK_SZ, NULL, 0))
-        {
-          free (sqe);
-          res = ERROR_CODE;
-          continue;
-        }
-      req->event_type = EV_REA;
-      req->client_socket = client_socket;
-      io_uring_prep_readv (sqe, client_socket, &req->iov[0], req->iovec_count,
-                           0);
-      io_uring_sqe_set_data (sqe, req);
-      if (io_uring_submit (ring) < 0)
-        {
-          free (sqe);
-          list_delete_node (&s->list, req);
-          res = ERROR_CODE;
-          continue;
-        }
-      res = SUCCESS_CODE;
-    }
-  pthread_mutex_unlock (&s->m_rings[sel]);
+  add_fd (s, client_socket, sel);
 }
 
 static void
@@ -693,7 +667,7 @@ handle_close (const struct saurion *const s, const struct request *const req)
 
 /******************* INTERFACE *******************/
 int
-EXTERNAL_set_socket (const int p)
+saurion_set_socket (const int p)
 {
   int sock = 0;
   struct sockaddr_in srv_addr;

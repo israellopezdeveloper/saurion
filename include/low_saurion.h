@@ -238,9 +238,15 @@ extern "C"
   } __attribute__ ((aligned (PACKING_SZ)));
 
   /*!
-   *  @todo Eliminar
+   * @public
+   * @brief Creates a socket
+   *
+   * Creates and sets a socket, ready for saurion configuration.
+   *
+   * @param p port
+   * @return result of socket creation.
    */
-  int EXTERNAL_set_socket (int p);
+  int saurion_set_socket (int p);
 
   /*!
    * @public
