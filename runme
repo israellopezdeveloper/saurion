@@ -47,8 +47,25 @@ make_exec() {
   params="$*"
   banner "MAKE ${params}"
 
-  make "${params}" &&
-    wait_key
+  max_attempts=3
+  attempt=0
+
+  while [ $attempt -lt $max_attempts ]; do
+    attempt=$((attempt + 1))
+
+    # Ejecuta el comando con timeout
+    timeout "50s" make "${params}"
+    exit_status=$?
+
+    if [ $exit_status -eq 0 ]; then
+      break
+    fi
+
+    if [ $attempt = $max_attempts ]; then
+      break
+    fi
+  done
+  wait_key
 }
 
 make_iwyu() {
