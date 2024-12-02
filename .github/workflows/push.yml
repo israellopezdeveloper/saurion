@@ -11,7 +11,7 @@ jobs:
     name: Generate coverage report
     uses: ./.github/workflows/reusable-job.yml
     with:
-      docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241126134054'
+      docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202100551'
       docker_options: '--privileged --user root'
       commands: |
         ./runme --coverage
@@ -20,7 +20,7 @@ jobs:
     name: Check and generate binaries using GCC
     uses: ./.github/workflows/reusable-job.yml
     with:
-      docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241126134054'
+      docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202100551'
       docker_options: '--privileged --user root'
       commands: |
         ./runme
@@ -29,7 +29,7 @@ jobs:
     name: Check and generate binaries using CLANG
     uses: ./.github/workflows/reusable-job.yml
     with:
-      docker_image: 'lopoeisr/make-clang:debian-bookworm_CLANG-19_20241126134054'
+      docker_image: 'lopoeisr/make-clang:debian-bookworm_CLANG-19_20241202100551'
       docker_options: '--privileged --user root'
       commands: |
         ./runme --debug
@@ -38,7 +38,7 @@ jobs:
     name: Check memory leaks on GCC
     uses: ./.github/workflows/reusable-job.yml
     with:
-      docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241126134054'
+      docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202100551'
       docker_options: '--privileged --user root'
       commands: |
         ulimit -n 1024
