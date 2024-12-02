@@ -136,7 +136,7 @@ extern "C"
  * Adjusting `PACKING_SZ` may be necessary depending on the hardware platform
  * or specific performance requirements.
  */
-#define PACKING_SZ 128
+#define PACKING_SZ 32
 
   /*!
    * @brief Main structure for managing io_uring and socket events.

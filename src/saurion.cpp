@@ -24,7 +24,7 @@ Saurion::init () noexcept
 }
 
 void
-Saurion::stop () noexcept
+Saurion::stop () const noexcept
 {
   saurion_stop (this->s);
 }

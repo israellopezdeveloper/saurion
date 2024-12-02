@@ -24,7 +24,7 @@ public:
   Saurion &operator= (Saurion &&) = delete;
 
   void init () noexcept;
-  void stop () noexcept;
+  void stop () const noexcept;
 
   Saurion *on_connected (ConnectedCb ncb, void *arg) noexcept;
   Saurion *on_readed (ReadedCb ncb, void *arg) noexcept;

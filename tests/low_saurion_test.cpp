@@ -1,6 +1,7 @@
 #include "config.h"
 #include "low_saurion.h"
 
+#include <cstdio>
 #include <ctime>
 #include <memory>
 #include <ostream>
@@ -18,7 +19,6 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
-#include <print>
 #include <regex>
 #include <stdexcept>
 #include <string>
@@ -288,28 +288,28 @@ protected:
   static void
   connect_clients (uint32_t n)
   {
-    std::print (fifo_write, "connect;{};{}\n", n, PORT);
+    fprintf (fifo_write, "connect;%d;%d\n", n, PORT);
     fflush (fifo_write);
   }
 
   static void
   disconnect_clients ()
   {
-    std::print (fifo_write, "disconnect;\n");
+    fprintf (fifo_write, "disconnect;\n");
     fflush (fifo_write);
   }
 
   static void
   clients_2_saurion (uint32_t n, const char *const msg, uint32_t delay)
   {
-    std::print (fifo_write, "send;{};{};{}\n", n, msg, delay);
+    fprintf (fifo_write, "send;%d;%s;%d\n", n, msg, delay);
     fflush (fifo_write);
   }
 
   static void
   close_clients ()
   {
-    std::print (fifo_write, "close;\n");
+    fprintf (fifo_write, "close;\n");
     fflush (fifo_write);
   }
 
