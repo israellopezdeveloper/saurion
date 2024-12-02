@@ -62,13 +62,23 @@ make_iwyu() {
 make_tests() {
   banner "MAKE check"
 
-  counter=0
-  while [ $counter -lt 3 ]; do
-    timeout "30s" make check || {
-      counter=$((counter + 1))
-    } && {
-      counter=4
-    }
+  max_attempts=3
+  attempt=0
+
+  while [ $attempt -lt $max_attempts ]; do
+    attempt=$((attempt + 1))
+
+    # Ejecuta el comando con timeout
+    timeout "30s" make check
+    exit_status=$?
+
+    if [ $exit_status -eq 0 ]; then
+      break
+    fi
+
+    if [ $attempt = $max_attempts ]; then
+      break
+    fi
   done
   wait_key
 }
