@@ -49,7 +49,7 @@ jobs:
       docker_image: 'lopoeisr/make-clang:debian-bookworm_CLANG-19_20241202100551'
       docker_options: '--privileged --user root'
       commands: |
-        ./runme --debug
+        ./runme
         tar -czf clang-libs.tar.gz -C build/lib .
       artifact_path: 'clang-libs.tar.gz'
       artifact_name: 'clang-libs'

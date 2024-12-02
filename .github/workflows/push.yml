@@ -32,7 +32,7 @@ jobs:
       docker_image: 'lopoeisr/make-clang:debian-bookworm_CLANG-19_20241202100551'
       docker_options: '--privileged --user root'
       commands: |
-        ./runme --debug
+        ./runme
 
   leak-gcc:
     name: Check memory leaks on GCC
