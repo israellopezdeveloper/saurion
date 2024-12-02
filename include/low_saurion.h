@@ -124,9 +124,9 @@ extern "C"
  * improve memory access performance and ensure compatibility with certain
  * hardware architectures that require specific alignment.
  *
- * In this case, the value is set to 128 bytes, meaning that structures marked
+ * In this case, the value is set to 32 bytes, meaning that structures marked
  * with
- * `__attribute__((aligned(PACKING_SZ)))` will be aligned to 128-byte
+ * `__attribute__((aligned(PACKING_SZ)))` will be aligned to 32-byte
  * boundaries.
  *
  * Proper alignment can be particularly important in multithreaded environments
