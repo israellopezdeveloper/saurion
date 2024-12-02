@@ -87,7 +87,7 @@ struct summary
   pthread_mutex_t wrote_m = PTHREAD_MUTEX_INITIALIZER;
 } __attribute__ ((aligned (128)));
 
-struct summary *const summary = new struct summary;
+const auto summary = std::make_unique<struct summary> ();
 
 void signalHandler (int signum);
 
