@@ -2,14 +2,14 @@ var low__saurion_8c =
 [
     [ "request", "dc/d20/structrequest.html", "dc/d20/structrequest" ],
     [ "saurion_wrapper", "df/df5/structsaurion__wrapper.html", "df/df5/structsaurion__wrapper" ],
-    [ "EVENT_TYPE_ACCEPT", "de/d27/low__saurion_8c.html#a96a7a2db32d44325af7e4db5fe599675", null ],
-    [ "EVENT_TYPE_ERROR", "de/d27/low__saurion_8c.html#a7a838ec11db7afb74af46c55e0cb6e43", null ],
-    [ "EVENT_TYPE_READ", "de/d27/low__saurion_8c.html#a1f7c29ac665cde9aa26808bb269837d9", null ],
-    [ "EVENT_TYPE_WAIT", "de/d27/low__saurion_8c.html#a59fc72da421a569911ec34c1c0537e9d", null ],
-    [ "EVENT_TYPE_WRITE", "de/d27/low__saurion_8c.html#a387dc1b3761c4fd9e9b40030bc5b78c8", null ],
+    [ "EV_ACC", "de/d27/low__saurion_8c.html#aa7c13c748770f04c169940b26c93682a", null ],
+    [ "EV_ERR", "de/d27/low__saurion_8c.html#a85ccb93e44662f9175e3579d741393d7", null ],
+    [ "EV_REA", "de/d27/low__saurion_8c.html#a77ab66dd047cee976375425d1ee3987e", null ],
+    [ "EV_WAI", "de/d27/low__saurion_8c.html#a63cd9bef0f3d1e247b467a962f4334b1", null ],
+    [ "EV_WRI", "de/d27/low__saurion_8c.html#a007c93bf045c4c59fecfa50f88472c8e", null ],
     [ "MAX", "de/d27/low__saurion_8c.html#afa99ec4acc4ecb2dc3c2d05da15d0e3f", null ],
     [ "MIN", "de/d27/low__saurion_8c.html#a3acffbd305ee72dcd4593c0d8af64a4f", null ],
-    [ "add_accept", "de/d27/low__saurion_8c.html#a40aa700cf97b0ad654fe0aff06644ae9", null ],
+    [ "add_accept", "de/d27/low__saurion_8c.html#ab26e567795c5f0d6755609102c5f8ee6", null ],
     [ "add_efd", "de/d27/low__saurion_8c.html#a2794e5aada66af40962e04b938bbd88a", null ],
     [ "add_read", "de/d27/low__saurion_8c.html#a2299a2be116729fdb774a5e655ff9f83", null ],
     [ "add_read_continue", "de/d27/low__saurion_8c.html#ab40f6349969e5ce57e654ddb9eaf827a", null ],
@@ -33,7 +33,10 @@ var low__saurion_8c =
     [ "saurion_start", "d9/da3/group__LowSaurion.html#gaeeab8302b41112175566881a1b7bf905", null ],
     [ "saurion_stop", "d9/da3/group__LowSaurion.html#ga9f32b41ec23178c2a693fec057b96532", null ],
     [ "saurion_worker_master", "de/d27/low__saurion_8c.html#a30bb7d15272a20fb689bf9fada1737fa", null ],
+    [ "saurion_worker_master_loop_it", "de/d27/low__saurion_8c.html#aa1ffb73b2d25dfd2a570d0dd4a02fa16", null ],
     [ "saurion_worker_slave", "de/d27/low__saurion_8c.html#a70abc87ee43c0e1b7059ec16e975afca", null ],
+    [ "saurion_worker_slave_loop_it", "de/d27/low__saurion_8c.html#ab8184a788d61bb7d879fc68036999a58", null ],
     [ "set_request", "d9/da3/group__LowSaurion.html#gaddb696f3c38e160dde5a5de6e6e10f70", null ],
-    [ "print_mutex", "de/d27/low__saurion_8c.html#adcba6f6935d1807493e731cc5e79a661", null ]
+    [ "print_mutex", "de/d27/low__saurion_8c.html#adcba6f6935d1807493e731cc5e79a661", null ],
+    [ "TIMEOUT_RETRY_SPEC", "de/d27/low__saurion_8c.html#a484cb327684f65c9592211732d0d13a2", null ]
 ];

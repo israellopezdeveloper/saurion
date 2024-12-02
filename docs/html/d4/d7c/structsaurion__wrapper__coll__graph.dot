@@ -10,7 +10,8 @@ digraph "saurion_wrapper"
   Node3 [label="Node",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$d8/d49/structNode.html",tooltip=" "];
   Node3 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" children\nnext" ,fontname="Helvetica"];
   Node4 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" pool" ,fontname="Helvetica"];
-  Node4 [label="ThreadPool",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$dc/de7/classThreadPool.html",tooltip=" "];
-  Node5 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" m_queues" ,fontname="Helvetica"];
-  Node5 [label="ThreadPool::AsyncMultiQueue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$d6/d2f/structThreadPool_1_1AsyncMultiQueue.html",tooltip=" "];
+  Node4 [label="threadpool",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$d9/d42/structthreadpool.html",tooltip=" "];
+  Node5 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" task_queue_head\ntask_queue_tail" ,fontname="Helvetica"];
+  Node5 [label="task",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$db/da2/structtask.html",tooltip=" "];
+  Node5 -> Node5 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" next" ,fontname="Helvetica"];
 }

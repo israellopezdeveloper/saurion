@@ -1,11 +1,10 @@
 var searchData=
 [
-  ['children_0',['children',['../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233',1,'Node']]],
-  ['clear_1',['clear',['../d6/d2f/structThreadPool_1_1AsyncMultiQueue.html#a1c8cc8a4ac6a00acdbaa911fc8553776',1,'ThreadPool::AsyncMultiQueue']]],
-  ['client_5fsocket_2',['client_socket',['../dc/d20/structrequest.html#a34dcdf74ea1d647ba95bcdd78c95c3b7',1,'request']]],
-  ['closedcb_3',['ClosedCb',['../d5/da0/classSaurion.html#a2c2ca67aafeb00369c86f62c94614225',1,'Saurion']]],
-  ['connectedcb_4',['ConnectedCb',['../d5/da0/classSaurion.html#a1a4646725512c48c9bc44af91fc826eb',1,'Saurion']]],
-  ['create_5fnode_5',['create_node',['../d3/d32/linked__list_8c.html#a918975430b04d125decf67186a4e868a',1,'linked_list.c']]],
-  ['cthreadpool_2ecpp_6',['cthreadpool.cpp',['../d8/ddb/cthreadpool_8cpp.html',1,'']]],
-  ['cthreadpool_2ehpp_7',['cthreadpool.hpp',['../dc/d6b/cthreadpool_8hpp.html',1,'']]]
+  ['add_5faccept_0',['add_accept',['../de/d27/low__saurion_8c.html#ab26e567795c5f0d6755609102c5f8ee6',1,'low_saurion.c']]],
+  ['add_5fefd_1',['add_efd',['../de/d27/low__saurion_8c.html#a2794e5aada66af40962e04b938bbd88a',1,'low_saurion.c']]],
+  ['add_5fread_2',['add_read',['../de/d27/low__saurion_8c.html#a2299a2be116729fdb774a5e655ff9f83',1,'low_saurion.c']]],
+  ['add_5fread_5fcontinue_3',['add_read_continue',['../de/d27/low__saurion_8c.html#ab40f6349969e5ce57e654ddb9eaf827a',1,'low_saurion.c']]],
+  ['add_5fwrite_4',['add_write',['../de/d27/low__saurion_8c.html#a39042ff39576b4db8db514acd6e9a224',1,'low_saurion.c']]],
+  ['allocate_5fiovec_5',['allocate_iovec',['../d9/da3/group__LowSaurion.html#ga1c329b9155a9159b696b60247c9b328b',1,'allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size, void **chd_ptr):&#160;low_saurion.c'],['../d9/da3/group__LowSaurion.html#ga1c329b9155a9159b696b60247c9b328b',1,'allocate_iovec(struct iovec *iov, size_t amount, size_t pos, size_t size, void **chd_ptr):&#160;low_saurion.c']]],
+  ['argument_6',['argument',['../db/da2/structtask.html#abd6f841e14fa8c67a18b34a542d5cbf1',1,'task']]]
 ];

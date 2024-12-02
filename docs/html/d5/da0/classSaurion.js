@@ -1,10 +1,10 @@
 var classSaurion =
 [
-    [ "ClosedCb", "d5/da0/classSaurion.html#a2c2ca67aafeb00369c86f62c94614225", null ],
-    [ "ConnectedCb", "d5/da0/classSaurion.html#a1a4646725512c48c9bc44af91fc826eb", null ],
-    [ "ErrorCb", "d5/da0/classSaurion.html#af58c5aaaa5171a6b71c9e62c34db5fce", null ],
-    [ "ReadedCb", "d5/da0/classSaurion.html#a2cacb6e2775688b834247cf95bab0518", null ],
-    [ "WroteCb", "d5/da0/classSaurion.html#a20f08b0f185563100d81c19355cc1b47", null ],
+    [ "ClosedCb", "d5/da0/classSaurion.html#a4145ce6e12b334a34d6b47d38e58248a", null ],
+    [ "ConnectedCb", "d5/da0/classSaurion.html#a5da4d05d3bcfea2461e0e3f3ee57026e", null ],
+    [ "ErrorCb", "d5/da0/classSaurion.html#a635147c9cfcd691e42b80353db22e2ce", null ],
+    [ "ReadedCb", "d5/da0/classSaurion.html#ac11bb4e3279488d1fca4b3e886ddbe40", null ],
+    [ "WroteCb", "d5/da0/classSaurion.html#a106a1958a13b0f9b2eea77e0990094e7", null ],
     [ "Saurion", "d5/da0/classSaurion.html#a56b8393a788078d51ad08792ccdcd713", null ],
     [ "~Saurion", "d5/da0/classSaurion.html#a3ea35eafe420d514b0147d69c745e7df", null ],
     [ "Saurion", "d5/da0/classSaurion.html#ae83d691a9d4a9c9d55ed7678b0608385", null ],
@@ -18,6 +18,6 @@ var classSaurion =
     [ "operator=", "d5/da0/classSaurion.html#a737974c4ed549a52a73ae6e3545a8ba0", null ],
     [ "operator=", "d5/da0/classSaurion.html#a315dcaed2d3675c068d9fcd0c723001c", null ],
     [ "send", "d5/da0/classSaurion.html#af652625283a9752d16d7a24b35cec14d", null ],
-    [ "stop", "d5/da0/classSaurion.html#aeb75b8b41463e2a5b10ca446f36ebe00", null ],
+    [ "stop", "d5/da0/classSaurion.html#a46ab498fe4f69d0505ebeb90eb4ac810", null ],
     [ "s", "d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142", null ]
 ];

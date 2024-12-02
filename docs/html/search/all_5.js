@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['init_0',['init',['../d5/da0/classSaurion.html#ad5408d5b521e109da8c5c32b134c1fb4',1,'Saurion::init()'],['../dc/de7/classThreadPool.html#a53b794c6101360ebfe6a8d903ba73298',1,'ThreadPool::init()']]],
-  ['initialize_5fiovec_1',['initialize_iovec',['../d9/da3/group__LowSaurion.html#gae64e81c0ce5f52d51684d8f1129e6076',1,'initialize_iovec(struct iovec *iov, size_t amount, size_t pos, const void *msg, size_t size, uint8_t h):&#160;low_saurion.c'],['../d9/da3/group__LowSaurion.html#gae64e81c0ce5f52d51684d8f1129e6076',1,'initialize_iovec(struct iovec *iov, size_t amount, size_t pos, const void *msg, size_t size, uint8_t h):&#160;low_saurion.c']]],
-  ['iov_2',['iov',['../dc/d20/structrequest.html#ae23ac64f6ae30671afc753260ef411fd',1,'request']]],
-  ['iovec_5fcount_3',['iovec_count',['../dc/d20/structrequest.html#a1291bf32fbcafa3bb4b348578db09a9f',1,'request']]]
+  ['handle_5faccept_0',['handle_accept',['../de/d27/low__saurion_8c.html#aff870d06aed2384abd16b89b4e6429d8',1,'low_saurion.c']]],
+  ['handle_5fclose_1',['handle_close',['../de/d27/low__saurion_8c.html#a6590a961ce99bb8a6f0fdd151f394afa',1,'low_saurion.c']]],
+  ['handle_5ferror_2',['handle_error',['../de/d27/low__saurion_8c.html#a79a329a1b1fcd31d446b309eb0d73849',1,'low_saurion.c']]],
+  ['handle_5fread_3',['handle_read',['../de/d27/low__saurion_8c.html#a97aee33e3c5728a7d986b2f42e7bb82a',1,'low_saurion.c']]],
+  ['handle_5fwrite_4',['handle_write',['../de/d27/low__saurion_8c.html#a94c77ae2935117db01e434b37204b649',1,'low_saurion.c']]],
+  ['htonll_5',['htonll',['../de/d27/low__saurion_8c.html#a00d80bc019becac44a598996923faecf',1,'low_saurion.c']]]
 ];

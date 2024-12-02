@@ -1,9 +1,5 @@
 var searchData=
 [
-  ['on_5fclosed_0',['on_closed',['../d5/da0/classSaurion.html#a0ad01e1c10b794fd10e5be17e9b5c4dd',1,'Saurion']]],
-  ['on_5fconnected_1',['on_connected',['../d5/da0/classSaurion.html#af1563e363c5a007289e6aa3a4d59860e',1,'Saurion']]],
-  ['on_5ferror_2',['on_error',['../d5/da0/classSaurion.html#a6a2ce2d5d7d62c110702c51b73a56a8d',1,'Saurion']]],
-  ['on_5freaded_3',['on_readed',['../d5/da0/classSaurion.html#a4739a8d5e3b2ae2618ea602c7d9e046b',1,'Saurion']]],
-  ['on_5fwrote_4',['on_wrote',['../d5/da0/classSaurion.html#a8450efc4ac6a6da43b3bad0d2f8a9b34',1,'Saurion']]],
-  ['operator_3d_5',['operator=',['../d5/da0/classSaurion.html#a737974c4ed549a52a73ae6e3545a8ba0',1,'Saurion::operator=(const Saurion &amp;)=delete'],['../d5/da0/classSaurion.html#a315dcaed2d3675c068d9fcd0c723001c',1,'Saurion::operator=(Saurion &amp;&amp;)=delete'],['../d1/de8/structTask.html#a28266635b1b105e481d703eaffb15666',1,'Task::operator=(const Task &amp;)=delete'],['../d1/de8/structTask.html#a9ea72b7f2d21107b03c5b55f250fd511',1,'Task::operator=(Task &amp;&amp;)=delete'],['../d8/dd6/structThreadPool_1_1AsyncQueue.html#a04cf023b930124ddee0978b17f53f027',1,'ThreadPool::AsyncQueue::operator=(const AsyncQueue &amp;)=delete'],['../d8/dd6/structThreadPool_1_1AsyncQueue.html#a260c8c88e2700020be447b7e4a837d61',1,'ThreadPool::AsyncQueue::operator=(AsyncQueue &amp;&amp;)=delete'],['../d6/d2f/structThreadPool_1_1AsyncMultiQueue.html#a0c2644007a183adca4bf80fdee98b1b3',1,'ThreadPool::AsyncMultiQueue::operator=(const AsyncMultiQueue &amp;)=delete'],['../d6/d2f/structThreadPool_1_1AsyncMultiQueue.html#a2150c6617322d2a68934fecde58363f4',1,'ThreadPool::AsyncMultiQueue::operator=(AsyncMultiQueue &amp;&amp;)=delete'],['../dc/de7/classThreadPool.html#afec5f97d2b512da75aa10897ef12a2a8',1,'ThreadPool::operator=(const ThreadPool &amp;)=delete'],['../dc/de7/classThreadPool.html#ad979aa170c8c04f5fb5f1d941ef9d5a2',1,'ThreadPool::operator=(ThreadPool &amp;&amp;)=delete']]]
+  ['next_0',['next',['../de/d27/low__saurion_8c.html#a7919e576d3fdccbefb75bee92abd5cc3',1,'low_saurion.c']]],
+  ['ntohll_1',['ntohll',['../de/d27/low__saurion_8c.html#a5fae4cad12b0ca469184e097624aea08',1,'low_saurion.c']]]
 ];

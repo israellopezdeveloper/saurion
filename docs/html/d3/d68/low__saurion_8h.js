@@ -2,6 +2,7 @@ var low__saurion_8h =
 [
     [ "saurion::saurion_callbacks", "d9/d62/structsaurion_1_1saurion__callbacks.html", "d9/d62/structsaurion_1_1saurion__callbacks" ],
     [ "saurion_callbacks", "d8/d5e/structsaurion__callbacks.html", "d8/d5e/structsaurion__callbacks" ],
+    [ "_POSIX_C_SOURCE", "d9/da3/group__LowSaurion.html#ga3024ccd4a9af5109d24e6c57565d74a1", null ],
     [ "PACKING_SZ", "d9/da3/group__LowSaurion.html#ga7889939b2b6cdf65275305251f749af0", null ],
     [ "EXTERNAL_set_socket", "d9/da3/group__LowSaurion.html#ga4a0bc8233ca030e29b9b94aed0177392", null ],
     [ "saurion_create", "d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131", null ],
@@ -24,7 +25,7 @@ var low__saurion_8h =
     [ "on_readed_arg", "d3/d68/low__saurion_8h.html#a908f164fa396610a2a489f2ada0a9ac3", null ],
     [ "on_wrote", "d3/d68/low__saurion_8h.html#ac3355b2a942d17cdf7e5b5ec4e967961", null ],
     [ "on_wrote_arg", "d3/d68/low__saurion_8h.html#a09e173970ff611931036303d7368042a", null ],
-    [ "pool", "d3/d68/low__saurion_8h.html#a5ee7fcc0cfde456201a7c8d99dd20042", null ],
+    [ "pool", "d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9", null ],
     [ "rings", "d3/d68/low__saurion_8h.html#abc82bdc059019b48b4eaa469a4c1ffe8", null ],
     [ "ss", "d3/d68/low__saurion_8h.html#a9a57016e056d7d2ce6d2417340c4429e", null ],
     [ "status", "d3/d68/low__saurion_8h.html#a6e27f49150e9a14580fb313cc2777e00", null ],
