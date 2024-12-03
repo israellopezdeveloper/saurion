@@ -44,9 +44,8 @@ struct request
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
-pthread_mutex_t print_mutex;
 
-struct timespec TIMEOUT_RETRY_SPEC = { 0, TIMEOUT_RETRY * 1000L };
+static struct timespec TIMEOUT_RETRY_SPEC = { 0, TIMEOUT_RETRY * 1000L };
 
 struct saurion_wrapper
 {
@@ -54,14 +53,14 @@ struct saurion_wrapper
   uint32_t sel;
 };
 
-static uint32_t
+static inline uint32_t
 next (struct saurion *s)
 {
   s->next = (s->next + 1) % s->n_threads;
   return s->next;
 }
 
-static uint64_t
+static inline uint64_t
 htonll (uint64_t value)
 {
   int num = 42;
@@ -74,7 +73,7 @@ htonll (uint64_t value)
   return value;
 }
 
-static uint64_t
+static inline uint64_t
 ntohll (uint64_t value)
 {
   int num = 42;
@@ -246,7 +245,7 @@ set_request (struct request **r, struct Node **l, size_t s, const void *m,
 }
 
 /******************* ADDERS *******************/
-static void
+static inline void
 add_accept (struct saurion *const s, struct sockaddr_in *const ca,
             socklen_t *const cal)
 {
@@ -285,7 +284,7 @@ add_accept (struct saurion *const s, struct sockaddr_in *const ca,
   pthread_mutex_unlock (&s->m_rings[0]);
 }
 
-static void
+static inline void
 add_fd (struct saurion *const s, int client_socket, int sel)
 {
   int res = ERROR_CODE;
@@ -323,20 +322,20 @@ add_fd (struct saurion *const s, int client_socket, int sel)
   pthread_mutex_unlock (&s->m_rings[sel]);
 }
 
-static void
+static inline void
 add_efd (struct saurion *const s, const int client_socket, int sel)
 {
   add_fd (s, client_socket, sel);
 }
 
-static void
+static inline void
 add_read (struct saurion *const s, const int client_socket)
 {
   int sel = next (s);
   add_fd (s, client_socket, sel);
 }
 
-static void
+static inline void
 add_read_continue (struct saurion *const s, struct request *oreq,
                    const int sel)
 {
@@ -372,7 +371,7 @@ add_read_continue (struct saurion *const s, struct request *oreq,
   pthread_mutex_unlock (&s->m_rings[sel]);
 }
 
-static void
+static inline void
 add_write (struct saurion *const s, int fd, const char *const str,
            const int sel)
 {
@@ -414,7 +413,7 @@ add_write (struct saurion *const s, int fd, const char *const str,
 }
 
 /******************* HANDLERS *******************/
-static void
+static inline void
 handle_accept (const struct saurion *const s, const int fd)
 {
   if (s->cb.on_connected)
@@ -597,7 +596,7 @@ read_chunk (void **dest, size_t *len, struct request *const req)
   return ERROR_CODE;
 }
 
-static void
+static inline void
 handle_read (struct saurion *const s, struct request *const req)
 {
   void *msg = NULL;
@@ -635,7 +634,7 @@ handle_read (struct saurion *const s, struct request *const req)
   add_read (s, req->client_socket);
 }
 
-static void
+static inline void
 handle_write (const struct saurion *const s, const int fd)
 {
   if (s->cb.on_wrote)
@@ -644,7 +643,7 @@ handle_write (const struct saurion *const s, const int fd)
     }
 }
 
-static void
+static inline void
 handle_error (const struct saurion *const s, const struct request *const req)
 {
   if (s->cb.on_error)
@@ -655,7 +654,7 @@ handle_error (const struct saurion *const s, const struct request *const req)
     }
 }
 
-static void
+static inline void
 handle_close (const struct saurion *const s, const struct request *const req)
 {
   if (s->cb.on_closed)
@@ -818,6 +817,25 @@ saurion_create (uint32_t n_threads)
   return p;
 }
 
+static inline void
+handle_event_read (const struct io_uring_cqe *const cqe,
+                   struct saurion *const s, struct request *req)
+{
+  if (cqe->res < 0)
+    {
+      handle_error (s, req);
+    }
+  if (cqe->res < 1)
+    {
+      handle_close (s, req);
+    }
+  if (cqe->res > 0)
+    {
+      handle_read (s, req);
+    }
+  list_delete_node (&s->list, req);
+}
+
 [[nodiscard]]
 static int
 saurion_worker_master_loop_it (struct saurion *const s,
@@ -864,19 +882,7 @@ saurion_worker_master_loop_it (struct saurion *const s,
       list_delete_node (&s->list, req);
       break;
     case EV_REA:
-      if (cqe->res < 0)
-        {
-          handle_error (s, req);
-        }
-      if (cqe->res < 1)
-        {
-          handle_close (s, req);
-        }
-      if (cqe->res > 0)
-        {
-          handle_read (s, req);
-        }
-      list_delete_node (&s->list, req);
+      handle_event_read (cqe, s, req);
       break;
     case EV_WRI:
       handle_write (s, req->client_socket);
@@ -959,19 +965,7 @@ saurion_worker_slave_loop_it (struct saurion *const s, const int sel)
   switch (req->event_type)
     {
     case EV_REA:
-      if (cqe->res < 0)
-        {
-          handle_error (s, req);
-        }
-      if (cqe->res < 1)
-        {
-          handle_close (s, req);
-        }
-      if (cqe->res > 0)
-        {
-          handle_read (s, req);
-        }
-      list_delete_node (&s->list, req);
+      handle_event_read (cqe, s, req);
       break;
     case EV_WRI:
       handle_write (s, req->client_socket);
@@ -1017,7 +1011,6 @@ saurion_worker_slave (void *arg)
 int
 saurion_start (struct saurion *const s)
 {
-  pthread_mutex_init (&print_mutex, NULL);
   threadpool_init (s->pool);
   threadpool_add (s->pool, saurion_worker_master, s);
   struct saurion_wrapper *ss = NULL;
