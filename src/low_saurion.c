@@ -436,7 +436,7 @@ handle_accept (const struct saurion *const s, const int fd)
     }
 }
 
-// calculate_max_iov_content (const request *)
+// calculate_max_iov_content
 [[nodiscard]]
 static inline size_t
 calculate_max_iov_content (const struct request *req)
@@ -449,29 +449,41 @@ calculate_max_iov_content (const struct request *req)
   return max_iov_cont;
 }
 
+struct chunk_params
+{
+  void **dest;
+  void *dest_ptr;
+  size_t dest_off;
+  struct request *req;
+  size_t cont_sz;
+  size_t cont_rem;
+  size_t max_iov_cont;
+  size_t curr_iov;
+  size_t curr_iov_off;
+  size_t *len;
+};
+
 // handle_previous_message
 [[nodiscard]]
 static inline int
-handle_previous_message (void **dest, void **dest_ptr, size_t *dest_off,
-                         struct request *req, size_t *cont_sz,
-                         size_t *cont_rem, size_t max_iov_cont)
+handle_previous_message (struct chunk_params *p)
 {
-  *cont_sz = req->prev_size;
-  *cont_rem = req->prev_remain;
-  *dest_off = *cont_sz - *cont_rem;
+  p->cont_sz = p->req->prev_size;
+  p->cont_rem = p->req->prev_remain;
+  p->dest_off = p->cont_sz - p->cont_rem;
 
-  if (*cont_rem <= max_iov_cont)
+  if (p->cont_rem <= p->max_iov_cont)
     {
-      *dest = req->prev;
-      *dest_ptr = *dest;
-      req->prev = NULL;
-      req->prev_size = 0;
-      req->prev_remain = 0;
+      *p->dest = p->req->prev;
+      p->dest_ptr = *p->dest;
+      p->req->prev = NULL;
+      p->req->prev_size = 0;
+      p->req->prev_remain = 0;
     }
   else
     {
-      *dest_ptr = req->prev;
-      *dest = NULL;
+      p->dest_ptr = p->req->prev;
+      *p->dest = NULL;
     }
   return SUCCESS_CODE;
 }
@@ -479,40 +491,37 @@ handle_previous_message (void **dest, void **dest_ptr, size_t *dest_off,
 // handle_partial_message
 [[nodiscard]]
 static inline int
-handle_partial_message (void **dest, void **dest_ptr, size_t *dest_off,
-                        struct request *req, size_t *cont_sz, size_t *cont_rem,
-                        size_t *curr_iov, size_t *curr_iov_off,
-                        size_t max_iov_cont, size_t *len)
+handle_partial_message (struct chunk_params *p)
 {
-  *curr_iov = req->next_iov;
-  *curr_iov_off = req->next_offset;
+  p->curr_iov = p->req->next_iov;
+  p->curr_iov_off = p->req->next_offset;
 
-  *cont_sz
-      = *(size_t *)((uint8_t *)req->iov[*curr_iov].iov_base + *curr_iov_off);
-  *cont_sz = ntohll (*cont_sz);
-  *curr_iov_off += sizeof (uint64_t);
-  *cont_rem = *cont_sz;
-  *dest_off = *cont_sz - *cont_rem;
+  p->cont_sz = *(size_t *)((uint8_t *)p->req->iov[p->curr_iov].iov_base
+                           + p->curr_iov_off);
+  p->cont_sz = ntohll (p->cont_sz);
+  p->curr_iov_off += sizeof (uint64_t);
+  p->cont_rem = p->cont_sz;
+  p->dest_off = p->cont_sz - p->cont_rem;
 
-  if ((*curr_iov_off + *cont_rem + 1) <= max_iov_cont)
+  if ((p->curr_iov_off + p->cont_rem + 1) <= p->max_iov_cont)
     {
-      *dest = malloc (*cont_sz);
-      if (!*dest)
+      *p->dest = malloc (p->cont_sz);
+      if (!*p->dest)
         {
           return ERROR_CODE;
         }
-      *dest_ptr = *dest;
+      p->dest_ptr = *p->dest;
     }
   else
     {
-      req->prev = malloc (*cont_sz);
-      if (!req->prev)
+      p->req->prev = malloc (p->cont_sz);
+      if (!p->req->prev)
         {
           return ERROR_CODE;
         }
-      *dest_ptr = req->prev;
-      *dest = NULL;
-      *len = 0;
+      p->dest_ptr = p->req->prev;
+      *p->dest = NULL;
+      *p->len = 0;
     }
   return SUCCESS_CODE;
 }
@@ -520,39 +529,36 @@ handle_partial_message (void **dest, void **dest_ptr, size_t *dest_off,
 // handle_new_message
 [[nodiscard]]
 static inline int
-handle_new_message (void **dest, void **dest_ptr, size_t *dest_off,
-                    struct request *req, size_t *cont_sz, size_t *cont_rem,
-                    size_t *curr_iov, size_t *curr_iov_off,
-                    size_t max_iov_cont)
+handle_new_message (struct chunk_params *p)
 {
-  *curr_iov = 0;
-  *curr_iov_off = 0;
+  p->curr_iov = 0;
+  p->curr_iov_off = 0;
 
-  *cont_sz
-      = *(size_t *)((uint8_t *)req->iov[*curr_iov].iov_base + *curr_iov_off);
-  *cont_sz = ntohll (*cont_sz);
-  *curr_iov_off += sizeof (uint64_t);
-  *cont_rem = *cont_sz;
-  *dest_off = *cont_sz - *cont_rem;
+  p->cont_sz = *(size_t *)((uint8_t *)p->req->iov[p->curr_iov].iov_base
+                           + p->curr_iov_off);
+  p->cont_sz = ntohll (p->cont_sz);
+  p->curr_iov_off += sizeof (uint64_t);
+  p->cont_rem = p->cont_sz;
+  p->dest_off = p->cont_sz - p->cont_rem;
 
-  if (*cont_rem <= max_iov_cont)
+  if (p->cont_rem <= p->max_iov_cont)
     {
-      *dest = malloc (*cont_sz);
-      if (!*dest)
+      *p->dest = malloc (p->cont_sz);
+      if (!*p->dest)
         {
           return ERROR_CODE; // Error al asignar memoria.
         }
-      *dest_ptr = *dest;
+      p->dest_ptr = *p->dest;
     }
   else
     {
-      req->prev = malloc (*cont_sz);
-      if (!req->prev)
+      p->req->prev = malloc (p->cont_sz);
+      if (!p->req->prev)
         {
           return ERROR_CODE; // Error al asignar memoria.
         }
-      *dest_ptr = req->prev;
-      *dest = NULL;
+      p->dest_ptr = p->req->prev;
+      *p->dest = NULL;
     }
   return SUCCESS_CODE;
 }
@@ -560,64 +566,56 @@ handle_new_message (void **dest, void **dest_ptr, size_t *dest_off,
 // prepare_destination
 [[nodiscard]]
 static inline int
-prepare_destination (void **dest, void **dest_ptr, size_t *dest_off,
-                     struct request *req, size_t max_iov_cont, size_t *cont_sz,
-                     size_t *cont_rem, size_t *curr_iov, size_t *curr_iov_off,
-                     size_t *len)
+prepare_destination (struct chunk_params *p)
 {
-  if (req->prev && req->prev_size && req->prev_remain)
+  if (p->req->prev && p->req->prev_size && p->req->prev_remain)
     {
-      return handle_previous_message (dest, dest_ptr, dest_off, req, cont_sz,
-                                      cont_rem, max_iov_cont);
+      return handle_previous_message (p);
     }
-  if (req->next_iov || req->next_offset)
+  if (p->req->next_iov || p->req->next_offset)
     {
-      return handle_partial_message (dest, dest_ptr, dest_off, req, cont_sz,
-                                     cont_rem, curr_iov, curr_iov_off,
-                                     max_iov_cont, len);
+      return handle_partial_message (p);
     }
-  return handle_new_message (dest, dest_ptr, dest_off, req, cont_sz, cont_rem,
-                             curr_iov, curr_iov_off, max_iov_cont);
+  return handle_new_message (p);
 }
 
 // copy_data
 static inline void
-copy_data (void *dest_ptr, size_t *dest_off, size_t *curr_iov_off,
-           size_t *cont_rem, struct request *req, size_t *curr_iov,
-           size_t *len, uint8_t *ok, size_t *cont_sz)
+copy_data (struct chunk_params *p, uint8_t *ok)
 {
   size_t curr_iov_msg_rem = 0;
   *ok = 1UL;
   while (1)
     {
-      curr_iov_msg_rem
-          = MIN (*cont_rem, (req->iov[*curr_iov].iov_len - *curr_iov_off));
-      memcpy ((uint8_t *)dest_ptr + *dest_off,
-              (uint8_t *)req->iov[*curr_iov].iov_base + *curr_iov_off,
+      curr_iov_msg_rem = MIN (
+          p->cont_rem, (p->req->iov[p->curr_iov].iov_len - p->curr_iov_off));
+      memcpy ((uint8_t *)p->dest_ptr + p->dest_off,
+              (uint8_t *)p->req->iov[p->curr_iov].iov_base + p->curr_iov_off,
               curr_iov_msg_rem);
-      *dest_off += curr_iov_msg_rem;
-      *curr_iov_off += curr_iov_msg_rem;
-      *cont_rem -= curr_iov_msg_rem;
+      p->dest_off += curr_iov_msg_rem;
+      p->curr_iov_off += curr_iov_msg_rem;
+      p->cont_rem -= curr_iov_msg_rem;
 
-      if (*cont_rem <= 0)
+      if (p->cont_rem <= 0)
         {
-          if (*(((uint8_t *)req->iov[*curr_iov].iov_base) + *curr_iov_off)
+          if (*(((uint8_t *)p->req->iov[p->curr_iov].iov_base)
+                + p->curr_iov_off)
               != 0)
             {
               *ok = 0UL;
             }
-          *len = *cont_sz;
-          ++(*curr_iov_off);
+          *p->len = p->cont_sz;
+          ++p->curr_iov_off;
           break;
         }
-      if (*curr_iov_off >= (req->iov[*curr_iov].iov_len))
+      if (p->curr_iov_off >= (p->req->iov[p->curr_iov].iov_len))
         {
-          ++(*curr_iov);
-          if (*curr_iov == req->iovec_count)
+          ++p->curr_iov;
+          if (p->curr_iov == p->req->iovec_count)
             {
               break;
             }
-          *curr_iov_off = 0;
+          p->curr_iov_off = 0;
         }
     }
 }
@@ -625,65 +623,59 @@ copy_data (void *dest_ptr, size_t *dest_off, size_t *curr_iov_off,
 // validate_and_update
 [[nodiscard]]
 static inline uint8_t
-validate_and_update (struct request *req, size_t curr_iov, size_t curr_iov_off,
-                     size_t cont_sz, size_t cont_rem, size_t iov_count,
-                     void **dest, size_t *len, uint8_t ok)
+validate_and_update (struct chunk_params *p, uint8_t ok)
 {
-  if (req->prev)
+  if (p->req->prev)
     {
-      req->prev_size = cont_sz;
-      req->prev_remain = cont_rem;
-      *dest = NULL;
-      *len = 0;
+      p->req->prev_size = p->cont_sz;
+      p->req->prev_remain = p->cont_rem;
+      *p->dest = NULL;
+      *p->len = 0;
     }
   else
     {
-      req->prev_size = 0;
-      req->prev_remain = 0;
+      p->req->prev_size = 0;
+      p->req->prev_remain = 0;
     }
-  if (curr_iov < iov_count)
+  if (p->curr_iov < p->req->iovec_count)
     {
-      uint64_t next_sz = *(uint64_t *)(((uint8_t *)req->iov[curr_iov].iov_base)
-                                       + curr_iov_off);
-      if ((req->iov[curr_iov].iov_len > curr_iov_off) && next_sz)
+      uint64_t next_sz
+          = *(uint64_t *)(((uint8_t *)p->req->iov[p->curr_iov].iov_base)
+                          + p->curr_iov_off);
+      if ((p->req->iov[p->curr_iov].iov_len > p->curr_iov_off) && next_sz)
         {
-          req->next_iov = curr_iov;
-          req->next_offset = curr_iov_off;
+          p->req->next_iov = p->curr_iov;
+          p->req->next_offset = p->curr_iov_off;
         }
       else
         {
-          req->next_iov = 0;
-          req->next_offset = 0;
+          p->req->next_iov = 0;
+          p->req->next_offset = 0;
         }
     }
 
-  if (!ok)
-    {
-      return ERROR_CODE;
-    }
-  return SUCCESS_CODE;
+  return ok ? SUCCESS_CODE : ERROR_CODE;
 }
 
 // read_chunk_free
 static inline void
-read_chunk_free (struct request *req, size_t curr_iov, size_t curr_iov_off,
-                 void **dest, void **dest_ptr, size_t *len)
+read_chunk_free (struct chunk_params *p)
 {
-  free (*dest_ptr);
-  *dest_ptr = NULL;
-  *dest = NULL;
-  *len = 0;
-  req->next_iov = 0;
-  req->next_offset = 0;
-  for (size_t i = curr_iov; i < req->iovec_count; ++i)
+  free (p->dest_ptr);
+  p->dest_ptr = NULL;
+  *p->dest = NULL;
+  *p->len = 0;
+  p->req->next_iov = 0;
+  p->req->next_offset = 0;
+  for (size_t i = p->curr_iov; i < p->req->iovec_count; ++i)
     {
-      for (size_t j = curr_iov_off; j < req->iov[i].iov_len; ++j)
+      for (size_t j = p->curr_iov_off; j < p->req->iov[i].iov_len; ++j)
         {
-          uint8_t foot = *((uint8_t *)req->iov[i].iov_base) + j;
+          uint8_t foot = *((uint8_t *)p->req->iov[i].iov_base) + j;
           if (foot == 0)
             {
-              req->next_iov = i;
-              req->next_offset = (j + 1) % req->iov[i].iov_len;
+              p->req->next_iov = i;
+              p->req->next_offset = (j + 1) % p->req->iov[i].iov_len;
               return;
             }
         }
@@ -695,35 +687,35 @@ read_chunk_free (struct request *req, size_t curr_iov, size_t curr_iov_off,
 int
 read_chunk (void **dest, size_t *len, struct request *const req)
 {
-  if (req->iovec_count == 0)
+  struct chunk_params p;
+  p.req = req;
+  p.dest = dest;
+  p.len = len;
+  if (p.req->iovec_count == 0)
     {
       return ERROR_CODE;
     }
 
-  size_t max_iov_cont = calculate_max_iov_content (req);
-  size_t cont_sz = 0;
-  size_t cont_rem = 0;
-  size_t curr_iov = 0;
-  size_t curr_iov_off = 0;
-  size_t dest_off = 0;
-  void *dest_ptr = NULL;
-  if (!prepare_destination (dest, &dest_ptr, &dest_off, req, max_iov_cont,
-                            &cont_sz, &cont_rem, &curr_iov, &curr_iov_off,
-                            len))
+  p.max_iov_cont = calculate_max_iov_content (p.req);
+  p.cont_sz = 0;
+  p.cont_rem = 0;
+  p.curr_iov = 0;
+  p.curr_iov_off = 0;
+  p.dest_off = 0;
+  p.dest_ptr = NULL;
+  if (!prepare_destination (&p))
     {
       return ERROR_CODE;
     }
 
   uint8_t ok = 1UL;
-  copy_data (dest_ptr, &dest_off, &curr_iov_off, &cont_rem, req, &curr_iov,
-             len, &ok, &cont_sz);
+  copy_data (&p, &ok);
 
-  if (validate_and_update (req, curr_iov, curr_iov_off, cont_sz, cont_rem,
-                           req->iovec_count, dest, len, ok))
+  if (validate_and_update (&p, ok))
     {
       return SUCCESS_CODE;
     }
-  read_chunk_free (req, curr_iov, curr_iov_off, dest, &dest_ptr, len);
+  read_chunk_free (&p);
   return ERROR_CODE;
 }
 
