@@ -53,6 +53,7 @@ struct saurion_wrapper
   uint32_t sel;
 };
 
+// next
 static inline uint32_t
 next (struct saurion *s)
 {
@@ -60,6 +61,7 @@ next (struct saurion *s)
   return s->next;
 }
 
+// htonll
 static inline uint64_t
 htonll (uint64_t value)
 {
@@ -73,6 +75,7 @@ htonll (uint64_t value)
   return value;
 }
 
+// ntohll
 static inline uint64_t
 ntohll (uint64_t value)
 {
@@ -86,6 +89,7 @@ ntohll (uint64_t value)
   return value;
 }
 
+// free_request
 void
 free_request (struct request *req, void **children_ptr, size_t amount)
 {
@@ -105,6 +109,7 @@ free_request (struct request *req, void **children_ptr, size_t amount)
   children_ptr = NULL;
 }
 
+// initialize_iovec
 [[nodiscard]]
 int
 initialize_iovec (struct iovec *iov, size_t amount, size_t pos,
@@ -153,6 +158,7 @@ initialize_iovec (struct iovec *iov, size_t amount, size_t pos,
   return SUCCESS_CODE;
 }
 
+// allocate_iovec
 [[nodiscard]]
 int
 allocate_iovec (struct iovec *iov, size_t amount, size_t pos, size_t size,
@@ -176,6 +182,7 @@ allocate_iovec (struct iovec *iov, size_t amount, size_t pos, size_t size,
   return SUCCESS_CODE;
 }
 
+// set_request
 [[nodiscard]]
 int
 set_request (struct request **r, struct Node **l, size_t s, const void *m,
@@ -245,6 +252,7 @@ set_request (struct request **r, struct Node **l, size_t s, const void *m,
 }
 
 /******************* ADDERS *******************/
+// add_accept
 static inline void
 add_accept (struct saurion *const s, struct sockaddr_in *const ca,
             socklen_t *const cal)
@@ -284,6 +292,7 @@ add_accept (struct saurion *const s, struct sockaddr_in *const ca,
   pthread_mutex_unlock (&s->m_rings[0]);
 }
 
+// add_fd
 static inline void
 add_fd (struct saurion *const s, int client_socket, int sel)
 {
@@ -322,12 +331,14 @@ add_fd (struct saurion *const s, int client_socket, int sel)
   pthread_mutex_unlock (&s->m_rings[sel]);
 }
 
+// add_efd
 static inline void
 add_efd (struct saurion *const s, const int client_socket, int sel)
 {
   add_fd (s, client_socket, sel);
 }
 
+// add_read
 static inline void
 add_read (struct saurion *const s, const int client_socket)
 {
@@ -335,6 +346,7 @@ add_read (struct saurion *const s, const int client_socket)
   add_fd (s, client_socket, sel);
 }
 
+// add_read_continue
 static inline void
 add_read_continue (struct saurion *const s, struct request *oreq,
                    const int sel)
@@ -371,6 +383,7 @@ add_read_continue (struct saurion *const s, struct request *oreq,
   pthread_mutex_unlock (&s->m_rings[sel]);
 }
 
+// add_write
 static inline void
 add_write (struct saurion *const s, int fd, const char *const str,
            const int sel)
@@ -413,6 +426,7 @@ add_write (struct saurion *const s, int fd, const char *const str,
 }
 
 /******************* HANDLERS *******************/
+// handle_accept
 static inline void
 handle_accept (const struct saurion *const s, const int fd)
 {
@@ -422,6 +436,7 @@ handle_accept (const struct saurion *const s, const int fd)
     }
 }
 
+// calculate_max_iov_content (const request *)
 [[nodiscard]]
 static inline size_t
 calculate_max_iov_content (const struct request *req)
@@ -434,40 +449,248 @@ calculate_max_iov_content (const struct request *req)
   return max_iov_cont;
 }
 
+// handle_previous_message
+[[nodiscard]]
+static inline int
+handle_previous_message (void **dest, void **dest_ptr, size_t *dest_off,
+                         struct request *req, size_t *cont_sz,
+                         size_t *cont_rem, size_t max_iov_cont)
+{
+  *cont_sz = req->prev_size;
+  *cont_rem = req->prev_remain;
+  *dest_off = *cont_sz - *cont_rem;
+
+  if (*cont_rem <= max_iov_cont)
+    {
+      *dest = req->prev;
+      *dest_ptr = *dest;
+      req->prev = NULL;
+      req->prev_size = 0;
+      req->prev_remain = 0;
+    }
+  else
+    {
+      *dest_ptr = req->prev;
+      *dest = NULL;
+    }
+  return SUCCESS_CODE;
+}
+
+// handle_partial_message
+[[nodiscard]]
+static inline int
+handle_partial_message (void **dest, void **dest_ptr, size_t *dest_off,
+                        struct request *req, size_t *cont_sz, size_t *cont_rem,
+                        size_t *curr_iov, size_t *curr_iov_off,
+                        size_t max_iov_cont, size_t *len)
+{
+  *curr_iov = req->next_iov;
+  *curr_iov_off = req->next_offset;
+
+  *cont_sz
+      = *(size_t *)((uint8_t *)req->iov[*curr_iov].iov_base + *curr_iov_off);
+  *cont_sz = ntohll (*cont_sz);
+  *curr_iov_off += sizeof (uint64_t);
+  *cont_rem = *cont_sz;
+  *dest_off = *cont_sz - *cont_rem;
+
+  if ((*curr_iov_off + *cont_rem + 1) <= max_iov_cont)
+    {
+      *dest = malloc (*cont_sz);
+      if (!*dest)
+        {
+          return ERROR_CODE;
+        }
+      *dest_ptr = *dest;
+    }
+  else
+    {
+      req->prev = malloc (*cont_sz);
+      if (!req->prev)
+        {
+          return ERROR_CODE;
+        }
+      *dest_ptr = req->prev;
+      *dest = NULL;
+      *len = 0;
+    }
+  return SUCCESS_CODE;
+}
+
+// handle_new_message
+[[nodiscard]]
+static inline int
+handle_new_message (void **dest, void **dest_ptr, size_t *dest_off,
+                    struct request *req, size_t *cont_sz, size_t *cont_rem,
+                    size_t *curr_iov, size_t *curr_iov_off,
+                    size_t max_iov_cont)
+{
+  *curr_iov = 0;
+  *curr_iov_off = 0;
+
+  *cont_sz
+      = *(size_t *)((uint8_t *)req->iov[*curr_iov].iov_base + *curr_iov_off);
+  *cont_sz = ntohll (*cont_sz);
+  *curr_iov_off += sizeof (uint64_t);
+  *cont_rem = *cont_sz;
+  *dest_off = *cont_sz - *cont_rem;
+
+  if (*cont_rem <= max_iov_cont)
+    {
+      *dest = malloc (*cont_sz);
+      if (!*dest)
+        {
+          return ERROR_CODE; // Error al asignar memoria.
+        }
+      *dest_ptr = *dest;
+    }
+  else
+    {
+      req->prev = malloc (*cont_sz);
+      if (!req->prev)
+        {
+          return ERROR_CODE; // Error al asignar memoria.
+        }
+      *dest_ptr = req->prev;
+      *dest = NULL;
+    }
+  return SUCCESS_CODE;
+}
+
+// prepare_destination
 [[nodiscard]]
 static inline int
 prepare_destination (void **dest, void **dest_ptr, size_t *dest_off,
                      struct request *req, size_t max_iov_cont, size_t *cont_sz,
-                     size_t *cont_rem, size_t *curr_iov, size_t *curr_iov_off)
+                     size_t *cont_rem, size_t *curr_iov, size_t *curr_iov_off,
+                     size_t *len)
 {
   if (req->prev && req->prev_size && req->prev_remain)
     {
-      *cont_sz = req->prev_size;
-      *cont_rem = req->prev_remain;
-      *curr_iov = 0;
-      *curr_iov_off = 0;
-      *dest_off = *cont_sz - *cont_rem;
-      if (*cont_rem <= max_iov_cont)
+      return handle_previous_message (dest, dest_ptr, dest_off, req, cont_sz,
+                                      cont_rem, max_iov_cont);
+    }
+  if (req->next_iov || req->next_offset)
+    {
+      return handle_partial_message (dest, dest_ptr, dest_off, req, cont_sz,
+                                     cont_rem, curr_iov, curr_iov_off,
+                                     max_iov_cont, len);
+    }
+  return handle_new_message (dest, dest_ptr, dest_off, req, cont_sz, cont_rem,
+                             curr_iov, curr_iov_off, max_iov_cont);
+}
+
+// copy_data
+static inline void
+copy_data (void *dest_ptr, size_t *dest_off, size_t *curr_iov_off,
+           size_t *cont_rem, struct request *req, size_t *curr_iov,
+           size_t *len, uint8_t *ok, size_t *cont_sz)
+{
+  size_t curr_iov_msg_rem = 0;
+  *ok = 1UL;
+  while (1)
+    {
+      curr_iov_msg_rem
+          = MIN (*cont_rem, (req->iov[*curr_iov].iov_len - *curr_iov_off));
+      memcpy ((uint8_t *)dest_ptr + *dest_off,
+              (uint8_t *)req->iov[*curr_iov].iov_base + *curr_iov_off,
+              curr_iov_msg_rem);
+      *dest_off += curr_iov_msg_rem;
+      *curr_iov_off += curr_iov_msg_rem;
+      *cont_rem -= curr_iov_msg_rem;
+
+      if (*cont_rem <= 0)
         {
-          *dest = req->prev;
-          *dest_ptr = *dest;
-          req->prev = NULL;
-          req->prev_size = 0;
-          req->prev_remain = 0;
+          if (*(((uint8_t *)req->iov[*curr_iov].iov_base) + *curr_iov_off)
+              != 0)
+            {
+              *ok = 0UL;
+            }
+          *len = *cont_sz;
+          ++(*curr_iov_off);
+          break;
+        }
+      if (*curr_iov_off >= (req->iov[*curr_iov].iov_len))
+        {
+          ++(*curr_iov);
+          if (*curr_iov == req->iovec_count)
+            {
+              break;
+            }
+          *curr_iov_off = 0;
+        }
+    }
+}
+
+// validate_and_update
+[[nodiscard]]
+static inline uint8_t
+validate_and_update (struct request *req, size_t curr_iov, size_t curr_iov_off,
+                     size_t cont_sz, size_t cont_rem, size_t iov_count,
+                     void **dest, size_t *len, uint8_t ok)
+{
+  if (req->prev)
+    {
+      req->prev_size = cont_sz;
+      req->prev_remain = cont_rem;
+      *dest = NULL;
+      *len = 0;
+    }
+  else
+    {
+      req->prev_size = 0;
+      req->prev_remain = 0;
+    }
+  if (curr_iov < iov_count)
+    {
+      uint64_t next_sz = *(uint64_t *)(((uint8_t *)req->iov[curr_iov].iov_base)
+                                       + curr_iov_off);
+      if ((req->iov[curr_iov].iov_len > curr_iov_off) && next_sz)
+        {
+          req->next_iov = curr_iov;
+          req->next_offset = curr_iov_off;
         }
       else
         {
-          *dest_ptr = req->prev;
-          *dest = NULL;
+          req->next_iov = 0;
+          req->next_offset = 0;
         }
     }
-  else
+
+  if (!ok)
     {
       return ERROR_CODE;
     }
   return SUCCESS_CODE;
 }
 
+// read_chunk_free
+static inline void
+read_chunk_free (struct request *req, size_t curr_iov, size_t curr_iov_off,
+                 void **dest, void **dest_ptr, size_t *len)
+{
+  free (*dest_ptr);
+  *dest_ptr = NULL;
+  *dest = NULL;
+  *len = 0;
+  req->next_iov = 0;
+  req->next_offset = 0;
+  for (size_t i = curr_iov; i < req->iovec_count; ++i)
+    {
+      for (size_t j = curr_iov_off; j < req->iov[i].iov_len; ++j)
+        {
+          uint8_t foot = *((uint8_t *)req->iov[i].iov_base) + j;
+          if (foot == 0)
+            {
+              req->next_iov = i;
+              req->next_offset = (j + 1) % req->iov[i].iov_len;
+              return;
+            }
+        }
+    }
+}
+
+// read_chunk
 [[nodiscard]]
 int
 read_chunk (void **dest, size_t *len, struct request *const req)
@@ -484,160 +707,27 @@ read_chunk (void **dest, size_t *len, struct request *const req)
   size_t curr_iov_off = 0;
   size_t dest_off = 0;
   void *dest_ptr = NULL;
-  if (req->prev && req->prev_size && req->prev_remain)
+  if (!prepare_destination (dest, &dest_ptr, &dest_off, req, max_iov_cont,
+                            &cont_sz, &cont_rem, &curr_iov, &curr_iov_off,
+                            len))
     {
-      cont_sz = req->prev_size;
-      cont_rem = req->prev_remain;
-      curr_iov = 0;
-      curr_iov_off = 0;
-      dest_off = cont_sz - cont_rem;
-      if (cont_rem <= max_iov_cont)
-        {
-          *dest = req->prev;
-          dest_ptr = *dest;
-          req->prev = NULL;
-          req->prev_size = 0;
-          req->prev_remain = 0;
-        }
-      else
-        {
-          dest_ptr = req->prev;
-          *dest = NULL;
-        }
+      return ERROR_CODE;
     }
-  else if (req->next_iov || req->next_offset)
-    {
-      curr_iov = req->next_iov;
-      curr_iov_off = req->next_offset;
-      cont_sz = *(
-          (size_t *)(((uint8_t *)req->iov[curr_iov].iov_base) + curr_iov_off));
-      cont_sz = ntohll (cont_sz);
-      curr_iov_off += sizeof (uint64_t);
-      cont_rem = cont_sz;
-      dest_off = cont_sz - cont_rem;
-      if ((curr_iov_off + cont_rem + 1) <= max_iov_cont)
-        {
-          *dest = malloc (cont_sz);
-          dest_ptr = *dest;
-        }
-      else
-        {
-          req->prev = malloc (cont_sz);
-          dest_ptr = req->prev;
-          *dest = NULL;
-          *len = 0;
-        }
-    }
-  else
-    {
-      curr_iov = 0;
-      curr_iov_off = 0;
-      cont_sz = *(
-          (size_t *)(((uint8_t *)req->iov[curr_iov].iov_base) + curr_iov_off));
-      cont_sz = ntohll (cont_sz);
-      curr_iov_off += sizeof (uint64_t);
-      cont_rem = cont_sz;
-      dest_off = cont_sz - cont_rem;
-      if (cont_rem <= max_iov_cont)
-        {
-          *dest = malloc (cont_sz);
-          dest_ptr = *dest;
-        }
-      else
-        {
-          req->prev = malloc (cont_sz);
-          dest_ptr = req->prev;
-          *dest = NULL;
-        }
-    }
-  size_t curr_iov_msg_rem = 0;
 
   uint8_t ok = 1UL;
-  while (1)
-    {
-      curr_iov_msg_rem
-          = MIN (cont_rem, (req->iov[curr_iov].iov_len - curr_iov_off));
-      memcpy ((uint8_t *)dest_ptr + dest_off,
-              ((uint8_t *)req->iov[curr_iov].iov_base) + curr_iov_off,
-              curr_iov_msg_rem);
-      dest_off += curr_iov_msg_rem;
-      curr_iov_off += curr_iov_msg_rem;
-      cont_rem -= curr_iov_msg_rem;
-      if (cont_rem <= 0)
-        {
-          if (*(((uint8_t *)req->iov[curr_iov].iov_base) + curr_iov_off) != 0)
-            {
-              ok = 0UL;
-            }
-          *len = cont_sz;
-          ++curr_iov_off;
-          break;
-        }
-      if (curr_iov_off >= (req->iov[curr_iov].iov_len))
-        {
-          ++curr_iov;
-          if (curr_iov == req->iovec_count)
-            {
-              break;
-            }
-          curr_iov_off = 0;
-        }
-    }
+  copy_data (dest_ptr, &dest_off, &curr_iov_off, &cont_rem, req, &curr_iov,
+             len, &ok, &cont_sz);
 
-  if (req->prev)
-    {
-      req->prev_size = cont_sz;
-      req->prev_remain = cont_rem;
-      *dest = NULL;
-      len = 0;
-    }
-  else
-    {
-      req->prev_size = 0;
-      req->prev_remain = 0;
-    }
-  if (curr_iov < req->iovec_count)
-    {
-      uint64_t next_sz = *(uint64_t *)(((uint8_t *)req->iov[curr_iov].iov_base)
-                                       + curr_iov_off);
-      if ((req->iov[curr_iov].iov_len > curr_iov_off) && next_sz)
-        {
-          req->next_iov = curr_iov;
-          req->next_offset = curr_iov_off;
-        }
-      else
-        {
-          req->next_iov = 0;
-          req->next_offset = 0;
-        }
-    }
-
-  if (ok)
+  if (validate_and_update (req, curr_iov, curr_iov_off, cont_sz, cont_rem,
+                           req->iovec_count, dest, len, ok))
     {
       return SUCCESS_CODE;
     }
-  free (dest_ptr);
-  dest_ptr = NULL;
-  *dest = NULL;
-  *len = 0;
-  req->next_iov = 0;
-  req->next_offset = 0;
-  for (size_t i = curr_iov; i < req->iovec_count; ++i)
-    {
-      for (size_t j = curr_iov_off; j < req->iov[i].iov_len; ++j)
-        {
-          uint8_t foot = *((uint8_t *)req->iov[i].iov_base) + j;
-          if (foot == 0)
-            {
-              req->next_iov = i;
-              req->next_offset = (j + 1) % req->iov[i].iov_len;
-              return ERROR_CODE;
-            }
-        }
-    }
+  read_chunk_free (req, curr_iov, curr_iov_off, dest, &dest_ptr, len);
   return ERROR_CODE;
 }
 
+// handle_read
 static inline void
 handle_read (struct saurion *const s, struct request *const req)
 {
@@ -676,6 +766,7 @@ handle_read (struct saurion *const s, struct request *const req)
   add_read (s, req->client_socket);
 }
 
+// handle_write
 static inline void
 handle_write (const struct saurion *const s, const int fd)
 {
@@ -685,6 +776,7 @@ handle_write (const struct saurion *const s, const int fd)
     }
 }
 
+// handle_error
 static inline void
 handle_error (const struct saurion *const s, const struct request *const req)
 {
@@ -696,6 +788,7 @@ handle_error (const struct saurion *const s, const struct request *const req)
     }
 }
 
+// handle_close
 static inline void
 handle_close (const struct saurion *const s, const struct request *const req)
 {
@@ -707,7 +800,8 @@ handle_close (const struct saurion *const s, const struct request *const req)
 }
 
 /******************* INTERFACE *******************/
-int
+// saurion_set_socket
+[[nodiscard]] int
 saurion_set_socket (const int p)
 {
   int sock = 0;
@@ -743,6 +837,7 @@ saurion_set_socket (const int p)
   return sock;
 }
 
+// saurion_create
 [[nodiscard]]
 struct saurion *
 saurion_create (uint32_t n_threads)
@@ -859,6 +954,7 @@ saurion_create (uint32_t n_threads)
   return p;
 }
 
+// handle_event_read
 static inline void
 handle_event_read (const struct io_uring_cqe *const cqe,
                    struct saurion *const s, struct request *req)
@@ -878,6 +974,7 @@ handle_event_read (const struct io_uring_cqe *const cqe,
   list_delete_node (&s->list, req);
 }
 
+// saurion_worker_master_loop_it
 [[nodiscard]]
 static inline int
 saurion_worker_master_loop_it (struct saurion *const s,
@@ -935,6 +1032,7 @@ saurion_worker_master_loop_it (struct saurion *const s,
   return SUCCESS_CODE;
 }
 
+// saurion_worker_master
 void
 saurion_worker_master (void *arg)
 {
@@ -967,6 +1065,7 @@ saurion_worker_master (void *arg)
   return;
 }
 
+// saurion_worker_slave_loop_it
 [[nodiscard]]
 static inline int
 saurion_worker_slave_loop_it (struct saurion *const s, const int sel)
@@ -1018,6 +1117,7 @@ saurion_worker_slave_loop_it (struct saurion *const s, const int sel)
   return SUCCESS_CODE;
 }
 
+// saurion_worker_slave
 void
 saurion_worker_slave (void *arg)
 {
@@ -1049,6 +1149,7 @@ saurion_worker_slave (void *arg)
   return;
 }
 
+// saurion_start
 [[nodiscard]]
 int
 saurion_start (struct saurion *const s)
@@ -1076,6 +1177,7 @@ saurion_start (struct saurion *const s)
   return SUCCESS_CODE;
 }
 
+// saurion_stop
 void
 saurion_stop (const struct saurion *const s)
 {
@@ -1090,6 +1192,7 @@ saurion_stop (const struct saurion *const s)
   threadpool_wait_empty (s->pool);
 }
 
+// saurion_destroy
 void
 saurion_destroy (struct saurion *const s)
 {
@@ -1122,6 +1225,7 @@ saurion_destroy (struct saurion *const s)
   free (s);
 }
 
+// saurion_send
 void
 saurion_send (struct saurion *const s, const int fd, const char *const msg)
 {
