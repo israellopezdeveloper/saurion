@@ -423,6 +423,52 @@ handle_accept (const struct saurion *const s, const int fd)
 }
 
 [[nodiscard]]
+static inline size_t
+calculate_max_iov_content (const struct request *req)
+{
+  size_t max_iov_cont = 0;
+  for (size_t i = 0; i < req->iovec_count; ++i)
+    {
+      max_iov_cont += req->iov[i].iov_len;
+    }
+  return max_iov_cont;
+}
+
+[[nodiscard]]
+static inline int
+prepare_destination (void **dest, void **dest_ptr, size_t *dest_off,
+                     struct request *req, size_t max_iov_cont, size_t *cont_sz,
+                     size_t *cont_rem, size_t *curr_iov, size_t *curr_iov_off)
+{
+  if (req->prev && req->prev_size && req->prev_remain)
+    {
+      *cont_sz = req->prev_size;
+      *cont_rem = req->prev_remain;
+      *curr_iov = 0;
+      *curr_iov_off = 0;
+      *dest_off = *cont_sz - *cont_rem;
+      if (*cont_rem <= max_iov_cont)
+        {
+          *dest = req->prev;
+          *dest_ptr = *dest;
+          req->prev = NULL;
+          req->prev_size = 0;
+          req->prev_remain = 0;
+        }
+      else
+        {
+          *dest_ptr = req->prev;
+          *dest = NULL;
+        }
+    }
+  else
+    {
+      return ERROR_CODE;
+    }
+  return SUCCESS_CODE;
+}
+
+[[nodiscard]]
 int
 read_chunk (void **dest, size_t *len, struct request *const req)
 {
@@ -431,11 +477,7 @@ read_chunk (void **dest, size_t *len, struct request *const req)
       return ERROR_CODE;
     }
 
-  size_t max_iov_cont = 0; //< Total size of request
-  for (size_t i = 0; i < req->iovec_count; ++i)
-    {
-      max_iov_cont += req->iov[i].iov_len;
-    }
+  size_t max_iov_cont = calculate_max_iov_content (req);
   size_t cont_sz = 0;
   size_t cont_rem = 0;
   size_t curr_iov = 0;
@@ -837,7 +879,7 @@ handle_event_read (const struct io_uring_cqe *const cqe,
 }
 
 [[nodiscard]]
-static int
+static inline int
 saurion_worker_master_loop_it (struct saurion *const s,
                                struct sockaddr_in *client_addr,
                                socklen_t *client_addr_len)
@@ -926,7 +968,7 @@ saurion_worker_master (void *arg)
 }
 
 [[nodiscard]]
-static int
+static inline int
 saurion_worker_slave_loop_it (struct saurion *const s, const int sel)
 {
   LOG_INIT (" ");
