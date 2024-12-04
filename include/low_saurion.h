@@ -73,23 +73,24 @@
  * Basic usage example:
  *
  * @code
- * // Create the saurion structure with 4 threads
  * struct saurion *s = saurion_create(4);
  *
- * // Start event processing
  * if (saurion_start(s) != 0) {
- *     // Handle the error
+ *     handle_error();
  * }
  *
- * // Send a message through a socket
  * saurion_send(s, socket_fd, "Hello, World!");
  *
- * // Stop event processing
  * saurion_stop(s);
  *
- * // Destroy the structure and free resources
  * saurion_destroy(s);
  * @endcode
+ *
+ * 1. Create the saurion structure with 4 threads
+ * 2. Start event processing
+ * 3. Send a message through a socket
+ * 4. Stop event processing
+ * 5. Destroy the structure and free resources
  *
  * In this example, the `saurion` structure is created with 4 threads to handle
  * the workload. Event processing is started, allowing it to accept connections
@@ -137,6 +138,71 @@ extern "C"
  * or specific performance requirements.
  */
 #define PACKING_SZ 32
+  /*!
+   * @brief Structure containing callback functions to handle socket events.
+   *
+   * This structure holds pointers to callback functions for handling events
+   * such as connection establishment, reading, writing, closing, and errors
+   * on sockets. Each callback has an associated argument pointer that can be
+   * passed along when the callback is invoked.
+   */
+  struct saurion_callbacks
+  {
+    /*!
+     * @brief Callback for handling new connections.
+     *
+     * @param fd File descriptor of the connected socket.
+     * @param arg Additional user-provided argument.
+     */
+    void (*on_connected) (const int fd, void *arg);
+    /*! Additional argument for the connection callback. */
+    void *on_connected_arg;
+
+    /*!
+     * @brief Callback for handling read events.
+     *
+     * @param fd File descriptor of the socket.
+     * @param content Pointer to the data that was read.
+     * @param len Length of the data that was read.
+     * @param arg Additional user-provided argument.
+     */
+    void (*on_readed) (const int fd, const void *const content,
+                       const ssize_t len, void *arg);
+    /*! Additional argument for the read callback. */
+    void *on_readed_arg;
+
+    /*!
+     * @brief Callback for handling write events.
+     *
+     * @param fd File descriptor of the socket.
+     * @param arg Additional user-provided argument.
+     */
+    void (*on_wrote) (const int fd, void *arg);
+    void *on_wrote_arg; /**< Additional argument for the write callback. */
+
+    /*!
+     * @brief Callback for handling socket closures.
+     *
+     * @param fd File descriptor of the closed socket.
+     * @param arg Additional user-provided argument.
+     */
+    void (*on_closed) (const int fd, void *arg);
+    /*! Additional argument for the close callback. */
+    void *on_closed_arg;
+
+    /*!
+     * @brief Callback for handling error events.
+     *
+     * @param fd File descriptor of the socket where the error occurred.
+     * @param content Pointer to the error message.
+     * @param len Length of the error message.
+     * @param arg Additional user-provided argument.
+     */
+    void (*on_error) (const int fd, const char *const content,
+                      const ssize_t len, void *arg);
+    /*! Additional argument for the error callback. */
+    void *on_error_arg;
+  } __attribute__ ((aligned (PACKING_SZ)));
 
   /*!
    * @brief Main structure for managing io_uring and socket events.
@@ -170,71 +236,7 @@ extern "C"
     /*! Index of the next io_uring ring to which an event will be added. */
     uint32_t next;
 
-    /*!
-     * @brief Structure containing callback functions to handle socket events.
-     *
-     * This structure holds pointers to callback functions for handling events
-     * such as connection establishment, reading, writing, closing, and errors
-     * on sockets. Each callback has an associated argument pointer that can be
-     * passed along when the callback is invoked.
-     */
-    struct saurion_callbacks
-    {
-      /*!
-       * @brief Callback for handling new connections.
-       *
-       * @param fd File descriptor of the connected socket.
-       * @param arg Additional user-provided argument.
-       */
-      void (*on_connected) (const int fd, void *arg);
-      /*! Additional argument for the connection callback. */
-      void *on_connected_arg;
-
-      /*!
-       * @brief Callback for handling read events.
-       *
-       * @param fd File descriptor of the socket.
-       * @param content Pointer to the data that was read.
-       * @param len Length of the data that was read.
-       * @param arg Additional user-provided argument.
-       */
-      void (*on_readed) (const int fd, const void *const content,
-                         const ssize_t len, void *arg);
-      /*! Additional argument for the read callback. */
-      void *on_readed_arg;
-
-      /*!
-       * @brief Callback for handling write events.
-       *
-       * @param fd File descriptor of the socket.
-       * @param arg Additional user-provided argument.
-       */
-      void (*on_wrote) (const int fd, void *arg);
-      void *on_wrote_arg; /**< Additional argument for the write callback. */
-
-      /*!
-       * @brief Callback for handling socket closures.
-       *
-       * @param fd File descriptor of the closed socket.
-       * @param arg Additional user-provided argument.
-       */
-      void (*on_closed) (const int fd, void *arg);
-      /*! Additional argument for the close callback. */
-      void *on_closed_arg;
-
-      /*!
-       * @brief Callback for handling error events.
-       *
-       * @param fd File descriptor of the socket where the error occurred.
-       * @param content Pointer to the error message.
-       * @param len Length of the error message.
-       * @param arg Additional user-provided argument.
-       */
-      void (*on_error) (const int fd, const char *const content,
-                        const ssize_t len, void *arg);
-      /*! Additional argument for the error callback. */
-      void *on_error_arg;
-    } __attribute__ ((aligned (PACKING_SZ))) cb;
+    struct saurion_callbacks cb;
   } __attribute__ ((aligned (PACKING_SZ)));
 
   /*!

@@ -2,6 +2,15 @@
 #include "gtest/gtest.h" // for Message, TestInfo (ptr only), AssertionResult
 #include <ctime>         // for timespec, nanosleep
 #include <pthread.h>     // for pthread_mutex_lock, pthread_mutex_unlock
+#include <thread>        // for sleep_for
+
+void
+dummy_task (void *arg)
+{
+  std::this_thread::sleep_for (std::chrono::milliseconds (50));
+  int *counter = static_cast<int *> (arg);
+  (*counter)++;
+}
 
 class struct_threadpool : public ::testing::Test
 {
@@ -96,3 +105,24 @@ TEST_F (struct_threadpool, ZeroThreads)
   threadpool_stop (pool);
   EXPECT_EQ (x, 1);
 }
+
+TEST_F (struct_threadpool, AddNullTask)
+{
+  threadpool_add (pool, nullptr, nullptr);
+
+  ASSERT_TRUE (threadpool_empty (pool));
+}
+
+TEST_F (struct_threadpool, AddToStopedThreadPool)
+{
+  int counter = 0;
+  threadpool_add (pool, dummy_task, &counter);
+  threadpool_stop (pool);
+
+  // Asegura que no se pueden agregar más tareas después de detener
+  threadpool_add (pool, dummy_task, &counter);
+
+  ASSERT_EQ (counter, 1);
+}
+
+// TODO: investigar -Wl,--wrap,malloc para testear cuando malloc falla
