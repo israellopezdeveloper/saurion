@@ -1,7 +1,12 @@
 var searchData=
 [
-  ['false_0',['FALSE',['../d1/dc7/threadpool_8c.html#aa93f0eb578d23995850d61f7d61c55c1',1,'threadpool.c']]],
-  ['free_5fnode_1',['free_node',['../d3/d32/linked__list_8c.html#aaf693ba941ada32c9c43d3c6897e4217',1,'linked_list.c']]],
-  ['free_5frequest_2',['free_request',['../d9/da3/group__LowSaurion.html#ga0f9760bc800b946244ccf790081e6bb3',1,'free_request(struct request *req, void **children_ptr, size_t amount):&#160;low_saurion.c'],['../d9/da3/group__LowSaurion.html#ga0f9760bc800b946244ccf790081e6bb3',1,'free_request(struct request *req, void **children_ptr, size_t amount):&#160;low_saurion.c']]],
-  ['function_3',['function',['../db/da2/structtask.html#a52478e66be0aa97174ab5d9bb3342492',1,'task']]]
+  ['efds_0',['efds',['../df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46',1,'saurion::efds()'],['../d3/d68/low__saurion_8h.html#a605489576f3bb0a77d1492cd83539001',1,'efds():&#160;low_saurion.h']]],
+  ['empty_5fcond_1',['empty_cond',['../d9/d42/structthreadpool.html#ac5a8de0c9bc82c2ad5135505ed66ac8a',1,'threadpool']]],
+  ['errorcb_2',['ErrorCb',['../d5/da0/classSaurion.html#a635147c9cfcd691e42b80353db22e2ce',1,'Saurion']]],
+  ['ev_5facc_3',['EV_ACC',['../de/d27/low__saurion_8c.html#aa7c13c748770f04c169940b26c93682a',1,'low_saurion.c']]],
+  ['ev_5ferr_4',['EV_ERR',['../de/d27/low__saurion_8c.html#a85ccb93e44662f9175e3579d741393d7',1,'low_saurion.c']]],
+  ['ev_5frea_5',['EV_REA',['../de/d27/low__saurion_8c.html#a77ab66dd047cee976375425d1ee3987e',1,'low_saurion.c']]],
+  ['ev_5fwai_6',['EV_WAI',['../de/d27/low__saurion_8c.html#a63cd9bef0f3d1e247b467a962f4334b1',1,'low_saurion.c']]],
+  ['ev_5fwri_7',['EV_WRI',['../de/d27/low__saurion_8c.html#a007c93bf045c4c59fecfa50f88472c8e',1,'low_saurion.c']]],
+  ['event_5ftype_8',['event_type',['../dc/d20/structrequest.html#a9cba15f1748716ffe6869a271c1ccc4d',1,'request']]]
 ];
