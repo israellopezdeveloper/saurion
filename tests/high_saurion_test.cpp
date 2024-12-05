@@ -1,5 +1,6 @@
 #include "config.h"
 #include "low_saurion.h"
+#include "saurion.hpp"
 
 #include <cstdio>
 #include <ctime>
@@ -91,10 +92,10 @@ const auto summary = std::make_unique<struct summary> ();
 
 static void signalHandler (int signum);
 
-class low_saurion : public ::testing::Test
+class high_saurion : public ::testing::Test
 {
 public:
-  struct saurion *saurion;
+  Saurion *saurion;
   static std::string fifo_name;
   static FILE *fifo_write;
   static pid_t pid;
@@ -179,64 +180,62 @@ protected:
     summary->readed = 0;
     summary->wrote = 0;
     summary->fds.clear ();
-    saurion = saurion_create (N_THREADS);
-    if (!saurion)
-      {
-        return;
-      }
-    saurion->ss = saurion_set_socket (PORT);
-    if (!saurion->ss)
-      {
-        throw std::runtime_error (strerror (errno));
-      }
-    saurion->cb.on_connected = [] (int sfd, void *) {
-      pthread_mutex_lock (&summary->connected_m);
-      summary->connected++;
-      summary->fds.push_back (sfd);
-      pthread_cond_signal (&summary->connected_c);
-      pthread_mutex_unlock (&summary->connected_m);
-    };
-    saurion->cb.on_readed
-        = [] (int, const void *const, const ssize_t size, void *) {
-            pthread_mutex_lock (&summary->readed_m);
-            summary->readed += size;
-            pthread_cond_signal (&summary->readed_c);
-            pthread_mutex_unlock (&summary->readed_m);
-          };
-    saurion->cb.on_wrote = [] (int, void *) {
-      pthread_mutex_lock (&summary->wrote_m);
-      summary->wrote++;
-      pthread_cond_signal (&summary->wrote_c);
-      pthread_mutex_unlock (&summary->wrote_m);
-    };
-    saurion->cb.on_closed = [] (int sfd, void *) {
-      pthread_mutex_lock (&summary->disconnected_m);
-      atomic_fetch_add_explicit ((atomic_int *)&summary->disconnected, 1,
-                                 memory_order_relaxed);
-      pthread_cond_signal (&summary->disconnected_c);
-      pthread_mutex_unlock (&summary->disconnected_m);
-      pthread_mutex_lock (&summary->connected_m);
-      auto &vec = summary->fds;
-      vec.erase (std::remove (vec.begin (), vec.end (), sfd), vec.end ());
-      pthread_cond_signal (&summary->connected_c);
-      pthread_mutex_unlock (&summary->connected_m);
-    };
-    saurion->cb.on_error = [] (int, const char *const, const ssize_t, void *) {
-      // Not tested yet
-    };
-    if (!saurion_start (saurion))
-      {
-        exit (ERROR_CODE);
-      }
+    saurion = new Saurion (N_THREADS, saurion_set_socket (PORT));
+    saurion
+        ->on_connected (
+            [] (int sfd, void *) {
+              pthread_mutex_lock (&summary->connected_m);
+              summary->connected++;
+              summary->fds.push_back (sfd);
+              pthread_cond_signal (&summary->connected_c);
+              pthread_mutex_unlock (&summary->connected_m);
+            },
+            nullptr)
+        ->on_readed (
+            [] (int, const void *const, const ssize_t size, void *) {
+              pthread_mutex_lock (&summary->readed_m);
+              summary->readed += size;
+              pthread_cond_signal (&summary->readed_c);
+              pthread_mutex_unlock (&summary->readed_m);
+            },
+            nullptr)
+        ->on_wrote (
+            [] (int, void *) {
+              pthread_mutex_lock (&summary->wrote_m);
+              summary->wrote++;
+              pthread_cond_signal (&summary->wrote_c);
+              pthread_mutex_unlock (&summary->wrote_m);
+            },
+            nullptr)
+        ->on_closed (
+            [] (int sfd, void *) {
+              pthread_mutex_lock (&summary->disconnected_m);
+              atomic_fetch_add_explicit ((atomic_int *)&summary->disconnected,
+                                         1, memory_order_relaxed);
+              pthread_cond_signal (&summary->disconnected_c);
+              pthread_mutex_unlock (&summary->disconnected_m);
+              pthread_mutex_lock (&summary->connected_m);
+              auto &vec = summary->fds;
+              vec.erase (std::remove (vec.begin (), vec.end (), sfd),
+                         vec.end ());
+              pthread_cond_signal (&summary->connected_c);
+              pthread_mutex_unlock (&summary->connected_m);
+            },
+            nullptr)
+        ->on_error (
+            [] (int, const char *const, const ssize_t, void *) {
+              // Not tested yet
+            },
+            nullptr);
+    saurion->init ();
   }
 
   void
   TearDown () override
   {
     disconnect_clients ();
-    saurion_stop (saurion);
-    close (saurion->ss);
-    saurion_destroy (saurion);
+    saurion->stop ();
+    delete saurion;
     deleteLogFiles ();
     struct timespec tim;
     tim.tv_sec = 0;
@@ -321,7 +320,7 @@ protected:
   {
     for (uint32_t i = 0; i < n; ++i)
       {
-        saurion_send (saurion, sfd, msg);
+        saurion->send (sfd, msg);
       }
   }
 
@@ -332,7 +331,7 @@ protected:
       {
         for (uint32_t i = 0; i < n; ++i)
           {
-            saurion_send (saurion, sfd, msg);
+            saurion->send (sfd, msg);
           }
       }
   }
@@ -394,22 +393,23 @@ private:
   }
 };
 
-std::string low_saurion::fifo_name = "";
-pid_t low_saurion::pid = 0;
-FILE *low_saurion::fifo_write = nullptr;
+std::string high_saurion::fifo_name = "";
+pid_t high_saurion::pid = 0;
+FILE *high_saurion::fifo_write = nullptr;
 
 static void
 signalHandler (int signum)
 {
   std::cout << "Interceptada la señal " << signum << std::endl;
 
-  if (std::remove (low_saurion::fifo_name.c_str ()) != 0)
+  if (std::remove (high_saurion::fifo_name.c_str ()) != 0)
     {
-      std::cerr << "Error al eliminar " << low_saurion::fifo_name << std::endl;
+      std::cerr << "Error al eliminar " << high_saurion::fifo_name
+                << std::endl;
     }
   else
     {
-      std::cout << low_saurion::fifo_name << " eliminado exitosamente."
+      std::cout << high_saurion::fifo_name << " eliminado exitosamente."
                 << std::endl;
     }
   std::regex pattern ("^saurion_sender.*\\.log$");
@@ -438,9 +438,9 @@ signalHandler (int signum)
   exit (ERROR_CODE);
 }
 
-TEST_F (low_saurion, initServerAndCloseCorrectly) { EXPECT_TRUE (true); }
+TEST_F (high_saurion, initServerAndCloseCorrectly) { EXPECT_TRUE (true); }
 
-TEST_F (low_saurion, connectMultipleClients)
+TEST_F (high_saurion, connectMultipleClients)
 {
   uint32_t clients = 20;
   connect_clients (clients);
@@ -451,7 +451,7 @@ TEST_F (low_saurion, connectMultipleClients)
   EXPECT_EQ (summary->disconnected, clients);
 }
 
-TEST_F (low_saurion, readWriteMsgsToClients)
+TEST_F (high_saurion, readWriteMsgsToClients)
 {
   uint32_t clients = 20;
   uint32_t msgs = 100;
@@ -470,7 +470,7 @@ TEST_F (low_saurion, readWriteMsgsToClients)
   EXPECT_EQ (summary->disconnected, clients);
 }
 
-TEST_F (low_saurion, reconnectClients)
+TEST_F (high_saurion, reconnectClients)
 {
   uint32_t clients = 5;
   connect_clients (clients);
@@ -487,7 +487,7 @@ TEST_F (low_saurion, reconnectClients)
   EXPECT_EQ (summary->disconnected, clients * 2);
 }
 
-TEST_F (low_saurion, readWriteWithLargeMessageMultipleOfChunkSize)
+TEST_F (high_saurion, readWriteWithLargeMessageMultipleOfChunkSize)
 {
   uint32_t clients = 1;
   size_t size = CHUNK_SZ * 2;
@@ -509,7 +509,7 @@ TEST_F (low_saurion, readWriteWithLargeMessageMultipleOfChunkSize)
   EXPECT_EQ (summary->disconnected, clients);
 }
 
-TEST_F (low_saurion, handleConcurrentReadsAndWrites)
+TEST_F (high_saurion, handleConcurrentReadsAndWrites)
 {
   uint32_t clients = 20;
   uint32_t msgs = 10;

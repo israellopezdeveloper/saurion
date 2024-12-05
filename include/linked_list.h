@@ -10,6 +10,7 @@ extern "C"
 
   struct Node;
 
+  [[nodiscard]]
   int list_insert (struct Node **head, void *ptr, size_t amount,
                    void **children);
 

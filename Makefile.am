@@ -43,7 +43,7 @@ check_PROGRAMS = tests/client tests/saurion_test
 
 tests_client_SOURCES = tests/client.cpp
 
-tests_saurion_test_SOURCES = tests/low_saurion_test.cpp tests/unit_low_saurion_test.cpp include/low_saurion.h include/saurion.hpp include/low_saurion_secret.h tests/threadpool_test.cpp include/threadpool.h tests/linked_list_test.cpp include/linked_list.h
+tests_saurion_test_SOURCES = tests/low_saurion_test.cpp tests/high_saurion_test.cpp tests/unit_low_saurion_test.cpp include/low_saurion.h include/saurion.hpp include/low_saurion_secret.h tests/threadpool_test.cpp include/threadpool.h tests/linked_list_test.cpp include/linked_list.h
 tests_saurion_test_CXXFLAGS = $(GTEST_INCLUDE)
 tests_saurion_test_LDADD = lib/libsaurion.la lib/libthreadpool.la $(GTEST_LIBS)
 tests_saurion_test_LDFLAGS = -luring

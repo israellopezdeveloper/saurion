@@ -11,6 +11,7 @@ OPTION_FLAGS_debug=false
 OPTION_FLAGS_clean=false
 OPTION_FLAGS_compile_commands=false
 OPTION_FLAGS_iwyu=false
+OPTION_FLAGS_disable_timeout=false
 OPTION_FLAGS_thread=false
 
 banner() {
@@ -47,24 +48,28 @@ make_exec() {
   params="$*"
   banner "MAKE ${params}"
 
-  max_attempts=3
-  attempt=0
+  if ${OPTION_FLAGS_disable_timeout}; then
+    make "${params}"
+  else
+    max_attempts=3
+    attempt=0
 
-  while [ $attempt -lt $max_attempts ]; do
-    attempt=$((attempt + 1))
+    while [ $attempt -lt $max_attempts ]; do
+      attempt=$((attempt + 1))
 
-    # Ejecuta el comando con timeout
-    timeout "120s" make "${params}"
-    exit_status=$?
+      timeout "120s" make "${params}"
+      exit_status=$?
 
-    if [ $exit_status -eq 0 ]; then
-      break
-    fi
+      if [ $exit_status -eq 0 ]; then
+        break
+      fi
 
-    if [ $attempt = $max_attempts ]; then
-      break
-    fi
-  done
+      if [ $attempt = $max_attempts ]; then
+        break
+      fi
+    done
+
+  fi
   wait_key
 }
 
@@ -79,24 +84,28 @@ make_iwyu() {
 make_tests() {
   banner "MAKE check"
 
-  max_attempts=3
-  attempt=0
+  if ${OPTION_FLAGS_disable_timeout}; then
+    make check
+  else
+    max_attempts=3
+    attempt=0
 
-  while [ $attempt -lt $max_attempts ]; do
-    attempt=$((attempt + 1))
+    while [ $attempt -lt $max_attempts ]; do
+      attempt=$((attempt + 1))
 
-    # Ejecuta el comando con timeout
-    timeout "30s" make check
-    exit_status=$?
+      # Ejecuta el comando con timeout
+      timeout "30s" make check
+      exit_status=$?
 
-    if [ $exit_status -eq 0 ]; then
-      break
-    fi
+      if [ $exit_status -eq 0 ]; then
+        break
+      fi
 
-    if [ $attempt = $max_attempts ]; then
-      break
-    fi
-  done
+      if [ $attempt = $max_attempts ]; then
+        break
+      fi
+    done
+  fi
   wait_key
 }
 
@@ -120,6 +129,7 @@ show_help() {
   echo "  -n, --clean                Clean build directory before building and do not clean after"
   echo "  -m, --compile-commands     Execute compile_commands target"
   echo "  -w, --iwyu                 Execute iwyu"
+  echo "  -x, --disable-timeout      Disable timeouts on rule execution"
   echo "  -h, --help                 Show this help message"
 }
 
@@ -227,6 +237,10 @@ while [ $# -gt 0 ]; do
     ;;
   -w | --iwyu)
     OPTION_FLAGS_iwyu=true
+    shift
+    ;;
+  -x | --disable-timeout)
+    OPTION_FLAGS_disable_timeout=true
     shift
     ;;
   -h | --help)

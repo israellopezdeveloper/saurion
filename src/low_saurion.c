@@ -242,7 +242,7 @@ set_request (struct request **r, struct Node **l, size_t s, const void *m,
           return ERROR_CODE;
         }
     }
-  if (list_insert (l, req, amount, children_ptr))
+  if (!list_insert (l, req, amount, children_ptr))
     {
       free_request (req, children_ptr, amount);
       return ERROR_CODE;
