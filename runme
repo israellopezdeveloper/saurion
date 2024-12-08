@@ -65,7 +65,7 @@ make_exec() {
       fi
 
       if [ $attempt = $max_attempts ]; then
-        exit 1
+        return 1
       fi
       sleep "0.5s"
     done
@@ -103,7 +103,7 @@ make_tests() {
       fi
 
       if [ $attempt = $max_attempts ]; then
-        exit 1
+        return 1
       fi
       sleep "0.5s"
     done
