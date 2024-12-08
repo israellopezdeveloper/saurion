@@ -9,7 +9,7 @@ void
 dummy_task (void *arg)
 {
   std::this_thread::sleep_for (std::chrono::milliseconds (50));
-  int *counter = static_cast<int *> (arg);
+  auto *counter = static_cast<int *> (arg);
   (*counter)++;
 }
 
@@ -126,7 +126,6 @@ TEST_F (struct_threadpool, AddToStopedThreadPool)
   ASSERT_EQ (counter, 1);
 }
 
-// TODO: investigar -Wl,--wrap,malloc para testear cuando malloc falla
 TEST (ThreadPoolTest, CreateMinimumThreads)
 {
   struct threadpool *pool = threadpool_create (2);

@@ -322,7 +322,7 @@ protected:
   }
 };
 
-typedef ::testing::Types<LowSaurion, HighSaurion> SaurionTypes;
+using SaurionTypes = ::testing::Types<LowSaurion, HighSaurion>;
 TYPED_TEST_SUITE (SaurionTest, SaurionTypes);
 
 TYPED_TEST (SaurionTest, initServerAndCloseCorrectly) { EXPECT_TRUE (true); }

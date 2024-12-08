@@ -4,8 +4,15 @@
 #include <cstdint>
 #include <cstdio>
 #include <string>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+// set_port
+int set_port ();
+
+// set_fifoname
+std::string set_fifoname ();
 
 class ClientInterface
 {
@@ -25,14 +32,14 @@ public:
   uint64_t reads (const std::string &search) const;
   void clean () const;
 
-  const std::string getFifoPath () const;
+  std::string getFifoPath () const;
   int getPort () const;
 
 private:
   pid_t pid;
   FILE *fifo;
-  std::string fifoname;
-  int port;
+  std::string fifoname = set_fifoname ();
+  int port = set_port ();
 };
 
 #endif // !CLIENT_INTERFACE_HPP

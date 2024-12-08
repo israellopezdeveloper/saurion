@@ -45,7 +45,7 @@ get_executable_directory ()
 }
 
 // generate_random_fifo_name
-static std::string
+std::string
 generate_random_fifo_name ()
 {
   constexpr char FIFO[] = "/tmp/saurion_test_fifo.XXX";
@@ -64,7 +64,7 @@ generate_random_fifo_name ()
 }
 
 // set_port
-static int
+int
 set_port ()
 {
   std::random_device rd;
@@ -74,7 +74,7 @@ set_port ()
 }
 
 // set_fifoname
-static std::string
+std::string
 set_fifoname ()
 {
   std::string filename = generate_random_fifo_name ();
@@ -121,8 +121,7 @@ exec_client (const std::string &filename, FILE *&fifo_write)
 }
 
 // Constructor
-ClientInterface::ClientInterface () noexcept : fifoname (set_fifoname ()),
-                                               port (set_port ())
+ClientInterface::ClientInterface () noexcept
 {
   pid = exec_client (fifoname, fifo);
 }
@@ -221,7 +220,7 @@ ClientInterface::clean () const
 }
 
 // getFifoPath
-const std::string
+std::string
 ClientInterface::getFifoPath () const
 {
   return this->fifoname;
