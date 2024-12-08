@@ -2,12 +2,13 @@
 #include <arpa/inet.h> // for htonl, inet_pton, ntohl, htons
 #include <atomic>      // for atomic
 #include <cerrno>
-#include <cstdint>      // for uint64_t, uint32_t, int64_t, uint8_t
-#include <cstdio>       // for perror, size_t
-#include <cstdlib>      // for exit, WIFEXITED, WTERMSIG
-#include <cstring>      // for memcpy, strerror, memset, strlen, strcpy
-#include <errno.h>      // for errno, EAGAIN, EWOULDBLOCK
-#include <fcntl.h>      // for fcntl, open, F_GETFL, F_SETFL, O_NONBLOCK
+#include <cstdint> // for uint64_t, uint32_t, int64_t, uint8_t
+#include <cstdio>  // for perror, size_t
+#include <cstdlib> // for exit, WIFEXITED, WTERMSIG
+#include <cstring> // for memcpy, strerror, memset, strlen, strcpy
+#include <errno.h> // for errno, EAGAIN, EWOULDBLOCK
+#include <fcntl.h> // for fcntl, open, F_GETFL, F_SETFL, O_NONBLOCK
+#include <filesystem>
 #include <fstream>      // for basic_ostream, operator<<, endl, basic...
 #include <iostream>     // for cerr, cout
 #include <memory>       // for allocator, make_unique, unique_ptr
@@ -163,6 +164,37 @@ parseMessages (const char *buffer, int64_t bytes_read,
     }
 }
 
+std::string
+createTemporaryFile (int clientId)
+{
+  if (clientId < 0 || clientId > 999)
+    {
+      throw std::invalid_argument ("clientId must be between 0 and 999.");
+    }
+
+  std::filesystem::path tempDir = std::filesystem::temp_directory_path ();
+  const std::string baseName = "saurion_sender";
+
+  std::ostringstream fileNameStream;
+  fileNameStream << baseName << "." << std::setfill ('0') << std::setw (3)
+                 << clientId << ".log";
+
+  std::filesystem::path filePath = tempDir / fileNameStream.str ();
+
+  std::ofstream tempFile (filePath,
+                          std::ios::out | std::ios::trunc | std::ios::binary);
+  if (tempFile.is_open ())
+    {
+      tempFile.close ();
+      return filePath.string ();
+    }
+  else
+    {
+      throw std::ios_base::failure (
+          "Failed to create or truncate the temporary file.");
+    }
+}
+
 void
 createClient (int clientId, int port)
 {
@@ -176,7 +208,7 @@ createClient (int clientId, int port)
   signal (SIGUSR2, sendMessagesHandler);
 
   std::ostringstream tempFilePath;
-  tempFilePath << "/tmp/saurion_sender." << clientId << ".log";
+  tempFilePath << createTemporaryFile (clientId);
   std::ofstream logStream (tempFilePath.str (), std::ios::app);
 
   if (!logStream.is_open ())

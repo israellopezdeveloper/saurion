@@ -1,6 +1,7 @@
 #include "saurion.hpp"
 
 #include "low_saurion.h" // for saurion, saurion_create, saurion_destroy
+#include <unistd.h>
 
 Saurion::Saurion (const uint32_t thds, const int sck) noexcept
 {
@@ -12,7 +13,11 @@ Saurion::Saurion (const uint32_t thds, const int sck) noexcept
   this->s->ss = sck;
 }
 
-Saurion::~Saurion () { saurion_destroy (this->s); }
+Saurion::~Saurion ()
+{
+  close (s->ss);
+  saurion_destroy (this->s);
+}
 
 void
 Saurion::init () noexcept

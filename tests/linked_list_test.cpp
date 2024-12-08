@@ -27,7 +27,10 @@ protected:
   {
     auto *ptr = new char[strlen (str) + 1];
     strcpy (ptr, str);
-    list_insert (&list, ptr, 0, nullptr);
+    if (!list_insert (&list, ptr, 0, nullptr))
+      {
+        return nullptr;
+      }
     return ptr;
   }
 
@@ -48,7 +51,10 @@ protected:
         children_ptr[i] = children[i]->iov_base;
       }
 
-    list_insert (&list, ptr, amount, children_ptr);
+    if (!list_insert (&list, ptr, amount, children_ptr))
+      {
+        return nullptr;
+      }
 
     for (size_t i = 0; i < amount; ++i)
       {

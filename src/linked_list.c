@@ -1,4 +1,5 @@
 #include "linked_list.h"
+#include "config.h"
 
 #include <pthread.h>
 #include <stdlib.h>
@@ -13,6 +14,7 @@ struct Node
 
 pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+[[nodiscard]]
 struct Node *
 create_node (void *ptr, size_t amount, void **children)
 {
@@ -61,20 +63,21 @@ create_node (void *ptr, size_t amount, void **children)
   return new_node;
 }
 
+[[nodiscard]]
 int
 list_insert (struct Node **head, void *ptr, size_t amount, void **children)
 {
   struct Node *new_node = create_node (ptr, amount, children);
   if (!new_node)
     {
-      return 1;
+      return ERROR_CODE;
     }
   pthread_mutex_lock (&list_mutex);
   if (!*head)
     {
       *head = new_node;
       pthread_mutex_unlock (&list_mutex);
-      return 0;
+      return SUCCESS_CODE;
     }
   struct Node *temp = *head;
   while (temp->next)
@@ -83,7 +86,7 @@ list_insert (struct Node **head, void *ptr, size_t amount, void **children)
     }
   temp->next = new_node;
   pthread_mutex_unlock (&list_mutex);
-  return 0;
+  return SUCCESS_CODE;
 }
 
 void
