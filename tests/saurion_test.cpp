@@ -88,7 +88,7 @@ cb_OnClosed (int sfd, void *arg)
   pthread_mutex_unlock (&summary->disconnected_m);
   pthread_mutex_lock (&summary->connected_m);
   auto &vec = summary->fds;
-  vec.erase (std::remove (vec.begin (), vec.end (), sfd), vec.end ());
+  std::erase_if (vec, [&sfd] (auto i) { return i == sfd; });
   pthread_cond_signal (&summary->connected_c);
   pthread_mutex_unlock (&summary->connected_m);
 }
@@ -106,7 +106,7 @@ public:
 
   // SetUp
   void
-  SetUp ()
+  SetUpCommon ()
   {
     summary.connected = 0;
     summary.disconnected = 0;
@@ -117,7 +117,7 @@ public:
 
   // TearDown
   void
-  TearDown ()
+  TearDownCommon () const
   {
     struct timespec tim;
     tim.tv_sec = 0;
@@ -184,7 +184,7 @@ public:
   void
   SetUp (const uint port)
   {
-    CommonSaurion::SetUp ();
+    CommonSaurion::SetUpCommon ();
     const unsigned int N_THREADS = 6;
     saurion = saurion_create (N_THREADS);
     if (!saurion)
@@ -219,7 +219,7 @@ public:
     saurion_stop (saurion);
     close (saurion->ss);
     saurion_destroy (saurion);
-    CommonSaurion::TearDown ();
+    CommonSaurion::TearDownCommon ();
   }
 
   // send
@@ -256,7 +256,7 @@ public:
   void
   SetUp (const uint port)
   {
-    CommonSaurion::SetUp ();
+    CommonSaurion::SetUpCommon ();
     const unsigned int N_THREADS = 6;
     saurion = new Saurion (N_THREADS, saurion_set_socket (port));
     saurion->on_connected (cb_OnConnected, &summary)
@@ -271,7 +271,7 @@ public:
   void
   TearDown ()
   {
-    CommonSaurion::TearDown ();
+    CommonSaurion::TearDownCommon ();
     saurion->stop ();
     delete saurion;
   }
