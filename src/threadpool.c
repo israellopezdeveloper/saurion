@@ -2,7 +2,6 @@
 #include "config.h"     // for NUM_CORES
 #include <nanologger.h> // for LOG_END, LOG_INIT
 #include <pthread.h>    // for pthread_mutex_unlock, pthread_mutex_lock
-#include <stdio.h>      // for perror
 #include <stdlib.h>     // for free, malloc
 
 #define TRUE 1
@@ -35,7 +34,6 @@ threadpool_create (size_t num_threads)
   struct threadpool *pool = malloc (sizeof (struct threadpool));
   if (pool == NULL)
     {
-      perror ("Failed to allocate threadpool");
       LOG_END (" ");
       return NULL;
     }
@@ -52,7 +50,6 @@ threadpool_create (size_t num_threads)
   pool->threads = malloc (sizeof (pthread_t) * num_threads);
   if (pool->threads == NULL)
     {
-      perror ("Failed to allocate threads array");
       free (pool);
       LOG_END (" ");
       return NULL;
@@ -65,7 +62,6 @@ threadpool_create (size_t num_threads)
 
   if (pthread_mutex_init (&pool->queue_lock, NULL) != 0)
     {
-      perror ("Failed to initialize mutex");
       free (pool->threads);
       free (pool);
       LOG_END (" ");
@@ -74,7 +70,6 @@ threadpool_create (size_t num_threads)
 
   if (pthread_cond_init (&pool->queue_cond, NULL) != 0)
     {
-      perror ("Failed to initialize condition variable");
       pthread_mutex_destroy (&pool->queue_lock);
       free (pool->threads);
       free (pool);
@@ -84,7 +79,6 @@ threadpool_create (size_t num_threads)
 
   if (pthread_cond_init (&pool->empty_cond, NULL) != 0)
     {
-      perror ("Failed to initialize empty condition variable");
       pthread_mutex_destroy (&pool->queue_lock);
       pthread_cond_destroy (&pool->queue_cond);
       free (pool->threads);
@@ -162,7 +156,6 @@ threadpool_init (struct threadpool *pool)
                           (void *)pool)
           != 0)
         {
-          perror ("Failed to create thread");
           pool->stop = TRUE;
           break;
         }
@@ -185,7 +178,6 @@ threadpool_add (struct threadpool *pool, void (*function) (void *),
   struct task *new_task = malloc (sizeof (struct task));
   if (new_task == NULL)
     {
-      perror ("Failed to allocate task");
       LOG_END (" ");
       return;
     }
@@ -280,16 +272,6 @@ threadpool_destroy (struct threadpool *pool)
       return;
     }
   threadpool_stop (pool);
-
-  pthread_mutex_lock (&pool->queue_lock);
-  struct task *task = pool->task_queue_head;
-  while (task != NULL)
-    {
-      struct task *tmp = task;
-      task = task->next;
-      free (tmp);
-    }
-  pthread_mutex_unlock (&pool->queue_lock);
 
   pthread_mutex_destroy (&pool->queue_lock);
   pthread_cond_destroy (&pool->queue_cond);

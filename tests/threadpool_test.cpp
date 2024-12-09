@@ -1,7 +1,17 @@
+#include "config.h"
 #include "threadpool.h"
 #include "gtest/gtest.h" // for Message, TestInfo (ptr only), AssertionResult
 #include <ctime>         // for timespec, nanosleep
 #include <pthread.h>     // for pthread_mutex_lock, pthread_mutex_unlock
+#include <thread>        // for sleep_for
+
+void
+dummy_task (void *arg)
+{
+  std::this_thread::sleep_for (std::chrono::milliseconds (50));
+  auto *counter = static_cast<int *> (arg);
+  (*counter)++;
+}
 
 class struct_threadpool : public ::testing::Test
 {
@@ -95,4 +105,117 @@ TEST_F (struct_threadpool, ZeroThreads)
       &x);
   threadpool_stop (pool);
   EXPECT_EQ (x, 1);
+}
+
+TEST_F (struct_threadpool, AddNullTask)
+{
+  threadpool_add (pool, nullptr, nullptr);
+
+  ASSERT_TRUE (threadpool_empty (pool));
+}
+
+TEST_F (struct_threadpool, AddToStopedThreadPool)
+{
+  int counter = 0;
+  threadpool_add (pool, dummy_task, &counter);
+  threadpool_stop (pool);
+
+  // Asegura que no se pueden agregar más tareas después de detener
+  threadpool_add (pool, dummy_task, &counter);
+
+  ASSERT_EQ (counter, 1);
+}
+
+TEST (ThreadPoolTest, CreateMinimumThreads)
+{
+  struct threadpool *pool = threadpool_create (2);
+  ASSERT_NE (pool, nullptr);
+  threadpool_destroy (pool);
+}
+
+TEST (ThreadPoolTest, CreateMaximumThreads)
+{
+  struct threadpool *pool
+      = threadpool_create (NUM_CORES + 5); // num_threads > NUM_CORES
+  ASSERT_NE (pool, nullptr);
+  threadpool_destroy (pool);
+}
+
+TEST (ThreadPoolTest, AddNullTask)
+{
+  struct threadpool *pool = threadpool_create (4);
+  ASSERT_NE (pool, nullptr);
+
+  // No debería agregar tareas si el puntero de función es nulo
+  threadpool_add (pool, nullptr, nullptr);
+
+  ASSERT_TRUE (threadpool_empty (pool));
+
+  threadpool_destroy (pool);
+}
+
+TEST (ThreadPoolTest, StopThreadPool)
+{
+  struct threadpool *pool = threadpool_create (4);
+  ASSERT_NE (pool, nullptr);
+
+  int counter = 0;
+  threadpool_init (pool);
+
+  threadpool_add (pool, dummy_task, &counter);
+  threadpool_stop (pool);
+
+  // Asegura que no se pueden agregar más tareas después de detener
+  threadpool_add (pool, dummy_task, &counter);
+
+  ASSERT_EQ (counter, 1); // Solo una tarea ejecutada
+
+  threadpool_destroy (pool);
+}
+
+TEST (ThreadPoolTest, DestroyWithPendingTasks)
+{
+  struct threadpool *pool = threadpool_create (4);
+  ASSERT_NE (pool, nullptr);
+
+  int counter = 0;
+  threadpool_init (pool);
+
+  // Agregar tareas pero no esperar a que terminen
+  for (int i = 0; i < 5; ++i)
+    {
+      threadpool_add (pool, dummy_task, &counter);
+    }
+
+  threadpool_destroy (pool);
+
+  // Los recursos deben limpiarse incluso con tareas pendientes
+  ASSERT_TRUE (true); // No hay errores de segmentación
+}
+
+TEST (ThreadPoolTest, PoolEmptyCheck)
+{
+  struct threadpool *pool = threadpool_create (4);
+  threadpool_init (pool);
+  ASSERT_NE (pool, nullptr);
+
+  ASSERT_TRUE (threadpool_empty (pool));
+
+  int counter = 0;
+  threadpool_add (pool, dummy_task, &counter);
+
+  ASSERT_FALSE (threadpool_empty (pool));
+
+  threadpool_wait_empty (pool);
+  ASSERT_TRUE (threadpool_empty (pool));
+
+  threadpool_destroy (pool);
+}
+
+TEST (ThreadPoolTest, CreateDefaultPool)
+{
+  struct threadpool *pool = threadpool_create_default ();
+  ASSERT_NE (pool, nullptr);
+
+  threadpool_destroy (pool);
 }
