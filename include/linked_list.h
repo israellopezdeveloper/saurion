@@ -1,6 +1,6 @@
 /*!
- * @defgroup LinkedList Thread-safe Linked List
- * @file linked_list.h
+ * @defgroup LinkedList
+ *
  * @brief A module for managing a thread-safe linked list.
  *
  * This module provides functions to create, insert, delete, and free nodes in
@@ -39,6 +39,9 @@
  *     return 0;
  * }
  * ```
+ *
+ * @author Israel
+ * @date 2024
  *
  * @{
  */
