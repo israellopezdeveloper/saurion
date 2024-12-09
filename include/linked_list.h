@@ -6,13 +6,13 @@ extern "C"
 {
 #endif
 
-#include <stddef.h>
+#include <stdint.h> // for uint64_t
 
   struct Node;
 
   [[nodiscard]]
-  int list_insert (struct Node **head, void *ptr, size_t amount,
-                   void **children);
+  int list_insert (struct Node **head, void *ptr, const uint64_t amount,
+                   void *const *children);
 
   void list_delete_node (struct Node **head, const void *const ptr);
 

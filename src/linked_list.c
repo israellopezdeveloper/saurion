@@ -16,7 +16,7 @@ pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 [[nodiscard]]
 struct Node *
-create_node (void *ptr, size_t amount, void **children)
+create_node (void *ptr, const uint64_t amount, void *const *children)
 {
   struct Node *new_node = (struct Node *)malloc (sizeof (struct Node));
   if (!new_node)
@@ -65,7 +65,8 @@ create_node (void *ptr, size_t amount, void **children)
 
 [[nodiscard]]
 int
-list_insert (struct Node **head, void *ptr, size_t amount, void **children)
+list_insert (struct Node **head, void *ptr, const uint64_t amount,
+             void *const *children)
 {
   struct Node *new_node = create_node (ptr, amount, children);
   if (!new_node)
