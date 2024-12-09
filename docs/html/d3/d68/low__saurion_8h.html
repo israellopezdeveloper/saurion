@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.3</span>
+   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.4</span>
    </div>
   </td>
  </tr>
@@ -108,14 +108,11 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d32/structsaurion.html">saurion</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main structure for managing io_uring and socket events.  <a href="../../df/d32/structsaurion.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d62/structsaurion_1_1saurion__callbacks.html">saurion::saurion_callbacks</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure containing callback functions to handle socket events.  <a href="../../d9/d62/structsaurion_1_1saurion__callbacks.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d5e/structsaurion__callbacks.html">saurion_callbacks</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure containing callback functions to handle socket events.  <a href="../../d8/d5e/structsaurion__callbacks.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d32/structsaurion.html">saurion</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main structure for managing io_uring and socket events.  <a href="../../df/d32/structsaurion.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
@@ -149,31 +146,31 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:accecd790987d2462aef28365fdc7fec2"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#accecd790987d2462aef28365fdc7fec2">on_connected</a> )(const int fd, void *arg)</td></tr>
-<tr class="memdesc:accecd790987d2462aef28365fdc7fec2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling new connections.  <a href="../../d3/d68/low__saurion_8h.html#accecd790987d2462aef28365fdc7fec2">More...</a><br /></td></tr>
-<tr class="separator:accecd790987d2462aef28365fdc7fec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7dcdef29b057c13947b60353e539d029"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a7dcdef29b057c13947b60353e539d029">on_connected_arg</a></td></tr>
-<tr class="separator:a7dcdef29b057c13947b60353e539d029"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d2b5799d70e786445db5adbeb98651b"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a4d2b5799d70e786445db5adbeb98651b">on_readed</a> )(const int fd, const void *const content, const ssize_t len, void *arg)</td></tr>
-<tr class="memdesc:a4d2b5799d70e786445db5adbeb98651b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling read events.  <a href="../../d3/d68/low__saurion_8h.html#a4d2b5799d70e786445db5adbeb98651b">More...</a><br /></td></tr>
-<tr class="separator:a4d2b5799d70e786445db5adbeb98651b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a908f164fa396610a2a489f2ada0a9ac3"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a908f164fa396610a2a489f2ada0a9ac3">on_readed_arg</a></td></tr>
-<tr class="separator:a908f164fa396610a2a489f2ada0a9ac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3355b2a942d17cdf7e5b5ec4e967961"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#ac3355b2a942d17cdf7e5b5ec4e967961">on_wrote</a> )(const int fd, void *arg)</td></tr>
-<tr class="memdesc:ac3355b2a942d17cdf7e5b5ec4e967961"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling write events.  <a href="../../d3/d68/low__saurion_8h.html#ac3355b2a942d17cdf7e5b5ec4e967961">More...</a><br /></td></tr>
-<tr class="separator:ac3355b2a942d17cdf7e5b5ec4e967961"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09e173970ff611931036303d7368042a"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a09e173970ff611931036303d7368042a">on_wrote_arg</a></td></tr>
-<tr class="separator:a09e173970ff611931036303d7368042a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa2b45f20cf3d4cde51f6f644f17cf7b"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#afa2b45f20cf3d4cde51f6f644f17cf7b">on_closed</a> )(const int fd, void *arg)</td></tr>
-<tr class="memdesc:afa2b45f20cf3d4cde51f6f644f17cf7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling socket closures.  <a href="../../d3/d68/low__saurion_8h.html#afa2b45f20cf3d4cde51f6f644f17cf7b">More...</a><br /></td></tr>
-<tr class="separator:afa2b45f20cf3d4cde51f6f644f17cf7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a015675f2c79592d505ff83c2b2a44840"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a015675f2c79592d505ff83c2b2a44840">on_closed_arg</a></td></tr>
-<tr class="separator:a015675f2c79592d505ff83c2b2a44840"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7338d3ceb8434b1f3a23261464bc159"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#af7338d3ceb8434b1f3a23261464bc159">on_error</a> )(const int fd, const char *const content, const ssize_t len, void *arg)</td></tr>
-<tr class="memdesc:af7338d3ceb8434b1f3a23261464bc159"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling error events.  <a href="../../d3/d68/low__saurion_8h.html#af7338d3ceb8434b1f3a23261464bc159">More...</a><br /></td></tr>
-<tr class="separator:af7338d3ceb8434b1f3a23261464bc159"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa65d2f759a6afebca65a7a9ac4c9841a"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#aa65d2f759a6afebca65a7a9ac4c9841a">on_error_arg</a></td></tr>
-<tr class="separator:aa65d2f759a6afebca65a7a9ac4c9841a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a1f6a55dc4fcd2a43d264268485ca7c"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a5a1f6a55dc4fcd2a43d264268485ca7c">on_connected</a> )(const int fd, void *arg)</td></tr>
+<tr class="memdesc:a5a1f6a55dc4fcd2a43d264268485ca7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling new connections.  <a href="../../d3/d68/low__saurion_8h.html#a5a1f6a55dc4fcd2a43d264268485ca7c">More...</a><br /></td></tr>
+<tr class="separator:a5a1f6a55dc4fcd2a43d264268485ca7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc9f5650a0b73e18e55ac7cf1e2b17f4"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#adc9f5650a0b73e18e55ac7cf1e2b17f4">on_connected_arg</a></td></tr>
+<tr class="separator:adc9f5650a0b73e18e55ac7cf1e2b17f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a411734fb2ab603181edd1f9de76d061f"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a411734fb2ab603181edd1f9de76d061f">on_readed</a> )(const int fd, const void *const content, const ssize_t len, void *arg)</td></tr>
+<tr class="memdesc:a411734fb2ab603181edd1f9de76d061f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling read events.  <a href="../../d3/d68/low__saurion_8h.html#a411734fb2ab603181edd1f9de76d061f">More...</a><br /></td></tr>
+<tr class="separator:a411734fb2ab603181edd1f9de76d061f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad77310081fa26d4ab1570e0ccfb3d90c"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#ad77310081fa26d4ab1570e0ccfb3d90c">on_readed_arg</a></td></tr>
+<tr class="separator:ad77310081fa26d4ab1570e0ccfb3d90c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38b1f1ca23eb062f4b6352ab46052665"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a38b1f1ca23eb062f4b6352ab46052665">on_wrote</a> )(const int fd, void *arg)</td></tr>
+<tr class="memdesc:a38b1f1ca23eb062f4b6352ab46052665"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling write events.  <a href="../../d3/d68/low__saurion_8h.html#a38b1f1ca23eb062f4b6352ab46052665">More...</a><br /></td></tr>
+<tr class="separator:a38b1f1ca23eb062f4b6352ab46052665"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb1e36de52f8b377877b69be2be52a6a"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#acb1e36de52f8b377877b69be2be52a6a">on_wrote_arg</a></td></tr>
+<tr class="separator:acb1e36de52f8b377877b69be2be52a6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f211bbd7f1dedd55ea5539f9612cfe8"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a2f211bbd7f1dedd55ea5539f9612cfe8">on_closed</a> )(const int fd, void *arg)</td></tr>
+<tr class="memdesc:a2f211bbd7f1dedd55ea5539f9612cfe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling socket closures.  <a href="../../d3/d68/low__saurion_8h.html#a2f211bbd7f1dedd55ea5539f9612cfe8">More...</a><br /></td></tr>
+<tr class="separator:a2f211bbd7f1dedd55ea5539f9612cfe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dfbfdb790dbf2f32f41f0c1438c5890"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a9dfbfdb790dbf2f32f41f0c1438c5890">on_closed_arg</a></td></tr>
+<tr class="separator:a9dfbfdb790dbf2f32f41f0c1438c5890"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02640c4e41269c0d0afa9d7c7c357709"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a02640c4e41269c0d0afa9d7c7c357709">on_error</a> )(const int fd, const char *const content, const ssize_t len, void *arg)</td></tr>
+<tr class="memdesc:a02640c4e41269c0d0afa9d7c7c357709"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling error events.  <a href="../../d3/d68/low__saurion_8h.html#a02640c4e41269c0d0afa9d7c7c357709">More...</a><br /></td></tr>
+<tr class="separator:a02640c4e41269c0d0afa9d7c7c357709"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef67e2ec495e223340f3daea5448a69a"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#aef67e2ec495e223340f3daea5448a69a">on_error_arg</a></td></tr>
+<tr class="separator:aef67e2ec495e223340f3daea5448a69a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc82bdc059019b48b4eaa469a4c1ffe8"><td class="memItemLeft" align="right" valign="top">struct io_uring *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#abc82bdc059019b48b4eaa469a4c1ffe8">rings</a></td></tr>
 <tr class="separator:abc82bdc059019b48b4eaa469a4c1ffe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a0aba1c1f59d8a06a371d93d4fdb758"><td class="memItemLeft" align="right" valign="top">pthread_mutex_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a7a0aba1c1f59d8a06a371d93d4fdb758">m_rings</a></td></tr>
@@ -196,8 +193,26 @@ Variables</h2></td></tr>
 <tr class="separator:a7001c0d6b3bf1fa114a0d230c6190e3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b4556b86497af3cd53528515556b0f3"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a9b4556b86497af3cd53528515556b0f3">next</a></td></tr>
 <tr class="separator:a9b4556b86497af3cd53528515556b0f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af42edda9bdd68b6e1e5d636e4b9ab875"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d8/d5e/structsaurion__callbacks.html">saurion_callbacks</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#af42edda9bdd68b6e1e5d636e4b9ab875">cb</a></td></tr>
+<tr class="separator:af42edda9bdd68b6e1e5d636e4b9ab875"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="af42edda9bdd68b6e1e5d636e4b9ab875" name="af42edda9bdd68b6e1e5d636e4b9ab875"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af42edda9bdd68b6e1e5d636e4b9ab875">&#9670;&nbsp;</a></span>cb</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="../../d8/d5e/structsaurion__callbacks.html">saurion_callbacks</a> cb</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00023">23</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+
+</div>
+</div>
 <a id="a605489576f3bb0a77d1492cd83539001" name="a605489576f3bb0a77d1492cd83539001"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a605489576f3bb0a77d1492cd83539001">&#9670;&nbsp;</a></span>efds</h2>
 
@@ -283,14 +298,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="afa2b45f20cf3d4cde51f6f644f17cf7b" name="afa2b45f20cf3d4cde51f6f644f17cf7b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afa2b45f20cf3d4cde51f6f644f17cf7b">&#9670;&nbsp;</a></span>on_closed</h2>
+<a id="a2f211bbd7f1dedd55ea5539f9612cfe8" name="a2f211bbd7f1dedd55ea5539f9612cfe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f211bbd7f1dedd55ea5539f9612cfe8">&#9670;&nbsp;</a></span>on_closed</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void(* on_closed)(const int fd, void *arg) </td>
+          <td class="memname">void(* on_closed) (const int fd, void *arg) </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>fd</em>, </td>
@@ -322,14 +337,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a015675f2c79592d505ff83c2b2a44840" name="a015675f2c79592d505ff83c2b2a44840"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a015675f2c79592d505ff83c2b2a44840">&#9670;&nbsp;</a></span>on_closed_arg</h2>
+<a id="a9dfbfdb790dbf2f32f41f0c1438c5890" name="a9dfbfdb790dbf2f32f41f0c1438c5890"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dfbfdb790dbf2f32f41f0c1438c5890">&#9670;&nbsp;</a></span>on_closed_arg</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void * on_closed_arg</td>
+          <td class="memname">void* on_closed_arg</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -339,14 +354,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="accecd790987d2462aef28365fdc7fec2" name="accecd790987d2462aef28365fdc7fec2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#accecd790987d2462aef28365fdc7fec2">&#9670;&nbsp;</a></span>on_connected</h2>
+<a id="a5a1f6a55dc4fcd2a43d264268485ca7c" name="a5a1f6a55dc4fcd2a43d264268485ca7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a1f6a55dc4fcd2a43d264268485ca7c">&#9670;&nbsp;</a></span>on_connected</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void(* on_connected)(const int fd, void *arg) </td>
+          <td class="memname">void(* on_connected) (const int fd, void *arg) </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>fd</em>, </td>
@@ -378,14 +393,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a7dcdef29b057c13947b60353e539d029" name="a7dcdef29b057c13947b60353e539d029"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7dcdef29b057c13947b60353e539d029">&#9670;&nbsp;</a></span>on_connected_arg</h2>
+<a id="adc9f5650a0b73e18e55ac7cf1e2b17f4" name="adc9f5650a0b73e18e55ac7cf1e2b17f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc9f5650a0b73e18e55ac7cf1e2b17f4">&#9670;&nbsp;</a></span>on_connected_arg</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void * on_connected_arg</td>
+          <td class="memname">void* on_connected_arg</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -395,14 +410,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="af7338d3ceb8434b1f3a23261464bc159" name="af7338d3ceb8434b1f3a23261464bc159"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af7338d3ceb8434b1f3a23261464bc159">&#9670;&nbsp;</a></span>on_error</h2>
+<a id="a02640c4e41269c0d0afa9d7c7c357709" name="a02640c4e41269c0d0afa9d7c7c357709"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02640c4e41269c0d0afa9d7c7c357709">&#9670;&nbsp;</a></span>on_error</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void(* on_error)(const int fd, const char *const content, const ssize_t len, void *arg) </td>
+          <td class="memname">void(* on_error) (const int fd, const char *const content, const ssize_t len, void *arg) </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>fd</em>, </td>
@@ -448,14 +463,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="aa65d2f759a6afebca65a7a9ac4c9841a" name="aa65d2f759a6afebca65a7a9ac4c9841a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa65d2f759a6afebca65a7a9ac4c9841a">&#9670;&nbsp;</a></span>on_error_arg</h2>
+<a id="aef67e2ec495e223340f3daea5448a69a" name="aef67e2ec495e223340f3daea5448a69a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef67e2ec495e223340f3daea5448a69a">&#9670;&nbsp;</a></span>on_error_arg</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void * on_error_arg</td>
+          <td class="memname">void* on_error_arg</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -465,14 +480,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a4d2b5799d70e786445db5adbeb98651b" name="a4d2b5799d70e786445db5adbeb98651b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d2b5799d70e786445db5adbeb98651b">&#9670;&nbsp;</a></span>on_readed</h2>
+<a id="a411734fb2ab603181edd1f9de76d061f" name="a411734fb2ab603181edd1f9de76d061f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a411734fb2ab603181edd1f9de76d061f">&#9670;&nbsp;</a></span>on_readed</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void(* on_readed)(const int fd, const void *const content, const ssize_t len, void *arg) </td>
+          <td class="memname">void(* on_readed) (const int fd, const void *const content, const ssize_t len, void *arg) </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>fd</em>, </td>
@@ -518,14 +533,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a908f164fa396610a2a489f2ada0a9ac3" name="a908f164fa396610a2a489f2ada0a9ac3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a908f164fa396610a2a489f2ada0a9ac3">&#9670;&nbsp;</a></span>on_readed_arg</h2>
+<a id="ad77310081fa26d4ab1570e0ccfb3d90c" name="ad77310081fa26d4ab1570e0ccfb3d90c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad77310081fa26d4ab1570e0ccfb3d90c">&#9670;&nbsp;</a></span>on_readed_arg</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void * on_readed_arg</td>
+          <td class="memname">void* on_readed_arg</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -535,14 +550,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="ac3355b2a942d17cdf7e5b5ec4e967961" name="ac3355b2a942d17cdf7e5b5ec4e967961"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac3355b2a942d17cdf7e5b5ec4e967961">&#9670;&nbsp;</a></span>on_wrote</h2>
+<a id="a38b1f1ca23eb062f4b6352ab46052665" name="a38b1f1ca23eb062f4b6352ab46052665"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38b1f1ca23eb062f4b6352ab46052665">&#9670;&nbsp;</a></span>on_wrote</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void(* on_wrote)(const int fd, void *arg) </td>
+          <td class="memname">void(* on_wrote) (const int fd, void *arg) </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>fd</em>, </td>
@@ -574,14 +589,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a09e173970ff611931036303d7368042a" name="a09e173970ff611931036303d7368042a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a09e173970ff611931036303d7368042a">&#9670;&nbsp;</a></span>on_wrote_arg</h2>
+<a id="acb1e36de52f8b377877b69be2be52a6a" name="acb1e36de52f8b377877b69be2be52a6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb1e36de52f8b377877b69be2be52a6a">&#9670;&nbsp;</a></span>on_wrote_arg</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void * on_wrote_arg</td>
+          <td class="memname">void* on_wrote_arg</td>
         </tr>
       </table>
 </div><div class="memdoc">

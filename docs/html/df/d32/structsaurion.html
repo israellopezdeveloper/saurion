@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.3</span>
+   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.4</span>
    </div>
   </td>
  </tr>
@@ -83,7 +83,6 @@ $(document).ready(function(){initNavTree('df/d32/structsaurion.html','../../'); 
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="../../de/d92/structsaurion-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">saurion Struct Reference<div class="ingroups"><a class="el" href="../../d9/da3/group__LowSaurion.html">LowSaurion</a></div></div></div>
@@ -100,12 +99,6 @@ Collaboration diagram for saurion:</div>
 <div class="center"><img src="../../dc/d95/structsaurion__coll__graph.png" border="0" usemap="#asaurion_coll__map" alt="Collaboration graph"/></div>
 <center><span class="legend">[<a target="top" href="../../graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d62/structsaurion_1_1saurion__callbacks.html">saurion_callbacks</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure containing callback functions to handle socket events.  <a href="../../d9/d62/structsaurion_1_1saurion__callbacks.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a4858f070287e6269298089b993793830"><td class="memItemLeft" align="right" valign="top">struct io_uring *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d32/structsaurion.html#a4858f070287e6269298089b993793830">rings</a></td></tr>
@@ -130,13 +123,31 @@ Public Attributes</h2></td></tr>
 <tr class="separator:aee308efd9e70f3b38da24483a3f74413"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2742eddc30d4e4409b9f1a98cf7eb054"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d32/structsaurion.html#a2742eddc30d4e4409b9f1a98cf7eb054">next</a></td></tr>
 <tr class="separator:a2742eddc30d4e4409b9f1a98cf7eb054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9d76fdd5db00b6af3fdc434a1369309"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d8/d5e/structsaurion__callbacks.html">saurion_callbacks</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a></td></tr>
+<tr class="separator:aa9d76fdd5db00b6af3fdc434a1369309"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Main structure for managing io_uring and socket events. </p>
 <p >This structure contains all the necessary data to handle the io_uring event queue and the callbacks for socket events, enabling efficient asynchronous I/O operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00148">148</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00214">214</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="aa9d76fdd5db00b6af3fdc434a1369309" name="aa9d76fdd5db00b6af3fdc434a1369309"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9d76fdd5db00b6af3fdc434a1369309">&#9670;&nbsp;</a></span>cb</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="../../d8/d5e/structsaurion__callbacks.html">saurion_callbacks</a> saurion::cb</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00239">239</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+
+</div>
+</div>
 <a id="a08e1b7aa083a0d311658ff7072ae7a46" name="a08e1b7aa083a0d311658ff7072ae7a46"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a08e1b7aa083a0d311658ff7072ae7a46">&#9670;&nbsp;</a></span>efds</h2>
 
@@ -150,7 +161,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Eventfd descriptors used for internal signaling between threads. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00157">157</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00223">223</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -167,7 +178,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Linked list for storing active requests. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00159">159</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00225">225</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -184,7 +195,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Array of mutexes to protect the io_uring rings. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00153">153</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00219">219</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -201,7 +212,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Number of threads in the thread pool. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00169">169</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00235">235</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -218,7 +229,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Index of the next io_uring ring to which an event will be added. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00171">171</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00237">237</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -235,7 +246,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Thread pool for executing tasks in parallel. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00167">167</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00233">233</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -252,7 +263,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Array of io_uring structures for managing the event queue. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00151">151</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00217">217</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -269,7 +280,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Server socket descriptor for accepting connections. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00155">155</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00221">221</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -286,7 +297,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Current status of the structure (e.g., running, stopped). </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00165">165</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00231">231</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -303,7 +314,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Condition variable to signal changes in the structure's state. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00163">163</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00229">229</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -320,7 +331,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Mutex to protect the state of the structure. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00161">161</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00227">227</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>

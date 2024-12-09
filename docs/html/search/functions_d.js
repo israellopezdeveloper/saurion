@@ -1,4 +1,19 @@
 var searchData=
 [
-  ['validate_5fand_5fupdate_0',['validate_and_update',['../de/d27/low__saurion_8c.html#a4f2048cb05224e6b83062488bb767e43',1,'low_saurion.c']]]
+  ['saurion_0',['Saurion',['../d5/da0/classSaurion.html#ae83d691a9d4a9c9d55ed7678b0608385',1,'Saurion::Saurion(const Saurion &amp;)=delete'],['../d5/da0/classSaurion.html#a2bda2b93047d6a70c3510bc4c84e151f',1,'Saurion::Saurion(Saurion &amp;&amp;)=delete'],['../d5/da0/classSaurion.html#a56b8393a788078d51ad08792ccdcd713',1,'Saurion::Saurion(const uint32_t thds, const int sck) noexcept']]],
+  ['saurion_5fcreate_1',['saurion_create',['../d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131',1,'saurion_create(uint32_t n_threads):&#160;low_saurion.c'],['../d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131',1,'saurion_create(uint32_t n_threads):&#160;low_saurion.c']]],
+  ['saurion_5fdestroy_2',['saurion_destroy',['../d9/da3/group__LowSaurion.html#ga7893ccf90a98845d5d95ffda0260d0b8',1,'saurion_destroy(struct saurion *const s):&#160;low_saurion.c'],['../d9/da3/group__LowSaurion.html#ga7893ccf90a98845d5d95ffda0260d0b8',1,'saurion_destroy(struct saurion *s):&#160;low_saurion.c']]],
+  ['saurion_5fsend_3',['saurion_send',['../d9/da3/group__LowSaurion.html#gadd63cf225e55bcf4cd22ddcbd9d1c9b7',1,'saurion_send(struct saurion *s, const int fd, const char *const msg):&#160;low_saurion.c'],['../d9/da3/group__LowSaurion.html#gadd63cf225e55bcf4cd22ddcbd9d1c9b7',1,'saurion_send(struct saurion *const s, const int fd, const char *const msg):&#160;low_saurion.c']]],
+  ['saurion_5fset_5fsocket_4',['saurion_set_socket',['../d9/da3/group__LowSaurion.html#ga3944d39e091afbe401a9dcbfe526e97f',1,'saurion_set_socket(int p):&#160;low_saurion.c'],['../d9/da3/group__LowSaurion.html#ga3944d39e091afbe401a9dcbfe526e97f',1,'saurion_set_socket(const int p):&#160;low_saurion.c']]],
+  ['saurion_5fstart_5',['saurion_start',['../d9/da3/group__LowSaurion.html#gaeeab8302b41112175566881a1b7bf905',1,'saurion_start(struct saurion *const s):&#160;low_saurion.c'],['../d9/da3/group__LowSaurion.html#gaeeab8302b41112175566881a1b7bf905',1,'saurion_start(struct saurion *s):&#160;low_saurion.c']]],
+  ['saurion_5fstop_6',['saurion_stop',['../d9/da3/group__LowSaurion.html#ga9f32b41ec23178c2a693fec057b96532',1,'saurion_stop(const struct saurion *const s):&#160;low_saurion.c'],['../d9/da3/group__LowSaurion.html#ga9f32b41ec23178c2a693fec057b96532',1,'saurion_stop(const struct saurion *s):&#160;low_saurion.c']]],
+  ['saurion_5fworker_5fmaster_7',['saurion_worker_master',['../de/d27/low__saurion_8c.html#a30bb7d15272a20fb689bf9fada1737fa',1,'low_saurion.c']]],
+  ['saurion_5fworker_5fmaster_5floop_5fit_8',['saurion_worker_master_loop_it',['../de/d27/low__saurion_8c.html#aa1ffb73b2d25dfd2a570d0dd4a02fa16',1,'low_saurion.c']]],
+  ['saurion_5fworker_5fslave_9',['saurion_worker_slave',['../de/d27/low__saurion_8c.html#a70abc87ee43c0e1b7059ec16e975afca',1,'low_saurion.c']]],
+  ['saurion_5fworker_5fslave_5floop_5fit_10',['saurion_worker_slave_loop_it',['../de/d27/low__saurion_8c.html#ab8184a788d61bb7d879fc68036999a58',1,'low_saurion.c']]],
+  ['send_11',['send',['../d5/da0/classSaurion.html#af652625283a9752d16d7a24b35cec14d',1,'Saurion::send()'],['../d0/deb/classClientInterface.html#aaf0d07cec2bdf71fd8b22cf347ab2f4b',1,'ClientInterface::send()']]],
+  ['set_5ffifoname_12',['set_fifoname',['../d6/db6/client__interface_8hpp.html#aad5cec9576a915a73eff21e1b0168bb2',1,'client_interface.hpp']]],
+  ['set_5fport_13',['set_port',['../d6/db6/client__interface_8hpp.html#ae27c7480b34f3f5184d53b196605c34c',1,'client_interface.hpp']]],
+  ['set_5frequest_14',['set_request',['../d9/da3/group__LowSaurion.html#gaddb696f3c38e160dde5a5de6e6e10f70',1,'set_request(struct request **r, struct Node **l, size_t s, const void *m, uint8_t h):&#160;low_saurion.c'],['../d9/da3/group__LowSaurion.html#gaddb696f3c38e160dde5a5de6e6e10f70',1,'set_request(struct request **r, struct Node **l, size_t s, const void *m, uint8_t h):&#160;low_saurion.c']]],
+  ['stop_15',['stop',['../d5/da0/classSaurion.html#a46ab498fe4f69d0505ebeb90eb4ac810',1,'Saurion']]]
 ];

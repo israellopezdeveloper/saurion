@@ -1,6 +1,13 @@
 var searchData=
 [
-  ['list_5fdelete_5fnode_0',['list_delete_node',['../d3/d32/linked__list_8c.html#a5c613e9f175d5433244f84467555dc8d',1,'list_delete_node(struct Node **head, const void *const ptr):&#160;linked_list.c'],['../d1/d4a/linked__list_8h.html#a5c613e9f175d5433244f84467555dc8d',1,'list_delete_node(struct Node **head, const void *const ptr):&#160;linked_list.c']]],
-  ['list_5ffree_1',['list_free',['../d3/d32/linked__list_8c.html#ac33c30e895caddc11181b50eca0ab735',1,'list_free(struct Node **head):&#160;linked_list.c'],['../d1/d4a/linked__list_8h.html#ac33c30e895caddc11181b50eca0ab735',1,'list_free(struct Node **head):&#160;linked_list.c']]],
-  ['list_5finsert_2',['list_insert',['../d3/d32/linked__list_8c.html#aee07283e23385804a1d3f880cd99731e',1,'list_insert(struct Node **head, void *ptr, size_t amount, void **children):&#160;linked_list.c'],['../d1/d4a/linked__list_8h.html#aee07283e23385804a1d3f880cd99731e',1,'list_insert(struct Node **head, void *ptr, size_t amount, void **children):&#160;linked_list.c']]]
+  ['handle_5faccept_0',['handle_accept',['../de/d27/low__saurion_8c.html#aff870d06aed2384abd16b89b4e6429d8',1,'low_saurion.c']]],
+  ['handle_5fclose_1',['handle_close',['../de/d27/low__saurion_8c.html#a6590a961ce99bb8a6f0fdd151f394afa',1,'low_saurion.c']]],
+  ['handle_5ferror_2',['handle_error',['../de/d27/low__saurion_8c.html#a79a329a1b1fcd31d446b309eb0d73849',1,'low_saurion.c']]],
+  ['handle_5fevent_5fread_3',['handle_event_read',['../de/d27/low__saurion_8c.html#a39b41e20a4f586f98bd4e1a431f02bb7',1,'low_saurion.c']]],
+  ['handle_5fnew_5fmessage_4',['handle_new_message',['../de/d27/low__saurion_8c.html#afafc18d6019f5dc7249cdc105a73ba0b',1,'low_saurion.c']]],
+  ['handle_5fpartial_5fmessage_5',['handle_partial_message',['../de/d27/low__saurion_8c.html#a7e193d3c0b443340a6716ce370ffa1f2',1,'low_saurion.c']]],
+  ['handle_5fprevious_5fmessage_6',['handle_previous_message',['../de/d27/low__saurion_8c.html#aa0da5f4cd411c5ecd89f50a4b7520b0b',1,'low_saurion.c']]],
+  ['handle_5fread_7',['handle_read',['../de/d27/low__saurion_8c.html#a97aee33e3c5728a7d986b2f42e7bb82a',1,'low_saurion.c']]],
+  ['handle_5fwrite_8',['handle_write',['../de/d27/low__saurion_8c.html#a94c77ae2935117db01e434b37204b649',1,'low_saurion.c']]],
+  ['htonll_9',['htonll',['../de/d27/low__saurion_8c.html#a00d80bc019becac44a598996923faecf',1,'low_saurion.c']]]
 ];

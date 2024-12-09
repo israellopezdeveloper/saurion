@@ -1,6 +1,6 @@
 var structsaurion =
 [
-    [ "saurion_callbacks", "d9/d62/structsaurion_1_1saurion__callbacks.html", "d9/d62/structsaurion_1_1saurion__callbacks" ],
+    [ "cb", "df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309", null ],
     [ "efds", "df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46", null ],
     [ "list", "df/d32/structsaurion.html#a63c38a9dc703180b628935d72236318f", null ],
     [ "m_rings", "df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030", null ],

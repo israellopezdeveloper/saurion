@@ -14,4 +14,6 @@ digraph "Saurion"
   Node5 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" task_queue_head\ntask_queue_tail" ,fontname="Helvetica"];
   Node5 [label="task",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$db/da2/structtask.html",tooltip=" "];
   Node5 -> Node5 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" next" ,fontname="Helvetica"];
+  Node6 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" cb" ,fontname="Helvetica"];
+  Node6 [label="saurion_callbacks",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$d8/d5e/structsaurion__callbacks.html",tooltip="Structure containing callback functions to handle socket events."];
 }

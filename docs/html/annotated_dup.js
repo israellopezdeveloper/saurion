@@ -1,6 +1,7 @@
 var annotated_dup =
 [
     [ "chunk_params", "dd/dad/structchunk__params.html", "dd/dad/structchunk__params" ],
+    [ "ClientInterface", "d0/deb/classClientInterface.html", "d0/deb/classClientInterface" ],
     [ "Node", "d8/d49/structNode.html", "d8/d49/structNode" ],
     [ "request", "dc/d20/structrequest.html", "dc/d20/structrequest" ],
     [ "saurion", "df/d32/structsaurion.html", "df/d32/structsaurion" ],

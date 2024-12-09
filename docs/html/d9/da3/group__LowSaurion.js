@@ -1,18 +1,19 @@
 var group__LowSaurion =
 [
+    [ "saurion_callbacks", "d8/d5e/structsaurion__callbacks.html", [
+      [ "on_closed", "d8/d5e/structsaurion__callbacks.html#a92d10ed4a5e24fe94067f2fa3f8115e4", null ],
+      [ "on_closed_arg", "d8/d5e/structsaurion__callbacks.html#a0c6906d4a2fcd277ce1b3703e20f41d2", null ],
+      [ "on_connected", "d8/d5e/structsaurion__callbacks.html#aadebdbd46d651eafc8ff2cb5492dd337", null ],
+      [ "on_connected_arg", "d8/d5e/structsaurion__callbacks.html#a0448514287c7c368cddcecd51b44ab0e", null ],
+      [ "on_error", "d8/d5e/structsaurion__callbacks.html#a4d99e1bab4869f6c0b47d3e630c0a2f1", null ],
+      [ "on_error_arg", "d8/d5e/structsaurion__callbacks.html#ad3372ecd9a17439b84edf72bb9377089", null ],
+      [ "on_readed", "d8/d5e/structsaurion__callbacks.html#a15c5a8dc04e2c4083502eb9f7f2c7997", null ],
+      [ "on_readed_arg", "d8/d5e/structsaurion__callbacks.html#a46d60adf1f70df83058296234572c978", null ],
+      [ "on_wrote", "d8/d5e/structsaurion__callbacks.html#a19b5d0802302a7120a3ad718ebb8cb2a", null ],
+      [ "on_wrote_arg", "d8/d5e/structsaurion__callbacks.html#a534ea394c43e9b450e8679d5c8f8d0bd", null ]
+    ] ],
     [ "saurion", "df/d32/structsaurion.html", [
-      [ "saurion_callbacks", "d9/d62/structsaurion_1_1saurion__callbacks.html", [
-        [ "on_closed", "d9/d62/structsaurion_1_1saurion__callbacks.html#a330a80c99984cb4412f87522ac040e6a", null ],
-        [ "on_closed_arg", "d9/d62/structsaurion_1_1saurion__callbacks.html#adbb1d46a589abef434e23191766891fe", null ],
-        [ "on_connected", "d9/d62/structsaurion_1_1saurion__callbacks.html#abbcac9a2cf6dccbf698fd56f4b672d80", null ],
-        [ "on_connected_arg", "d9/d62/structsaurion_1_1saurion__callbacks.html#a1680ee7a4bc10737a8ca95c1e003e786", null ],
-        [ "on_error", "d9/d62/structsaurion_1_1saurion__callbacks.html#a4bb8e66fb0b5b7d204e4b43828b37d67", null ],
-        [ "on_error_arg", "d9/d62/structsaurion_1_1saurion__callbacks.html#a72891fef0ba0293233f008aae9ede7aa", null ],
-        [ "on_readed", "d9/d62/structsaurion_1_1saurion__callbacks.html#ae67cde94f799274a710213af64ed5e58", null ],
-        [ "on_readed_arg", "d9/d62/structsaurion_1_1saurion__callbacks.html#a02270cf60b25c999a180fcb9381b53d0", null ],
-        [ "on_wrote", "d9/d62/structsaurion_1_1saurion__callbacks.html#a49664c1b74e1c71b4703a232c3ccc2c7", null ],
-        [ "on_wrote_arg", "d9/d62/structsaurion_1_1saurion__callbacks.html#a148b0aae663aafb51fbcf17286d66369", null ]
-      ] ],
+      [ "cb", "df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309", null ],
       [ "efds", "df/d32/structsaurion.html#a08e1b7aa083a0d311658ff7072ae7a46", null ],
       [ "list", "df/d32/structsaurion.html#a63c38a9dc703180b628935d72236318f", null ],
       [ "m_rings", "df/d32/structsaurion.html#ad3305571e32bbb72bc95caefbb68b030", null ],
