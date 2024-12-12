@@ -55,7 +55,7 @@ struct saurion_wrapper
 
 // next
 static inline uint32_t
-next (struct saurion *s)
+next (struct saurion *const s)
 {
   s->next = (s->next + 1) % s->n_threads;
   return s->next;
@@ -63,7 +63,7 @@ next (struct saurion *s)
 
 // htonll
 static inline uint64_t
-htonll (uint64_t value)
+htonll (const uint64_t value)
 {
   int num = 42;
   if (*(char *)&num == 42)
@@ -77,7 +77,7 @@ htonll (uint64_t value)
 
 // ntohll
 static inline uint64_t
-ntohll (uint64_t value)
+ntohll (const uint64_t value)
 {
   int num = 42;
   if (*(char *)&num == 42)
@@ -91,7 +91,7 @@ ntohll (uint64_t value)
 
 // free_request
 void
-free_request (struct request *req, void **children_ptr, size_t amount)
+free_request (struct request *req, void **children_ptr, const uint64_t amount)
 {
   if (children_ptr)
     {
@@ -112,8 +112,8 @@ free_request (struct request *req, void **children_ptr, size_t amount)
 // initialize_iovec
 [[nodiscard]]
 int
-initialize_iovec (struct iovec *iov, size_t amount, size_t pos,
-                  const void *msg, size_t size, uint8_t h)
+initialize_iovec (struct iovec *iov, const uint64_t amount, const uint64_t pos,
+                  const void *msg, const uint64_t size, const uint8_t h)
 {
   if (!iov || !iov->iov_base)
     {
@@ -161,8 +161,8 @@ initialize_iovec (struct iovec *iov, size_t amount, size_t pos,
 // allocate_iovec
 [[nodiscard]]
 int
-allocate_iovec (struct iovec *iov, size_t amount, size_t pos, size_t size,
-                void **chd_ptr)
+allocate_iovec (struct iovec *iov, const uint64_t amount, const uint64_t pos,
+                const uint64_t size, void **chd_ptr)
 {
   if (!iov || !chd_ptr)
     {
@@ -294,7 +294,7 @@ add_accept (struct saurion *const s, struct sockaddr_in *const ca,
 
 // add_fd
 static inline void
-add_fd (struct saurion *const s, int client_socket, int sel)
+add_fd (struct saurion *const s, const int client_socket, const int sel)
 {
   int res = ERROR_CODE;
   pthread_mutex_lock (&s->m_rings[sel]);
@@ -333,7 +333,7 @@ add_fd (struct saurion *const s, int client_socket, int sel)
 
 // add_efd
 static inline void
-add_efd (struct saurion *const s, const int client_socket, int sel)
+add_efd (struct saurion *const s, const int client_socket, const int sel)
 {
   add_fd (s, client_socket, sel);
 }
@@ -385,7 +385,7 @@ add_read_continue (struct saurion *const s, struct request *oreq,
 
 // add_write
 static inline void
-add_write (struct saurion *const s, int fd, const char *const str,
+add_write (struct saurion *const s, const int fd, const char *const str,
            const int sel)
 {
   int res = ERROR_CODE;
@@ -581,7 +581,7 @@ prepare_destination (struct chunk_params *p)
 
 // copy_data
 static inline void
-copy_data (struct chunk_params *p, uint8_t *ok)
+copy_data (struct chunk_params *p, uint8_t *const ok)
 {
   size_t curr_iov_msg_rem = 0;
   *ok = 1UL;
@@ -623,7 +623,7 @@ copy_data (struct chunk_params *p, uint8_t *ok)
 // validate_and_update
 [[nodiscard]]
 static inline uint8_t
-validate_and_update (struct chunk_params *p, uint8_t ok)
+validate_and_update (struct chunk_params *const p, const uint8_t ok)
 {
   if (p->req->prev)
     {
@@ -659,7 +659,7 @@ validate_and_update (struct chunk_params *p, uint8_t ok)
 
 // read_chunk_free
 static inline void
-read_chunk_free (struct chunk_params *p)
+read_chunk_free (struct chunk_params *const p)
 {
   free (p->dest_ptr);
   p->dest_ptr = NULL;
@@ -685,7 +685,7 @@ read_chunk_free (struct chunk_params *p)
 // read_chunk
 [[nodiscard]]
 int
-read_chunk (void **dest, size_t *len, struct request *const req)
+read_chunk (void **dest, uint64_t *const len, struct request *const req)
 {
   struct chunk_params p;
   p.req = req;
@@ -970,8 +970,8 @@ handle_event_read (const struct io_uring_cqe *const cqe,
 [[nodiscard]]
 static inline int
 saurion_worker_master_loop_it (struct saurion *const s,
-                               struct sockaddr_in *client_addr,
-                               socklen_t *client_addr_len)
+                               struct sockaddr_in *const client_addr,
+                               socklen_t *const client_addr_len)
 {
   LOG_INIT (" ");
   struct io_uring ring = s->rings[0];
@@ -1026,10 +1026,10 @@ saurion_worker_master_loop_it (struct saurion *const s,
 
 // saurion_worker_master
 void
-saurion_worker_master (void *arg)
+saurion_worker_master (void *const arg)
 {
   LOG_INIT (" ");
-  struct saurion *const s = (struct saurion *)arg;
+  struct saurion *const s = (struct saurion *const)arg;
   struct sockaddr_in client_addr;
   socklen_t client_addr_len = sizeof (client_addr);
 
@@ -1111,10 +1111,10 @@ saurion_worker_slave_loop_it (struct saurion *const s, const int sel)
 
 // saurion_worker_slave
 void
-saurion_worker_slave (void *arg)
+saurion_worker_slave (void *const arg)
 {
   LOG_INIT (" ");
-  struct saurion_wrapper *const ss = (struct saurion_wrapper *)arg;
+  struct saurion_wrapper *const ss = (struct saurion_wrapper *const)arg;
   struct saurion *s = ss->s;
   const int sel = ss->sel;
   free (ss);

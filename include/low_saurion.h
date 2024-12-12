@@ -248,7 +248,7 @@ extern "C"
    * @param p port
    * @return result of socket creation.
    */
-  int saurion_set_socket (int p);
+  int saurion_set_socket (const int p);
 
   /*!
    * @public
