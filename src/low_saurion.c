@@ -810,6 +810,8 @@ saurion_set_socket (const int p)
     {
       return ERROR_CODE;
     }
+  // TODO: añadir el timeout de conexiones inactivas (definido en tiempo de
+  // compilación)
 
   memset (&srv_addr, 0, sizeof (srv_addr));
   srv_addr.sin_family = AF_INET;
@@ -821,7 +823,9 @@ saurion_set_socket (const int p)
       return ERROR_CODE;
     }
 
-  if (listen (sock, ACCEPT_QUEUE) < 0)
+  // TODO: verificar en tiempo de compilación si ACCEPT_QUEUE es > 0 en caso
+  // contrario utilizar SOMAXCONN
+  if (listen (sock, SOMAXCONN) < 0)
     {
       return ERROR_CODE;
     }
