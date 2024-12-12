@@ -14,10 +14,9 @@ struct Node
 
 pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-// create_node
 [[nodiscard]]
 struct Node *
-create_node (void *ptr, const uint64_t amount, void *const *children)
+create_node (void *ptr, size_t amount, void **children)
 {
   struct Node *new_node = (struct Node *)malloc (sizeof (struct Node));
   if (!new_node)
@@ -64,11 +63,9 @@ create_node (void *ptr, const uint64_t amount, void *const *children)
   return new_node;
 }
 
-// list_insert
 [[nodiscard]]
 int
-list_insert (struct Node **head, void *ptr, const uint64_t amount,
-             void *const *children)
+list_insert (struct Node **head, void *ptr, size_t amount, void **children)
 {
   struct Node *new_node = create_node (ptr, amount, children);
   if (!new_node)
@@ -92,7 +89,6 @@ list_insert (struct Node **head, void *ptr, const uint64_t amount,
   return SUCCESS_CODE;
 }
 
-// free_node
 void
 free_node (struct Node *current)
 {
@@ -109,7 +105,6 @@ free_node (struct Node *current)
   free (current);
 }
 
-// list_delete_node
 void
 list_delete_node (struct Node **head, const void *const ptr)
 {
@@ -142,7 +137,6 @@ list_delete_node (struct Node **head, const void *const ptr)
   pthread_mutex_unlock (&list_mutex);
 }
 
-// list_free
 void
 list_free (struct Node **head)
 {
