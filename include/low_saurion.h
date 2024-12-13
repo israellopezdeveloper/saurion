@@ -111,6 +111,8 @@
 #include <stdint.h>    // for uint32_t
 #include <sys/types.h> // for ssize_t
 
+// TODO: añadir métodos de backpressure, por ver conversacion de ChatGPT
+
 #ifdef __cplusplus
 extern "C"
 {
