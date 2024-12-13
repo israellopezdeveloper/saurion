@@ -5,6 +5,7 @@
 
 #include <arpa/inet.h>             // for htonl, ntohl, htons
 #include <bits/socket-constants.h> // for SOL_SOCKET, SO_REUSEADDR
+#include <bits/types/struct_timeval.h>
 #include <liburing.h>          // for io_uring_get_sqe, io_uring, io_uring_...
 #include <liburing/io_uring.h> // for io_uring_cqe
 #include <nanologger.h>        // for LOG_END, LOG_INIT
@@ -810,8 +811,13 @@ saurion_set_socket (const int p)
     {
       return ERROR_CODE;
     }
-  // TODO: añadir el timeout de conexiones inactivas (definido en tiempo de
-  // compilación)
+  struct timeval t_out;
+  t_out.tv_sec = TIMEOUT_IDLE / 1000L;
+  t_out.tv_usec = TIMEOUT_IDLE % 1000L;
+  if (setsockopt (sock, SOL_SOCKET, SO_RCVTIMEO, &t_out, sizeof (t_out)) < 0)
+    {
+      return ERROR_CODE;
+    }
 
   memset (&srv_addr, 0, sizeof (srv_addr));
   srv_addr.sin_family = AF_INET;
@@ -823,9 +829,8 @@ saurion_set_socket (const int p)
       return ERROR_CODE;
     }
 
-  // TODO: verificar en tiempo de compilación si ACCEPT_QUEUE es > 0 en caso
-  // contrario utilizar SOMAXCONN
-  if (listen (sock, SOMAXCONN) < 0)
+  constexpr int num_queue = (ACCEPT_QUEUE > 0 ? ACCEPT_QUEUE : SOMAXCONN);
+  if (listen (sock, num_queue) < 0)
     {
       return ERROR_CODE;
     }
