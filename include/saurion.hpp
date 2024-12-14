@@ -154,7 +154,7 @@ public:
   /*!
    * @brief Initializes the server and starts listening for connections.
    */
-  void init () noexcept;
+  void init ();
   /*!
    * @brief Stops the server and all associated threads.
    */

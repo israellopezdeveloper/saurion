@@ -297,6 +297,10 @@ if [ "${OPTION_FLAGS_docs}" = true ]; then
   CONFIGURE_OPTIONS="${CONFIGURE_OPTIONS} --enable-doxygen-doc"
 fi
 
+if [ "${OPTION_FLAGS_compile_commands}" = true ]; then
+  CONFIGURE_OPTIONS="${CONFIGURE_OPTIONS} --enable-compile-commands"
+fi
+
 # Ejecutar configuración y construcción
 configure "${CONFIGURE_OPTIONS}"
 
