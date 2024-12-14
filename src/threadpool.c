@@ -1,8 +1,7 @@
 #include "threadpool.h"
-#include "config.h"     // for NUM_CORES
-#include <nanologger.h> // for LOG_END, LOG_INIT
-#include <pthread.h>    // for pthread_mutex_unlock, pthread_mutex_lock
-#include <stdlib.h>     // for free, malloc
+#include "config.h"
+#include <pthread.h> // for pthread_mutex_unlock, pthread_mutex_lock
+#include <stdlib.h>  // for free, malloc
 
 #define TRUE 1
 #define FALSE 0
@@ -17,7 +16,7 @@ struct task
 struct threadpool
 {
   pthread_t *threads;
-  size_t num_threads;
+  uint64_t num_threads;
   struct task *task_queue_head;
   struct task *task_queue_tail;
   pthread_mutex_t queue_lock;
@@ -28,7 +27,7 @@ struct threadpool
 };
 
 struct threadpool *
-threadpool_create (size_t num_threads)
+threadpool_create (uint64_t num_threads)
 {
   LOG_INIT (" ");
   struct threadpool *pool = malloc (sizeof (struct threadpool));
@@ -150,7 +149,7 @@ threadpool_init (struct threadpool *pool)
       LOG_END (" ");
       return;
     }
-  for (size_t i = 0; i < pool->num_threads; i++)
+  for (uint64_t i = 0; i < pool->num_threads; i++)
     {
       if (pthread_create (&pool->threads[i], NULL, threadpool_worker,
                           (void *)pool)
@@ -220,7 +219,7 @@ threadpool_stop (struct threadpool *pool)
   pthread_cond_broadcast (&pool->queue_cond);
   pthread_mutex_unlock (&pool->queue_lock);
 
-  for (size_t i = 0; i < pool->num_threads; i++)
+  for (uint64_t i = 0; i < pool->num_threads; i++)
     {
       pthread_join (pool->threads[i], NULL);
     }

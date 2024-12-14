@@ -1,13 +1,11 @@
 #include "client_interface.hpp"
-#include <cstdint>
-#include <filesystem>
-#include <fstream>
-#include <linux/limits.h>
-#include <random>
-#include <stdexcept>
-#include <string>
-#include <sys/stat.h>
-#include <sys/wait.h>
+
+#include <filesystem>     // for filesystem, fstream
+#include <fstream>        // for ifstream
+#include <linux/limits.h> // for PATH_MAX
+#include <random>         // for random_device, mt19937, ..
+#include <sys/stat.h>     // for mkfifo
+#include <sys/wait.h>     // for readlink, fork, execvp
 
 // get_executable_directory
 static std::string
@@ -15,15 +13,15 @@ get_executable_directory ()
 {
   std::string buffer (PATH_MAX, '\0');
 
-  ssize_t len = readlink ("/proc/self/exe", &buffer[0], buffer.size () - 1);
-  if (len <= 0 || len >= static_cast<ssize_t> (buffer.size ()))
+  int64_t len = readlink ("/proc/self/exe", &buffer[0], buffer.size () - 1);
+  if (len <= 0 || len >= static_cast<int64_t> (buffer.size ()))
     {
       throw std::runtime_error ("Failed to read symbolic link /proc/self/exe");
     }
 
   buffer.resize (len);
 
-  if (size_t last_slash_pos = buffer.find_last_of ('/');
+  if (uint64_t last_slash_pos = buffer.find_last_of ('/');
       last_slash_pos != std::string::npos)
     {
       buffer.erase (last_slash_pos);
@@ -35,7 +33,7 @@ get_executable_directory ()
       throw std::runtime_error ("Failed to resolve real path");
     }
 
-  if (size_t libs_pos = real_path.find ("/.libs");
+  if (uint64_t libs_pos = real_path.find ("/.libs");
       libs_pos != std::string::npos)
     {
       real_path.erase (libs_pos);

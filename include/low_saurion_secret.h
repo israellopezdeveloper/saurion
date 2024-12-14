@@ -1,9 +1,8 @@
 #ifndef LOW_SAURION_SECRET_H
 #define LOW_SAURION_SECRET_H
 
-#include <bits/types/struct_iovec.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <bits/types/struct_iovec.h> // for struct iovec
+#include <stdint.h>                  // for uint64_t, uint8_t
 
 #ifdef __cplusplus
 extern "C"
@@ -18,16 +17,18 @@ extern "C"
   struct request
   {
     void *prev;
-    size_t prev_size;
-    size_t prev_remain;
-    size_t next_iov;
-    size_t next_offset;
+    uint64_t prev_size;
+    uint64_t prev_remain;
+    uint64_t next_iov;
+    uint64_t next_offset;
     int event_type;
-    size_t iovec_count;
+    uint64_t iovec_count;
     int client_socket;
     struct iovec iov[];
   };
 #pragma GCC diagnostic pop
+
+  struct Node;
   /*! @endcond */
 
   /*!
@@ -63,8 +64,8 @@ extern "C"
    * @{
    */
   [[nodiscard]]
-  int allocate_iovec (struct iovec *iov, size_t amount, size_t pos,
-                      size_t size, void **chd_ptr);
+  int allocate_iovec (struct iovec *iov, const uint64_t amount,
+                      const uint64_t pos, const uint64_t size, void **chd_ptr);
 
   /*!
    * @private
@@ -102,8 +103,9 @@ extern "C"
    * with zeros, essentially resetting the buffer.
    */
   [[nodiscard]]
-  int initialize_iovec (struct iovec *iov, size_t amount, size_t pos,
-                        const void *msg, size_t size, uint8_t h);
+  int initialize_iovec (struct iovec *iov, const uint64_t amount,
+                        const uint64_t pos, const void *msg,
+                        const uint64_t size, const uint8_t h);
 
   /**
    * @private
@@ -140,7 +142,7 @@ extern "C"
    * for proper memory deallocation.
    */
   [[nodiscard]]
-  int set_request (struct request **r, struct Node **l, size_t s,
+  int set_request (struct request **r, struct Node **l, uint64_t s,
                    const void *m, uint8_t h);
 
   /**
@@ -150,7 +152,7 @@ extern "C"
    *
    * This function processes data from a `struct request`, which contains an
    * array of `iovec` structures representing buffered data. Each message in
-   * the buffers starts with a `size_t` value indicating the size of the
+   * the buffers starts with a `uint64_t` value indicating the size of the
    * message, followed by the message content. The function reads the message
    * size, allocates a buffer for the message content, and copies the data from
    * the iovec buffers into this buffer. It handles messages that span multiple
@@ -160,7 +162,7 @@ extern "C"
    * @param[out] dest Pointer to a variable where the address of the allocated
    * message buffer will be stored. The buffer is allocated by the function and
    * must be freed by the caller.
-   * @param[out] len  Pointer to a `size_t` variable where the length of the
+   * @param[out] len  Pointer to a `uint64_t` variable where the length of the
    * read message will be stored. If a complete message is read, `*len` is set
    * to the message size. If the message is incomplete, `*len` is set to 0.
    * @param[in,out] req Pointer to a `struct request` containing the iovec
@@ -168,9 +170,9 @@ extern "C"
    * track the current position within the iovecs and any incomplete messages.
    *
    * @note The function assumes that each message is prefixed with its size (of
-   * type `size_t`), and that messages may span multiple iovec entries. It also
-   * assumes that the data in the iovec buffers is valid and properly aligned
-   * for reading `size_t` values.
+   * type `uint64_t`), and that messages may span multiple iovec entries. It
+   * also assumes that the data in the iovec buffers is valid and properly
+   * aligned for reading `uint64_t` values.
    *
    * @warning The caller is responsible for freeing the allocated message
    * buffer pointed to by `*dest` when it is no longer needed.
@@ -181,9 +183,10 @@ extern "C"
    * @retval ERROR_CODE Malformed message found.
    */
   [[nodiscard]]
-  int read_chunk (void **dest, size_t *len, struct request *const req);
+  int read_chunk (void **dest, uint64_t *len, struct request *const req);
 
-  void free_request (struct request *req, void **children_ptr, size_t amount);
+  void free_request (struct request *req, void **children_ptr,
+                     uint64_t amount);
 /*!
  * @}
  */

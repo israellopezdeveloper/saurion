@@ -7,7 +7,7 @@
 struct Node
 {
   void *ptr;
-  size_t size;
+  uint64_t size;
   struct Node **children;
   struct Node *next;
 };
@@ -39,13 +39,13 @@ create_node (void *ptr, const uint64_t amount, void *const *children)
       free (new_node);
       return NULL;
     }
-  for (size_t i = 0; i < amount; ++i)
+  for (uint64_t i = 0; i < amount; ++i)
     {
       new_node->children[i] = (struct Node *)malloc (sizeof (struct Node));
 
       if (!new_node->children[i])
         {
-          for (size_t j = 0; j < i; ++j)
+          for (uint64_t j = 0; j < i; ++j)
             {
               free (new_node->children[j]);
             }
@@ -53,7 +53,7 @@ create_node (void *ptr, const uint64_t amount, void *const *children)
           return NULL;
         }
     }
-  for (size_t i = 0; i < amount; ++i)
+  for (uint64_t i = 0; i < amount; ++i)
     {
       new_node->children[i]->size = 0;
       new_node->children[i]->next = NULL;
@@ -98,7 +98,7 @@ free_node (struct Node *current)
 {
   if (current->size > 0)
     {
-      for (size_t i = 0; i < current->size; ++i)
+      for (uint64_t i = 0; i < current->size; ++i)
         {
           free (current->children[i]->ptr);
           free (current->children[i]);

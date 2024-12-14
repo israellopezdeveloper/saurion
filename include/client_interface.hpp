@@ -1,12 +1,8 @@
 #ifndef CLIENT_INTERFACE_HPP
 #define CLIENT_INTERFACE_HPP
 
-#include <cstdint>
-#include <cstdio>
-#include <string>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include <cstdint> // for uint64_t
+#include <string>  // for string
 
 // set_port
 int set_port ();

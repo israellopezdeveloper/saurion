@@ -47,7 +47,7 @@
  *     std::cout << "Connected: " << fd << std::endl;
  * }
  *
- * void on_readed(const int fd, const void *const data, const ssize_t len,
+ * void on_readed(const int fd, const void *const data, const int64_t len,
  *     void *arg) {
  *   std::cout << "Read data: " << std::string((char *)data, len) << std::endl;
  * }
@@ -79,8 +79,8 @@
 #ifndef SAURION_HPP
 #define SAURION_HPP
 
-#include <stdint.h>    // for uint32_t
-#include <sys/types.h> // for ssize_t
+#include <cstdint>
+#include <stdint.h> // for uint32_t, int64_t
 
 /*!
  * @brief A class for managing network connections with callback-based event
@@ -109,7 +109,7 @@ public:
    * @param arg User-defined argument.
    */
   using ReadedCb
-      = void (*) (const int, const void *const, const ssize_t, void *);
+      = void (*) (const int, const void *const, const int64_t, void *);
   /*!
    * @typedef WroteCb
    * @brief Callback type for data sent events.
@@ -133,7 +133,7 @@ public:
    * @param arg User-defined argument.
    */
   using ErrorCb
-      = void (*) (const int, const char *const, const ssize_t, void *);
+      = void (*) (const int, const char *const, const int64_t, void *);
 
   /*!
    * @brief Constructs a `Saurion` instance.

@@ -1,29 +1,16 @@
-#include "config.h"    // for CHUNK_SZ
+#include "config.h"
+
 #include <arpa/inet.h> // for htonl, inet_pton, ntohl, htons
 #include <atomic>      // for atomic
-#include <cerrno>
-#include <cstdint> // for uint64_t, uint32_t, int64_t, uint8_t
-#include <cstdio>  // for perror, size_t
-#include <cstdlib> // for exit, WIFEXITED, WTERMSIG
-#include <cstring> // for memcpy, strerror, memset, strlen, strcpy
-#include <errno.h> // for errno, EAGAIN, EWOULDBLOCK
-#include <fcntl.h> // for fcntl, open, F_GETFL, F_SETFL, O_NONBLOCK
-#include <filesystem>
-#include <fstream>      // for basic_ostream, operator<<, endl, basic...
-#include <iostream>     // for cerr, cout
-#include <memory>       // for allocator, make_unique, unique_ptr
-#include <netinet/in.h> // for sockaddr_in
-#include <signal.h>     // for SIGUSR1, SIGUSR2, timespec, kill, signal
-#include <sstream>      // for basic_istringstream, basic_ostringstream
-#include <string>       // for char_traits, basic_string, getline
-#include <sys/mman.h>   // for mmap, MAP_ANONYMOUS, MAP_FAILED, MAP_S...
-#include <sys/socket.h> // for AF_INET, connect, send, socket, SOCK_S...
-#include <sys/stat.h>   // for mkfifo
-#include <sys/types.h>  // for pid_t, ssize_t
-#include <sys/wait.h>   // for waitpid
-#include <time.h>       // for nanosleep
-#include <unistd.h>     // for close, read, fork, sleep
-#include <vector>       // for vector
+#include <cstdint>     // for uint64_t, uint32_t, int64_t, uint8_t
+#include <cstring>     // for memcpy, strerror, memset, strlen, strcpy
+#include <fcntl.h>     // for fcntl, open, F_GETFL, F_SETFL, O_NONBLOCK
+#include <filesystem>  // for filesystem, setfill, setw
+#include <fstream>     // for basic_ostream, operator<<, endl, basic...
+#include <sys/mman.h>  // for mmap, MAP_ANONYMOUS, MAP_FAILED, MAP_S...
+#include <sys/stat.h>  // for mkfifo
+#include <sys/wait.h>  // for waitpid
+#include <vector>      // for vector
 
 std::vector<pid_t> clients;
 int numClients = 0;
@@ -112,15 +99,11 @@ makeSocketNonBlocking ()
   int flags = fcntl (sockfd, F_GETFL, 0);
   if (flags == -1)
     {
-      std::cerr << "Error obteniendo flags del socket: " << strerror (errno)
-                << std::endl;
       exit (1);
     }
 
   if (fcntl (sockfd, F_SETFL, flags | O_NONBLOCK) == -1)
     {
-      std::cerr << "Error configurando el socket como no bloqueante: "
-                << strerror (errno) << std::endl;
       exit (1);
     }
 }
@@ -213,15 +196,12 @@ createClient (int clientId, int port)
 
   if (!logStream.is_open ())
     {
-      std::cerr << "Error al abrir el archivo log para el cliente " << clientId
-                << std::endl;
       exit (1);
     }
 
   sockfd = socket (AF_INET, SOCK_STREAM, 0);
   if (sockfd < 0)
     {
-      std::cerr << "Error creando socket" << std::endl;
       exit (1);
     }
 
@@ -243,7 +223,7 @@ createClient (int clientId, int port)
   memset (buffer, 0, 8192);
 
   std::vector<uint8_t> accumulatedBuffer;
-  ssize_t total_len = 0;
+  int64_t total_len = 0;
 
   struct timespec ts;
   ts.tv_sec = 0;
@@ -255,7 +235,7 @@ createClient (int clientId, int port)
       total_len = 0;
       while (dataAvailable > 0)
         {
-          ssize_t len = read (sockfd, buffer, sizeof (buffer));
+          int64_t len = read (sockfd, buffer, sizeof (buffer));
 
           if (len > 0)
             {
@@ -323,11 +303,6 @@ disconnectClients ()
 
       int status;
       waitpid (pid, &status, 0);
-      if (!WIFEXITED (status))
-        {
-          std::cout << "Cliente " << pid << " terminó por señal "
-                    << WTERMSIG (status) << std::endl;
-        }
     }
   clients.clear ();
   numClients = 0;
@@ -378,10 +353,6 @@ handleCommand (const std::string &command)
     {
       closeApplication ();
     }
-  else
-    {
-      std::cout << "Comando desconocido: " << cmd << std::endl;
-    }
 }
 
 void
@@ -390,13 +361,12 @@ readPipe (const std::string &pipePath)
   int fd = open (pipePath.c_str (), O_RDONLY);
   if (fd < 0)
     {
-      std::cerr << "Error al abrir el pipe: " << pipePath << std::endl;
       return;
     }
 
   char buffer[4096];
   std::string commandBuffer;
-  ssize_t bytesRead = 0;
+  int64_t bytesRead = 0;
   while ((bytesRead = read (fd, buffer, sizeof (buffer))) > 0L)
     {
       commandBuffer.append (buffer, bytesRead);
@@ -417,7 +387,7 @@ __attribute__ ((no_sanitize ("thread")))
 
 template <typename T>
 T *
-mapSharedMemory (size_t size)
+mapSharedMemory (int64_t size)
 {
   void *addr = mmap (nullptr, size, PROT_READ | PROT_WRITE,
                      MAP_SHARED | MAP_ANONYMOUS, -1, 0);
@@ -442,7 +412,6 @@ main (int argc, char *argv[])
 {
   if (argc < 3)
     {
-      std::cerr << "Uso: " << argv[0] << " -p <pipe_path>" << std::endl;
       return 1;
     }
 

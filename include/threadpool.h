@@ -48,7 +48,7 @@
 #ifndef THREADPOOL_H
 #define THREADPOOL_H
 
-#include <stddef.h> // for size_t
+#include <stdint.h> // for uint64_t
 
 #ifdef __cplusplus
 extern "C"
@@ -81,7 +81,7 @@ extern "C"
    *   - Task Queue: Empty
    * ```
    */
-  struct threadpool *threadpool_create (size_t num_threads);
+  struct threadpool *threadpool_create (uint64_t num_threads);
 
   /*!
    * @brief Creates a new thread pool with the default number of threads (equal

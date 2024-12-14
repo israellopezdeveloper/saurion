@@ -3,20 +3,9 @@
 #include "low_saurion.h"
 #include "saurion.hpp"
 
-#include <cstdio>
-#include <ctime>
-#include <memory>
-#include <pthread.h>
-#include <stdatomic.h>
-#include <string.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include <cerrno>
-#include <csignal>
-#include <cstdlib>
-#include <cstring>
-#include <stdexcept>
+#include <cstring>     // for memset
+#include <memory>      // for allocator
+#include <stdatomic.h> // for atomicint
 
 #include "gtest/gtest.h"
 
@@ -35,7 +24,7 @@ struct summary
   uint32_t disconnected = 0;
   pthread_cond_t disconnected_c = PTHREAD_COND_INITIALIZER;
   pthread_mutex_t disconnected_m = PTHREAD_MUTEX_INITIALIZER;
-  size_t readed = 0;
+  uint64_t readed = 0;
   pthread_cond_t readed_c = PTHREAD_COND_INITIALIZER;
   pthread_mutex_t readed_m = PTHREAD_MUTEX_INITIALIZER;
   uint32_t wrote = 0;
@@ -57,7 +46,7 @@ cb_OnConnected (int sfd, void *arg)
 }
 //    -> OnReaded
 static void
-cb_OnReaded (int, const void *const, const ssize_t size, void *arg)
+cb_OnReaded (int, const void *const, const int64_t size, void *arg)
 {
   auto *summary = static_cast<struct summary *> (arg);
   pthread_mutex_lock (&summary->readed_m);
@@ -93,7 +82,7 @@ cb_OnClosed (int sfd, void *arg)
 }
 //    -> OnError
 static void
-cb_OnError (int, const char *const, const ssize_t, void *)
+cb_OnError (int, const char *const, const int64_t, void *)
 {
   // Not tested yet
 }
@@ -150,7 +139,7 @@ public:
 
   // wait_read
   void
-  wait_readed (size_t n)
+  wait_readed (uint64_t n)
   {
     pthread_mutex_lock (&summary.readed_m);
     while (summary.readed < n)
@@ -373,7 +362,7 @@ TYPED_TEST (SaurionTest, reconnectClients)
 TYPED_TEST (SaurionTest, readWriteWithLargeMessageMultipleOfChunkSize)
 {
   uint32_t clients = 1;
-  size_t size = CHUNK_SZ * 2;
+  uint64_t size = CHUNK_SZ * 2;
   auto str = std::make_unique<char[]> (size + 1);
   std::memset (str.get (), 'A', size);
   str[size - 1] = '1';

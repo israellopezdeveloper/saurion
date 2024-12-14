@@ -1,11 +1,9 @@
 #include "linked_list.h"
+#include "gtest/gtest.h"
 
 #include <atomic>
-#include <thread>
-
-#include <sys/uio.h>
-
-#include "gtest/gtest.h"
+#include <sys/uio.h> // for struct iovec
+#include <thread>    // for jthread
 
 constexpr int N_ITEMS = 100;
 
@@ -39,10 +37,10 @@ protected:
   {
     auto *ptr = new char[strlen (str) + 1];
     strcpy (ptr, str);
-    size_t amount = 4;
+    uint64_t amount = 4;
     auto **children = new struct iovec *[amount];
     auto **children_ptr = new void *[amount];
-    for (size_t i = 0; i < amount; ++i)
+    for (uint64_t i = 0; i < amount; ++i)
       {
         children[i] = new struct iovec;
         children[i]->iov_len = 7;
@@ -56,7 +54,7 @@ protected:
         return nullptr;
       }
 
-    for (size_t i = 0; i < amount; ++i)
+    for (uint64_t i = 0; i < amount; ++i)
       {
         delete children[i];
       }

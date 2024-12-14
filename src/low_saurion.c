@@ -3,23 +3,12 @@
 #include "linked_list.h" // for list_delete_node, list_free, list_insert
 #include "threadpool.h"  // for threadpool_add, threadpool_create
 
-#include <arpa/inet.h>             // for htonl, ntohl, htons
-#include <bits/socket-constants.h> // for SOL_SOCKET, SO_REUSEADDR
-#include <bits/types/struct_timeval.h>
-#include <liburing.h>          // for io_uring_get_sqe, io_uring, io_uring_...
-#include <liburing/io_uring.h> // for io_uring_cqe
-#include <nanologger.h>        // for LOG_END, LOG_INIT
-#include <netinet/in.h>        // for sockaddr_in, INADDR_ANY, in_addr
-#include <pthread.h>           // for pthread_mutex_lock, pthread_mutex_unlock
-#include <stdint.h>            // for uint32_t, uint64_t, uint8_t
-#include <stdio.h>             // for NULL
-#include <stdlib.h>            // for free, malloc
-#include <string.h>            // for memset, memcpy, strlen
-#include <sys/eventfd.h>       // for eventfd, EFD_NONBLOCK
-#include <sys/socket.h>        // for socklen_t, bind, listen, setsockopt
-#include <sys/uio.h>           // for iovec
-#include <time.h>              // for nanosleep
-#include <unistd.h>            // for close, write
+#include <bits/types/struct_timeval.h> // for struct timeval
+#include <liburing.h>    // for io_uring_get_sqe, io_uring, io_uring_...
+#include <netinet/in.h>  // for sockaddr_in, INADDR_ANY, in_addr
+#include <stdlib.h>      // for free, malloc
+#include <string.h>      // for memset, memcpy, strlen
+#include <sys/eventfd.h> // for eventfd, EFD_NONBLOCK
 
 struct Node;
 struct iovec;
@@ -33,12 +22,12 @@ struct iovec;
 struct request
 {
   void *prev;
-  size_t prev_size;
-  size_t prev_remain;
-  size_t next_iov;
-  size_t next_offset;
+  uint64_t prev_size;
+  uint64_t prev_remain;
+  uint64_t next_iov;
+  uint64_t next_offset;
   int event_type;
-  size_t iovec_count;
+  uint64_t iovec_count;
   int client_socket;
   struct iovec iov[];
 };
@@ -99,7 +88,7 @@ free_request (struct request *req, void **children_ptr, const uint64_t amount)
       free (children_ptr);
       children_ptr = NULL;
     }
-  for (size_t i = 0; i < amount; ++i)
+  for (uint64_t i = 0; i < amount; ++i)
     {
       free (req->iov[i].iov_base);
       req->iov[i].iov_base = NULL;
@@ -122,10 +111,10 @@ initialize_iovec (struct iovec *iov, const uint64_t amount, const uint64_t pos,
     }
   if (msg)
     {
-      size_t len = iov->iov_len;
+      uint64_t len = iov->iov_len;
       char *dest = (char *)iov->iov_base;
       char *orig = (char *)msg + pos * CHUNK_SZ;
-      size_t cpy_sz = 0;
+      uint64_t cpy_sz = 0;
       if (h)
         {
           if (pos == 0)
@@ -149,7 +138,7 @@ initialize_iovec (struct iovec *iov, const uint64_t amount, const uint64_t pos,
       cpy_sz = (len < size ? len : size);
       memcpy (dest, orig, cpy_sz);
       dest += cpy_sz;
-      size_t rem = CHUNK_SZ - (dest - (char *)iov->iov_base);
+      uint64_t rem = CHUNK_SZ - (dest - (char *)iov->iov_base);
       memset (dest, 0, rem);
     }
   else
@@ -186,7 +175,7 @@ allocate_iovec (struct iovec *iov, const uint64_t amount, const uint64_t pos,
 // set_request
 [[nodiscard]]
 int
-set_request (struct request **r, struct Node **l, size_t s, const void *m,
+set_request (struct request **r, struct Node **l, uint64_t s, const void *m,
              uint8_t h)
 {
   uint64_t full_size = s;
@@ -194,7 +183,7 @@ set_request (struct request **r, struct Node **l, size_t s, const void *m,
     {
       full_size += (sizeof (uint64_t) + sizeof (uint8_t));
     }
-  size_t amount = full_size / CHUNK_SZ;
+  uint64_t amount = full_size / CHUNK_SZ;
   amount = amount + (full_size % CHUNK_SZ == 0 ? 0 : 1);
   struct request *temp = (struct request *)malloc (
       sizeof (struct request) + sizeof (struct iovec) * amount);
@@ -230,7 +219,7 @@ set_request (struct request **r, struct Node **l, size_t s, const void *m,
       free_request (req, children_ptr, 0);
       return ERROR_CODE;
     }
-  for (size_t i = 0; i < amount; ++i)
+  for (uint64_t i = 0; i < amount; ++i)
     {
       if (!allocate_iovec (&req->iov[i], amount, i, full_size, children_ptr))
         {
@@ -439,11 +428,11 @@ handle_accept (const struct saurion *const s, const int fd)
 
 // calculate_max_iov_content
 [[nodiscard]]
-static inline size_t
+static inline uint64_t
 calculate_max_iov_content (const struct request *req)
 {
-  size_t max_iov_cont = 0;
-  for (size_t i = 0; i < req->iovec_count; ++i)
+  uint64_t max_iov_cont = 0;
+  for (uint64_t i = 0; i < req->iovec_count; ++i)
     {
       max_iov_cont += req->iov[i].iov_len;
     }
@@ -454,14 +443,14 @@ struct chunk_params
 {
   void **dest;
   void *dest_ptr;
-  size_t dest_off;
+  uint64_t dest_off;
   struct request *req;
-  size_t cont_sz;
-  size_t cont_rem;
-  size_t max_iov_cont;
-  size_t curr_iov;
-  size_t curr_iov_off;
-  size_t *len;
+  uint64_t cont_sz;
+  uint64_t cont_rem;
+  uint64_t max_iov_cont;
+  uint64_t curr_iov;
+  uint64_t curr_iov_off;
+  uint64_t *len;
 };
 
 // handle_previous_message
@@ -497,8 +486,8 @@ handle_partial_message (struct chunk_params *p)
   p->curr_iov = p->req->next_iov;
   p->curr_iov_off = p->req->next_offset;
 
-  p->cont_sz = *(size_t *)((uint8_t *)p->req->iov[p->curr_iov].iov_base
-                           + p->curr_iov_off);
+  p->cont_sz = *(uint64_t *)((uint8_t *)p->req->iov[p->curr_iov].iov_base
+                             + p->curr_iov_off);
   p->cont_sz = ntohll (p->cont_sz);
   p->curr_iov_off += sizeof (uint64_t);
   p->cont_rem = p->cont_sz;
@@ -535,8 +524,8 @@ handle_new_message (struct chunk_params *p)
   p->curr_iov = 0;
   p->curr_iov_off = 0;
 
-  p->cont_sz = *(size_t *)((uint8_t *)p->req->iov[p->curr_iov].iov_base
-                           + p->curr_iov_off);
+  p->cont_sz = *(uint64_t *)((uint8_t *)p->req->iov[p->curr_iov].iov_base
+                             + p->curr_iov_off);
   p->cont_sz = ntohll (p->cont_sz);
   p->curr_iov_off += sizeof (uint64_t);
   p->cont_rem = p->cont_sz;
@@ -584,7 +573,7 @@ prepare_destination (struct chunk_params *p)
 static inline void
 copy_data (struct chunk_params *p, uint8_t *const ok)
 {
-  size_t curr_iov_msg_rem = 0;
+  uint64_t curr_iov_msg_rem = 0;
   *ok = 1UL;
   while (1)
     {
@@ -668,9 +657,9 @@ read_chunk_free (struct chunk_params *const p)
   *p->len = 0;
   p->req->next_iov = 0;
   p->req->next_offset = 0;
-  for (size_t i = p->curr_iov; i < p->req->iovec_count; ++i)
+  for (uint64_t i = p->curr_iov; i < p->req->iovec_count; ++i)
     {
-      for (size_t j = p->curr_iov_off; j < p->req->iov[i].iov_len; ++j)
+      for (uint64_t j = p->curr_iov_off; j < p->req->iov[i].iov_len; ++j)
         {
           uint8_t foot = *((uint8_t *)p->req->iov[i].iov_base) + j;
           if (foot == 0)
@@ -725,7 +714,7 @@ static inline void
 handle_read (struct saurion *const s, struct request *const req)
 {
   void *msg = NULL;
-  size_t len = 0;
+  uint64_t len = 0;
   while (1)
     {
       if (!read_chunk (&msg, &len, req))
@@ -776,7 +765,7 @@ handle_error (const struct saurion *const s, const struct request *const req)
   if (s->cb.on_error)
     {
       const char *resp = "ERROR";
-      s->cb.on_error (req->client_socket, resp, (ssize_t)strlen (resp),
+      s->cb.on_error (req->client_socket, resp, (int64_t)strlen (resp),
                       s->cb.on_error_arg);
     }
 }
