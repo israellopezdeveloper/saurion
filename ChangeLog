@@ -1,1 +1,17 @@
+# ChangeLog
 
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to [Semantic Versioning](https://semver.org/).
+
+## [0.0.5] - 2024-12-14
+### Added
+- Basic functionality for an asynchronous socket
+
+### Changed
+- Improved stability of the system.
+
+### Fixed
+- Fixed a bug on compile_commands.json
+
+---

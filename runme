@@ -157,8 +157,8 @@ loop_execution() {
       fi
     fi
     executed=1
-    make_exec &&
-      make_tests || {
+    make_exec || exit 1
+    make_tests || {
       echo "Running tests individually..."
       # Ejecutar los tests individualmente si falla make check
       for test_file in "${SCRIPT_DIR}/build/tests/"*_test; do
@@ -297,6 +297,10 @@ if [ "${OPTION_FLAGS_docs}" = true ]; then
   CONFIGURE_OPTIONS="${CONFIGURE_OPTIONS} --enable-doxygen-doc"
 fi
 
+if [ "${OPTION_FLAGS_compile_commands}" = true ]; then
+  CONFIGURE_OPTIONS="${CONFIGURE_OPTIONS} --enable-compile-commands"
+fi
+
 # Ejecutar configuración y construcción
 configure "${CONFIGURE_OPTIONS}"
 
@@ -311,7 +315,7 @@ else
     make_exec compile_commands
   fi
   make_exec all
-  make_tests || ./tests/saurion_test
+  make_tests || ./tests/saurion_test || exit 1
   if [ "${OPTION_FLAGS_docs}" = true ]; then
     make_exec doxygen-doc
   fi

@@ -1,7 +1,8 @@
 #include "saurion.hpp"
-
 #include "low_saurion.h" // for saurion, saurion_create, saurion_destroy
-#include <unistd.h>
+
+#include <stdexcept> // for runtime_error
+#include <unistd.h>  // close
 
 Saurion::Saurion (const uint32_t thds, const int sck) noexcept
 {
@@ -20,11 +21,11 @@ Saurion::~Saurion ()
 }
 
 void
-Saurion::init () noexcept
+Saurion::init ()
 {
   if (!saurion_start (this->s))
     {
-      return;
+      throw std::runtime_error ("Error on saurion start");
     }
 }
 

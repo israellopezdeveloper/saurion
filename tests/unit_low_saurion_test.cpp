@@ -2,20 +2,11 @@
 #include "linked_list.h"        // for list_free
 #include "low_saurion_secret.h" // for request, set_request, read_chunk
 #include "gtest/gtest.h"        // for Message, TestPartResult, Test (ptr o...
-#include <arpa/inet.h>          // for htonl, ntohl
-#include <cmath>                // for ceil
-#include <cstdint>              // for uint64_t, uint32_t, uint8_t
-#include <cstdlib>              // for free, size_t
-#include <cstring>              // for strlen, strncmp, memcpy, memset, str...
-#include <gtest/gtest.h>        // for Test, EXPECT_EQ, TEST, CmpHelperNE
-#include <memory>               // for unique_ptr, make_unique
-#include <numeric>              // for accumulate
-#include <random>               // for uniform_int_distribution, random_device
-#include <stdexcept>            // for invalid_argument
-#include <sys/types.h>          // for uint
-#include <sys/uio.h>            // for iovec
-#include <utility>              // for move
-#include <vector>               // for vector
+
+#include <arpa/inet.h> // for htonl, ntohl
+#include <cstdlib>     // for free, uint64_t
+#include <cstring>     // for strlen, strncmp, memcpy, memset, str...
+#include <random>      // for uniform_int_distribution, random_device
 
 uint64_t
 htonll (uint64_t value)
@@ -50,7 +41,7 @@ ntohll (uint64_t value)
 }
 
 std::unique_ptr<char[]>
-fill_with_alphabet (size_t length, uint8_t h)
+fill_with_alphabet (uint64_t length, uint8_t h)
 {
   const char *alphabet = "abcdefghijklmnopqrstuvwxyz";
   int alphabet_len = 26;
@@ -284,7 +275,7 @@ generate_messages (const std::vector<uint64_t> &sizes,
   const uint64_t wrapper = sizeof (uint64_t) + sizeof (uint8_t);
   uint64_t total_size = 0;
 
-  for (size_t i = 0; i < sizes.size (); ++i)
+  for (uint64_t i = 0; i < sizes.size (); ++i)
     {
       total_size += sizes[i] + wrapper + adjustments[i];
     }
@@ -294,7 +285,7 @@ generate_messages (const std::vector<uint64_t> &sizes,
   offset = 0;
   std::vector<std::unique_ptr<char[]> > message_list;
 
-  for (size_t i = 0; i < sizes.size (); ++i)
+  for (uint64_t i = 0; i < sizes.size (); ++i)
     {
       auto msg = fill_with_alphabet (sizes[i], 1);
       std::memcpy (msgs.get () + offset, msg.get (),
@@ -306,7 +297,7 @@ generate_messages (const std::vector<uint64_t> &sizes,
   auto sum_msg = std::make_unique<char[]> (total_size);
   uint64_t sum_offset = 0;
 
-  for (size_t i = 0; i < sizes.size (); ++i)
+  for (uint64_t i = 0; i < sizes.size (); ++i)
     {
       uint64_t msg_size = sizes[i];
       std::memcpy (sum_msg.get () + sum_offset, message_list[i].get (),
@@ -556,7 +547,7 @@ TEST (unit_saurion, PreviousUnfinishedMessage)
   uint64_t len = 0;
 
   res = read_chunk (&dest, &len, req);
-  uint64_t readed = CHUNK_SZ - sizeof (size_t);
+  uint64_t readed = CHUNK_SZ - sizeof (uint64_t);
 
   check_read (len, msg_size, readed, res, req, dest);
 

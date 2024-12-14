@@ -107,9 +107,10 @@
 
 #define _POSIX_C_SOURCE 200809L
 
-#include <pthread.h>   // for pthread_mutex_t, pthread_cond_t
-#include <stdint.h>    // for uint32_t
-#include <sys/types.h> // for ssize_t
+#include <pthread.h> // for pthread_mutex_t, pthread_cond_t
+#include <stdint.h>  // for uint32_t, int64_t
+
+// TODO: añadir métodos de backpressure, por ver conversacion de ChatGPT
 
 #ifdef __cplusplus
 extern "C"
@@ -167,7 +168,7 @@ extern "C"
      * @param arg Additional user-provided argument.
      */
     void (*on_readed) (const int fd, const void *const content,
-                       const ssize_t len, void *arg);
+                       const int64_t len, void *arg);
     /*! Additional argument for the read callback. */
     void *on_readed_arg;
 
@@ -199,7 +200,7 @@ extern "C"
      * @param arg Additional user-provided argument.
      */
     void (*on_error) (const int fd, const char *const content,
-                      const ssize_t len, void *arg);
+                      const int64_t len, void *arg);
     /*! Additional argument for the error callback. */
     void *on_error_arg;
   } __attribute__ ((aligned (PACKING_SZ)));
@@ -248,7 +249,7 @@ extern "C"
    * @param p port
    * @return result of socket creation.
    */
-  int saurion_set_socket (int p);
+  int saurion_set_socket (const int p);
 
   /*!
    * @public
