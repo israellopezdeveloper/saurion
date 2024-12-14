@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.4</span>
+   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.5</span>
    </div>
   </td>
  </tr>
@@ -101,9 +101,9 @@ Public Attributes</h2></td></tr>
 <tr class="separator:aadebdbd46d651eafc8ff2cb5492dd337"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0448514287c7c368cddcecd51b44ab0e"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d5e/structsaurion__callbacks.html#a0448514287c7c368cddcecd51b44ab0e">on_connected_arg</a></td></tr>
 <tr class="separator:a0448514287c7c368cddcecd51b44ab0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15c5a8dc04e2c4083502eb9f7f2c7997"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d5e/structsaurion__callbacks.html#a15c5a8dc04e2c4083502eb9f7f2c7997">on_readed</a> )(const int fd, const void *const content, const ssize_t len, void *arg)</td></tr>
-<tr class="memdesc:a15c5a8dc04e2c4083502eb9f7f2c7997"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling read events.  <a href="../../d8/d5e/structsaurion__callbacks.html#a15c5a8dc04e2c4083502eb9f7f2c7997">More...</a><br /></td></tr>
-<tr class="separator:a15c5a8dc04e2c4083502eb9f7f2c7997"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff5837eff0e7596abfab1dc2bf146074"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d5e/structsaurion__callbacks.html#aff5837eff0e7596abfab1dc2bf146074">on_readed</a> )(const int fd, const void *const content, const int64_t len, void *arg)</td></tr>
+<tr class="memdesc:aff5837eff0e7596abfab1dc2bf146074"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling read events.  <a href="../../d8/d5e/structsaurion__callbacks.html#aff5837eff0e7596abfab1dc2bf146074">More...</a><br /></td></tr>
+<tr class="separator:aff5837eff0e7596abfab1dc2bf146074"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46d60adf1f70df83058296234572c978"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d5e/structsaurion__callbacks.html#a46d60adf1f70df83058296234572c978">on_readed_arg</a></td></tr>
 <tr class="separator:a46d60adf1f70df83058296234572c978"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19b5d0802302a7120a3ad718ebb8cb2a"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d5e/structsaurion__callbacks.html#a19b5d0802302a7120a3ad718ebb8cb2a">on_wrote</a> )(const int fd, void *arg)</td></tr>
@@ -116,9 +116,9 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a92d10ed4a5e24fe94067f2fa3f8115e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c6906d4a2fcd277ce1b3703e20f41d2"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d5e/structsaurion__callbacks.html#a0c6906d4a2fcd277ce1b3703e20f41d2">on_closed_arg</a></td></tr>
 <tr class="separator:a0c6906d4a2fcd277ce1b3703e20f41d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d99e1bab4869f6c0b47d3e630c0a2f1"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d5e/structsaurion__callbacks.html#a4d99e1bab4869f6c0b47d3e630c0a2f1">on_error</a> )(const int fd, const char *const content, const ssize_t len, void *arg)</td></tr>
-<tr class="memdesc:a4d99e1bab4869f6c0b47d3e630c0a2f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling error events.  <a href="../../d8/d5e/structsaurion__callbacks.html#a4d99e1bab4869f6c0b47d3e630c0a2f1">More...</a><br /></td></tr>
-<tr class="separator:a4d99e1bab4869f6c0b47d3e630c0a2f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d1803c293e950b94cc74d8d59b70a00"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d5e/structsaurion__callbacks.html#a3d1803c293e950b94cc74d8d59b70a00">on_error</a> )(const int fd, const char *const content, const int64_t len, void *arg)</td></tr>
+<tr class="memdesc:a3d1803c293e950b94cc74d8d59b70a00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling error events.  <a href="../../d8/d5e/structsaurion__callbacks.html#a3d1803c293e950b94cc74d8d59b70a00">More...</a><br /></td></tr>
+<tr class="separator:a3d1803c293e950b94cc74d8d59b70a00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3372ecd9a17439b84edf72bb9377089"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d5e/structsaurion__callbacks.html#ad3372ecd9a17439b84edf72bb9377089">on_error_arg</a></td></tr>
 <tr class="separator:ad3372ecd9a17439b84edf72bb9377089"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -126,7 +126,7 @@ Public Attributes</h2></td></tr>
 <div class="textblock"><p >Structure containing callback functions to handle socket events. </p>
 <p >This structure holds pointers to callback functions for handling events such as connection establishment, reading, writing, closing, and errors on sockets. Each callback has an associated argument pointer that can be passed along when the callback is invoked. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00149">149</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00150">150</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="a92d10ed4a5e24fe94067f2fa3f8115e4" name="a92d10ed4a5e24fe94067f2fa3f8115e4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a92d10ed4a5e24fe94067f2fa3f8115e4">&#9670;&nbsp;</a></span>on_closed</h2>
@@ -149,7 +149,7 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00189">189</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00190">190</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -166,7 +166,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Additional argument for the close callback. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00191">191</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00192">192</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -191,7 +191,7 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00157">157</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00158">158</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -208,18 +208,18 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Additional argument for the connection callback. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00159">159</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00160">160</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
-<a id="a4d99e1bab4869f6c0b47d3e630c0a2f1" name="a4d99e1bab4869f6c0b47d3e630c0a2f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d99e1bab4869f6c0b47d3e630c0a2f1">&#9670;&nbsp;</a></span>on_error</h2>
+<a id="a3d1803c293e950b94cc74d8d59b70a00" name="a3d1803c293e950b94cc74d8d59b70a00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d1803c293e950b94cc74d8d59b70a00">&#9670;&nbsp;</a></span>on_error</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void(* saurion_callbacks::on_error) (const int fd, const char *const content, const ssize_t len, void *arg)</td>
+          <td class="memname">void(* saurion_callbacks::on_error) (const int fd, const char *const content, const int64_t len, void *arg)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -235,7 +235,7 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00201">201</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00202">202</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -252,18 +252,18 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Additional argument for the error callback. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00204">204</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00205">205</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
-<a id="a15c5a8dc04e2c4083502eb9f7f2c7997" name="a15c5a8dc04e2c4083502eb9f7f2c7997"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a15c5a8dc04e2c4083502eb9f7f2c7997">&#9670;&nbsp;</a></span>on_readed</h2>
+<a id="aff5837eff0e7596abfab1dc2bf146074" name="aff5837eff0e7596abfab1dc2bf146074"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff5837eff0e7596abfab1dc2bf146074">&#9670;&nbsp;</a></span>on_readed</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void(* saurion_callbacks::on_readed) (const int fd, const void *const content, const ssize_t len, void *arg)</td>
+          <td class="memname">void(* saurion_callbacks::on_readed) (const int fd, const void *const content, const int64_t len, void *arg)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -279,7 +279,7 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00169">169</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00170">170</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -296,7 +296,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Additional argument for the read callback. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00172">172</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00173">173</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -321,7 +321,7 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00180">180</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00181">181</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>
@@ -338,7 +338,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Additional argument for the write callback. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00181">181</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/low__saurion_8h_source.html#l00182">182</a> of file <a class="el" href="../../d3/d68/low__saurion_8h_source.html">low_saurion.h</a>.</p>
 
 </div>
 </div>

@@ -9,5 +9,6 @@ var searchData=
   ['handle_5fprevious_5fmessage_6',['handle_previous_message',['../de/d27/low__saurion_8c.html#aa0da5f4cd411c5ecd89f50a4b7520b0b',1,'low_saurion.c']]],
   ['handle_5fread_7',['handle_read',['../de/d27/low__saurion_8c.html#a97aee33e3c5728a7d986b2f42e7bb82a',1,'low_saurion.c']]],
   ['handle_5fwrite_8',['handle_write',['../de/d27/low__saurion_8c.html#a94c77ae2935117db01e434b37204b649',1,'low_saurion.c']]],
-  ['htonll_9',['htonll',['../de/d27/low__saurion_8c.html#a00d80bc019becac44a598996923faecf',1,'low_saurion.c']]]
+  ['highsaurion_9',['HighSaurion',['../da/d36/group__HighSaurion.html',1,'']]],
+  ['htonll_10',['htonll',['../de/d27/low__saurion_8c.html#a865da08e2337383f2f3795e28f11c7de',1,'low_saurion.c']]]
 ];

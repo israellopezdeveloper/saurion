@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.4</span>
+   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.5</span>
    </div>
   </td>
  </tr>
@@ -104,20 +104,24 @@ Include dependency graph for linked_list.c:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d49/structNode.html">Node</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a node in the linked list.  <a href="../../d8/d49/structNode.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a918975430b04d125decf67186a4e868a"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d8/d49/structNode.html">Node</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d32/linked__list_8c.html#a918975430b04d125decf67186a4e868a">create_node</a> (void *ptr, size_t amount, void **children)</td></tr>
-<tr class="separator:a918975430b04d125decf67186a4e868a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee07283e23385804a1d3f880cd99731e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d32/linked__list_8c.html#aee07283e23385804a1d3f880cd99731e">list_insert</a> (struct <a class="el" href="../../d8/d49/structNode.html">Node</a> **head, void *ptr, size_t amount, void **children)</td></tr>
-<tr class="separator:aee07283e23385804a1d3f880cd99731e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20dbf129ca11174850d65956fc169522"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d8/d49/structNode.html">Node</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d32/linked__list_8c.html#a20dbf129ca11174850d65956fc169522">create_node</a> (void *ptr, const uint64_t amount, void *const *children)</td></tr>
+<tr class="separator:a20dbf129ca11174850d65956fc169522"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga07ded45c12669448ebc1aee6d1b1efeb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d38/group__LinkedList.html#ga07ded45c12669448ebc1aee6d1b1efeb">list_insert</a> (struct <a class="el" href="../../d8/d49/structNode.html">Node</a> **head, void *ptr, const uint64_t amount, void **children)</td></tr>
+<tr class="memdesc:ga07ded45c12669448ebc1aee6d1b1efeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts a new node into the linked list.  <a href="../../d4/d38/group__LinkedList.html#ga07ded45c12669448ebc1aee6d1b1efeb">More...</a><br /></td></tr>
+<tr class="separator:ga07ded45c12669448ebc1aee6d1b1efeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf693ba941ada32c9c43d3c6897e4217"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d32/linked__list_8c.html#aaf693ba941ada32c9c43d3c6897e4217">free_node</a> (struct <a class="el" href="../../d8/d49/structNode.html">Node</a> *current)</td></tr>
 <tr class="separator:aaf693ba941ada32c9c43d3c6897e4217"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c613e9f175d5433244f84467555dc8d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d32/linked__list_8c.html#a5c613e9f175d5433244f84467555dc8d">list_delete_node</a> (struct <a class="el" href="../../d8/d49/structNode.html">Node</a> **head, const void *const ptr)</td></tr>
-<tr class="separator:a5c613e9f175d5433244f84467555dc8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac33c30e895caddc11181b50eca0ab735"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d32/linked__list_8c.html#ac33c30e895caddc11181b50eca0ab735">list_free</a> (struct <a class="el" href="../../d8/d49/structNode.html">Node</a> **head)</td></tr>
-<tr class="separator:ac33c30e895caddc11181b50eca0ab735"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5c613e9f175d5433244f84467555dc8d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d38/group__LinkedList.html#ga5c613e9f175d5433244f84467555dc8d">list_delete_node</a> (struct <a class="el" href="../../d8/d49/structNode.html">Node</a> **head, const void *const ptr)</td></tr>
+<tr class="memdesc:ga5c613e9f175d5433244f84467555dc8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a node from the linked list.  <a href="../../d4/d38/group__LinkedList.html#ga5c613e9f175d5433244f84467555dc8d">More...</a><br /></td></tr>
+<tr class="separator:ga5c613e9f175d5433244f84467555dc8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac33c30e895caddc11181b50eca0ab735"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d38/group__LinkedList.html#gac33c30e895caddc11181b50eca0ab735">list_free</a> (struct <a class="el" href="../../d8/d49/structNode.html">Node</a> **head)</td></tr>
+<tr class="memdesc:gac33c30e895caddc11181b50eca0ab735"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees the entire linked list.  <a href="../../d4/d38/group__LinkedList.html#gac33c30e895caddc11181b50eca0ab735">More...</a><br /></td></tr>
+<tr class="separator:gac33c30e895caddc11181b50eca0ab735"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -125,8 +129,8 @@ Variables</h2></td></tr>
 <tr class="separator:a269b01c2f5e202f62eb85b91e6542661"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a918975430b04d125decf67186a4e868a" name="a918975430b04d125decf67186a4e868a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a918975430b04d125decf67186a4e868a">&#9670;&nbsp;</a></span>create_node()</h2>
+<a id="a20dbf129ca11174850d65956fc169522" name="a20dbf129ca11174850d65956fc169522"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20dbf129ca11174850d65956fc169522">&#9670;&nbsp;</a></span>create_node()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -140,13 +144,13 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
+          <td class="paramtype">const uint64_t&#160;</td>
           <td class="paramname"><em>amount</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void **&#160;</td>
+          <td class="paramtype">void *const *&#160;</td>
           <td class="paramname"><em>children</em>&#160;</td>
         </tr>
         <tr>
@@ -157,56 +161,56 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d32/linked__list_8c_source.html#l00019">19</a> of file <a class="el" href="../../d3/d32/linked__list_8c_source.html">linked_list.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   20</span>{</div>
-<div class="line"><span class="lineno">   21</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *new_node = (<span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *)malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a>));</div>
-<div class="line"><span class="lineno">   22</span>  <span class="keywordflow">if</span> (!new_node)</div>
-<div class="line"><span class="lineno">   23</span>    {</div>
-<div class="line"><span class="lineno">   24</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">   25</span>    }</div>
-<div class="line"><span class="lineno">   26</span>  new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a> = <a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a>;</div>
-<div class="line"><span class="lineno">   27</span>  new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#aeda96509e2e7bbcbb3c35c498b4f7d3a">size</a> = amount;</div>
-<div class="line"><span class="lineno">   28</span>  new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a> = NULL;</div>
-<div class="line"><span class="lineno">   29</span>  <span class="keywordflow">if</span> (amount &lt;= 0)</div>
-<div class="line"><span class="lineno">   30</span>    {</div>
-<div class="line"><span class="lineno">   31</span>      new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a> = NULL;</div>
-<div class="line"><span class="lineno">   32</span>      <span class="keywordflow">return</span> new_node;</div>
-<div class="line"><span class="lineno">   33</span>    }</div>
-<div class="line"><span class="lineno">   34</span>  new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a></div>
-<div class="line"><span class="lineno">   35</span>      = (<span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> **)malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *) * amount);</div>
-<div class="line"><span class="lineno">   36</span>  <span class="keywordflow">if</span> (!new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>)</div>
-<div class="line"><span class="lineno">   37</span>    {</div>
-<div class="line"><span class="lineno">   38</span>      free (new_node);</div>
-<div class="line"><span class="lineno">   39</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">   40</span>    }</div>
-<div class="line"><span class="lineno">   41</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; amount; ++i)</div>
-<div class="line"><span class="lineno">   42</span>    {</div>
-<div class="line"><span class="lineno">   43</span>      new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i] = (<span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *)malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a>));</div>
-<div class="line"><span class="lineno">   44</span> </div>
-<div class="line"><span class="lineno">   45</span>      <span class="keywordflow">if</span> (!new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i])</div>
-<div class="line"><span class="lineno">   46</span>        {</div>
-<div class="line"><span class="lineno">   47</span>          <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; i; ++j)</div>
-<div class="line"><span class="lineno">   48</span>            {</div>
-<div class="line"><span class="lineno">   49</span>              free (new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[j]);</div>
-<div class="line"><span class="lineno">   50</span>            }</div>
-<div class="line"><span class="lineno">   51</span>          free (new_node);</div>
-<div class="line"><span class="lineno">   52</span>          <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">   53</span>        }</div>
-<div class="line"><span class="lineno">   54</span>    }</div>
-<div class="line"><span class="lineno">   55</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; amount; ++i)</div>
-<div class="line"><span class="lineno">   56</span>    {</div>
-<div class="line"><span class="lineno">   57</span>      new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i]-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#aeda96509e2e7bbcbb3c35c498b4f7d3a">size</a> = 0;</div>
-<div class="line"><span class="lineno">   58</span>      new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i]-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a> = NULL;</div>
-<div class="line"><span class="lineno">   59</span>      new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i]-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a> = <a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i];</div>
-<div class="line"><span class="lineno">   60</span>      new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i]-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a> = NULL;</div>
-<div class="line"><span class="lineno">   61</span>    }</div>
-<div class="line"><span class="lineno">   62</span>  new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a> = NULL;</div>
-<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">return</span> new_node;</div>
-<div class="line"><span class="lineno">   64</span>}</div>
-<div class="ttc" id="astructNode_html"><div class="ttname"><a href="../../d8/d49/structNode.html">Node</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d32/linked__list_8c_source.html#l00007">linked_list.c:8</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d3/d32/linked__list_8c_source.html#l00020">20</a> of file <a class="el" href="../../d3/d32/linked__list_8c_source.html">linked_list.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   21</span>{</div>
+<div class="line"><span class="lineno">   22</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *new_node = (<span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *)malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a>));</div>
+<div class="line"><span class="lineno">   23</span>  <span class="keywordflow">if</span> (!new_node)</div>
+<div class="line"><span class="lineno">   24</span>    {</div>
+<div class="line"><span class="lineno">   25</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">   26</span>    }</div>
+<div class="line"><span class="lineno">   27</span>  new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a> = <a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a>;</div>
+<div class="line"><span class="lineno">   28</span>  new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a7153973135ed2194237314165d9d984d">size</a> = amount;</div>
+<div class="line"><span class="lineno">   29</span>  new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a> = NULL;</div>
+<div class="line"><span class="lineno">   30</span>  <span class="keywordflow">if</span> (amount &lt;= 0)</div>
+<div class="line"><span class="lineno">   31</span>    {</div>
+<div class="line"><span class="lineno">   32</span>      new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a> = NULL;</div>
+<div class="line"><span class="lineno">   33</span>      <span class="keywordflow">return</span> new_node;</div>
+<div class="line"><span class="lineno">   34</span>    }</div>
+<div class="line"><span class="lineno">   35</span>  new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a></div>
+<div class="line"><span class="lineno">   36</span>      = (<span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> **)malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *) * amount);</div>
+<div class="line"><span class="lineno">   37</span>  <span class="keywordflow">if</span> (!new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>)</div>
+<div class="line"><span class="lineno">   38</span>    {</div>
+<div class="line"><span class="lineno">   39</span>      free (new_node);</div>
+<div class="line"><span class="lineno">   40</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">   41</span>    }</div>
+<div class="line"><span class="lineno">   42</span>  <span class="keywordflow">for</span> (uint64_t i = 0; i &lt; amount; ++i)</div>
+<div class="line"><span class="lineno">   43</span>    {</div>
+<div class="line"><span class="lineno">   44</span>      new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i] = (<span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *)malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a>));</div>
+<div class="line"><span class="lineno">   45</span> </div>
+<div class="line"><span class="lineno">   46</span>      <span class="keywordflow">if</span> (!new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i])</div>
+<div class="line"><span class="lineno">   47</span>        {</div>
+<div class="line"><span class="lineno">   48</span>          <span class="keywordflow">for</span> (uint64_t j = 0; j &lt; i; ++j)</div>
+<div class="line"><span class="lineno">   49</span>            {</div>
+<div class="line"><span class="lineno">   50</span>              free (new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[j]);</div>
+<div class="line"><span class="lineno">   51</span>            }</div>
+<div class="line"><span class="lineno">   52</span>          free (new_node);</div>
+<div class="line"><span class="lineno">   53</span>          <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">   54</span>        }</div>
+<div class="line"><span class="lineno">   55</span>    }</div>
+<div class="line"><span class="lineno">   56</span>  <span class="keywordflow">for</span> (uint64_t i = 0; i &lt; amount; ++i)</div>
+<div class="line"><span class="lineno">   57</span>    {</div>
+<div class="line"><span class="lineno">   58</span>      new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i]-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a7153973135ed2194237314165d9d984d">size</a> = 0;</div>
+<div class="line"><span class="lineno">   59</span>      new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i]-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a> = NULL;</div>
+<div class="line"><span class="lineno">   60</span>      new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i]-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a> = <a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i];</div>
+<div class="line"><span class="lineno">   61</span>      new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i]-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a> = NULL;</div>
+<div class="line"><span class="lineno">   62</span>    }</div>
+<div class="line"><span class="lineno">   63</span>  new_node-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a> = NULL;</div>
+<div class="line"><span class="lineno">   64</span>  <span class="keywordflow">return</span> new_node;</div>
+<div class="line"><span class="lineno">   65</span>}</div>
+<div class="ttc" id="astructNode_html"><div class="ttname"><a href="../../d8/d49/structNode.html">Node</a></div><div class="ttdoc">Represents a node in the linked list.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d32/linked__list_8c_source.html#l00007">linked_list.c:8</a></div></div>
 <div class="ttc" id="astructNode_html_a174a6b1ed6b6b34a9a313ae1d686f9ee"><div class="ttname"><a href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">Node::ptr</a></div><div class="ttdeci">void * ptr</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d32/linked__list_8c_source.html#l00009">linked_list.c:9</a></div></div>
 <div class="ttc" id="astructNode_html_a3d857c2fdb25634fe92ca32ff006c233"><div class="ttname"><a href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">Node::children</a></div><div class="ttdeci">struct Node ** children</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d32/linked__list_8c_source.html#l00011">linked_list.c:11</a></div></div>
-<div class="ttc" id="astructNode_html_aeda96509e2e7bbcbb3c35c498b4f7d3a"><div class="ttname"><a href="../../d8/d49/structNode.html#aeda96509e2e7bbcbb3c35c498b4f7d3a">Node::size</a></div><div class="ttdeci">size_t size</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d32/linked__list_8c_source.html#l00010">linked_list.c:10</a></div></div>
+<div class="ttc" id="astructNode_html_a7153973135ed2194237314165d9d984d"><div class="ttname"><a href="../../d8/d49/structNode.html#a7153973135ed2194237314165d9d984d">Node::size</a></div><div class="ttdeci">uint64_t size</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d32/linked__list_8c_source.html#l00010">linked_list.c:10</a></div></div>
 <div class="ttc" id="astructNode_html_af67b110ca1a258b793bf69d306929b22"><div class="ttname"><a href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">Node::next</a></div><div class="ttdeci">struct Node * next</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d32/linked__list_8c_source.html#l00012">linked_list.c:12</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -227,182 +231,20 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d32/linked__list_8c_source.html#l00093">93</a> of file <a class="el" href="../../d3/d32/linked__list_8c_source.html">linked_list.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   94</span>{</div>
-<div class="line"><span class="lineno">   95</span>  <span class="keywordflow">if</span> (current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#aeda96509e2e7bbcbb3c35c498b4f7d3a">size</a> &gt; 0)</div>
-<div class="line"><span class="lineno">   96</span>    {</div>
-<div class="line"><span class="lineno">   97</span>      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#aeda96509e2e7bbcbb3c35c498b4f7d3a">size</a>; ++i)</div>
-<div class="line"><span class="lineno">   98</span>        {</div>
-<div class="line"><span class="lineno">   99</span>          free (current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i]-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a>);</div>
-<div class="line"><span class="lineno">  100</span>          free (current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i]);</div>
-<div class="line"><span class="lineno">  101</span>        }</div>
-<div class="line"><span class="lineno">  102</span>      free (current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>);</div>
-<div class="line"><span class="lineno">  103</span>    }</div>
-<div class="line"><span class="lineno">  104</span>  free (current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a>);</div>
-<div class="line"><span class="lineno">  105</span>  free (current);</div>
-<div class="line"><span class="lineno">  106</span>}</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="a5c613e9f175d5433244f84467555dc8d" name="a5c613e9f175d5433244f84467555dc8d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5c613e9f175d5433244f84467555dc8d">&#9670;&nbsp;</a></span>list_delete_node()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void list_delete_node </td>
-          <td>(</td>
-          <td class="paramtype">struct <a class="el" href="../../d8/d49/structNode.html">Node</a> **&#160;</td>
-          <td class="paramname"><em>head</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const void *const&#160;</td>
-          <td class="paramname"><em>ptr</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="../../d3/d32/linked__list_8c_source.html#l00109">109</a> of file <a class="el" href="../../d3/d32/linked__list_8c_source.html">linked_list.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  110</span>{</div>
-<div class="line"><span class="lineno">  111</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../d3/d32/linked__list_8c.html#a269b01c2f5e202f62eb85b91e6542661">list_mutex</a>);</div>
-<div class="line"><span class="lineno">  112</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *current = *head;</div>
-<div class="line"><span class="lineno">  113</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *prev = NULL;</div>
-<div class="line"><span class="lineno">  114</span> </div>
-<div class="line"><span class="lineno">  115</span>  <span class="keywordflow">if</span> (current &amp;&amp; current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a> == <a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a>)</div>
-<div class="line"><span class="lineno">  116</span>    {</div>
-<div class="line"><span class="lineno">  117</span>      *head = current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a>;</div>
-<div class="line"><span class="lineno">  118</span>      <a class="code hl_function" href="../../d3/d32/linked__list_8c.html#aaf693ba941ada32c9c43d3c6897e4217">free_node</a> (current);</div>
-<div class="line"><span class="lineno">  119</span>      pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d32/linked__list_8c.html#a269b01c2f5e202f62eb85b91e6542661">list_mutex</a>);</div>
-<div class="line"><span class="lineno">  120</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  121</span>    }</div>
-<div class="line"><span class="lineno">  122</span> </div>
-<div class="line"><span class="lineno">  123</span>  <span class="keywordflow">while</span> (current &amp;&amp; current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a> != <a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a>)</div>
-<div class="line"><span class="lineno">  124</span>    {</div>
-<div class="line"><span class="lineno">  125</span>      prev = current;</div>
-<div class="line"><span class="lineno">  126</span>      current = current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a>;</div>
-<div class="line"><span class="lineno">  127</span>    }</div>
-<div class="line"><span class="lineno">  128</span> </div>
-<div class="line"><span class="lineno">  129</span>  <span class="keywordflow">if</span> (!current)</div>
-<div class="line"><span class="lineno">  130</span>    {</div>
-<div class="line"><span class="lineno">  131</span>      pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d32/linked__list_8c.html#a269b01c2f5e202f62eb85b91e6542661">list_mutex</a>);</div>
-<div class="line"><span class="lineno">  132</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  133</span>    }</div>
-<div class="line"><span class="lineno">  134</span> </div>
-<div class="line"><span class="lineno">  135</span>  prev-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a> = current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a>;</div>
-<div class="line"><span class="lineno">  136</span>  <a class="code hl_function" href="../../d3/d32/linked__list_8c.html#aaf693ba941ada32c9c43d3c6897e4217">free_node</a> (current);</div>
-<div class="line"><span class="lineno">  137</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d32/linked__list_8c.html#a269b01c2f5e202f62eb85b91e6542661">list_mutex</a>);</div>
-<div class="line"><span class="lineno">  138</span>}</div>
-<div class="ttc" id="alinked__list_8c_html_a269b01c2f5e202f62eb85b91e6542661"><div class="ttname"><a href="../../d3/d32/linked__list_8c.html#a269b01c2f5e202f62eb85b91e6542661">list_mutex</a></div><div class="ttdeci">pthread_mutex_t list_mutex</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d32/linked__list_8c_source.html#l00015">linked_list.c:15</a></div></div>
-<div class="ttc" id="alinked__list_8c_html_aaf693ba941ada32c9c43d3c6897e4217"><div class="ttname"><a href="../../d3/d32/linked__list_8c.html#aaf693ba941ada32c9c43d3c6897e4217">free_node</a></div><div class="ttdeci">void free_node(struct Node *current)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d32/linked__list_8c_source.html#l00093">linked_list.c:93</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="ac33c30e895caddc11181b50eca0ab735" name="ac33c30e895caddc11181b50eca0ab735"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac33c30e895caddc11181b50eca0ab735">&#9670;&nbsp;</a></span>list_free()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void list_free </td>
-          <td>(</td>
-          <td class="paramtype">struct <a class="el" href="../../d8/d49/structNode.html">Node</a> **&#160;</td>
-          <td class="paramname"><em>head</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="../../d3/d32/linked__list_8c_source.html#l00141">141</a> of file <a class="el" href="../../d3/d32/linked__list_8c_source.html">linked_list.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  142</span>{</div>
-<div class="line"><span class="lineno">  143</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../d3/d32/linked__list_8c.html#a269b01c2f5e202f62eb85b91e6542661">list_mutex</a>);</div>
-<div class="line"><span class="lineno">  144</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *current = *head;</div>
-<div class="line"><span class="lineno">  145</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9b4556b86497af3cd53528515556b0f3">next</a>;</div>
-<div class="line"><span class="lineno">  146</span> </div>
-<div class="line"><span class="lineno">  147</span>  <span class="keywordflow">while</span> (current)</div>
-<div class="line"><span class="lineno">  148</span>    {</div>
-<div class="line"><span class="lineno">  149</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9b4556b86497af3cd53528515556b0f3">next</a> = current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a>;</div>
-<div class="line"><span class="lineno">  150</span>      <a class="code hl_function" href="../../d3/d32/linked__list_8c.html#aaf693ba941ada32c9c43d3c6897e4217">free_node</a> (current);</div>
-<div class="line"><span class="lineno">  151</span>      current = <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a9b4556b86497af3cd53528515556b0f3">next</a>;</div>
-<div class="line"><span class="lineno">  152</span>    }</div>
-<div class="line"><span class="lineno">  153</span> </div>
-<div class="line"><span class="lineno">  154</span>  *head = NULL;</div>
-<div class="line"><span class="lineno">  155</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d32/linked__list_8c.html#a269b01c2f5e202f62eb85b91e6542661">list_mutex</a>);</div>
-<div class="line"><span class="lineno">  156</span>}</div>
-<div class="ttc" id="alow__saurion_8h_html_a9b4556b86497af3cd53528515556b0f3"><div class="ttname"><a href="../../d3/d68/low__saurion_8h.html#a9b4556b86497af3cd53528515556b0f3">next</a></div><div class="ttdeci">uint32_t next</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00021">low_saurion.h:21</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="aee07283e23385804a1d3f880cd99731e" name="aee07283e23385804a1d3f880cd99731e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aee07283e23385804a1d3f880cd99731e">&#9670;&nbsp;</a></span>list_insert()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int list_insert </td>
-          <td>(</td>
-          <td class="paramtype">struct <a class="el" href="../../d8/d49/structNode.html">Node</a> **&#160;</td>
-          <td class="paramname"><em>head</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>ptr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>amount</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void **&#160;</td>
-          <td class="paramname"><em>children</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="../../d3/d32/linked__list_8c_source.html#l00068">68</a> of file <a class="el" href="../../d3/d32/linked__list_8c_source.html">linked_list.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   69</span>{</div>
-<div class="line"><span class="lineno">   70</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *new_node = <a class="code hl_function" href="../../d3/d32/linked__list_8c.html#a918975430b04d125decf67186a4e868a">create_node</a> (<a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a>, amount, <a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>);</div>
-<div class="line"><span class="lineno">   71</span>  <span class="keywordflow">if</span> (!new_node)</div>
-<div class="line"><span class="lineno">   72</span>    {</div>
-<div class="line"><span class="lineno">   73</span>      <span class="keywordflow">return</span> ERROR_CODE;</div>
-<div class="line"><span class="lineno">   74</span>    }</div>
-<div class="line"><span class="lineno">   75</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../d3/d32/linked__list_8c.html#a269b01c2f5e202f62eb85b91e6542661">list_mutex</a>);</div>
-<div class="line"><span class="lineno">   76</span>  <span class="keywordflow">if</span> (!*head)</div>
-<div class="line"><span class="lineno">   77</span>    {</div>
-<div class="line"><span class="lineno">   78</span>      *head = new_node;</div>
-<div class="line"><span class="lineno">   79</span>      pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d32/linked__list_8c.html#a269b01c2f5e202f62eb85b91e6542661">list_mutex</a>);</div>
-<div class="line"><span class="lineno">   80</span>      <span class="keywordflow">return</span> SUCCESS_CODE;</div>
-<div class="line"><span class="lineno">   81</span>    }</div>
-<div class="line"><span class="lineno">   82</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../d8/d49/structNode.html">Node</a> *temp = *head;</div>
-<div class="line"><span class="lineno">   83</span>  <span class="keywordflow">while</span> (temp-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a>)</div>
-<div class="line"><span class="lineno">   84</span>    {</div>
-<div class="line"><span class="lineno">   85</span>      temp = temp-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a>;</div>
-<div class="line"><span class="lineno">   86</span>    }</div>
-<div class="line"><span class="lineno">   87</span>  temp-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#af67b110ca1a258b793bf69d306929b22">next</a> = new_node;</div>
-<div class="line"><span class="lineno">   88</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d32/linked__list_8c.html#a269b01c2f5e202f62eb85b91e6542661">list_mutex</a>);</div>
-<div class="line"><span class="lineno">   89</span>  <span class="keywordflow">return</span> SUCCESS_CODE;</div>
-<div class="line"><span class="lineno">   90</span>}</div>
-<div class="ttc" id="alinked__list_8c_html_a918975430b04d125decf67186a4e868a"><div class="ttname"><a href="../../d3/d32/linked__list_8c.html#a918975430b04d125decf67186a4e868a">create_node</a></div><div class="ttdeci">struct Node * create_node(void *ptr, size_t amount, void **children)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d32/linked__list_8c_source.html#l00019">linked_list.c:19</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d3/d32/linked__list_8c_source.html#l00097">97</a> of file <a class="el" href="../../d3/d32/linked__list_8c_source.html">linked_list.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   98</span>{</div>
+<div class="line"><span class="lineno">   99</span>  <span class="keywordflow">if</span> (current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a7153973135ed2194237314165d9d984d">size</a> &gt; 0)</div>
+<div class="line"><span class="lineno">  100</span>    {</div>
+<div class="line"><span class="lineno">  101</span>      <span class="keywordflow">for</span> (uint64_t i = 0; i &lt; current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a7153973135ed2194237314165d9d984d">size</a>; ++i)</div>
+<div class="line"><span class="lineno">  102</span>        {</div>
+<div class="line"><span class="lineno">  103</span>          free (current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i]-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a>);</div>
+<div class="line"><span class="lineno">  104</span>          free (current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>[i]);</div>
+<div class="line"><span class="lineno">  105</span>        }</div>
+<div class="line"><span class="lineno">  106</span>      free (current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a3d857c2fdb25634fe92ca32ff006c233">children</a>);</div>
+<div class="line"><span class="lineno">  107</span>    }</div>
+<div class="line"><span class="lineno">  108</span>  free (current-&gt;<a class="code hl_variable" href="../../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee">ptr</a>);</div>
+<div class="line"><span class="lineno">  109</span>  free (current);</div>
+<div class="line"><span class="lineno">  110</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

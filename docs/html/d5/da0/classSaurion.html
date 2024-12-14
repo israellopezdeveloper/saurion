@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.4</span>
+   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.5</span>
    </div>
   </td>
  </tr>
@@ -87,9 +87,12 @@ $(document).ready(function(){initNavTree('d5/da0/classSaurion.html','../../'); i
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="../../da/df2/classSaurion-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">Saurion Class Reference</div></div>
+  <div class="headertitle"><div class="title">Saurion Class Reference<div class="ingroups"><a class="el" href="../../da/d36/group__HighSaurion.html">HighSaurion</a></div></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>A class for managing network connections with callback-based event handling.  
+ <a href="../../d5/da0/classSaurion.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>&gt;</code></p>
 <div class="dynheader">
@@ -100,22 +103,29 @@ Collaboration diagram for Saurion:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a5da4d05d3bcfea2461e0e3f3ee57026e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a5da4d05d3bcfea2461e0e3f3ee57026e">ConnectedCb</a> = void(*)(const int, void *)</td></tr>
-<tr class="separator:a5da4d05d3bcfea2461e0e3f3ee57026e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac11bb4e3279488d1fca4b3e886ddbe40"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#ac11bb4e3279488d1fca4b3e886ddbe40">ReadedCb</a> = void(*)(const int, const void *const, const ssize_t, void *)</td></tr>
-<tr class="separator:ac11bb4e3279488d1fca4b3e886ddbe40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a106a1958a13b0f9b2eea77e0990094e7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a106a1958a13b0f9b2eea77e0990094e7">WroteCb</a> = void(*)(const int, void *)</td></tr>
-<tr class="separator:a106a1958a13b0f9b2eea77e0990094e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4145ce6e12b334a34d6b47d38e58248a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a4145ce6e12b334a34d6b47d38e58248a">ClosedCb</a> = void(*)(const int, void *)</td></tr>
-<tr class="separator:a4145ce6e12b334a34d6b47d38e58248a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a635147c9cfcd691e42b80353db22e2ce"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a635147c9cfcd691e42b80353db22e2ce">ErrorCb</a> = void(*)(const int, const char *const, const ssize_t, void *)</td></tr>
-<tr class="separator:a635147c9cfcd691e42b80353db22e2ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27c125b69e20e4da7855572063dc41d2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a27c125b69e20e4da7855572063dc41d2">ConnectedCb</a> = void(*)(const int, void *)</td></tr>
+<tr class="memdesc:a27c125b69e20e4da7855572063dc41d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback type for connection events.  <a href="../../d5/da0/classSaurion.html#a27c125b69e20e4da7855572063dc41d2">More...</a><br /></td></tr>
+<tr class="separator:a27c125b69e20e4da7855572063dc41d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76ecdfa541a8840d770e6649105c3107"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a76ecdfa541a8840d770e6649105c3107">ReadedCb</a> = void(*)(const int, const void *const, const int64_t, void *)</td></tr>
+<tr class="memdesc:a76ecdfa541a8840d770e6649105c3107"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback type for data received events.  <a href="../../d5/da0/classSaurion.html#a76ecdfa541a8840d770e6649105c3107">More...</a><br /></td></tr>
+<tr class="separator:a76ecdfa541a8840d770e6649105c3107"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9643d3ea3c74bf7d87dcdc8f20935053"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a9643d3ea3c74bf7d87dcdc8f20935053">WroteCb</a> = void(*)(const int, void *)</td></tr>
+<tr class="memdesc:a9643d3ea3c74bf7d87dcdc8f20935053"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback type for data sent events.  <a href="../../d5/da0/classSaurion.html#a9643d3ea3c74bf7d87dcdc8f20935053">More...</a><br /></td></tr>
+<tr class="separator:a9643d3ea3c74bf7d87dcdc8f20935053"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17fbe9d6880edb8bdbfc105b3df0c5b8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a17fbe9d6880edb8bdbfc105b3df0c5b8">ClosedCb</a> = void(*)(const int, void *)</td></tr>
+<tr class="memdesc:a17fbe9d6880edb8bdbfc105b3df0c5b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback type for connection closed events.  <a href="../../d5/da0/classSaurion.html#a17fbe9d6880edb8bdbfc105b3df0c5b8">More...</a><br /></td></tr>
+<tr class="separator:a17fbe9d6880edb8bdbfc105b3df0c5b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe4f5e673383bd5bb563afff0f22fcfe"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#afe4f5e673383bd5bb563afff0f22fcfe">ErrorCb</a> = void(*)(const int, const char *const, const int64_t, void *)</td></tr>
+<tr class="memdesc:afe4f5e673383bd5bb563afff0f22fcfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback type for error events.  <a href="../../d5/da0/classSaurion.html#afe4f5e673383bd5bb563afff0f22fcfe">More...</a><br /></td></tr>
+<tr class="separator:afe4f5e673383bd5bb563afff0f22fcfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a56b8393a788078d51ad08792ccdcd713"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a56b8393a788078d51ad08792ccdcd713">Saurion</a> (const uint32_t thds, const int sck) noexcept</td></tr>
+<tr class="memdesc:a56b8393a788078d51ad08792ccdcd713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a <code><a class="el" href="../../d5/da0/classSaurion.html" title="A class for managing network connections with callback-based event handling.">Saurion</a></code> instance.  <a href="../../d5/da0/classSaurion.html#a56b8393a788078d51ad08792ccdcd713">More...</a><br /></td></tr>
 <tr class="separator:a56b8393a788078d51ad08792ccdcd713"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ea35eafe420d514b0147d69c745e7df"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a3ea35eafe420d514b0147d69c745e7df">~Saurion</a> ()</td></tr>
+<tr class="memdesc:a3ea35eafe420d514b0147d69c745e7df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the <code><a class="el" href="../../d5/da0/classSaurion.html" title="A class for managing network connections with callback-based event handling.">Saurion</a></code> instance, releasing resources.  <a href="../../d5/da0/classSaurion.html#a3ea35eafe420d514b0147d69c745e7df">More...</a><br /></td></tr>
 <tr class="separator:a3ea35eafe420d514b0147d69c745e7df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae83d691a9d4a9c9d55ed7678b0608385"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#ae83d691a9d4a9c9d55ed7678b0608385">Saurion</a> (const <a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> &amp;)=delete</td></tr>
 <tr class="separator:ae83d691a9d4a9c9d55ed7678b0608385"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -125,109 +135,169 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a737974c4ed549a52a73ae6e3545a8ba0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a315dcaed2d3675c068d9fcd0c723001c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a315dcaed2d3675c068d9fcd0c723001c">operator=</a> (<a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:a315dcaed2d3675c068d9fcd0c723001c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5408d5b521e109da8c5c32b134c1fb4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#ad5408d5b521e109da8c5c32b134c1fb4">init</a> () noexcept</td></tr>
-<tr class="separator:ad5408d5b521e109da8c5c32b134c1fb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4957a620aca95d51e084abf4fa8b71a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a4957a620aca95d51e084abf4fa8b71a6">init</a> ()</td></tr>
+<tr class="memdesc:a4957a620aca95d51e084abf4fa8b71a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the server and starts listening for connections.  <a href="../../d5/da0/classSaurion.html#a4957a620aca95d51e084abf4fa8b71a6">More...</a><br /></td></tr>
+<tr class="separator:a4957a620aca95d51e084abf4fa8b71a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46ab498fe4f69d0505ebeb90eb4ac810"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a46ab498fe4f69d0505ebeb90eb4ac810">stop</a> () const noexcept</td></tr>
+<tr class="memdesc:a46ab498fe4f69d0505ebeb90eb4ac810"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the server and all associated threads.  <a href="../../d5/da0/classSaurion.html#a46ab498fe4f69d0505ebeb90eb4ac810">More...</a><br /></td></tr>
 <tr class="separator:a46ab498fe4f69d0505ebeb90eb4ac810"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1563e363c5a007289e6aa3a4d59860e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#af1563e363c5a007289e6aa3a4d59860e">on_connected</a> (<a class="el" href="../../d5/da0/classSaurion.html#a5da4d05d3bcfea2461e0e3f3ee57026e">ConnectedCb</a> ncb, void *arg) noexcept</td></tr>
+<tr class="memitem:af1563e363c5a007289e6aa3a4d59860e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#af1563e363c5a007289e6aa3a4d59860e">on_connected</a> (<a class="el" href="../../d5/da0/classSaurion.html#a27c125b69e20e4da7855572063dc41d2">ConnectedCb</a> ncb, void *arg) noexcept</td></tr>
+<tr class="memdesc:af1563e363c5a007289e6aa3a4d59860e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the callback for connection events.  <a href="../../d5/da0/classSaurion.html#af1563e363c5a007289e6aa3a4d59860e">More...</a><br /></td></tr>
 <tr class="separator:af1563e363c5a007289e6aa3a4d59860e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4739a8d5e3b2ae2618ea602c7d9e046b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a4739a8d5e3b2ae2618ea602c7d9e046b">on_readed</a> (<a class="el" href="../../d5/da0/classSaurion.html#ac11bb4e3279488d1fca4b3e886ddbe40">ReadedCb</a> ncb, void *arg) noexcept</td></tr>
+<tr class="memitem:a4739a8d5e3b2ae2618ea602c7d9e046b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a4739a8d5e3b2ae2618ea602c7d9e046b">on_readed</a> (<a class="el" href="../../d5/da0/classSaurion.html#a76ecdfa541a8840d770e6649105c3107">ReadedCb</a> ncb, void *arg) noexcept</td></tr>
+<tr class="memdesc:a4739a8d5e3b2ae2618ea602c7d9e046b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the callback for data received events.  <a href="../../d5/da0/classSaurion.html#a4739a8d5e3b2ae2618ea602c7d9e046b">More...</a><br /></td></tr>
 <tr class="separator:a4739a8d5e3b2ae2618ea602c7d9e046b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8450efc4ac6a6da43b3bad0d2f8a9b34"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a8450efc4ac6a6da43b3bad0d2f8a9b34">on_wrote</a> (<a class="el" href="../../d5/da0/classSaurion.html#a106a1958a13b0f9b2eea77e0990094e7">WroteCb</a> ncb, void *arg) noexcept</td></tr>
+<tr class="memitem:a8450efc4ac6a6da43b3bad0d2f8a9b34"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a8450efc4ac6a6da43b3bad0d2f8a9b34">on_wrote</a> (<a class="el" href="../../d5/da0/classSaurion.html#a9643d3ea3c74bf7d87dcdc8f20935053">WroteCb</a> ncb, void *arg) noexcept</td></tr>
+<tr class="memdesc:a8450efc4ac6a6da43b3bad0d2f8a9b34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the callback for data sent events.  <a href="../../d5/da0/classSaurion.html#a8450efc4ac6a6da43b3bad0d2f8a9b34">More...</a><br /></td></tr>
 <tr class="separator:a8450efc4ac6a6da43b3bad0d2f8a9b34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ad01e1c10b794fd10e5be17e9b5c4dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a0ad01e1c10b794fd10e5be17e9b5c4dd">on_closed</a> (<a class="el" href="../../d5/da0/classSaurion.html#a4145ce6e12b334a34d6b47d38e58248a">ClosedCb</a> ncb, void *arg) noexcept</td></tr>
+<tr class="memitem:a0ad01e1c10b794fd10e5be17e9b5c4dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a0ad01e1c10b794fd10e5be17e9b5c4dd">on_closed</a> (<a class="el" href="../../d5/da0/classSaurion.html#a17fbe9d6880edb8bdbfc105b3df0c5b8">ClosedCb</a> ncb, void *arg) noexcept</td></tr>
+<tr class="memdesc:a0ad01e1c10b794fd10e5be17e9b5c4dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the callback for connection closed events.  <a href="../../d5/da0/classSaurion.html#a0ad01e1c10b794fd10e5be17e9b5c4dd">More...</a><br /></td></tr>
 <tr class="separator:a0ad01e1c10b794fd10e5be17e9b5c4dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a2ce2d5d7d62c110702c51b73a56a8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a6a2ce2d5d7d62c110702c51b73a56a8d">on_error</a> (<a class="el" href="../../d5/da0/classSaurion.html#a635147c9cfcd691e42b80353db22e2ce">ErrorCb</a> ncb, void *arg) noexcept</td></tr>
+<tr class="memitem:a6a2ce2d5d7d62c110702c51b73a56a8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a6a2ce2d5d7d62c110702c51b73a56a8d">on_error</a> (<a class="el" href="../../d5/da0/classSaurion.html#afe4f5e673383bd5bb563afff0f22fcfe">ErrorCb</a> ncb, void *arg) noexcept</td></tr>
+<tr class="memdesc:a6a2ce2d5d7d62c110702c51b73a56a8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the callback for error events.  <a href="../../d5/da0/classSaurion.html#a6a2ce2d5d7d62c110702c51b73a56a8d">More...</a><br /></td></tr>
 <tr class="separator:a6a2ce2d5d7d62c110702c51b73a56a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af652625283a9752d16d7a24b35cec14d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#af652625283a9752d16d7a24b35cec14d">send</a> (const int fd, const char *const msg) noexcept</td></tr>
+<tr class="memdesc:af652625283a9752d16d7a24b35cec14d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a message to the specified file descriptor.  <a href="../../d5/da0/classSaurion.html#af652625283a9752d16d7a24b35cec14d">More...</a><br /></td></tr>
 <tr class="separator:af652625283a9752d16d7a24b35cec14d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a6f75f768b084ef03214b178d3746f142"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../df/d32/structsaurion.html">saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a></td></tr>
+<tr class="memdesc:a6f75f768b084ef03214b178d3746f142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the underlying <code>saurion</code> structure.  <a href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">More...</a><br /></td></tr>
 <tr class="separator:a6f75f768b084ef03214b178d3746f142"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00007">7</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
+<div class="textblock"><p >A class for managing network connections with callback-based event handling. </p>
+<p >The <code><a class="el" href="../../d5/da0/classSaurion.html" title="A class for managing network connections with callback-based event handling.">Saurion</a></code> class encapsulates a network socket and provides methods for initializing, stopping, and sending data, as well as setting up event callbacks. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00093">93</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a4145ce6e12b334a34d6b47d38e58248a" name="a4145ce6e12b334a34d6b47d38e58248a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4145ce6e12b334a34d6b47d38e58248a">&#9670;&nbsp;</a></span>ClosedCb</h2>
+<a id="a17fbe9d6880edb8bdbfc105b3df0c5b8" name="a17fbe9d6880edb8bdbfc105b3df0c5b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17fbe9d6880edb8bdbfc105b3df0c5b8">&#9670;&nbsp;</a></span>ClosedCb</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="../../d5/da0/classSaurion.html#a4145ce6e12b334a34d6b47d38e58248a">Saurion::ClosedCb</a> =  void (*) (const int, void *)</td>
+          <td class="memname"><a class="el" href="../../d5/da0/classSaurion.html#a17fbe9d6880edb8bdbfc105b3df0c5b8">Saurion::ClosedCb</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00014">14</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
+<p>Callback type for connection closed events. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fd</td><td>File descriptor of the closed socket. </td></tr>
+    <tr><td class="paramname">arg</td><td>User-defined argument. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00126">126</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a5da4d05d3bcfea2461e0e3f3ee57026e" name="a5da4d05d3bcfea2461e0e3f3ee57026e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5da4d05d3bcfea2461e0e3f3ee57026e">&#9670;&nbsp;</a></span>ConnectedCb</h2>
+<a id="a27c125b69e20e4da7855572063dc41d2" name="a27c125b69e20e4da7855572063dc41d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27c125b69e20e4da7855572063dc41d2">&#9670;&nbsp;</a></span>ConnectedCb</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="../../d5/da0/classSaurion.html#a5da4d05d3bcfea2461e0e3f3ee57026e">Saurion::ConnectedCb</a> =  void (*) (const int, void *)</td>
+          <td class="memname"><a class="el" href="../../d5/da0/classSaurion.html#a27c125b69e20e4da7855572063dc41d2">Saurion::ConnectedCb</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00010">10</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
+<p>Callback type for connection events. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fd</td><td>File descriptor for the connected socket. </td></tr>
+    <tr><td class="paramname">arg</td><td>User-defined argument. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00102">102</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a635147c9cfcd691e42b80353db22e2ce" name="a635147c9cfcd691e42b80353db22e2ce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a635147c9cfcd691e42b80353db22e2ce">&#9670;&nbsp;</a></span>ErrorCb</h2>
+<a id="afe4f5e673383bd5bb563afff0f22fcfe" name="afe4f5e673383bd5bb563afff0f22fcfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe4f5e673383bd5bb563afff0f22fcfe">&#9670;&nbsp;</a></span>ErrorCb</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="../../d5/da0/classSaurion.html#a635147c9cfcd691e42b80353db22e2ce">Saurion::ErrorCb</a> =  void (*) (const int, const char *const, const ssize_t, void *)</td>
+          <td class="memname"><a class="el" href="../../d5/da0/classSaurion.html#afe4f5e673383bd5bb563afff0f22fcfe">Saurion::ErrorCb</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00015">15</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
+<p>Callback type for error events. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fd</td><td>File descriptor of the socket where the error occurred. </td></tr>
+    <tr><td class="paramname">msg</td><td>Error message. </td></tr>
+    <tr><td class="paramname">len</td><td>Length of the error message. </td></tr>
+    <tr><td class="paramname">arg</td><td>User-defined argument. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00135">135</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
 
 </div>
 </div>
-<a id="ac11bb4e3279488d1fca4b3e886ddbe40" name="ac11bb4e3279488d1fca4b3e886ddbe40"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac11bb4e3279488d1fca4b3e886ddbe40">&#9670;&nbsp;</a></span>ReadedCb</h2>
+<a id="a76ecdfa541a8840d770e6649105c3107" name="a76ecdfa541a8840d770e6649105c3107"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76ecdfa541a8840d770e6649105c3107">&#9670;&nbsp;</a></span>ReadedCb</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="../../d5/da0/classSaurion.html#ac11bb4e3279488d1fca4b3e886ddbe40">Saurion::ReadedCb</a> =  void (*) (const int, const void *const, const ssize_t, void *)</td>
+          <td class="memname"><a class="el" href="../../d5/da0/classSaurion.html#a76ecdfa541a8840d770e6649105c3107">Saurion::ReadedCb</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00011">11</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
+<p>Callback type for data received events. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fd</td><td>File descriptor of the socket. </td></tr>
+    <tr><td class="paramname">data</td><td>Pointer to the received data. </td></tr>
+    <tr><td class="paramname">len</td><td>Length of the received data. </td></tr>
+    <tr><td class="paramname">arg</td><td>User-defined argument. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00111">111</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a106a1958a13b0f9b2eea77e0990094e7" name="a106a1958a13b0f9b2eea77e0990094e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a106a1958a13b0f9b2eea77e0990094e7">&#9670;&nbsp;</a></span>WroteCb</h2>
+<a id="a9643d3ea3c74bf7d87dcdc8f20935053" name="a9643d3ea3c74bf7d87dcdc8f20935053"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9643d3ea3c74bf7d87dcdc8f20935053">&#9670;&nbsp;</a></span>WroteCb</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="../../d5/da0/classSaurion.html#a106a1958a13b0f9b2eea77e0990094e7">Saurion::WroteCb</a> =  void (*) (const int, void *)</td>
+          <td class="memname"><a class="el" href="../../d5/da0/classSaurion.html#a9643d3ea3c74bf7d87dcdc8f20935053">Saurion::WroteCb</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00013">13</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
+<p>Callback type for data sent events. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fd</td><td>File descriptor of the socket. </td></tr>
+    <tr><td class="paramname">arg</td><td>User-defined argument. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00119">119</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
 
 </div>
 </div>
@@ -266,18 +336,27 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00006">6</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">    7</span>{</div>
-<div class="line"><span class="lineno">    8</span>  this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a> = <a class="code hl_function" href="../../d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131">saurion_create</a> (thds);</div>
-<div class="line"><span class="lineno">    9</span>  <span class="keywordflow">if</span> (!this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>)</div>
-<div class="line"><span class="lineno">   10</span>    {</div>
-<div class="line"><span class="lineno">   11</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   12</span>    }</div>
-<div class="line"><span class="lineno">   13</span>  this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ae85c8eed456efd00dcc93d005b0ad99c">ss</a> = sck;</div>
-<div class="line"><span class="lineno">   14</span>}</div>
-<div class="ttc" id="aclassSaurion_html_a6f75f768b084ef03214b178d3746f142"><div class="ttname"><a href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">Saurion::s</a></div><div class="ttdeci">struct saurion * s</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/dfe/saurion_8hpp_source.html#l00038">saurion.hpp:38</a></div></div>
-<div class="ttc" id="agroup__LowSaurion_html_gae589ab08ed623ad2ab6d13beec33b131"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131">saurion_create</a></div><div class="ttdeci">struct saurion * saurion_create(uint32_t n_threads)</div><div class="ttdoc">Creates an instance of the saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00835">low_saurion.c:835</a></div></div>
-<div class="ttc" id="astructsaurion_html_ae85c8eed456efd00dcc93d005b0ad99c"><div class="ttname"><a href="../../df/d32/structsaurion.html#ae85c8eed456efd00dcc93d005b0ad99c">saurion::ss</a></div><div class="ttdeci">int ss</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00221">low_saurion.h:221</a></div></div>
+<p>Constructs a <code><a class="el" href="../../d5/da0/classSaurion.html" title="A class for managing network connections with callback-based event handling.">Saurion</a></code> instance. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">thds</td><td>Number of threads for handling connections. </td></tr>
+    <tr><td class="paramname">sck</td><td>Listening socket file descriptor. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00007">7</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">    8</span>{</div>
+<div class="line"><span class="lineno">    9</span>  this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a> = <a class="code hl_function" href="../../d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131">saurion_create</a> (thds);</div>
+<div class="line"><span class="lineno">   10</span>  <span class="keywordflow">if</span> (!this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>)</div>
+<div class="line"><span class="lineno">   11</span>    {</div>
+<div class="line"><span class="lineno">   12</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   13</span>    }</div>
+<div class="line"><span class="lineno">   14</span>  this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ae85c8eed456efd00dcc93d005b0ad99c">ss</a> = sck;</div>
+<div class="line"><span class="lineno">   15</span>}</div>
+<div class="ttc" id="aclassSaurion_html_a6f75f768b084ef03214b178d3746f142"><div class="ttname"><a href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">Saurion::s</a></div><div class="ttdeci">struct saurion * s</div><div class="ttdoc">Pointer to the underlying saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/dfe/saurion_8hpp_source.html#l00207">saurion.hpp:207</a></div></div>
+<div class="ttc" id="agroup__LowSaurion_html_gae589ab08ed623ad2ab6d13beec33b131"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131">saurion_create</a></div><div class="ttdeci">struct saurion * saurion_create(uint32_t n_threads)</div><div class="ttdoc">Creates an instance of the saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l00833">low_saurion.c:833</a></div></div>
+<div class="ttc" id="astructsaurion_html_ae85c8eed456efd00dcc93d005b0ad99c"><div class="ttname"><a href="../../df/d32/structsaurion.html#ae85c8eed456efd00dcc93d005b0ad99c">saurion::ss</a></div><div class="ttdeci">int ss</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00222">low_saurion.h:222</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -296,12 +375,14 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00016">16</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   17</span>{</div>
-<div class="line"><span class="lineno">   18</span>  close (<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ae85c8eed456efd00dcc93d005b0ad99c">ss</a>);</div>
-<div class="line"><span class="lineno">   19</span>  <a class="code hl_function" href="../../d9/da3/group__LowSaurion.html#ga7893ccf90a98845d5d95ffda0260d0b8">saurion_destroy</a> (this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>);</div>
-<div class="line"><span class="lineno">   20</span>}</div>
-<div class="ttc" id="agroup__LowSaurion_html_ga7893ccf90a98845d5d95ffda0260d0b8"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#ga7893ccf90a98845d5d95ffda0260d0b8">saurion_destroy</a></div><div class="ttdeci">void saurion_destroy(struct saurion *const s)</div><div class="ttdoc">Destroys the saurion structure and frees all associated resources.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01189">low_saurion.c:1189</a></div></div>
+<p>Destroys the <code><a class="el" href="../../d5/da0/classSaurion.html" title="A class for managing network connections with callback-based event handling.">Saurion</a></code> instance, releasing resources. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00017">17</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   18</span>{</div>
+<div class="line"><span class="lineno">   19</span>  close (<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#ae85c8eed456efd00dcc93d005b0ad99c">ss</a>);</div>
+<div class="line"><span class="lineno">   20</span>  <a class="code hl_function" href="../../d9/da3/group__LowSaurion.html#ga7893ccf90a98845d5d95ffda0260d0b8">saurion_destroy</a> (this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>);</div>
+<div class="line"><span class="lineno">   21</span>}</div>
+<div class="ttc" id="agroup__LowSaurion_html_ga7893ccf90a98845d5d95ffda0260d0b8"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#ga7893ccf90a98845d5d95ffda0260d0b8">saurion_destroy</a></div><div class="ttdeci">void saurion_destroy(struct saurion *const s)</div><div class="ttdoc">Destroys the saurion structure and frees all associated resources.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01187">low_saurion.c:1187</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -358,14 +439,11 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad5408d5b521e109da8c5c32b134c1fb4" name="ad5408d5b521e109da8c5c32b134c1fb4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad5408d5b521e109da8c5c32b134c1fb4">&#9670;&nbsp;</a></span>init()</h2>
+<a id="a4957a620aca95d51e084abf4fa8b71a6" name="a4957a620aca95d51e084abf4fa8b71a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4957a620aca95d51e084abf4fa8b71a6">&#9670;&nbsp;</a></span>init()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void Saurion::init </td>
@@ -374,21 +452,18 @@ Private Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00023">23</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   24</span>{</div>
-<div class="line"><span class="lineno">   25</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="../../d9/da3/group__LowSaurion.html#gaeeab8302b41112175566881a1b7bf905">saurion_start</a> (this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>))</div>
-<div class="line"><span class="lineno">   26</span>    {</div>
-<div class="line"><span class="lineno">   27</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   28</span>    }</div>
-<div class="line"><span class="lineno">   29</span>}</div>
-<div class="ttc" id="agroup__LowSaurion_html_gaeeab8302b41112175566881a1b7bf905"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#gaeeab8302b41112175566881a1b7bf905">saurion_start</a></div><div class="ttdeci">int saurion_start(struct saurion *const s)</div><div class="ttdoc">Starts event processing in the saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01147">low_saurion.c:1147</a></div></div>
+<p>Initializes the server and starts listening for connections. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00024">24</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>{</div>
+<div class="line"><span class="lineno">   26</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="../../d9/da3/group__LowSaurion.html#gaeeab8302b41112175566881a1b7bf905">saurion_start</a> (this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>))</div>
+<div class="line"><span class="lineno">   27</span>    {</div>
+<div class="line"><span class="lineno">   28</span>      <span class="keywordflow">throw</span> std::runtime_error (<span class="stringliteral">&quot;Error on saurion start&quot;</span>);</div>
+<div class="line"><span class="lineno">   29</span>    }</div>
+<div class="line"><span class="lineno">   30</span>}</div>
+<div class="ttc" id="agroup__LowSaurion_html_gaeeab8302b41112175566881a1b7bf905"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#gaeeab8302b41112175566881a1b7bf905">saurion_start</a></div><div class="ttdeci">int saurion_start(struct saurion *const s)</div><div class="ttdoc">Starts event processing in the saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01145">low_saurion.c:1145</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -404,7 +479,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> * Saurion::on_closed </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d5/da0/classSaurion.html#a4145ce6e12b334a34d6b47d38e58248a">Saurion::ClosedCb</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d5/da0/classSaurion.html#a17fbe9d6880edb8bdbfc105b3df0c5b8">Saurion::ClosedCb</a>&#160;</td>
           <td class="paramname"><em>ncb</em>, </td>
         </tr>
         <tr>
@@ -426,15 +501,25 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00062">62</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   63</span>{</div>
-<div class="line"><span class="lineno">   64</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a92d10ed4a5e24fe94067f2fa3f8115e4">on_closed</a> = ncb;</div>
-<div class="line"><span class="lineno">   65</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a0c6906d4a2fcd277ce1b3703e20f41d2">on_closed_arg</a> = arg;</div>
-<div class="line"><span class="lineno">   66</span>  <span class="keywordflow">return</span> <span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   67</span>}</div>
-<div class="ttc" id="astructsaurion__callbacks_html_a0c6906d4a2fcd277ce1b3703e20f41d2"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a0c6906d4a2fcd277ce1b3703e20f41d2">saurion_callbacks::on_closed_arg</a></div><div class="ttdeci">void * on_closed_arg</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00191">low_saurion.h:191</a></div></div>
-<div class="ttc" id="astructsaurion__callbacks_html_a92d10ed4a5e24fe94067f2fa3f8115e4"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a92d10ed4a5e24fe94067f2fa3f8115e4">saurion_callbacks::on_closed</a></div><div class="ttdeci">void(* on_closed)(const int fd, void *arg)</div><div class="ttdoc">Callback for handling socket closures.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00189">low_saurion.h:189</a></div></div>
-<div class="ttc" id="astructsaurion_html_aa9d76fdd5db00b6af3fdc434a1369309"><div class="ttname"><a href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">saurion::cb</a></div><div class="ttdeci">struct saurion_callbacks cb</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00239">low_saurion.h:239</a></div></div>
+<p>Sets the callback for connection closed events. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ncb</td><td>The callback function. </td></tr>
+    <tr><td class="paramname">arg</td><td>User-defined argument for the callback. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to the <code><a class="el" href="../../d5/da0/classSaurion.html" title="A class for managing network connections with callback-based event handling.">Saurion</a></code> instance for chaining. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00063">63</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   64</span>{</div>
+<div class="line"><span class="lineno">   65</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a92d10ed4a5e24fe94067f2fa3f8115e4">on_closed</a> = ncb;</div>
+<div class="line"><span class="lineno">   66</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a0c6906d4a2fcd277ce1b3703e20f41d2">on_closed_arg</a> = arg;</div>
+<div class="line"><span class="lineno">   67</span>  <span class="keywordflow">return</span> <span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   68</span>}</div>
+<div class="ttc" id="astructsaurion__callbacks_html_a0c6906d4a2fcd277ce1b3703e20f41d2"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a0c6906d4a2fcd277ce1b3703e20f41d2">saurion_callbacks::on_closed_arg</a></div><div class="ttdeci">void * on_closed_arg</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00192">low_saurion.h:192</a></div></div>
+<div class="ttc" id="astructsaurion__callbacks_html_a92d10ed4a5e24fe94067f2fa3f8115e4"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a92d10ed4a5e24fe94067f2fa3f8115e4">saurion_callbacks::on_closed</a></div><div class="ttdeci">void(* on_closed)(const int fd, void *arg)</div><div class="ttdoc">Callback for handling socket closures.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00190">low_saurion.h:190</a></div></div>
+<div class="ttc" id="astructsaurion_html_aa9d76fdd5db00b6af3fdc434a1369309"><div class="ttname"><a href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">saurion::cb</a></div><div class="ttdeci">struct saurion_callbacks cb</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00240">low_saurion.h:240</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -450,7 +535,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> * Saurion::on_connected </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d5/da0/classSaurion.html#a5da4d05d3bcfea2461e0e3f3ee57026e">Saurion::ConnectedCb</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d5/da0/classSaurion.html#a27c125b69e20e4da7855572063dc41d2">Saurion::ConnectedCb</a>&#160;</td>
           <td class="paramname"><em>ncb</em>, </td>
         </tr>
         <tr>
@@ -472,14 +557,24 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00038">38</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   39</span>{</div>
-<div class="line"><span class="lineno">   40</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#aadebdbd46d651eafc8ff2cb5492dd337">on_connected</a> = ncb;</div>
-<div class="line"><span class="lineno">   41</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a0448514287c7c368cddcecd51b44ab0e">on_connected_arg</a> = arg;</div>
-<div class="line"><span class="lineno">   42</span>  <span class="keywordflow">return</span> <span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   43</span>}</div>
-<div class="ttc" id="astructsaurion__callbacks_html_a0448514287c7c368cddcecd51b44ab0e"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a0448514287c7c368cddcecd51b44ab0e">saurion_callbacks::on_connected_arg</a></div><div class="ttdeci">void * on_connected_arg</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00159">low_saurion.h:159</a></div></div>
-<div class="ttc" id="astructsaurion__callbacks_html_aadebdbd46d651eafc8ff2cb5492dd337"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#aadebdbd46d651eafc8ff2cb5492dd337">saurion_callbacks::on_connected</a></div><div class="ttdeci">void(* on_connected)(const int fd, void *arg)</div><div class="ttdoc">Callback for handling new connections.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00157">low_saurion.h:157</a></div></div>
+<p>Sets the callback for connection events. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ncb</td><td>The callback function. </td></tr>
+    <tr><td class="paramname">arg</td><td>User-defined argument for the callback. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to the <code><a class="el" href="../../d5/da0/classSaurion.html" title="A class for managing network connections with callback-based event handling.">Saurion</a></code> instance for chaining. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00039">39</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   40</span>{</div>
+<div class="line"><span class="lineno">   41</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#aadebdbd46d651eafc8ff2cb5492dd337">on_connected</a> = ncb;</div>
+<div class="line"><span class="lineno">   42</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a0448514287c7c368cddcecd51b44ab0e">on_connected_arg</a> = arg;</div>
+<div class="line"><span class="lineno">   43</span>  <span class="keywordflow">return</span> <span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   44</span>}</div>
+<div class="ttc" id="astructsaurion__callbacks_html_a0448514287c7c368cddcecd51b44ab0e"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a0448514287c7c368cddcecd51b44ab0e">saurion_callbacks::on_connected_arg</a></div><div class="ttdeci">void * on_connected_arg</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00160">low_saurion.h:160</a></div></div>
+<div class="ttc" id="astructsaurion__callbacks_html_aadebdbd46d651eafc8ff2cb5492dd337"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#aadebdbd46d651eafc8ff2cb5492dd337">saurion_callbacks::on_connected</a></div><div class="ttdeci">void(* on_connected)(const int fd, void *arg)</div><div class="ttdoc">Callback for handling new connections.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00158">low_saurion.h:158</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -495,7 +590,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> * Saurion::on_error </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d5/da0/classSaurion.html#a635147c9cfcd691e42b80353db22e2ce">Saurion::ErrorCb</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d5/da0/classSaurion.html#afe4f5e673383bd5bb563afff0f22fcfe">Saurion::ErrorCb</a>&#160;</td>
           <td class="paramname"><em>ncb</em>, </td>
         </tr>
         <tr>
@@ -517,14 +612,24 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00070">70</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   71</span>{</div>
-<div class="line"><span class="lineno">   72</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a4d99e1bab4869f6c0b47d3e630c0a2f1">on_error</a> = ncb;</div>
-<div class="line"><span class="lineno">   73</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#ad3372ecd9a17439b84edf72bb9377089">on_error_arg</a> = arg;</div>
-<div class="line"><span class="lineno">   74</span>  <span class="keywordflow">return</span> <span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   75</span>}</div>
-<div class="ttc" id="astructsaurion__callbacks_html_a4d99e1bab4869f6c0b47d3e630c0a2f1"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a4d99e1bab4869f6c0b47d3e630c0a2f1">saurion_callbacks::on_error</a></div><div class="ttdeci">void(* on_error)(const int fd, const char *const content, const ssize_t len, void *arg)</div><div class="ttdoc">Callback for handling error events.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00201">low_saurion.h:201</a></div></div>
-<div class="ttc" id="astructsaurion__callbacks_html_ad3372ecd9a17439b84edf72bb9377089"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#ad3372ecd9a17439b84edf72bb9377089">saurion_callbacks::on_error_arg</a></div><div class="ttdeci">void * on_error_arg</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00204">low_saurion.h:204</a></div></div>
+<p>Sets the callback for error events. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ncb</td><td>The callback function. </td></tr>
+    <tr><td class="paramname">arg</td><td>User-defined argument for the callback. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to the <code><a class="el" href="../../d5/da0/classSaurion.html" title="A class for managing network connections with callback-based event handling.">Saurion</a></code> instance for chaining. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00071">71</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   72</span>{</div>
+<div class="line"><span class="lineno">   73</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a3d1803c293e950b94cc74d8d59b70a00">on_error</a> = ncb;</div>
+<div class="line"><span class="lineno">   74</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#ad3372ecd9a17439b84edf72bb9377089">on_error_arg</a> = arg;</div>
+<div class="line"><span class="lineno">   75</span>  <span class="keywordflow">return</span> <span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   76</span>}</div>
+<div class="ttc" id="astructsaurion__callbacks_html_a3d1803c293e950b94cc74d8d59b70a00"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a3d1803c293e950b94cc74d8d59b70a00">saurion_callbacks::on_error</a></div><div class="ttdeci">void(* on_error)(const int fd, const char *const content, const int64_t len, void *arg)</div><div class="ttdoc">Callback for handling error events.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00202">low_saurion.h:202</a></div></div>
+<div class="ttc" id="astructsaurion__callbacks_html_ad3372ecd9a17439b84edf72bb9377089"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#ad3372ecd9a17439b84edf72bb9377089">saurion_callbacks::on_error_arg</a></div><div class="ttdeci">void * on_error_arg</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00205">low_saurion.h:205</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -540,7 +645,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> * Saurion::on_readed </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d5/da0/classSaurion.html#ac11bb4e3279488d1fca4b3e886ddbe40">Saurion::ReadedCb</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d5/da0/classSaurion.html#a76ecdfa541a8840d770e6649105c3107">Saurion::ReadedCb</a>&#160;</td>
           <td class="paramname"><em>ncb</em>, </td>
         </tr>
         <tr>
@@ -562,14 +667,24 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00046">46</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   47</span>{</div>
-<div class="line"><span class="lineno">   48</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a15c5a8dc04e2c4083502eb9f7f2c7997">on_readed</a> = ncb;</div>
-<div class="line"><span class="lineno">   49</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a46d60adf1f70df83058296234572c978">on_readed_arg</a> = arg;</div>
-<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">return</span> <span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   51</span>}</div>
-<div class="ttc" id="astructsaurion__callbacks_html_a15c5a8dc04e2c4083502eb9f7f2c7997"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a15c5a8dc04e2c4083502eb9f7f2c7997">saurion_callbacks::on_readed</a></div><div class="ttdeci">void(* on_readed)(const int fd, const void *const content, const ssize_t len, void *arg)</div><div class="ttdoc">Callback for handling read events.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00169">low_saurion.h:169</a></div></div>
-<div class="ttc" id="astructsaurion__callbacks_html_a46d60adf1f70df83058296234572c978"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a46d60adf1f70df83058296234572c978">saurion_callbacks::on_readed_arg</a></div><div class="ttdeci">void * on_readed_arg</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00172">low_saurion.h:172</a></div></div>
+<p>Sets the callback for data received events. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ncb</td><td>The callback function. </td></tr>
+    <tr><td class="paramname">arg</td><td>User-defined argument for the callback. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to the <code><a class="el" href="../../d5/da0/classSaurion.html" title="A class for managing network connections with callback-based event handling.">Saurion</a></code> instance for chaining. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00047">47</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>{</div>
+<div class="line"><span class="lineno">   49</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#aff5837eff0e7596abfab1dc2bf146074">on_readed</a> = ncb;</div>
+<div class="line"><span class="lineno">   50</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a46d60adf1f70df83058296234572c978">on_readed_arg</a> = arg;</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">return</span> <span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   52</span>}</div>
+<div class="ttc" id="astructsaurion__callbacks_html_a46d60adf1f70df83058296234572c978"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a46d60adf1f70df83058296234572c978">saurion_callbacks::on_readed_arg</a></div><div class="ttdeci">void * on_readed_arg</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00173">low_saurion.h:173</a></div></div>
+<div class="ttc" id="astructsaurion__callbacks_html_aff5837eff0e7596abfab1dc2bf146074"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#aff5837eff0e7596abfab1dc2bf146074">saurion_callbacks::on_readed</a></div><div class="ttdeci">void(* on_readed)(const int fd, const void *const content, const int64_t len, void *arg)</div><div class="ttdoc">Callback for handling read events.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00170">low_saurion.h:170</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -585,7 +700,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="../../d5/da0/classSaurion.html">Saurion</a> * Saurion::on_wrote </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d5/da0/classSaurion.html#a106a1958a13b0f9b2eea77e0990094e7">Saurion::WroteCb</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d5/da0/classSaurion.html#a9643d3ea3c74bf7d87dcdc8f20935053">Saurion::WroteCb</a>&#160;</td>
           <td class="paramname"><em>ncb</em>, </td>
         </tr>
         <tr>
@@ -607,14 +722,24 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00054">54</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   55</span>{</div>
-<div class="line"><span class="lineno">   56</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a19b5d0802302a7120a3ad718ebb8cb2a">on_wrote</a> = ncb;</div>
-<div class="line"><span class="lineno">   57</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a534ea394c43e9b450e8679d5c8f8d0bd">on_wrote_arg</a> = arg;</div>
-<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">return</span> <span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   59</span>}</div>
-<div class="ttc" id="astructsaurion__callbacks_html_a19b5d0802302a7120a3ad718ebb8cb2a"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a19b5d0802302a7120a3ad718ebb8cb2a">saurion_callbacks::on_wrote</a></div><div class="ttdeci">void(* on_wrote)(const int fd, void *arg)</div><div class="ttdoc">Callback for handling write events.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00180">low_saurion.h:180</a></div></div>
-<div class="ttc" id="astructsaurion__callbacks_html_a534ea394c43e9b450e8679d5c8f8d0bd"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a534ea394c43e9b450e8679d5c8f8d0bd">saurion_callbacks::on_wrote_arg</a></div><div class="ttdeci">void * on_wrote_arg</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00181">low_saurion.h:181</a></div></div>
+<p>Sets the callback for data sent events. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ncb</td><td>The callback function. </td></tr>
+    <tr><td class="paramname">arg</td><td>User-defined argument for the callback. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to the <code><a class="el" href="../../d5/da0/classSaurion.html" title="A class for managing network connections with callback-based event handling.">Saurion</a></code> instance for chaining. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00055">55</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   56</span>{</div>
+<div class="line"><span class="lineno">   57</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a19b5d0802302a7120a3ad718ebb8cb2a">on_wrote</a> = ncb;</div>
+<div class="line"><span class="lineno">   58</span>  <a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>-&gt;<a class="code hl_variable" href="../../df/d32/structsaurion.html#aa9d76fdd5db00b6af3fdc434a1369309">cb</a>.<a class="code hl_variable" href="../../d8/d5e/structsaurion__callbacks.html#a534ea394c43e9b450e8679d5c8f8d0bd">on_wrote_arg</a> = arg;</div>
+<div class="line"><span class="lineno">   59</span>  <span class="keywordflow">return</span> <span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   60</span>}</div>
+<div class="ttc" id="astructsaurion__callbacks_html_a19b5d0802302a7120a3ad718ebb8cb2a"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a19b5d0802302a7120a3ad718ebb8cb2a">saurion_callbacks::on_wrote</a></div><div class="ttdeci">void(* on_wrote)(const int fd, void *arg)</div><div class="ttdoc">Callback for handling write events.</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00181">low_saurion.h:181</a></div></div>
+<div class="ttc" id="astructsaurion__callbacks_html_a534ea394c43e9b450e8679d5c8f8d0bd"><div class="ttname"><a href="../../d8/d5e/structsaurion__callbacks.html#a534ea394c43e9b450e8679d5c8f8d0bd">saurion_callbacks::on_wrote_arg</a></div><div class="ttdeci">void * on_wrote_arg</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00182">low_saurion.h:182</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -704,11 +829,20 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00078">78</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   79</span>{</div>
-<div class="line"><span class="lineno">   80</span>  <a class="code hl_function" href="../../d9/da3/group__LowSaurion.html#gadd63cf225e55bcf4cd22ddcbd9d1c9b7">saurion_send</a> (this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>, fd, msg);</div>
-<div class="line"><span class="lineno">   81</span>}</div>
-<div class="ttc" id="agroup__LowSaurion_html_gadd63cf225e55bcf4cd22ddcbd9d1c9b7"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#gadd63cf225e55bcf4cd22ddcbd9d1c9b7">saurion_send</a></div><div class="ttdeci">void saurion_send(struct saurion *const s, const int fd, const char *const msg)</div><div class="ttdoc">Sends a message through a socket using io_uring.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01222">low_saurion.c:1222</a></div></div>
+<p>Sends a message to the specified file descriptor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fd</td><td>File descriptor to send the message to. </td></tr>
+    <tr><td class="paramname">msg</td><td>Pointer to the message to send. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00079">79</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>{</div>
+<div class="line"><span class="lineno">   81</span>  <a class="code hl_function" href="../../d9/da3/group__LowSaurion.html#gadd63cf225e55bcf4cd22ddcbd9d1c9b7">saurion_send</a> (this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>, fd, msg);</div>
+<div class="line"><span class="lineno">   82</span>}</div>
+<div class="ttc" id="agroup__LowSaurion_html_gadd63cf225e55bcf4cd22ddcbd9d1c9b7"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#gadd63cf225e55bcf4cd22ddcbd9d1c9b7">saurion_send</a></div><div class="ttdeci">void saurion_send(struct saurion *const s, const int fd, const char *const msg)</div><div class="ttdoc">Sends a message through a socket using io_uring.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01220">low_saurion.c:1220</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -735,11 +869,13 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00032">32</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   33</span>{</div>
-<div class="line"><span class="lineno">   34</span>  <a class="code hl_function" href="../../d9/da3/group__LowSaurion.html#ga9f32b41ec23178c2a693fec057b96532">saurion_stop</a> (this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>);</div>
-<div class="line"><span class="lineno">   35</span>}</div>
-<div class="ttc" id="agroup__LowSaurion_html_ga9f32b41ec23178c2a693fec057b96532"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#ga9f32b41ec23178c2a693fec057b96532">saurion_stop</a></div><div class="ttdeci">void saurion_stop(const struct saurion *const s)</div><div class="ttdoc">Stops event processing in the saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01174">low_saurion.c:1174</a></div></div>
+<p>Stops the server and all associated threads. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/da3/saurion_8cpp_source.html#l00033">33</a> of file <a class="el" href="../../d5/da3/saurion_8cpp_source.html">saurion.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>{</div>
+<div class="line"><span class="lineno">   35</span>  <a class="code hl_function" href="../../d9/da3/group__LowSaurion.html#ga9f32b41ec23178c2a693fec057b96532">saurion_stop</a> (this-&gt;<a class="code hl_variable" href="../../d5/da0/classSaurion.html#a6f75f768b084ef03214b178d3746f142">s</a>);</div>
+<div class="line"><span class="lineno">   36</span>}</div>
+<div class="ttc" id="agroup__LowSaurion_html_ga9f32b41ec23178c2a693fec057b96532"><div class="ttname"><a href="../../d9/da3/group__LowSaurion.html#ga9f32b41ec23178c2a693fec057b96532">saurion_stop</a></div><div class="ttdeci">void saurion_stop(const struct saurion *const s)</div><div class="ttdoc">Stops event processing in the saurion structure.</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d27/low__saurion_8c_source.html#l01172">low_saurion.c:1172</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -764,7 +900,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00038">38</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
+<p>Pointer to the underlying <code>saurion</code> structure. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dfe/saurion_8hpp_source.html#l00207">207</a> of file <a class="el" href="../../d9/dfe/saurion_8hpp_source.html">saurion.hpp</a>.</p>
 
 </div>
 </div>

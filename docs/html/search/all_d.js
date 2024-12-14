@@ -6,7 +6,7 @@ var searchData=
   ['port_3',['port',['../d0/deb/classClientInterface.html#a4cdf97a892803bf2f6e30a799fb38a5b',1,'ClientInterface']]],
   ['prepare_5fdestination_4',['prepare_destination',['../de/d27/low__saurion_8c.html#a466771742d22310b2860033791b497da',1,'low_saurion.c']]],
   ['prev_5',['prev',['../dc/d20/structrequest.html#ab8f409ae411cecc817a691455830f700',1,'request']]],
-  ['prev_5fremain_6',['prev_remain',['../dc/d20/structrequest.html#acb69c014fb67502b59cd112d3758569f',1,'request']]],
-  ['prev_5fsize_7',['prev_size',['../dc/d20/structrequest.html#a02dc8e759c5216e1b7f7c908a0e0481f',1,'request']]],
+  ['prev_5fremain_6',['prev_remain',['../dc/d20/structrequest.html#a160fdd0e0712237e0d688ba3b8841def',1,'request']]],
+  ['prev_5fsize_7',['prev_size',['../dc/d20/structrequest.html#afb65b3abd19ff603b64179efbe037893',1,'request']]],
   ['ptr_8',['ptr',['../d8/d49/structNode.html#a174a6b1ed6b6b34a9a313ae1d686f9ee',1,'Node']]]
 ];

@@ -1,8 +1,8 @@
 var low__saurion__secret_8h =
 [
-    [ "allocate_iovec", "d9/da3/group__LowSaurion.html#ga1c329b9155a9159b696b60247c9b328b", null ],
-    [ "free_request", "d9/da3/group__LowSaurion.html#ga0f9760bc800b946244ccf790081e6bb3", null ],
-    [ "initialize_iovec", "d9/da3/group__LowSaurion.html#gae64e81c0ce5f52d51684d8f1129e6076", null ],
-    [ "read_chunk", "d9/da3/group__LowSaurion.html#gaec24df6ee2f4999bf64acf5fc42ed019", null ],
-    [ "set_request", "d9/da3/group__LowSaurion.html#gaddb696f3c38e160dde5a5de6e6e10f70", null ]
+    [ "allocate_iovec", "d9/da3/group__LowSaurion.html#gafd079f55921c1b3711837f1ac6d9b1e9", null ],
+    [ "free_request", "d9/da3/group__LowSaurion.html#ga7904af924df847240b1f9f2e32b3995c", null ],
+    [ "initialize_iovec", "d9/da3/group__LowSaurion.html#gab36b3f72a0bd23bad4af3d88acfc8dd5", null ],
+    [ "read_chunk", "d9/da3/group__LowSaurion.html#ga835af81acb8e69600848a26bfd3a33c3", null ],
+    [ "set_request", "d9/da3/group__LowSaurion.html#ga074498ebe19ef5d64724a50632a81cb7", null ]
 ];

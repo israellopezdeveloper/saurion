@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.4</span>
+   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.5</span>
    </div>
   </td>
  </tr>
@@ -92,7 +92,6 @@ $(document).ready(function(){initNavTree('d3/d68/low__saurion_8h.html','../../')
 <div class="contents">
 <div class="textblock"><code>#include &lt;pthread.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
-<code>#include &lt;sys/types.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for low_saurion.h:</div>
 <div class="dyncontent">
@@ -125,9 +124,9 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga3944d39e091afbe401a9dcbfe526e97f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da3/group__LowSaurion.html#ga3944d39e091afbe401a9dcbfe526e97f">saurion_set_socket</a> (int p)</td></tr>
-<tr class="memdesc:ga3944d39e091afbe401a9dcbfe526e97f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a socket.  <a href="../../d9/da3/group__LowSaurion.html#ga3944d39e091afbe401a9dcbfe526e97f">More...</a><br /></td></tr>
-<tr class="separator:ga3944d39e091afbe401a9dcbfe526e97f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga81a8e2ed6fdb48a279f380eef5fdfe35"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da3/group__LowSaurion.html#ga81a8e2ed6fdb48a279f380eef5fdfe35">saurion_set_socket</a> (const int p)</td></tr>
+<tr class="memdesc:ga81a8e2ed6fdb48a279f380eef5fdfe35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a socket.  <a href="../../d9/da3/group__LowSaurion.html#ga81a8e2ed6fdb48a279f380eef5fdfe35">More...</a><br /></td></tr>
+<tr class="separator:ga81a8e2ed6fdb48a279f380eef5fdfe35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae589ab08ed623ad2ab6d13beec33b131"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../df/d32/structsaurion.html">saurion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131">saurion_create</a> (uint32_t <a class="el" href="../../d3/d68/low__saurion_8h.html#a7001c0d6b3bf1fa114a0d230c6190e3d">n_threads</a>)</td></tr>
 <tr class="memdesc:gae589ab08ed623ad2ab6d13beec33b131"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an instance of the <code>saurion</code> structure.  <a href="../../d9/da3/group__LowSaurion.html#gae589ab08ed623ad2ab6d13beec33b131">More...</a><br /></td></tr>
 <tr class="separator:gae589ab08ed623ad2ab6d13beec33b131"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,9 +150,9 @@ Variables</h2></td></tr>
 <tr class="separator:a5a1f6a55dc4fcd2a43d264268485ca7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc9f5650a0b73e18e55ac7cf1e2b17f4"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#adc9f5650a0b73e18e55ac7cf1e2b17f4">on_connected_arg</a></td></tr>
 <tr class="separator:adc9f5650a0b73e18e55ac7cf1e2b17f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a411734fb2ab603181edd1f9de76d061f"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a411734fb2ab603181edd1f9de76d061f">on_readed</a> )(const int fd, const void *const content, const ssize_t len, void *arg)</td></tr>
-<tr class="memdesc:a411734fb2ab603181edd1f9de76d061f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling read events.  <a href="../../d3/d68/low__saurion_8h.html#a411734fb2ab603181edd1f9de76d061f">More...</a><br /></td></tr>
-<tr class="separator:a411734fb2ab603181edd1f9de76d061f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3d94402dca35dc192ad431c306735ca"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#af3d94402dca35dc192ad431c306735ca">on_readed</a> )(const int fd, const void *const content, const int64_t len, void *arg)</td></tr>
+<tr class="memdesc:af3d94402dca35dc192ad431c306735ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling read events.  <a href="../../d3/d68/low__saurion_8h.html#af3d94402dca35dc192ad431c306735ca">More...</a><br /></td></tr>
+<tr class="separator:af3d94402dca35dc192ad431c306735ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad77310081fa26d4ab1570e0ccfb3d90c"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#ad77310081fa26d4ab1570e0ccfb3d90c">on_readed_arg</a></td></tr>
 <tr class="separator:ad77310081fa26d4ab1570e0ccfb3d90c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38b1f1ca23eb062f4b6352ab46052665"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a38b1f1ca23eb062f4b6352ab46052665">on_wrote</a> )(const int fd, void *arg)</td></tr>
@@ -166,9 +165,9 @@ Variables</h2></td></tr>
 <tr class="separator:a2f211bbd7f1dedd55ea5539f9612cfe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9dfbfdb790dbf2f32f41f0c1438c5890"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a9dfbfdb790dbf2f32f41f0c1438c5890">on_closed_arg</a></td></tr>
 <tr class="separator:a9dfbfdb790dbf2f32f41f0c1438c5890"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02640c4e41269c0d0afa9d7c7c357709"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a02640c4e41269c0d0afa9d7c7c357709">on_error</a> )(const int fd, const char *const content, const ssize_t len, void *arg)</td></tr>
-<tr class="memdesc:a02640c4e41269c0d0afa9d7c7c357709"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling error events.  <a href="../../d3/d68/low__saurion_8h.html#a02640c4e41269c0d0afa9d7c7c357709">More...</a><br /></td></tr>
-<tr class="separator:a02640c4e41269c0d0afa9d7c7c357709"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76cb78c86e3d50f57bc98ffa8381f701"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#a76cb78c86e3d50f57bc98ffa8381f701">on_error</a> )(const int fd, const char *const content, const int64_t len, void *arg)</td></tr>
+<tr class="memdesc:a76cb78c86e3d50f57bc98ffa8381f701"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for handling error events.  <a href="../../d3/d68/low__saurion_8h.html#a76cb78c86e3d50f57bc98ffa8381f701">More...</a><br /></td></tr>
+<tr class="separator:a76cb78c86e3d50f57bc98ffa8381f701"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef67e2ec495e223340f3daea5448a69a"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#aef67e2ec495e223340f3daea5448a69a">on_error_arg</a></td></tr>
 <tr class="separator:aef67e2ec495e223340f3daea5448a69a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc82bdc059019b48b4eaa469a4c1ffe8"><td class="memItemLeft" align="right" valign="top">struct io_uring *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d68/low__saurion_8h.html#abc82bdc059019b48b4eaa469a4c1ffe8">rings</a></td></tr>
@@ -410,14 +409,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a02640c4e41269c0d0afa9d7c7c357709" name="a02640c4e41269c0d0afa9d7c7c357709"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02640c4e41269c0d0afa9d7c7c357709">&#9670;&nbsp;</a></span>on_error</h2>
+<a id="a76cb78c86e3d50f57bc98ffa8381f701" name="a76cb78c86e3d50f57bc98ffa8381f701"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76cb78c86e3d50f57bc98ffa8381f701">&#9670;&nbsp;</a></span>on_error</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void(* on_error) (const int fd, const char *const content, const ssize_t len, void *arg) </td>
+          <td class="memname">void(* on_error) (const int fd, const char *const content, const int64_t len, void *arg) </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>fd</em>, </td>
@@ -431,7 +430,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const ssize_t&#160;</td>
+          <td class="paramtype">const int64_t&#160;</td>
           <td class="paramname"><em>len</em>, </td>
         </tr>
         <tr>
@@ -480,14 +479,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a411734fb2ab603181edd1f9de76d061f" name="a411734fb2ab603181edd1f9de76d061f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a411734fb2ab603181edd1f9de76d061f">&#9670;&nbsp;</a></span>on_readed</h2>
+<a id="af3d94402dca35dc192ad431c306735ca" name="af3d94402dca35dc192ad431c306735ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3d94402dca35dc192ad431c306735ca">&#9670;&nbsp;</a></span>on_readed</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void(* on_readed) (const int fd, const void *const content, const ssize_t len, void *arg) </td>
+          <td class="memname">void(* on_readed) (const int fd, const void *const content, const int64_t len, void *arg) </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>fd</em>, </td>
@@ -501,7 +500,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const ssize_t&#160;</td>
+          <td class="paramtype">const int64_t&#160;</td>
           <td class="paramname"><em>len</em>, </td>
         </tr>
         <tr>

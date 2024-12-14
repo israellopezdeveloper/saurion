@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.4</span>
+   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.5</span>
    </div>
   </td>
  </tr>
@@ -85,9 +85,14 @@ $(document).ready(function(){initNavTree('d9/d42/structthreadpool.html','../../'
   <div class="summary">
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="../../da/d66/structthreadpool-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">threadpool Struct Reference</div></div>
+  <div class="headertitle"><div class="title">threadpool Struct Reference<div class="ingroups"><a class="el" href="../../dd/d9c/group__ThreadPool.html">ThreadPool</a></div></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Represents a thread pool.  
+ <a href="../../d9/d42/structthreadpool.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="../../d3/d40/threadpool_8h_source.html">threadpool.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for threadpool:</div>
 <div class="dyncontent">
@@ -98,8 +103,8 @@ Collaboration diagram for threadpool:</div>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a986fa796519e202c7681c5c47d58f5e6"><td class="memItemLeft" align="right" valign="top">pthread_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a></td></tr>
 <tr class="separator:a986fa796519e202c7681c5c47d58f5e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24688368e7c53b1bd958056e9b8e1ce6"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d42/structthreadpool.html#a24688368e7c53b1bd958056e9b8e1ce6">num_threads</a></td></tr>
-<tr class="separator:a24688368e7c53b1bd958056e9b8e1ce6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affaba6c6657e4948458dbf50a59c54a8"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d42/structthreadpool.html#affaba6c6657e4948458dbf50a59c54a8">num_threads</a></td></tr>
+<tr class="separator:affaba6c6657e4948458dbf50a59c54a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac63e8b7db2caa5acaf7a42cb3b376684"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../db/da2/structtask.html">task</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">task_queue_head</a></td></tr>
 <tr class="separator:ac63e8b7db2caa5acaf7a42cb3b376684"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0fb4c1ba343d2b5af9cdb6c2f726790"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../db/da2/structtask.html">task</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d42/structthreadpool.html#ad0fb4c1ba343d2b5af9cdb6c2f726790">task_queue_tail</a></td></tr>
@@ -116,8 +121,10 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a8017588c65bf9fbe06c4090532eaf1d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00017">17</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<div class="textblock"><p >Represents a thread pool. </p>
+<p >The thread pool manages a fixed number of worker threads and a queue of tasks. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00016">16</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="ac5a8de0c9bc82c2ad5135505ed66ac8a" name="ac5a8de0c9bc82c2ad5135505ed66ac8a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac5a8de0c9bc82c2ad5135505ed66ac8a">&#9670;&nbsp;</a></span>empty_cond</h2>
@@ -131,23 +138,23 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00025">25</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00024">24</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
-<a id="a24688368e7c53b1bd958056e9b8e1ce6" name="a24688368e7c53b1bd958056e9b8e1ce6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a24688368e7c53b1bd958056e9b8e1ce6">&#9670;&nbsp;</a></span>num_threads</h2>
+<a id="affaba6c6657e4948458dbf50a59c54a8" name="affaba6c6657e4948458dbf50a59c54a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affaba6c6657e4948458dbf50a59c54a8">&#9670;&nbsp;</a></span>num_threads</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">size_t threadpool::num_threads</td>
+          <td class="memname">uint64_t threadpool::num_threads</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00020">20</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00019">19</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -163,7 +170,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00024">24</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00023">23</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -179,7 +186,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00023">23</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00022">22</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -195,7 +202,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00027">27</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00026">26</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -211,7 +218,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00026">26</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00025">25</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -227,7 +234,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00021">21</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00020">20</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -243,7 +250,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00022">22</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00021">21</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -259,7 +266,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00019">19</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00018">18</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>

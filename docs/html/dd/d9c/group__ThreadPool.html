@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.4</span>
+   <div id="projectname">Saurion<span id="projectnumber">&#160;0.0.5</span>
    </div>
   </td>
  </tr>
@@ -83,31 +83,90 @@ $(document).ready(function(){initNavTree('dd/d9c/group__ThreadPool.html','../../
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">ThreadPool</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>A thread pool implementation for managing and executing tasks.  
+<a href="#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d42/structthreadpool.html">threadpool</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a thread pool.  <a href="../../d9/d42/structthreadpool.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gabca97950848f08a7f9111e5844225ac0"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d9/d42/structthreadpool.html">threadpool</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d9c/group__ThreadPool.html#gabca97950848f08a7f9111e5844225ac0">threadpool_create</a> (size_t num_threads)</td></tr>
-<tr class="separator:gabca97950848f08a7f9111e5844225ac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gacc5910e706017274a824377e25d1e902"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d9/d42/structthreadpool.html">threadpool</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d9c/group__ThreadPool.html#gacc5910e706017274a824377e25d1e902">threadpool_create</a> (uint64_t num_threads)</td></tr>
+<tr class="memdesc:gacc5910e706017274a824377e25d1e902"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new thread pool with the specified number of threads.  <a href="../../dd/d9c/group__ThreadPool.html#gacc5910e706017274a824377e25d1e902">More...</a><br /></td></tr>
+<tr class="separator:gacc5910e706017274a824377e25d1e902"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga62b7cf0249fecfcd113e43df0cbb410c"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d9/d42/structthreadpool.html">threadpool</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d9c/group__ThreadPool.html#ga62b7cf0249fecfcd113e43df0cbb410c">threadpool_create_default</a> (void)</td></tr>
+<tr class="memdesc:ga62b7cf0249fecfcd113e43df0cbb410c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new thread pool with the default number of threads (equal to the number of CPU cores).  <a href="../../dd/d9c/group__ThreadPool.html#ga62b7cf0249fecfcd113e43df0cbb410c">More...</a><br /></td></tr>
 <tr class="separator:ga62b7cf0249fecfcd113e43df0cbb410c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga70990f8c3c2931d44bb1fbdd07eed7d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d9c/group__ThreadPool.html#ga70990f8c3c2931d44bb1fbdd07eed7d3">threadpool_init</a> (struct <a class="el" href="../../d9/d42/structthreadpool.html">threadpool</a> *<a class="el" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>)</td></tr>
+<tr class="memdesc:ga70990f8c3c2931d44bb1fbdd07eed7d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the thread pool, starting the worker threads.  <a href="../../dd/d9c/group__ThreadPool.html#ga70990f8c3c2931d44bb1fbdd07eed7d3">More...</a><br /></td></tr>
 <tr class="separator:ga70990f8c3c2931d44bb1fbdd07eed7d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga69a5aa61497402d6ddb6425e0ace7f60"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d9c/group__ThreadPool.html#ga69a5aa61497402d6ddb6425e0ace7f60">threadpool_add</a> (struct <a class="el" href="../../d9/d42/structthreadpool.html">threadpool</a> *<a class="el" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>, void(*function)(void *), void *argument)</td></tr>
+<tr class="memdesc:ga69a5aa61497402d6ddb6425e0ace7f60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a task to the thread pool.  <a href="../../dd/d9c/group__ThreadPool.html#ga69a5aa61497402d6ddb6425e0ace7f60">More...</a><br /></td></tr>
 <tr class="separator:ga69a5aa61497402d6ddb6425e0ace7f60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad4ae5fd8ebf1cb0ebb2d6cb1069fce03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d9c/group__ThreadPool.html#gad4ae5fd8ebf1cb0ebb2d6cb1069fce03">threadpool_stop</a> (struct <a class="el" href="../../d9/d42/structthreadpool.html">threadpool</a> *<a class="el" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>)</td></tr>
+<tr class="memdesc:gad4ae5fd8ebf1cb0ebb2d6cb1069fce03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops all threads in the thread pool and prevents further tasks from being added.  <a href="../../dd/d9c/group__ThreadPool.html#gad4ae5fd8ebf1cb0ebb2d6cb1069fce03">More...</a><br /></td></tr>
 <tr class="separator:gad4ae5fd8ebf1cb0ebb2d6cb1069fce03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9b04bae98d170f01938859ec76aca386"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d9c/group__ThreadPool.html#ga9b04bae98d170f01938859ec76aca386">threadpool_empty</a> (struct <a class="el" href="../../d9/d42/structthreadpool.html">threadpool</a> *<a class="el" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>)</td></tr>
+<tr class="memdesc:ga9b04bae98d170f01938859ec76aca386"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the thread pool's task queue is empty.  <a href="../../dd/d9c/group__ThreadPool.html#ga9b04bae98d170f01938859ec76aca386">More...</a><br /></td></tr>
 <tr class="separator:ga9b04bae98d170f01938859ec76aca386"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaad95c955c36ef40b29142e8187cddb1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d9c/group__ThreadPool.html#gaad95c955c36ef40b29142e8187cddb1e">threadpool_wait_empty</a> (struct <a class="el" href="../../d9/d42/structthreadpool.html">threadpool</a> *<a class="el" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>)</td></tr>
+<tr class="memdesc:gaad95c955c36ef40b29142e8187cddb1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Waits until the task queue becomes empty.  <a href="../../dd/d9c/group__ThreadPool.html#gaad95c955c36ef40b29142e8187cddb1e">More...</a><br /></td></tr>
 <tr class="separator:gaad95c955c36ef40b29142e8187cddb1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga62a3d2a1dee82e1c7705bc7fc1c2021d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d9c/group__ThreadPool.html#ga62a3d2a1dee82e1c7705bc7fc1c2021d">threadpool_destroy</a> (struct <a class="el" href="../../d9/d42/structthreadpool.html">threadpool</a> *<a class="el" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>)</td></tr>
+<tr class="memdesc:ga62a3d2a1dee82e1c7705bc7fc1c2021d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the thread pool, freeing all allocated resources.  <a href="../../dd/d9c/group__ThreadPool.html#ga62a3d2a1dee82e1c7705bc7fc1c2021d">More...</a><br /></td></tr>
 <tr class="separator:ga62a3d2a1dee82e1c7705bc7fc1c2021d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<p >A thread pool implementation for managing and executing tasks. </p>
+<p >This module provides functionality to manage a pool of threads that execute tasks in a synchronized manner.</p>
+<h3><a class="anchor" id="autotoc_md8"></a>
+Thread Pool Overview:</h3>
+<div class="fragment"><div class="line">Threads in <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>: [T1] [T2] [T3] ... [Tn]</div>
+<div class="line">Task Queue:</div>
+<div class="line">[Task(function=A, argument=X)] -&gt; [Task(function=B, argument=Y)] -&gt; NULL</div>
+<div class="ttc" id="alow__saurion_8h_html_a0d232b78568f2e4905d66ef056ce98b9"><div class="ttname"><a href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a></div><div class="ttdeci">struct threadpool * pool</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00017">low_saurion.h:17</a></div></div>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md9"></a>
+Example Usage:</h3>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="../../d3/d40/threadpool_8h.html">threadpool.h</a>&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> print_task(<span class="keywordtype">void</span> *arg) {</div>
+<div class="line">    <span class="keywordtype">int</span> *val = (<span class="keywordtype">int</span> *)arg;</div>
+<div class="line">    printf(<span class="stringliteral">&quot;Task executed with value: %d\n&quot;</span>, *val);</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> <a class="code hl_function" href="../../d0/d29/main_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a>() {</div>
+<div class="line">    <span class="keyword">struct </span><a class="code hl_struct" href="../../d9/d42/structthreadpool.html">threadpool</a> *<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> = <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga62b7cf0249fecfcd113e43df0cbb410c">threadpool_create_default</a>();</div>
+<div class="line">    <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga70990f8c3c2931d44bb1fbdd07eed7d3">threadpool_init</a>(<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">int</span> data1 = 42, data2 = 24;</div>
+<div class="line"> </div>
+<div class="line">    <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga69a5aa61497402d6ddb6425e0ace7f60">threadpool_add</a>(<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>, print_task, &amp;data1);</div>
+<div class="line">    <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga69a5aa61497402d6ddb6425e0ace7f60">threadpool_add</a>(<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>, print_task, &amp;data2);</div>
+<div class="line"> </div>
+<div class="line">    <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#gaad95c955c36ef40b29142e8187cddb1e">threadpool_wait_empty</a>(<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
+<div class="line">    <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#ga62a3d2a1dee82e1c7705bc7fc1c2021d">threadpool_destroy</a>(<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
+<div class="line">    <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
+<div class="ttc" id="agroup__ThreadPool_html_ga62a3d2a1dee82e1c7705bc7fc1c2021d"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#ga62a3d2a1dee82e1c7705bc7fc1c2021d">threadpool_destroy</a></div><div class="ttdeci">void threadpool_destroy(struct threadpool *pool)</div><div class="ttdoc">Destroys the thread pool, freeing all allocated resources.</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00265">threadpool.c:265</a></div></div>
+<div class="ttc" id="agroup__ThreadPool_html_ga62b7cf0249fecfcd113e43df0cbb410c"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#ga62b7cf0249fecfcd113e43df0cbb410c">threadpool_create_default</a></div><div class="ttdeci">struct threadpool * threadpool_create_default(void)</div><div class="ttdoc">Creates a new thread pool with the default number of threads (equal to the number of CPU cores).</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00094">threadpool.c:94</a></div></div>
+<div class="ttc" id="agroup__ThreadPool_html_ga69a5aa61497402d6ddb6425e0ace7f60"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#ga69a5aa61497402d6ddb6425e0ace7f60">threadpool_add</a></div><div class="ttdeci">void threadpool_add(struct threadpool *pool, void(*function)(void *), void *argument)</div><div class="ttdoc">Adds a task to the thread pool.</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00167">threadpool.c:167</a></div></div>
+<div class="ttc" id="agroup__ThreadPool_html_ga70990f8c3c2931d44bb1fbdd07eed7d3"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#ga70990f8c3c2931d44bb1fbdd07eed7d3">threadpool_init</a></div><div class="ttdeci">void threadpool_init(struct threadpool *pool)</div><div class="ttdoc">Initializes the thread pool, starting the worker threads.</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00144">threadpool.c:144</a></div></div>
+<div class="ttc" id="agroup__ThreadPool_html_gaad95c955c36ef40b29142e8187cddb1e"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#gaad95c955c36ef40b29142e8187cddb1e">threadpool_wait_empty</a></div><div class="ttdeci">void threadpool_wait_empty(struct threadpool *pool)</div><div class="ttdoc">Waits until the task queue becomes empty.</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00247">threadpool.c:247</a></div></div>
+<div class="ttc" id="amain_8c_html_ae66f6b31b5ad750f1fe042a706a4e3d4"><div class="ttname"><a href="../../d0/d29/main_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a></div><div class="ttdeci">int main()</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d29/main_8c_source.html#l00023">main.c:23</a></div></div>
+<div class="ttc" id="astructthreadpool_html"><div class="ttname"><a href="../../d9/d42/structthreadpool.html">threadpool</a></div><div class="ttdoc">Represents a thread pool.</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00016">threadpool.c:17</a></div></div>
+<div class="ttc" id="athreadpool_8h_html"><div class="ttname"><a href="../../d3/d40/threadpool_8h.html">threadpool.h</a></div></div>
+</div><!-- fragment --><dl class="section author"><dt>Author</dt><dd>Israel </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>2024 </dd></dl>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ga69a5aa61497402d6ddb6425e0ace7f60" name="ga69a5aa61497402d6ddb6425e0ace7f60"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga69a5aa61497402d6ddb6425e0ace7f60">&#9670;&nbsp;</a></span>threadpool_add()</h2>
@@ -141,57 +200,73 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00168">168</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  170</span>{</div>
-<div class="line"><span class="lineno">  171</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  172</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL || function == NULL)</div>
-<div class="line"><span class="lineno">  173</span>    {</div>
-<div class="line"><span class="lineno">  174</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  175</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  176</span>    }</div>
-<div class="line"><span class="lineno">  177</span> </div>
-<div class="line"><span class="lineno">  178</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../db/da2/structtask.html">task</a> *new_task = malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../db/da2/structtask.html">task</a>));</div>
-<div class="line"><span class="lineno">  179</span>  <span class="keywordflow">if</span> (new_task == NULL)</div>
-<div class="line"><span class="lineno">  180</span>    {</div>
-<div class="line"><span class="lineno">  181</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  182</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  183</span>    }</div>
-<div class="line"><span class="lineno">  184</span> </div>
-<div class="line"><span class="lineno">  185</span>  new_task-&gt;<a class="code hl_variable" href="../../db/da2/structtask.html#a52478e66be0aa97174ab5d9bb3342492">function</a> = <a class="code hl_variable" href="../../db/da2/structtask.html#a52478e66be0aa97174ab5d9bb3342492">function</a>;</div>
-<div class="line"><span class="lineno">  186</span>  new_task-&gt;<a class="code hl_variable" href="../../db/da2/structtask.html#abd6f841e14fa8c67a18b34a542d5cbf1">argument</a> = <a class="code hl_variable" href="../../db/da2/structtask.html#abd6f841e14fa8c67a18b34a542d5cbf1">argument</a>;</div>
-<div class="line"><span class="lineno">  187</span>  new_task-&gt;<a class="code hl_variable" href="../../db/da2/structtask.html#a3f2c7149983c28824baf1aebdfa7af98">next</a> = NULL;</div>
-<div class="line"><span class="lineno">  188</span> </div>
-<div class="line"><span class="lineno">  189</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
-<div class="line"><span class="lineno">  190</span> </div>
-<div class="line"><span class="lineno">  191</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">task_queue_head</a> == NULL)</div>
-<div class="line"><span class="lineno">  192</span>    {</div>
-<div class="line"><span class="lineno">  193</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">task_queue_head</a> = new_task;</div>
-<div class="line"><span class="lineno">  194</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ad0fb4c1ba343d2b5af9cdb6c2f726790">task_queue_tail</a> = new_task;</div>
-<div class="line"><span class="lineno">  195</span>    }</div>
-<div class="line"><span class="lineno">  196</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  197</span>    {</div>
-<div class="line"><span class="lineno">  198</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ad0fb4c1ba343d2b5af9cdb6c2f726790">task_queue_tail</a>-&gt;<a class="code hl_variable" href="../../db/da2/structtask.html#a3f2c7149983c28824baf1aebdfa7af98">next</a> = new_task;</div>
-<div class="line"><span class="lineno">  199</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ad0fb4c1ba343d2b5af9cdb6c2f726790">task_queue_tail</a> = new_task;</div>
-<div class="line"><span class="lineno">  200</span>    }</div>
-<div class="line"><span class="lineno">  201</span>  pthread_cond_signal (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a29ec1c740d231134eb150e8c55432ede">queue_cond</a>);</div>
-<div class="line"><span class="lineno">  202</span> </div>
-<div class="line"><span class="lineno">  203</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
-<div class="line"><span class="lineno">  204</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  205</span>}</div>
-<div class="ttc" id="alow__saurion_8h_html_a0d232b78568f2e4905d66ef056ce98b9"><div class="ttname"><a href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a></div><div class="ttdeci">struct threadpool * pool</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/low__saurion_8h_source.html#l00017">low_saurion.h:17</a></div></div>
-<div class="ttc" id="astructtask_html"><div class="ttname"><a href="../../db/da2/structtask.html">task</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00010">threadpool.c:11</a></div></div>
-<div class="ttc" id="astructtask_html_a3f2c7149983c28824baf1aebdfa7af98"><div class="ttname"><a href="../../db/da2/structtask.html#a3f2c7149983c28824baf1aebdfa7af98">task::next</a></div><div class="ttdeci">struct task * next</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00014">threadpool.c:14</a></div></div>
-<div class="ttc" id="astructtask_html_a52478e66be0aa97174ab5d9bb3342492"><div class="ttname"><a href="../../db/da2/structtask.html#a52478e66be0aa97174ab5d9bb3342492">task::function</a></div><div class="ttdeci">void(* function)(void *)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00012">threadpool.c:12</a></div></div>
-<div class="ttc" id="astructtask_html_abd6f841e14fa8c67a18b34a542d5cbf1"><div class="ttname"><a href="../../db/da2/structtask.html#abd6f841e14fa8c67a18b34a542d5cbf1">task::argument</a></div><div class="ttdeci">void * argument</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00013">threadpool.c:13</a></div></div>
-<div class="ttc" id="astructthreadpool_html_a29ec1c740d231134eb150e8c55432ede"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#a29ec1c740d231134eb150e8c55432ede">threadpool::queue_cond</a></div><div class="ttdeci">pthread_cond_t queue_cond</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00024">threadpool.c:24</a></div></div>
-<div class="ttc" id="astructthreadpool_html_a4ac932be8335ba851db4fb193512a49d"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">threadpool::queue_lock</a></div><div class="ttdeci">pthread_mutex_t queue_lock</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00023">threadpool.c:23</a></div></div>
-<div class="ttc" id="astructthreadpool_html_ac63e8b7db2caa5acaf7a42cb3b376684"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">threadpool::task_queue_head</a></div><div class="ttdeci">struct task * task_queue_head</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00021">threadpool.c:21</a></div></div>
-<div class="ttc" id="astructthreadpool_html_ad0fb4c1ba343d2b5af9cdb6c2f726790"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#ad0fb4c1ba343d2b5af9cdb6c2f726790">threadpool::task_queue_tail</a></div><div class="ttdeci">struct task * task_queue_tail</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00022">threadpool.c:22</a></div></div>
+<p>Adds a task to the thread pool. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pool</td><td>Pointer to the thread pool. </td></tr>
+    <tr><td class="paramname">function</td><td>Pointer to the function representing the task. </td></tr>
+    <tr><td class="paramname">argument</td><td>Pointer to the argument to pass to the task function.</td></tr>
+  </table>
+  </dd>
+</dl>
+<h3><a class="anchor" id="autotoc_md11"></a>
+Diagram:</h3>
+<div class="fragment"><div class="line">Before:</div>
+<div class="line">Task Queue: Empty</div>
+<div class="line"> </div>
+<div class="line">After:</div>
+<div class="line">Task Queue: [Task(function=A, argument=X)] -&gt; NULL</div>
+</div><!-- fragment --> 
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00167">167</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  169</span>{</div>
+<div class="line"><span class="lineno">  170</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  171</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL || function == NULL)</div>
+<div class="line"><span class="lineno">  172</span>    {</div>
+<div class="line"><span class="lineno">  173</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  174</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  175</span>    }</div>
+<div class="line"><span class="lineno">  176</span> </div>
+<div class="line"><span class="lineno">  177</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../db/da2/structtask.html">task</a> *new_task = malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../db/da2/structtask.html">task</a>));</div>
+<div class="line"><span class="lineno">  178</span>  <span class="keywordflow">if</span> (new_task == NULL)</div>
+<div class="line"><span class="lineno">  179</span>    {</div>
+<div class="line"><span class="lineno">  180</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  181</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  182</span>    }</div>
+<div class="line"><span class="lineno">  183</span> </div>
+<div class="line"><span class="lineno">  184</span>  new_task-&gt;<a class="code hl_variable" href="../../db/da2/structtask.html#a52478e66be0aa97174ab5d9bb3342492">function</a> = <a class="code hl_variable" href="../../db/da2/structtask.html#a52478e66be0aa97174ab5d9bb3342492">function</a>;</div>
+<div class="line"><span class="lineno">  185</span>  new_task-&gt;<a class="code hl_variable" href="../../db/da2/structtask.html#abd6f841e14fa8c67a18b34a542d5cbf1">argument</a> = <a class="code hl_variable" href="../../db/da2/structtask.html#abd6f841e14fa8c67a18b34a542d5cbf1">argument</a>;</div>
+<div class="line"><span class="lineno">  186</span>  new_task-&gt;<a class="code hl_variable" href="../../db/da2/structtask.html#a3f2c7149983c28824baf1aebdfa7af98">next</a> = NULL;</div>
+<div class="line"><span class="lineno">  187</span> </div>
+<div class="line"><span class="lineno">  188</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
+<div class="line"><span class="lineno">  189</span> </div>
+<div class="line"><span class="lineno">  190</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">task_queue_head</a> == NULL)</div>
+<div class="line"><span class="lineno">  191</span>    {</div>
+<div class="line"><span class="lineno">  192</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">task_queue_head</a> = new_task;</div>
+<div class="line"><span class="lineno">  193</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ad0fb4c1ba343d2b5af9cdb6c2f726790">task_queue_tail</a> = new_task;</div>
+<div class="line"><span class="lineno">  194</span>    }</div>
+<div class="line"><span class="lineno">  195</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  196</span>    {</div>
+<div class="line"><span class="lineno">  197</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ad0fb4c1ba343d2b5af9cdb6c2f726790">task_queue_tail</a>-&gt;<a class="code hl_variable" href="../../db/da2/structtask.html#a3f2c7149983c28824baf1aebdfa7af98">next</a> = new_task;</div>
+<div class="line"><span class="lineno">  198</span>      <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ad0fb4c1ba343d2b5af9cdb6c2f726790">task_queue_tail</a> = new_task;</div>
+<div class="line"><span class="lineno">  199</span>    }</div>
+<div class="line"><span class="lineno">  200</span>  pthread_cond_signal (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a29ec1c740d231134eb150e8c55432ede">queue_cond</a>);</div>
+<div class="line"><span class="lineno">  201</span> </div>
+<div class="line"><span class="lineno">  202</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
+<div class="line"><span class="lineno">  203</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  204</span>}</div>
+<div class="ttc" id="astructtask_html"><div class="ttname"><a href="../../db/da2/structtask.html">task</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00009">threadpool.c:10</a></div></div>
+<div class="ttc" id="astructtask_html_a3f2c7149983c28824baf1aebdfa7af98"><div class="ttname"><a href="../../db/da2/structtask.html#a3f2c7149983c28824baf1aebdfa7af98">task::next</a></div><div class="ttdeci">struct task * next</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00013">threadpool.c:13</a></div></div>
+<div class="ttc" id="astructtask_html_a52478e66be0aa97174ab5d9bb3342492"><div class="ttname"><a href="../../db/da2/structtask.html#a52478e66be0aa97174ab5d9bb3342492">task::function</a></div><div class="ttdeci">void(* function)(void *)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00011">threadpool.c:11</a></div></div>
+<div class="ttc" id="astructtask_html_abd6f841e14fa8c67a18b34a542d5cbf1"><div class="ttname"><a href="../../db/da2/structtask.html#abd6f841e14fa8c67a18b34a542d5cbf1">task::argument</a></div><div class="ttdeci">void * argument</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00012">threadpool.c:12</a></div></div>
+<div class="ttc" id="astructthreadpool_html_a29ec1c740d231134eb150e8c55432ede"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#a29ec1c740d231134eb150e8c55432ede">threadpool::queue_cond</a></div><div class="ttdeci">pthread_cond_t queue_cond</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00023">threadpool.c:23</a></div></div>
+<div class="ttc" id="astructthreadpool_html_a4ac932be8335ba851db4fb193512a49d"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">threadpool::queue_lock</a></div><div class="ttdeci">pthread_mutex_t queue_lock</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00022">threadpool.c:22</a></div></div>
+<div class="ttc" id="astructthreadpool_html_ac63e8b7db2caa5acaf7a42cb3b376684"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">threadpool::task_queue_head</a></div><div class="ttdeci">struct task * task_queue_head</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00020">threadpool.c:20</a></div></div>
+<div class="ttc" id="astructthreadpool_html_ad0fb4c1ba343d2b5af9cdb6c2f726790"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#ad0fb4c1ba343d2b5af9cdb6c2f726790">threadpool::task_queue_tail</a></div><div class="ttdeci">struct task * task_queue_tail</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00021">threadpool.c:21</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="gabca97950848f08a7f9111e5844225ac0" name="gabca97950848f08a7f9111e5844225ac0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gabca97950848f08a7f9111e5844225ac0">&#9670;&nbsp;</a></span>threadpool_create()</h2>
+<a id="gacc5910e706017274a824377e25d1e902" name="gacc5910e706017274a824377e25d1e902"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gacc5910e706017274a824377e25d1e902">&#9670;&nbsp;</a></span>threadpool_create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -199,82 +274,99 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">struct <a class="el" href="../../d9/d42/structthreadpool.html">threadpool</a> * threadpool_create </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
+          <td class="paramtype">uint64_t&#160;</td>
           <td class="paramname"><em>num_threads</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00031">31</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   32</span>{</div>
-<div class="line"><span class="lineno">   33</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">   34</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../d9/d42/structthreadpool.html">threadpool</a> *<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> = malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../d9/d42/structthreadpool.html">threadpool</a>));</div>
-<div class="line"><span class="lineno">   35</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL)</div>
-<div class="line"><span class="lineno">   36</span>    {</div>
-<div class="line"><span class="lineno">   37</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">   38</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">   39</span>    }</div>
-<div class="line"><span class="lineno">   40</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a24688368e7c53b1bd958056e9b8e1ce6">num_threads</a> &lt; 3)</div>
-<div class="line"><span class="lineno">   41</span>    {</div>
-<div class="line"><span class="lineno">   42</span>      <a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a24688368e7c53b1bd958056e9b8e1ce6">num_threads</a> = 3;</div>
-<div class="line"><span class="lineno">   43</span>    }</div>
-<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a24688368e7c53b1bd958056e9b8e1ce6">num_threads</a> &gt; NUM_CORES)</div>
-<div class="line"><span class="lineno">   45</span>    {</div>
-<div class="line"><span class="lineno">   46</span>      <a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a24688368e7c53b1bd958056e9b8e1ce6">num_threads</a> = NUM_CORES;</div>
-<div class="line"><span class="lineno">   47</span>    }</div>
-<div class="line"><span class="lineno">   48</span> </div>
-<div class="line"><span class="lineno">   49</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a24688368e7c53b1bd958056e9b8e1ce6">num_threads</a> = <a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a24688368e7c53b1bd958056e9b8e1ce6">num_threads</a>;</div>
-<div class="line"><span class="lineno">   50</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a> = malloc (<span class="keyword">sizeof</span> (pthread_t) * <a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a24688368e7c53b1bd958056e9b8e1ce6">num_threads</a>);</div>
-<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a> == NULL)</div>
-<div class="line"><span class="lineno">   52</span>    {</div>
-<div class="line"><span class="lineno">   53</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
-<div class="line"><span class="lineno">   54</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">   55</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">   56</span>    }</div>
-<div class="line"><span class="lineno">   57</span> </div>
-<div class="line"><span class="lineno">   58</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">task_queue_head</a> = NULL;</div>
-<div class="line"><span class="lineno">   59</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ad0fb4c1ba343d2b5af9cdb6c2f726790">task_queue_tail</a> = NULL;</div>
-<div class="line"><span class="lineno">   60</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a2670cc6ae89edbeae325976f6484282b">stop</a> = <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa93f0eb578d23995850d61f7d61c55c1">FALSE</a>;</div>
-<div class="line"><span class="lineno">   61</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a8017588c65bf9fbe06c4090532eaf1d5">started</a> = <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa93f0eb578d23995850d61f7d61c55c1">FALSE</a>;</div>
-<div class="line"><span class="lineno">   62</span> </div>
-<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">if</span> (pthread_mutex_init (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>, NULL) != 0)</div>
-<div class="line"><span class="lineno">   64</span>    {</div>
-<div class="line"><span class="lineno">   65</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a>);</div>
-<div class="line"><span class="lineno">   66</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
-<div class="line"><span class="lineno">   67</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">   68</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">   69</span>    }</div>
-<div class="line"><span class="lineno">   70</span> </div>
-<div class="line"><span class="lineno">   71</span>  <span class="keywordflow">if</span> (pthread_cond_init (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a29ec1c740d231134eb150e8c55432ede">queue_cond</a>, NULL) != 0)</div>
-<div class="line"><span class="lineno">   72</span>    {</div>
-<div class="line"><span class="lineno">   73</span>      pthread_mutex_destroy (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
-<div class="line"><span class="lineno">   74</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a>);</div>
-<div class="line"><span class="lineno">   75</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
-<div class="line"><span class="lineno">   76</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">   77</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">   78</span>    }</div>
-<div class="line"><span class="lineno">   79</span> </div>
-<div class="line"><span class="lineno">   80</span>  <span class="keywordflow">if</span> (pthread_cond_init (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac5a8de0c9bc82c2ad5135505ed66ac8a">empty_cond</a>, NULL) != 0)</div>
-<div class="line"><span class="lineno">   81</span>    {</div>
-<div class="line"><span class="lineno">   82</span>      pthread_mutex_destroy (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
-<div class="line"><span class="lineno">   83</span>      pthread_cond_destroy (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a29ec1c740d231134eb150e8c55432ede">queue_cond</a>);</div>
-<div class="line"><span class="lineno">   84</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a>);</div>
-<div class="line"><span class="lineno">   85</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
-<div class="line"><span class="lineno">   86</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">   87</span>      <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><span class="lineno">   88</span>    }</div>
-<div class="line"><span class="lineno">   89</span> </div>
-<div class="line"><span class="lineno">   90</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">   91</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>;</div>
-<div class="line"><span class="lineno">   92</span>}</div>
-<div class="ttc" id="astructthreadpool_html"><div class="ttname"><a href="../../d9/d42/structthreadpool.html">threadpool</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00017">threadpool.c:18</a></div></div>
-<div class="ttc" id="astructthreadpool_html_a24688368e7c53b1bd958056e9b8e1ce6"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#a24688368e7c53b1bd958056e9b8e1ce6">threadpool::num_threads</a></div><div class="ttdeci">size_t num_threads</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00020">threadpool.c:20</a></div></div>
-<div class="ttc" id="astructthreadpool_html_a2670cc6ae89edbeae325976f6484282b"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#a2670cc6ae89edbeae325976f6484282b">threadpool::stop</a></div><div class="ttdeci">int stop</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00026">threadpool.c:26</a></div></div>
-<div class="ttc" id="astructthreadpool_html_a8017588c65bf9fbe06c4090532eaf1d5"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#a8017588c65bf9fbe06c4090532eaf1d5">threadpool::started</a></div><div class="ttdeci">int started</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00027">threadpool.c:27</a></div></div>
-<div class="ttc" id="astructthreadpool_html_a986fa796519e202c7681c5c47d58f5e6"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threadpool::threads</a></div><div class="ttdeci">pthread_t * threads</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00019">threadpool.c:19</a></div></div>
-<div class="ttc" id="astructthreadpool_html_ac5a8de0c9bc82c2ad5135505ed66ac8a"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#ac5a8de0c9bc82c2ad5135505ed66ac8a">threadpool::empty_cond</a></div><div class="ttdeci">pthread_cond_t empty_cond</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00025">threadpool.c:25</a></div></div>
-<div class="ttc" id="athreadpool_8c_html_aa93f0eb578d23995850d61f7d61c55c1"><div class="ttname"><a href="../../d1/dc7/threadpool_8c.html#aa93f0eb578d23995850d61f7d61c55c1">FALSE</a></div><div class="ttdeci">#define FALSE</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00008">threadpool.c:8</a></div></div>
+<p>Creates a new thread pool with the specified number of threads. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">num_threads</td><td>The number of threads in the pool. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the created thread pool, or <code>NULL</code> if creation fails.</dd></dl>
+<h3><a class="anchor" id="autotoc_md10"></a>
+Diagram:</h3>
+<div class="fragment"><div class="line">Input:</div>
+<div class="line">num_threads = 4</div>
+<div class="line"> </div>
+<div class="line">Output:</div>
+<div class="line">ThreadPool:</div>
+<div class="line">  - Threads: [T1, T2, T3, T4]</div>
+<div class="line">  - Task Queue: Empty</div>
+</div><!-- fragment --> 
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00030">30</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   31</span>{</div>
+<div class="line"><span class="lineno">   32</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">   33</span>  <span class="keyword">struct </span><a class="code hl_struct" href="../../d9/d42/structthreadpool.html">threadpool</a> *<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> = malloc (<span class="keyword">sizeof</span> (<span class="keyword">struct</span> <a class="code hl_struct" href="../../d9/d42/structthreadpool.html">threadpool</a>));</div>
+<div class="line"><span class="lineno">   34</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL)</div>
+<div class="line"><span class="lineno">   35</span>    {</div>
+<div class="line"><span class="lineno">   36</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">   37</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">   38</span>    }</div>
+<div class="line"><span class="lineno">   39</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#affaba6c6657e4948458dbf50a59c54a8">num_threads</a> &lt; 3)</div>
+<div class="line"><span class="lineno">   40</span>    {</div>
+<div class="line"><span class="lineno">   41</span>      <a class="code hl_variable" href="../../d9/d42/structthreadpool.html#affaba6c6657e4948458dbf50a59c54a8">num_threads</a> = 3;</div>
+<div class="line"><span class="lineno">   42</span>    }</div>
+<div class="line"><span class="lineno">   43</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#affaba6c6657e4948458dbf50a59c54a8">num_threads</a> &gt; NUM_CORES)</div>
+<div class="line"><span class="lineno">   44</span>    {</div>
+<div class="line"><span class="lineno">   45</span>      <a class="code hl_variable" href="../../d9/d42/structthreadpool.html#affaba6c6657e4948458dbf50a59c54a8">num_threads</a> = NUM_CORES;</div>
+<div class="line"><span class="lineno">   46</span>    }</div>
+<div class="line"><span class="lineno">   47</span> </div>
+<div class="line"><span class="lineno">   48</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#affaba6c6657e4948458dbf50a59c54a8">num_threads</a> = <a class="code hl_variable" href="../../d9/d42/structthreadpool.html#affaba6c6657e4948458dbf50a59c54a8">num_threads</a>;</div>
+<div class="line"><span class="lineno">   49</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a> = malloc (<span class="keyword">sizeof</span> (pthread_t) * <a class="code hl_variable" href="../../d9/d42/structthreadpool.html#affaba6c6657e4948458dbf50a59c54a8">num_threads</a>);</div>
+<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a> == NULL)</div>
+<div class="line"><span class="lineno">   51</span>    {</div>
+<div class="line"><span class="lineno">   52</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
+<div class="line"><span class="lineno">   53</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">   54</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">   55</span>    }</div>
+<div class="line"><span class="lineno">   56</span> </div>
+<div class="line"><span class="lineno">   57</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">task_queue_head</a> = NULL;</div>
+<div class="line"><span class="lineno">   58</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ad0fb4c1ba343d2b5af9cdb6c2f726790">task_queue_tail</a> = NULL;</div>
+<div class="line"><span class="lineno">   59</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a2670cc6ae89edbeae325976f6484282b">stop</a> = <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa93f0eb578d23995850d61f7d61c55c1">FALSE</a>;</div>
+<div class="line"><span class="lineno">   60</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a8017588c65bf9fbe06c4090532eaf1d5">started</a> = <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa93f0eb578d23995850d61f7d61c55c1">FALSE</a>;</div>
+<div class="line"><span class="lineno">   61</span> </div>
+<div class="line"><span class="lineno">   62</span>  <span class="keywordflow">if</span> (pthread_mutex_init (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>, NULL) != 0)</div>
+<div class="line"><span class="lineno">   63</span>    {</div>
+<div class="line"><span class="lineno">   64</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a>);</div>
+<div class="line"><span class="lineno">   65</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
+<div class="line"><span class="lineno">   66</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">   67</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">   68</span>    }</div>
+<div class="line"><span class="lineno">   69</span> </div>
+<div class="line"><span class="lineno">   70</span>  <span class="keywordflow">if</span> (pthread_cond_init (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a29ec1c740d231134eb150e8c55432ede">queue_cond</a>, NULL) != 0)</div>
+<div class="line"><span class="lineno">   71</span>    {</div>
+<div class="line"><span class="lineno">   72</span>      pthread_mutex_destroy (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
+<div class="line"><span class="lineno">   73</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a>);</div>
+<div class="line"><span class="lineno">   74</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
+<div class="line"><span class="lineno">   75</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">   76</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">   77</span>    }</div>
+<div class="line"><span class="lineno">   78</span> </div>
+<div class="line"><span class="lineno">   79</span>  <span class="keywordflow">if</span> (pthread_cond_init (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac5a8de0c9bc82c2ad5135505ed66ac8a">empty_cond</a>, NULL) != 0)</div>
+<div class="line"><span class="lineno">   80</span>    {</div>
+<div class="line"><span class="lineno">   81</span>      pthread_mutex_destroy (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
+<div class="line"><span class="lineno">   82</span>      pthread_cond_destroy (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a29ec1c740d231134eb150e8c55432ede">queue_cond</a>);</div>
+<div class="line"><span class="lineno">   83</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a>);</div>
+<div class="line"><span class="lineno">   84</span>      free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
+<div class="line"><span class="lineno">   85</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">   86</span>      <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><span class="lineno">   87</span>    }</div>
+<div class="line"><span class="lineno">   88</span> </div>
+<div class="line"><span class="lineno">   89</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">   90</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>;</div>
+<div class="line"><span class="lineno">   91</span>}</div>
+<div class="ttc" id="astructthreadpool_html_a2670cc6ae89edbeae325976f6484282b"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#a2670cc6ae89edbeae325976f6484282b">threadpool::stop</a></div><div class="ttdeci">int stop</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00025">threadpool.c:25</a></div></div>
+<div class="ttc" id="astructthreadpool_html_a8017588c65bf9fbe06c4090532eaf1d5"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#a8017588c65bf9fbe06c4090532eaf1d5">threadpool::started</a></div><div class="ttdeci">int started</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00026">threadpool.c:26</a></div></div>
+<div class="ttc" id="astructthreadpool_html_a986fa796519e202c7681c5c47d58f5e6"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threadpool::threads</a></div><div class="ttdeci">pthread_t * threads</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00018">threadpool.c:18</a></div></div>
+<div class="ttc" id="astructthreadpool_html_ac5a8de0c9bc82c2ad5135505ed66ac8a"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#ac5a8de0c9bc82c2ad5135505ed66ac8a">threadpool::empty_cond</a></div><div class="ttdeci">pthread_cond_t empty_cond</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00024">threadpool.c:24</a></div></div>
+<div class="ttc" id="astructthreadpool_html_affaba6c6657e4948458dbf50a59c54a8"><div class="ttname"><a href="../../d9/d42/structthreadpool.html#affaba6c6657e4948458dbf50a59c54a8">threadpool::num_threads</a></div><div class="ttdeci">uint64_t num_threads</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00019">threadpool.c:19</a></div></div>
+<div class="ttc" id="athreadpool_8c_html_aa93f0eb578d23995850d61f7d61c55c1"><div class="ttname"><a href="../../d1/dc7/threadpool_8c.html#aa93f0eb578d23995850d61f7d61c55c1">FALSE</a></div><div class="ttdeci">#define FALSE</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00007">threadpool.c:7</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -294,11 +386,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00095">95</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   96</span>{</div>
-<div class="line"><span class="lineno">   97</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#gabca97950848f08a7f9111e5844225ac0">threadpool_create</a> (NUM_CORES);</div>
-<div class="line"><span class="lineno">   98</span>}</div>
-<div class="ttc" id="agroup__ThreadPool_html_gabca97950848f08a7f9111e5844225ac0"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#gabca97950848f08a7f9111e5844225ac0">threadpool_create</a></div><div class="ttdeci">struct threadpool * threadpool_create(size_t num_threads)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00031">threadpool.c:31</a></div></div>
+<p>Creates a new thread pool with the default number of threads (equal to the number of CPU cores). </p>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the created thread pool, or <code>NULL</code> if creation fails. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00094">94</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   95</span>{</div>
+<div class="line"><span class="lineno">   96</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#gacc5910e706017274a824377e25d1e902">threadpool_create</a> (NUM_CORES);</div>
+<div class="line"><span class="lineno">   97</span>}</div>
+<div class="ttc" id="agroup__ThreadPool_html_gacc5910e706017274a824377e25d1e902"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#gacc5910e706017274a824377e25d1e902">threadpool_create</a></div><div class="ttdeci">struct threadpool * threadpool_create(uint64_t num_threads)</div><div class="ttdoc">Creates a new thread pool with the specified number of threads.</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00030">threadpool.c:30</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -318,25 +413,42 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00266">266</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  267</span>{</div>
-<div class="line"><span class="lineno">  268</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  269</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL)</div>
-<div class="line"><span class="lineno">  270</span>    {</div>
-<div class="line"><span class="lineno">  271</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  272</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  273</span>    }</div>
-<div class="line"><span class="lineno">  274</span>  <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#gad4ae5fd8ebf1cb0ebb2d6cb1069fce03">threadpool_stop</a> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
-<div class="line"><span class="lineno">  275</span> </div>
-<div class="line"><span class="lineno">  276</span>  pthread_mutex_destroy (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
-<div class="line"><span class="lineno">  277</span>  pthread_cond_destroy (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a29ec1c740d231134eb150e8c55432ede">queue_cond</a>);</div>
-<div class="line"><span class="lineno">  278</span>  pthread_cond_destroy (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac5a8de0c9bc82c2ad5135505ed66ac8a">empty_cond</a>);</div>
-<div class="line"><span class="lineno">  279</span> </div>
-<div class="line"><span class="lineno">  280</span>  free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a>);</div>
-<div class="line"><span class="lineno">  281</span>  free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
-<div class="line"><span class="lineno">  282</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  283</span>}</div>
-<div class="ttc" id="agroup__ThreadPool_html_gad4ae5fd8ebf1cb0ebb2d6cb1069fce03"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#gad4ae5fd8ebf1cb0ebb2d6cb1069fce03">threadpool_stop</a></div><div class="ttdeci">void threadpool_stop(struct threadpool *pool)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00208">threadpool.c:208</a></div></div>
+<p>Destroys the thread pool, freeing all allocated resources. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pool</td><td>Pointer to the thread pool to destroy.</td></tr>
+  </table>
+  </dd>
+</dl>
+<h3><a class="anchor" id="autotoc_md13"></a>
+Diagram:</h3>
+<div class="fragment"><div class="line">Before:</div>
+<div class="line">ThreadPool:</div>
+<div class="line">  - Threads: [T1, T2, T3]</div>
+<div class="line">  - Task Queue: [Task1] -&gt; [Task2] -&gt; NULL</div>
+<div class="line"> </div>
+<div class="line">After:</div>
+<div class="line">ThreadPool: Destroyed</div>
+</div><!-- fragment --> 
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00265">265</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  266</span>{</div>
+<div class="line"><span class="lineno">  267</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  268</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL)</div>
+<div class="line"><span class="lineno">  269</span>    {</div>
+<div class="line"><span class="lineno">  270</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  271</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  272</span>    }</div>
+<div class="line"><span class="lineno">  273</span>  <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#gad4ae5fd8ebf1cb0ebb2d6cb1069fce03">threadpool_stop</a> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
+<div class="line"><span class="lineno">  274</span> </div>
+<div class="line"><span class="lineno">  275</span>  pthread_mutex_destroy (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
+<div class="line"><span class="lineno">  276</span>  pthread_cond_destroy (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a29ec1c740d231134eb150e8c55432ede">queue_cond</a>);</div>
+<div class="line"><span class="lineno">  277</span>  pthread_cond_destroy (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac5a8de0c9bc82c2ad5135505ed66ac8a">empty_cond</a>);</div>
+<div class="line"><span class="lineno">  278</span> </div>
+<div class="line"><span class="lineno">  279</span>  free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a>);</div>
+<div class="line"><span class="lineno">  280</span>  free (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
+<div class="line"><span class="lineno">  281</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  282</span>}</div>
+<div class="ttc" id="agroup__ThreadPool_html_gad4ae5fd8ebf1cb0ebb2d6cb1069fce03"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#gad4ae5fd8ebf1cb0ebb2d6cb1069fce03">threadpool_stop</a></div><div class="ttdeci">void threadpool_stop(struct threadpool *pool)</div><div class="ttdoc">Stops all threads in the thread pool and prevents further tasks from being added.</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00207">threadpool.c:207</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -356,21 +468,30 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00232">232</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  233</span>{</div>
-<div class="line"><span class="lineno">  234</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  235</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL)</div>
-<div class="line"><span class="lineno">  236</span>    {</div>
-<div class="line"><span class="lineno">  237</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  238</span>      <span class="keywordflow">return</span> <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa8cecfc5c5c054d2875c03e77b7be15d">TRUE</a>;</div>
-<div class="line"><span class="lineno">  239</span>    }</div>
-<div class="line"><span class="lineno">  240</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
-<div class="line"><span class="lineno">  241</span>  <span class="keywordtype">int</span> empty = (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">task_queue_head</a> == NULL);</div>
-<div class="line"><span class="lineno">  242</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
-<div class="line"><span class="lineno">  243</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  244</span>  <span class="keywordflow">return</span> empty;</div>
-<div class="line"><span class="lineno">  245</span>}</div>
-<div class="ttc" id="athreadpool_8c_html_aa8cecfc5c5c054d2875c03e77b7be15d"><div class="ttname"><a href="../../d1/dc7/threadpool_8c.html#aa8cecfc5c5c054d2875c03e77b7be15d">TRUE</a></div><div class="ttdeci">#define TRUE</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00007">threadpool.c:7</a></div></div>
+<p>Checks if the thread pool's task queue is empty. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pool</td><td>Pointer to the thread pool. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>1</code> if the task queue is empty, <code>0</code> otherwise. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00231">231</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  232</span>{</div>
+<div class="line"><span class="lineno">  233</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  234</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL)</div>
+<div class="line"><span class="lineno">  235</span>    {</div>
+<div class="line"><span class="lineno">  236</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  237</span>      <span class="keywordflow">return</span> <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa8cecfc5c5c054d2875c03e77b7be15d">TRUE</a>;</div>
+<div class="line"><span class="lineno">  238</span>    }</div>
+<div class="line"><span class="lineno">  239</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
+<div class="line"><span class="lineno">  240</span>  <span class="keywordtype">int</span> empty = (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">task_queue_head</a> == NULL);</div>
+<div class="line"><span class="lineno">  241</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
+<div class="line"><span class="lineno">  242</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  243</span>  <span class="keywordflow">return</span> empty;</div>
+<div class="line"><span class="lineno">  244</span>}</div>
+<div class="ttc" id="athreadpool_8c_html_aa8cecfc5c5c054d2875c03e77b7be15d"><div class="ttname"><a href="../../d1/dc7/threadpool_8c.html#aa8cecfc5c5c054d2875c03e77b7be15d">TRUE</a></div><div class="ttdeci">#define TRUE</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00006">threadpool.c:6</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -390,28 +511,36 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00145">145</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  146</span>{</div>
-<div class="line"><span class="lineno">  147</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  148</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL || <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a8017588c65bf9fbe06c4090532eaf1d5">started</a>)</div>
-<div class="line"><span class="lineno">  149</span>    {</div>
-<div class="line"><span class="lineno">  150</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  151</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  152</span>    }</div>
-<div class="line"><span class="lineno">  153</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a24688368e7c53b1bd958056e9b8e1ce6">num_threads</a>; i++)</div>
-<div class="line"><span class="lineno">  154</span>    {</div>
-<div class="line"><span class="lineno">  155</span>      <span class="keywordflow">if</span> (pthread_create (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a>[i], NULL, <a class="code hl_function" href="../../d1/dc7/threadpool_8c.html#a8f0a9cbe091c3c0f88286fdaea035b6e">threadpool_worker</a>,</div>
-<div class="line"><span class="lineno">  156</span>                          (<span class="keywordtype">void</span> *)<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>)</div>
-<div class="line"><span class="lineno">  157</span>          != 0)</div>
-<div class="line"><span class="lineno">  158</span>        {</div>
-<div class="line"><span class="lineno">  159</span>          <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a2670cc6ae89edbeae325976f6484282b">stop</a> = <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa8cecfc5c5c054d2875c03e77b7be15d">TRUE</a>;</div>
-<div class="line"><span class="lineno">  160</span>          <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  161</span>        }</div>
-<div class="line"><span class="lineno">  162</span>    }</div>
-<div class="line"><span class="lineno">  163</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a8017588c65bf9fbe06c4090532eaf1d5">started</a> = <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa8cecfc5c5c054d2875c03e77b7be15d">TRUE</a>;</div>
-<div class="line"><span class="lineno">  164</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  165</span>}</div>
-<div class="ttc" id="athreadpool_8c_html_a8f0a9cbe091c3c0f88286fdaea035b6e"><div class="ttname"><a href="../../d1/dc7/threadpool_8c.html#a8f0a9cbe091c3c0f88286fdaea035b6e">threadpool_worker</a></div><div class="ttdeci">void * threadpool_worker(void *arg)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00101">threadpool.c:101</a></div></div>
+<p>Initializes the thread pool, starting the worker threads. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pool</td><td>Pointer to the thread pool to initialize. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00144">144</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  145</span>{</div>
+<div class="line"><span class="lineno">  146</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  147</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL || <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a8017588c65bf9fbe06c4090532eaf1d5">started</a>)</div>
+<div class="line"><span class="lineno">  148</span>    {</div>
+<div class="line"><span class="lineno">  149</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  150</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  151</span>    }</div>
+<div class="line"><span class="lineno">  152</span>  <span class="keywordflow">for</span> (uint64_t i = 0; i &lt; <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#affaba6c6657e4948458dbf50a59c54a8">num_threads</a>; i++)</div>
+<div class="line"><span class="lineno">  153</span>    {</div>
+<div class="line"><span class="lineno">  154</span>      <span class="keywordflow">if</span> (pthread_create (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a>[i], NULL, <a class="code hl_function" href="../../d1/dc7/threadpool_8c.html#a8f0a9cbe091c3c0f88286fdaea035b6e">threadpool_worker</a>,</div>
+<div class="line"><span class="lineno">  155</span>                          (<span class="keywordtype">void</span> *)<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>)</div>
+<div class="line"><span class="lineno">  156</span>          != 0)</div>
+<div class="line"><span class="lineno">  157</span>        {</div>
+<div class="line"><span class="lineno">  158</span>          <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a2670cc6ae89edbeae325976f6484282b">stop</a> = <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa8cecfc5c5c054d2875c03e77b7be15d">TRUE</a>;</div>
+<div class="line"><span class="lineno">  159</span>          <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  160</span>        }</div>
+<div class="line"><span class="lineno">  161</span>    }</div>
+<div class="line"><span class="lineno">  162</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a8017588c65bf9fbe06c4090532eaf1d5">started</a> = <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa8cecfc5c5c054d2875c03e77b7be15d">TRUE</a>;</div>
+<div class="line"><span class="lineno">  163</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  164</span>}</div>
+<div class="ttc" id="athreadpool_8c_html_a8f0a9cbe091c3c0f88286fdaea035b6e"><div class="ttname"><a href="../../d1/dc7/threadpool_8c.html#a8f0a9cbe091c3c0f88286fdaea035b6e">threadpool_worker</a></div><div class="ttdeci">void * threadpool_worker(void *arg)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00100">threadpool.c:100</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -431,29 +560,45 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00208">208</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  209</span>{</div>
-<div class="line"><span class="lineno">  210</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  211</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL || !<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a8017588c65bf9fbe06c4090532eaf1d5">started</a>)</div>
-<div class="line"><span class="lineno">  212</span>    {</div>
-<div class="line"><span class="lineno">  213</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  214</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  215</span>    }</div>
-<div class="line"><span class="lineno">  216</span>  <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#gaad95c955c36ef40b29142e8187cddb1e">threadpool_wait_empty</a> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
-<div class="line"><span class="lineno">  217</span> </div>
-<div class="line"><span class="lineno">  218</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
-<div class="line"><span class="lineno">  219</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a2670cc6ae89edbeae325976f6484282b">stop</a> = <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa8cecfc5c5c054d2875c03e77b7be15d">TRUE</a>;</div>
-<div class="line"><span class="lineno">  220</span>  pthread_cond_broadcast (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a29ec1c740d231134eb150e8c55432ede">queue_cond</a>);</div>
-<div class="line"><span class="lineno">  221</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
-<div class="line"><span class="lineno">  222</span> </div>
-<div class="line"><span class="lineno">  223</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a24688368e7c53b1bd958056e9b8e1ce6">num_threads</a>; i++)</div>
-<div class="line"><span class="lineno">  224</span>    {</div>
-<div class="line"><span class="lineno">  225</span>      pthread_join (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a>[i], NULL);</div>
-<div class="line"><span class="lineno">  226</span>    }</div>
-<div class="line"><span class="lineno">  227</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a8017588c65bf9fbe06c4090532eaf1d5">started</a> = <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa93f0eb578d23995850d61f7d61c55c1">FALSE</a>;</div>
-<div class="line"><span class="lineno">  228</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  229</span>}</div>
-<div class="ttc" id="agroup__ThreadPool_html_gaad95c955c36ef40b29142e8187cddb1e"><div class="ttname"><a href="../../dd/d9c/group__ThreadPool.html#gaad95c955c36ef40b29142e8187cddb1e">threadpool_wait_empty</a></div><div class="ttdeci">void threadpool_wait_empty(struct threadpool *pool)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc7/threadpool_8c_source.html#l00248">threadpool.c:248</a></div></div>
+<p>Stops all threads in the thread pool and prevents further tasks from being added. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pool</td><td>Pointer to the thread pool to stop.</td></tr>
+  </table>
+  </dd>
+</dl>
+<h3><a class="anchor" id="autotoc_md12"></a>
+Diagram:</h3>
+<div class="fragment"><div class="line">Before:</div>
+<div class="line">Threads: [Running T1, Running T2]</div>
+<div class="line">Task Queue: [Task1] -&gt; [Task2] -&gt; NULL</div>
+<div class="line"> </div>
+<div class="line">After:</div>
+<div class="line">Threads: Stopped</div>
+<div class="line">Task Queue: Empty</div>
+</div><!-- fragment --> 
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00207">207</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  208</span>{</div>
+<div class="line"><span class="lineno">  209</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  210</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL || !<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a8017588c65bf9fbe06c4090532eaf1d5">started</a>)</div>
+<div class="line"><span class="lineno">  211</span>    {</div>
+<div class="line"><span class="lineno">  212</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  213</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  214</span>    }</div>
+<div class="line"><span class="lineno">  215</span>  <a class="code hl_function" href="../../dd/d9c/group__ThreadPool.html#gaad95c955c36ef40b29142e8187cddb1e">threadpool_wait_empty</a> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>);</div>
+<div class="line"><span class="lineno">  216</span> </div>
+<div class="line"><span class="lineno">  217</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
+<div class="line"><span class="lineno">  218</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a2670cc6ae89edbeae325976f6484282b">stop</a> = <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa8cecfc5c5c054d2875c03e77b7be15d">TRUE</a>;</div>
+<div class="line"><span class="lineno">  219</span>  pthread_cond_broadcast (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a29ec1c740d231134eb150e8c55432ede">queue_cond</a>);</div>
+<div class="line"><span class="lineno">  220</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
+<div class="line"><span class="lineno">  221</span> </div>
+<div class="line"><span class="lineno">  222</span>  <span class="keywordflow">for</span> (uint64_t i = 0; i &lt; <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#affaba6c6657e4948458dbf50a59c54a8">num_threads</a>; i++)</div>
+<div class="line"><span class="lineno">  223</span>    {</div>
+<div class="line"><span class="lineno">  224</span>      pthread_join (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a986fa796519e202c7681c5c47d58f5e6">threads</a>[i], NULL);</div>
+<div class="line"><span class="lineno">  225</span>    }</div>
+<div class="line"><span class="lineno">  226</span>  <a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a8017588c65bf9fbe06c4090532eaf1d5">started</a> = <a class="code hl_define" href="../../d1/dc7/threadpool_8c.html#aa93f0eb578d23995850d61f7d61c55c1">FALSE</a>;</div>
+<div class="line"><span class="lineno">  227</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  228</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -473,22 +618,30 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00248">248</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  249</span>{</div>
-<div class="line"><span class="lineno">  250</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  251</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL)</div>
-<div class="line"><span class="lineno">  252</span>    {</div>
-<div class="line"><span class="lineno">  253</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  254</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  255</span>    }</div>
-<div class="line"><span class="lineno">  256</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
-<div class="line"><span class="lineno">  257</span>  <span class="keywordflow">while</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">task_queue_head</a> != NULL)</div>
-<div class="line"><span class="lineno">  258</span>    {</div>
-<div class="line"><span class="lineno">  259</span>      pthread_cond_wait (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac5a8de0c9bc82c2ad5135505ed66ac8a">empty_cond</a>, &amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
-<div class="line"><span class="lineno">  260</span>    }</div>
-<div class="line"><span class="lineno">  261</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
-<div class="line"><span class="lineno">  262</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
-<div class="line"><span class="lineno">  263</span>}</div>
+<p>Waits until the task queue becomes empty. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pool</td><td>Pointer to the thread pool. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d1/dc7/threadpool_8c_source.html#l00247">247</a> of file <a class="el" href="../../d1/dc7/threadpool_8c_source.html">threadpool.c</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  248</span>{</div>
+<div class="line"><span class="lineno">  249</span>  LOG_INIT (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  250</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a> == NULL)</div>
+<div class="line"><span class="lineno">  251</span>    {</div>
+<div class="line"><span class="lineno">  252</span>      LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  253</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  254</span>    }</div>
+<div class="line"><span class="lineno">  255</span>  pthread_mutex_lock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
+<div class="line"><span class="lineno">  256</span>  <span class="keywordflow">while</span> (<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac63e8b7db2caa5acaf7a42cb3b376684">task_queue_head</a> != NULL)</div>
+<div class="line"><span class="lineno">  257</span>    {</div>
+<div class="line"><span class="lineno">  258</span>      pthread_cond_wait (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#ac5a8de0c9bc82c2ad5135505ed66ac8a">empty_cond</a>, &amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
+<div class="line"><span class="lineno">  259</span>    }</div>
+<div class="line"><span class="lineno">  260</span>  pthread_mutex_unlock (&amp;<a class="code hl_variable" href="../../d3/d68/low__saurion_8h.html#a0d232b78568f2e4905d66ef056ce98b9">pool</a>-&gt;<a class="code hl_variable" href="../../d9/d42/structthreadpool.html#a4ac932be8335ba851db4fb193512a49d">queue_lock</a>);</div>
+<div class="line"><span class="lineno">  261</span>  LOG_END (<span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="lineno">  262</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
