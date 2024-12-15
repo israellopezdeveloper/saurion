@@ -6,8 +6,7 @@
 <!--toc:end-->
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=israellopezdeveloper_saurion&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=israellopezdeveloper_saurion)
-[![CI Push](https://github.com/israellopezdeveloper/saurion/actions/workflows/push.yml/badge.svg)](https://github.com/israellopezdeveloper/saurion/actions/workflows/push.yml)
-
+[![CI Main](https://github.com/israellopezdeveloper/saurion/actions/workflows/main.yml/badge.svg)](https://github.com/israellopezdeveloper/saurion/actions/workflows/main.yml)
 ![Sauron](https://raw.githubusercontent.com/israellopezdeveloper/saurion/refs/heads/metadata-branch/logo.png)
 
 [Web Page](https://israellopezdeveloper.github.io/saurion/)
