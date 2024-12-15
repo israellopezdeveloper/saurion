@@ -48,14 +48,12 @@
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
-#include <stdint.h> // for uint64_t
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include <stddef.h>
+#include <stdint.h> // for uint64_t
 
   /*!
    * @struct Node

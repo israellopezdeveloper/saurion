@@ -1,5 +1,7 @@
 # Saurion
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=israellopezdeveloper_saurion&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=israellopezdeveloper_saurion)
+
 ![Sauron](https://raw.githubusercontent.com/israellopezdeveloper/saurion/refs/heads/metadata-branch/logo.png)
 
 [Web Page](https://israellopezdeveloper.github.io/saurion/)
@@ -40,7 +42,7 @@ The structure of the message is as follows:
 
 The structure of the iovec division is:
 
-  First iovec (8192 bytes):
+First iovec (8192 bytes):
 
 ```
   +-----------------------------------------+-----------------------+
@@ -50,7 +52,7 @@ The structure of the iovec division is:
   +-----------------------------------------+-----------------------+
 ```
 
-  Second iovec (817 bytes):
+Second iovec (817 bytes):
 
 ```
   +-----------------------------------------+-----------------------+
@@ -67,18 +69,18 @@ Basic usage example:
 ```c
 // Create the saurion structure with 4 threads
 struct saurion *s = saurion_create(4);
- 
+
 // Start event processing
 if (saurion_start(s) != 0) {
     // Handle the error
 }
- 
+
 // Send a message through a socket
 saurion_send(s, socket_fd, "Hello, World!");
- 
+
 // Stop event processing
 saurion_stop(s);
- 
+
 // Destroy the structure and free resources
 saurion_destroy(s);
 ```

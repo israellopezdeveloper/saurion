@@ -34,7 +34,6 @@ extern "C"
   /*!
    * @defgroup LowSaurion
    *
-   * @private
    * @brief This function allocates memory for each `struct iovec`
    *
    * This function allocates memory for each `struct iovec`. Every `struct
