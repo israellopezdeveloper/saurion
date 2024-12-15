@@ -1,6 +1,7 @@
 # Saurion
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=israellopezdeveloper_saurion&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=israellopezdeveloper_saurion)
+![Pipeline](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
 
 ![Sauron](https://raw.githubusercontent.com/israellopezdeveloper/saurion/refs/heads/metadata-branch/logo.png)
 
