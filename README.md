@@ -17,7 +17,11 @@
       - [`iovec` Division](#iovec-division)
   - [Design Diagrams](#design-diagrams)
     - [General Architecture](#general-architecture)
-    - [Thread Pool](#thread-pool)
+    - [Relationships](#relationships)
+    - [Detailed Diagrams by Component](#detailed-diagrams-by-component)
+      - [ThreadPool](#threadpool)
+      - [Interaction Between Components](#interaction-between-components)
+      - [General Task Workflow](#general-task-workflow)
   - [Usage Examples](#usage-examples)
     - [Basic I/O Handling](#basic-io-handling)
     - [Thread Pool Example](#thread-pool-example)
@@ -96,29 +100,100 @@ efficient transmission. Each `iovec` has:
 
 ### General Architecture
 
+The following diagram reflects how **Saurion** encompasses the three main
+modules (**ThreadPool**, **LinkedList**, and **io_uring**) and how they
+interact with each other.
+
 ```text
 +---------------------+
 |      Saurion        |
 +---------+-----------+
-          |
-   +------v-------+          +---------+
-   | Thread Pool   |<--------| Task    |
-   +------+--------+         +---------+
-          |
-   +------v-------+
-   |  io_uring     |
-   +------+--------+
-          |
-   +------v-------+
-   | Linked List   |
-   +--------------+
+          | Contains
+  +-------+--------+-------------------+
+  |                |                   |
+  v                v                   v
++-----------+  +------------+     +-------------+
+| ThreadPool |  | LinkedList |     |  io_uring   |
++-----+-----+  +-----+------+     +------+------+
+      |               ^                   |
+      |               |                   |
+      |        Manages Requests           |
+      +---------------+-------------------+
+                      | Adds Tasks
+                      v
+            +------------------+
+            |       Task       |
+            +------------------+
 ```
 
-### Thread Pool
+---
+
+### Relationships
+
+1. **Saurion**:
+
+   - The main component that encapsulates:
+     - **ThreadPool** for managing concurrent tasks.
+     - **LinkedList** for storing and handling pending or active tasks.
+     - **io_uring** for handling asynchronous input/output events.
+
+2. **ThreadPool**:
+
+   - Composed of:
+     - **Threads**, which execute concurrent tasks.
+     - **Tasks**, representing individual units of work.
+   - Interacts with:
+     - **io_uring** to receive new tasks and distribute them among the threads.
+     - **LinkedList** to add or remove completed tasks.
+
+3. **io_uring**:
+
+   - Adds new tasks to the **ThreadPool**.
+   - Serves as the intermediary to manage asynchronous input/output events,
+     such as network or file operations.
+
+4. **LinkedList**:
+   - Stores **Requests** that are either being processed or are pending execution.
+   - Removes requests from the list once they are completed by the **ThreadPool**.
+
+---
+
+### Detailed Diagrams by Component
+
+#### ThreadPool
 
 ```text
-Threads: [T1, T2, T3, T4]
-Task Queue: [Task1] -> [Task2] -> NULL
++-------------------+
+|    ThreadPool     |
++---------+---------+
+          | Contains
+          v
++---------+---------+         +----------------+
+|      Threads      |   --->  |      Task      |
+| [T1, T2, ..., Tn] |         | Function, Args |
++-------------------+         +----------------+
+```
+
+---
+
+#### Interaction Between Components
+
+```text
+io_uring -> ThreadPool: Adds tasks
+ThreadPool -> LinkedList: Adds and removes requests
+LinkedList: Manages pending requests
+```
+
+---
+
+#### General Task Workflow
+
+```text
+1. io_uring detects an event (e.g., read/write on a socket).
+2. io_uring adds the task to the ThreadPool.
+3. ThreadPool distributes the task to one of its available threads.
+4. The thread processes the task and, if necessary, adds it to the LinkedList.
+5. The LinkedList removes the request once it is completed.
 ```
 
 ---
