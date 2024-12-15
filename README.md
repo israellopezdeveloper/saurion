@@ -104,26 +104,16 @@ The following diagram reflects how **Saurion** encompasses the three main
 modules (**ThreadPool**, **LinkedList**, and **io_uring**) and how they
 interact with each other.
 
-```text
-+---------------------+
-|      Saurion        |
-+---------+-----------+
-          | Contains
-  +-------+--------+-------------------+
-  |                |                   |
-  v                v                   v
-+-----------+  +------------+     +-------------+
-| ThreadPool |  | LinkedList |     |  io_uring   |
-+-----+-----+  +-----+------+     +------+------+
-      |               ^                   |
-      |               |                   |
-      |        Manages Requests           |
-      +---------------+-------------------+
-                      | Adds Tasks
-                      v
-            +------------------+
-            |       Task       |
-            +------------------+
+```mermaid
+graph TD
+    Saurion["Saurion"] --> ThreadPool["ThreadPool"]
+    Saurion --> LinkedList["LinkedList"]
+    Saurion --> IoUring["io_uring"]
+    IoUring --> ThreadPool
+    ThreadPool --> LinkedList
+    ThreadPool --> TaskQueue["Task Queue"]
+    ThreadPool --> Threads["Threads"]
+    TaskQueue --> Task["Task (Function, Args)"]
 ```
 
 ---
@@ -162,26 +152,29 @@ interact with each other.
 
 #### ThreadPool
 
-```text
-+-------------------+
-|    ThreadPool     |
-+---------+---------+
-          | Contains
-          v
-+---------+---------+         +----------------+
-|      Threads      |   --->  |      Task      |
-| [T1, T2, ..., Tn] |         | Function, Args |
-+-------------------+         +----------------+
+```mermaid
+graph TD
+    ThreadPool["ThreadPool"] --> Threads["Threads (T1, T2, ..., Tn)"]
+    ThreadPool --> TaskQueue["Task Queue"]
+    TaskQueue --> Task1["Task (Function A, Args X)"]
+    TaskQueue --> Task2["Task (Function B, Args Y)"]
 ```
 
 ---
 
 #### Interaction Between Components
 
-```text
-io_uring -> ThreadPool: Adds tasks
-ThreadPool -> LinkedList: Adds and removes requests
-LinkedList: Manages pending requests
+```mermaid
+sequenceDiagram
+    participant IoUring as io_uring
+    participant ThreadPool as ThreadPool
+    participant Thread as Thread
+    participant LinkedList as LinkedList
+
+    IoUring ->> ThreadPool: Detects event and adds task
+    ThreadPool ->> Thread: Distributes task to available thread
+    Thread ->> LinkedList: Adds request if necessary
+    LinkedList ->> ThreadPool: Removes completed request
 ```
 
 ---
