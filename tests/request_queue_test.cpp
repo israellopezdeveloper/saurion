@@ -103,7 +103,7 @@ TEST_F (RequestQueueTest, EnqueueMultipleRequests)
 
 TEST_F (RequestQueueTest, DequeueSingleRequest)
 {
-  struct request *req = new struct request;
+  auto *req = new struct request ({ 1 });
   ASSERT_EQ (enqueue (req), SUCCESS_CODE);
 
   struct request *dequeued_req = dequeue ();
@@ -115,8 +115,8 @@ TEST_F (RequestQueueTest, DequeueSingleRequest)
 TEST_F (RequestQueueTest, DequeueMultipleRequests)
 {
   std::vector<struct request *> requests
-      = { new struct request, new struct request, new struct request,
-          new struct request };
+      = { new struct request ({ 1 }), new struct request ({ 2 }),
+          new struct request ({ 3 }), new struct request ({ 4 }) };
 
   for (auto *req : requests)
     {
@@ -141,7 +141,7 @@ TEST_F (RequestQueueTest, DequeueEmptyQueue)
     dequeued.store (true);
   });
 
-  auto *req = new struct request (1);
+  auto *req = new struct request ({ 1 });
   ASSERT_EQ (enqueue (req), SUCCESS_CODE);
 
   t.join ();
@@ -153,7 +153,7 @@ TEST_F (RequestQueueTest, DestroyQueueWithItems)
   std::vector<struct request *> requests;
   for (int i = 0; i < 5; ++i)
     {
-      auto *req = new struct request (1);
+      auto *req = new struct request ({ 1 });
       requests.push_back (req);
       ASSERT_EQ (enqueue (req), SUCCESS_CODE);
     }
