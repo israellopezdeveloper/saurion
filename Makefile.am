@@ -1,5 +1,6 @@
 # This is an automatically generated configuration file.
-# It is recommended not to modify this file or any other included in the .mk nd m4 directories.
+# It is recommended not to modify this file or any other included in the .mk
+# and m4 directories.
 
 ACLOCAL_AMFLAGS = -I m4
 include .mk/my_conf.am
@@ -12,10 +13,12 @@ bin_my_program_SOURCES = src/main.c
 
 # **Libraries** must be placed at lib folder
 # Additional configuration for library. Meaning of version info:
-# The '-version-info' option is used to specify versioning information for shared libraries.
+# The '-version-info' option is used to specify versioning information for
+# shared libraries.
 # - 'current' represents the current interface version.
 # - 'revision' is incremented for minor changes or bug fixes.
-# - 'age' specifies how many previous versions are compatible with the current one.
+# - 'age' specifies how many previous versions are compatible with the current
+#   one.
 # This helps manage compatibility and versioning for shared library users.
 # lib_LTLIBRARIES =  lib/libmylib.la
 # lib_mylib_la_SOURCES = src/mylib.c include/mylib.h
@@ -47,5 +50,10 @@ tests_saurion_test_SOURCES = tests/request_queue_test.cpp tests/saurion_test.cpp
 tests_saurion_test_CXXFLAGS = $(GTEST_INCLUDE)
 tests_saurion_test_LDADD = lib/libsaurion.la lib/libthreadpool.la $(GTEST_LIBS)
 tests_saurion_test_LDFLAGS = -luring
+
+# TODO:create an executable that executes an instance of Saurion and
+# comunicates with client, executable must accept a fifo path to comunicates
+# with the client. The target must be provide an isolated executable without
+# any external library to check the memory leaks.
 
 TESTS = tests/saurion_test
