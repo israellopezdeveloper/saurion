@@ -84,14 +84,11 @@ TEST_F (RequestQueueTest, EnqueueSingleRequest)
 TEST_F (RequestQueueTest, EnqueueMultipleRequests)
 {
   std::vector<struct request *> requests
-      = { new struct request, new struct request, new struct request,
-          new struct request };
+      = { new struct request ({ 1 }), new struct request ({ 2 }),
+          new struct request ({ 3 }), new struct request ({ 4 }) };
 
-  int counter = 0;
   for (auto *req : requests)
     {
-      ++counter;
-      req->id = counter;
       ASSERT_EQ (enqueue (req), SUCCESS_CODE);
     }
 
