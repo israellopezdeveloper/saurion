@@ -379,11 +379,6 @@ readPipe (const std::string &pipePath)
 
   close (fd);
 }
-#if defined(__has_feature)
-#if __has_feature(thread_sanitizer)
-__attribute__ ((no_sanitize ("thread")))
-#endif
-#endif
 
 template <typename T>
 T *

@@ -75,7 +75,7 @@ TEST_F (RequestQueueTest, InitQueueSuccess)
 
 TEST_F (RequestQueueTest, EnqueueSingleRequest)
 {
-  auto *req = new struct request (1);
+  auto *req = new struct request ({ 1 });
   ASSERT_EQ (enqueue (req), SUCCESS_CODE);
   ASSERT_EQ (front ()->req, req);
   ASSERT_EQ (rear ()->req, req);
@@ -106,7 +106,7 @@ TEST_F (RequestQueueTest, EnqueueMultipleRequests)
 
 TEST_F (RequestQueueTest, DequeueSingleRequest)
 {
-  struct request *req = new struct request (1);
+  struct request *req = new struct request;
   ASSERT_EQ (enqueue (req), SUCCESS_CODE);
 
   struct request *dequeued_req = dequeue ();
