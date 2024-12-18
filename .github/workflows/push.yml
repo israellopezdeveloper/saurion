@@ -39,7 +39,7 @@ jobs:
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202135515'
-      docker_options: '--privileged --user root'
+      docker_options: '--privileged --user root --memory=4g --memory-swap=4g'
       commands: |
         ulimit -n 1024
         ./runme --mode memleak --actions memleak
