@@ -61,8 +61,16 @@ jobs:
       docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202135515'
       docker_options: '--privileged --user root'
       commands: |
-        ulimit -n 1024
-        ./runme --mode memleak --actions memleak || true
+        ./runme --mode memleak --actions memleak
+
+  thread-gcc:
+    name: Check thread issues on GCC
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202135515'
+      docker_options: '--privileged --user root'
+      commands: |
+        ./runme --mode thread --actions thread
 
   create-release:
     name: Create GitHub Release

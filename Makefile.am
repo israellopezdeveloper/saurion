@@ -42,7 +42,7 @@ lib_libthreadpool_la_LDFLAGS = -version-info 1:0:0
 lib_libsaurion_la_SOURCES = src/request_queue.c include/request_queue.h src/linked_list.c include/linked_list.h src/low_saurion.c include/low_saurion.h src/saurion.cpp include/saurion.hpp include/config.h
 lib_libsaurion_la_LDFLAGS = -version-info 1:0:0
 
-check_PROGRAMS = tests/client tests/saurion_test
+check_PROGRAMS = tests/client tests/saurion_test tests/saurion_leak
 
 tests_client_SOURCES = tests/client.cpp
 
@@ -55,5 +55,9 @@ tests_saurion_test_LDFLAGS = -luring
 # comunicates with client, executable must accept a fifo path to comunicates
 # with the client. The target must be provide an isolated executable without
 # any external library to check the memory leaks.
+
+tests_saurion_leak_SOURCES = tests/saurion_leak.cpp include/client_interface.hpp tests/client_interface.cpp
+tests_saurion_leak_LDADD = lib/libsaurion.la lib/libthreadpool.la
+tests_saurion_leak_LDFLAGS = -luring
 
 TESTS = tests/saurion_test

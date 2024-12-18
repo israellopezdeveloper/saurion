@@ -495,7 +495,7 @@ handle_partial_message (struct chunk_params *p)
 
   if ((p->curr_iov_off + p->cont_rem + 1) <= p->max_iov_cont)
     {
-      *p->dest = malloc (p->cont_sz);
+      *p->dest = malloc (p->cont_sz + 1);
       if (!*p->dest)
         {
           return ERROR_CODE;
@@ -504,7 +504,7 @@ handle_partial_message (struct chunk_params *p)
     }
   else
     {
-      p->req->prev = malloc (p->cont_sz);
+      p->req->prev = malloc (p->cont_sz + 1);
       if (!p->req->prev)
         {
           return ERROR_CODE;
@@ -533,7 +533,7 @@ handle_new_message (struct chunk_params *p)
 
   if (p->cont_rem <= p->max_iov_cont)
     {
-      *p->dest = malloc (p->cont_sz);
+      *p->dest = malloc (p->cont_sz + 1);
       if (!*p->dest)
         {
           return ERROR_CODE; // Error al asignar memoria.
@@ -542,7 +542,7 @@ handle_new_message (struct chunk_params *p)
     }
   else
     {
-      p->req->prev = malloc (p->cont_sz);
+      p->req->prev = malloc (p->cont_sz + 1);
       if (!p->req->prev)
         {
           return ERROR_CODE; // Error al asignar memoria.
