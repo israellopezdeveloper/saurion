@@ -13,7 +13,7 @@ jobs:
       docker_image: 'lopoeisr/make-doc:debian-bookworm_GCC-14_20241202135515'
       docker_options: '--privileged --user root'
       commands: |
-        ./runme --docs
+        ./runme --actions docs
         tar -czf documentation.tar.gz -C build/docs html -C latex refman.pdf
       artifact_path: 'documentation.tar.gz'
       artifact_name: 'documentation'
@@ -25,7 +25,7 @@ jobs:
       docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202135515'
       docker_options: '--privileged --user root'
       commands: |
-        ./runme --coverage
+        ./runme --mode coverage --actions coverage
         tar -czf coverage.tar.gz -C build/coverage .
       artifact_path: 'coverage.tar.gz'
       artifact_name: 'coverage'
@@ -37,7 +37,7 @@ jobs:
       docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202135515'
       docker_options: '--privileged --user root'
       commands: |
-        ./runme
+        ./runme --actions test
         tar -czf gcc-libs.tar.gz -C build/lib .
       artifact_path: 'gcc-libs.tar.gz'
       artifact_name: 'gcc-libs'
@@ -49,7 +49,7 @@ jobs:
       docker_image: 'lopoeisr/make-clang:debian-bookworm_CLANG-19_20241202135515'
       docker_options: '--privileged --user root'
       commands: |
-        ./runme
+        ./runme --actions test
         tar -czf clang-libs.tar.gz -C build/lib .
       artifact_path: 'clang-libs.tar.gz'
       artifact_name: 'clang-libs'
@@ -61,8 +61,16 @@ jobs:
       docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202135515'
       docker_options: '--privileged --user root'
       commands: |
-        ulimit -n 1024
-        ./runme --leak
+        ./runme --mode memleak --actions memleak
+
+  thread-gcc:
+    name: Check thread issues on GCC
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202135515'
+      docker_options: '--privileged --user root'
+      commands: |
+        ./runme --mode thread --actions thread
 
   create-release:
     name: Create GitHub Release

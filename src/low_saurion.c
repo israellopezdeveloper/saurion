@@ -254,8 +254,8 @@ add_accept (struct saurion *const s, struct sockaddr_in *const ca,
       struct io_uring_sqe *sqe = io_uring_get_sqe (&s->rings[0]);
       while (!sqe)
         {
-          sqe = io_uring_get_sqe (&s->rings[0]);
           nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
+          sqe = io_uring_get_sqe (&s->rings[0]);
         }
       struct request *req = NULL;
       if (!set_request (&req, &s->list, 0, NULL, 0))
@@ -294,8 +294,8 @@ add_fd (struct saurion *const s, const int client_socket, const int sel)
       struct io_uring_sqe *sqe = io_uring_get_sqe (ring);
       while (!sqe)
         {
-          sqe = io_uring_get_sqe (ring);
           nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
+          sqe = io_uring_get_sqe (ring);
         }
       struct request *req = NULL;
       if (!set_request (&req, &s->list, CHUNK_SZ, NULL, 0))
@@ -349,8 +349,8 @@ add_read_continue (struct saurion *const s, struct request *oreq,
       struct io_uring_sqe *sqe = io_uring_get_sqe (ring);
       while (!sqe)
         {
-          sqe = io_uring_get_sqe (ring);
           nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
+          sqe = io_uring_get_sqe (ring);
         }
       if (!set_request (&oreq, &s->list, oreq->prev_remain, NULL, 0))
         {
@@ -386,8 +386,8 @@ add_write (struct saurion *const s, const int fd, const char *const str,
       struct io_uring_sqe *sqe = io_uring_get_sqe (ring);
       while (!sqe)
         {
-          sqe = io_uring_get_sqe (ring);
           nanosleep (&TIMEOUT_RETRY_SPEC, NULL);
+          sqe = io_uring_get_sqe (ring);
         }
       struct request *req = NULL;
       if (!set_request (&req, &s->list, strlen (str), (const void *const)str,
@@ -495,7 +495,7 @@ handle_partial_message (struct chunk_params *p)
 
   if ((p->curr_iov_off + p->cont_rem + 1) <= p->max_iov_cont)
     {
-      *p->dest = malloc (p->cont_sz);
+      *p->dest = malloc (p->cont_sz + 1);
       if (!*p->dest)
         {
           return ERROR_CODE;
@@ -504,7 +504,7 @@ handle_partial_message (struct chunk_params *p)
     }
   else
     {
-      p->req->prev = malloc (p->cont_sz);
+      p->req->prev = malloc (p->cont_sz + 1);
       if (!p->req->prev)
         {
           return ERROR_CODE;
@@ -533,7 +533,7 @@ handle_new_message (struct chunk_params *p)
 
   if (p->cont_rem <= p->max_iov_cont)
     {
-      *p->dest = malloc (p->cont_sz);
+      *p->dest = malloc (p->cont_sz + 1);
       if (!*p->dest)
         {
           return ERROR_CODE; // Error al asignar memoria.
@@ -542,7 +542,7 @@ handle_new_message (struct chunk_params *p)
     }
   else
     {
-      p->req->prev = malloc (p->cont_sz);
+      p->req->prev = malloc (p->cont_sz + 1);
       if (!p->req->prev)
         {
           return ERROR_CODE; // Error al asignar memoria.

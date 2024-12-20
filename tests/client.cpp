@@ -3,14 +3,15 @@
 #include <arpa/inet.h> // for htonl, inet_pton, ntohl, htons
 #include <atomic>      // for atomic
 #include <cstdint>     // for uint64_t, uint32_t, int64_t, uint8_t
-#include <cstring>     // for memcpy, strerror, memset, strlen, strcpy
-#include <fcntl.h>     // for fcntl, open, F_GETFL, F_SETFL, O_NONBLOCK
-#include <filesystem>  // for filesystem, setfill, setw
-#include <fstream>     // for basic_ostream, operator<<, endl, basic...
-#include <sys/mman.h>  // for mmap, MAP_ANONYMOUS, MAP_FAILED, MAP_S...
-#include <sys/stat.h>  // for mkfifo
-#include <sys/wait.h>  // for waitpid
-#include <vector>      // for vector
+#include <cstdio>
+#include <cstring>    // for memcpy, strerror, memset, strlen, strcpy
+#include <fcntl.h>    // for fcntl, open, F_GETFL, F_SETFL, O_NONBLOCK
+#include <filesystem> // for filesystem, setfill, setw
+#include <fstream>    // for basic_ostream, operator<<, endl, basic...
+#include <sys/mman.h> // for mmap, MAP_ANONYMOUS, MAP_FAILED, MAP_S...
+#include <sys/stat.h> // for mkfifo
+#include <sys/wait.h> // for waitpid
+#include <vector>     // for vector
 
 std::vector<pid_t> clients;
 int numClients = 0;
@@ -379,11 +380,6 @@ readPipe (const std::string &pipePath)
 
   close (fd);
 }
-#if defined(__has_feature)
-#if __has_feature(thread_sanitizer)
-__attribute__ ((no_sanitize ("thread")))
-#endif
-#endif
 
 template <typename T>
 T *

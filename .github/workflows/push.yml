@@ -2,8 +2,8 @@ name: CI Push
 
 on:
   push:
-    branches:
-      - '**'  # Todas las ramas
+    branches-ignore:
+      - main
 
 jobs:
 
@@ -14,7 +14,7 @@ jobs:
       docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202135515'
       docker_options: '--privileged --user root'
       commands: |
-        ./runme --coverage
+        ./runme --mode coverage --actions coverage
 
   test-gcc:
     name: Check and generate binaries using GCC
@@ -23,7 +23,7 @@ jobs:
       docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202135515'
       docker_options: '--privileged --user root'
       commands: |
-        ./runme
+        ./runme --actions check
 
   test-clang:
     name: Check and generate binaries using CLANG
@@ -32,14 +32,24 @@ jobs:
       docker_image: 'lopoeisr/make-clang:debian-bookworm_CLANG-19_20241202135515'
       docker_options: '--privileged --user root'
       commands: |
-        ./runme
+        ./runme --actions check
 
   leak-gcc:
     name: Check memory leaks on GCC
     uses: ./.github/workflows/reusable-job.yml
     with:
       docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202135515'
+      docker_options: '--privileged --user root --memory=4g --memory-swap=4g'
+      commands: |
+        ulimit -n 1024
+        ./runme --mode memleak --actions memleak
+
+  thread-gcc:
+    name: Check thread issues on GCC
+    uses: ./.github/workflows/reusable-job.yml
+    with:
+      docker_image: 'lopoeisr/make-gcc:debian-bookworm_GCC-14_20241202135515'
       docker_options: '--privileged --user root'
       commands: |
         ulimit -n 1024
-        ./runme --leak
+        ./runme --mode thread --actions thread
